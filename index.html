@@ -2342,22 +2342,6 @@ function resetAllWarehouse() {
   closeCalculator();
 }
 
-// ===== Tawk 위젯 유지 =====
-function keepTawkVisible() {
-  const tawkNodes = document.querySelectorAll('iframe[src*="tawk"], [id*="tawk"], [class*="tawk"]');
-  tawkNodes.forEach((el) => {
-    if (!(el instanceof HTMLElement)) return;
-    el.style.display = 'block';
-    el.style.visibility = 'visible';
-    el.style.opacity = '1';
-    el.style.zIndex = '2147483000';
-  });
-
-  if (window.Tawk_API && typeof window.Tawk_API.showWidget === 'function') {
-    try { window.Tawk_API.showWidget(); } catch (_) {}
-  }
-}
-
 // ===== 섹션 전환 =====
 function switchSection(sectionId) {
   saveWarehouseInventory();
@@ -2385,8 +2369,6 @@ function switchSection(sectionId) {
   } else if (sectionId === 'factory') {
     renderFactorySeaweedMedia();
   }
-
-  keepTawkVisible();
 }
 
 function openFactorySub(subKey) {
