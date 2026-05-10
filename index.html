@@ -1898,6 +1898,8 @@ function buildImageTag(name, alt = '', style = '', className = '') {
 }
 
 const PATCH_NOTES_HTML = `
+  <h3>[띵타해] 프로토타입</h3>
+  <p><strong>버전:</strong> v1.0.0</p>
   <h3>최근 업데이트</h3>
   <ul>
     <li>공예품 가격 패널이 재료 입력 없이도 항상 표시되도록 변경</li>
@@ -3017,9 +3019,13 @@ function getBaseAlchemyTimeSec(name) {
 }
 
 function formatDuration(sec) {
-  const s = Math.max(1, Math.round(sec));
-  if (s >= 60) return `${(s / 60).toFixed(2)}분`;
-  return `${s}초`;
+  const totalSec = Math.max(1, Math.round(sec));
+  const hours = Math.floor(totalSec / 3600);
+  const minutes = Math.floor((totalSec % 3600) / 60);
+  const seconds = totalSec % 60;
+  if (hours > 0) return `${hours}시간 ${minutes}분 ${seconds}초`;
+  if (minutes > 0) return `${minutes}분 ${seconds}초`;
+  return `${seconds}초`;
 }
 
 const FINAL_GROUP1 = ['영생의 아쿠티스', '크라켄의 광란체', '리바이던의 깃털'];
