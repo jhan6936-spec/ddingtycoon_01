@@ -3873,8 +3873,11 @@ function analyzeEfficiency() {
     planEntries.forEach(([name, count], i) => {
       const recipe = data.recipes.find(r => r.name === name);
       if (!recipe) return;
+      const basePrice = recipe.price || 0;
       const priceMultiplier = 1 + (effects.alchemyPriceBoost / 100);
       const adjustedPrice = Math.round((recipe.price || 0) * priceMultiplier);
+      const totalBasePrice = basePrice * count;
+      const totalAdjustedPrice = adjustedPrice * count;
       
       // 바로 아랫단계 필요 재료 계산
       const subMatsHTML = (recipe.inputs || []).map((inp) => {
@@ -3898,7 +3901,10 @@ function analyzeEfficiency() {
           </div>
           <div class="info-item">
             <div class="info-label">총 획득 수익</div>
-            <div class="info-value" style="font-size: 16px;">${(adjustedPrice * count).toLocaleString()}G</div>
+            <div style="display:flex;flex-direction:column;gap:2px;text-align:right;">
+              <div style="font-size:12px;color:#b7b7b7;">기본가: <strong style="color:#ffffff;">${totalBasePrice.toLocaleString()}G</strong></div>
+              <div style="font-size:12px;color:#9acfff;">전문가 포함가: <strong style="color:#8fd5ff;">${totalAdjustedPrice.toLocaleString()}G</strong></div>
+            </div>
           </div>
         </div>
         <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #2a2a2a;">
