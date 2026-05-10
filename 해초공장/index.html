@@ -1,0 +1,3359 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>띵타이쿤 효율 계산기</title>
+  <style>
+    @font-face {
+      font-family: 'PixelRoborobo';
+      src: url('../pixelroborobo.otf') format('opentype');
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'PixelRoborobo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0f0f0f;
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+    .main-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+    /* 사이드바 */
+    .sidebar {
+      width: 220px;
+      background: #1a1a1a;
+      border-right: 1px solid #333;
+      padding: 20px 0;
+      overflow-y: auto;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+    .sidebar-title {
+      padding: 15px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .nav-item {
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 14px;
+      color: #bbb;
+      border-left: 3px solid transparent;
+    }
+    .nav-item:hover {
+      background: #252525;
+      color: #fff;
+      border-left-color: #4a8fd9;
+    }
+    .nav-item.active {
+      background: #252525;
+      color: #4a8fd9;
+      border-left-color: #4a8fd9;
+      font-weight: 600;
+    }
+    .sub-nav {
+      margin-top: 6px;
+      padding-left: 8px;
+      display: none;
+    }
+    .sub-nav .sub-item {
+      padding: 8px 20px 8px 28px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 12px;
+      color: #9a9a9a;
+      border-left: 3px solid transparent;
+    }
+    .sub-nav .sub-item:hover {
+      background: #222;
+      color: #fff;
+      border-left-color: #4a8fd9;
+    }
+    .sub-nav .sub-item.active {
+      background: #222;
+      color: #4a8fd9;
+      border-left-color: #4a8fd9;
+      font-weight: 700;
+    }
+    /* 메인 컨텐츠 */
+    .main-content {
+      flex: 1;
+      padding: 30px 40px;
+      overflow-y: auto;
+    }
+    .header {
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 5px;
+    }
+    .header-subtitle {
+      font-size: 13px;
+      color: #888;
+    }
+    /* 검색 & 필터 */
+    .search-filter {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 25px;
+      align-items: center;
+    }
+    .search-box {
+      flex: 1;
+      max-width: 400px;
+      position: relative;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 10px 15px;
+      background: #1a1a1a;
+      color: #fff;
+      border: 1px solid #333;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    .search-box input::placeholder {
+      color: #666;
+    }
+    .filter-select {
+      padding: 10px 15px;
+      background: #1a1a1a;
+      color: #fff;
+      border: 1px solid #333;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    /* 레시피 카드 그리드 */
+    .recipes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .recipe-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .recipe-card:hover {
+      border-color: #4a8fd9;
+      box-shadow: 0 4px 12px rgba(74, 143, 217, 0.15);
+      transform: translateY(-2px);
+    }
+    .recipe-card-header {
+      padding: 15px;
+      background: #252525;
+      border-bottom: 1px solid #2a2a2a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .recipe-card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .recipe-card-price {
+      background: #4a8fd9;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .recipe-card-body {
+      padding: 15px;
+    }
+    .recipe-section {
+      margin-bottom: 15px;
+    }
+    .recipe-section:last-child {
+      margin-bottom: 0;
+    }
+    .recipe-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .ingredient-item {
+      display: flex;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 13px;
+      color: #bbb;
+    }
+    .ingredient-item:before {
+      content: "•";
+      margin-right: 8px;
+      color: #4a8fd9;
+      font-weight: bold;
+    }
+    .ingredient-name {
+      flex: 1;
+    }
+    .ingredient-count {
+      background: #2a2a2a;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 12px;
+      color: #4a8fd9;
+      font-weight: 600;
+    }
+    /* 창고 섹션 */
+    .warehouse-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 12px;
+    }
+    .warehouse-sections {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 18px;
+    }
+    .warehouse-section {
+      background: rgba(26, 26, 26, 0.5);
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      padding: 14px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+    }
+    .warehouse-section-title {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .warehouse-section-title h2 {
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 0.2px;
+    }
+    .warehouse-section-sub {
+      font-size: 11px;
+      color: #888;
+      white-space: nowrap;
+    }
+    .warehouse-item {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      padding: 15px;
+      border-radius: 6px;
+    }
+    .warehouse-item:hover {
+      border-color: #3b5f87;
+    }
+    .warehouse-item-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+    .warehouse-item input {
+      width: 100%;
+      padding: 8px;
+      background: #252525;
+      color: #4a8fd9;
+      border: 1px solid #333;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .warehouse-section.vanilla-disabled {
+      opacity: 0.62;
+    }
+    .warehouse-section.vanilla-disabled .warehouse-item input {
+      cursor: not-allowed;
+      color: #999;
+      background: #202020;
+      border-color: #2d2d2d;
+    }
+    .warehouse-vanilla-wrap {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 14px;
+      align-items: start;
+    }
+    .warehouse-grid.vanilla-dense {
+      grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+      gap: 8px;
+    }
+    .warehouse-item.vanilla-item {
+      padding: 10px 11px;
+    }
+    .warehouse-item.vanilla-item .warehouse-item-name {
+      font-size: 12px;
+      margin-bottom: 6px;
+      line-height: 1.35;
+      word-break: keep-all;
+    }
+
+    /* 창고 헤더 액션 */
+    .header-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .toggle-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #bbb;
+      font-size: 12px;
+      font-weight: 700;
+      user-select: none;
+    }
+    .toggle-switch {
+      position: relative;
+      width: 42px;
+      height: 24px;
+      display: inline-block;
+    }
+    .toggle-switch input {
+      display: none;
+    }
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      border-radius: 999px;
+      background: #353535;
+      border: 1px solid #4a4a4a;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .toggle-slider::before {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: #ddd;
+      transition: transform 0.2s ease;
+    }
+    .toggle-switch input:checked + .toggle-slider {
+      background: #2a4f7a;
+      border-color: #4a8fd9;
+    }
+    .toggle-switch input:checked + .toggle-slider::before {
+      transform: translateX(18px);
+      background: #fff;
+    }
+    .btn {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #333;
+      background: #1a1a1a;
+      color: #ddd;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+    .btn:hover {
+      background: #252525;
+      border-color: #4a8fd9;
+      color: #fff;
+    }
+    .btn.danger:hover {
+      border-color: #d94a4a;
+      color: #fff;
+    }
+
+    /* 공장 제작법 */
+    .factory-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      background: #1a1a1a;
+      color: #bbb;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .tab-btn.active {
+      background: #4a8fd9;
+      border-color: #4a8fd9;
+      color: #fff;
+    }
+    .factory-media-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .media-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .media-card-title {
+      padding: 10px 12px;
+      background: #252525;
+      border-bottom: 1px solid #2a2a2a;
+      font-size: 12px;
+      font-weight: 800;
+      color: #eee;
+    }
+    .media-card-body {
+      padding: 10px 12px 12px;
+      color: #bbb;
+      font-size: 12px;
+    }
+    .media-img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      display: block;
+      background: #0f0f0f;
+      cursor: zoom-in;
+    }
+    .factory-video-wrap {
+      margin-top: 18px;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      overflow: hidden;
+      max-width: 980px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .factory-video-title {
+      padding: 10px 12px;
+      background: #252525;
+      border-bottom: 1px solid #2a2a2a;
+      font-size: 12px;
+      font-weight: 900;
+      color: #fff;
+    }
+    .factory-video {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: #000;
+      max-height: 520px;
+    }
+
+    .factory-credit {
+      margin-top: 14px;
+      padding: 10px 12px;
+      background: #161616;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      color: #aaa;
+      font-size: 12px;
+      line-height: 1.45;
+      max-width: 980px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .factory-credit strong {
+      color: #e6e6e6;
+    }
+
+    @media (max-width: 980px) {
+      .factory-media-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 640px) {
+      .factory-media-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .factory-video {
+        max-height: 380px;
+      }
+    }
+
+    /* 공장 사진 확대 뷰어 */
+    .viewer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.78);
+      display: none;
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+    .viewer-overlay.open {
+      display: flex;
+    }
+    .viewer-dialog {
+      width: min(1100px, 100%);
+      max-height: min(86vh, 920px);
+      background: #0f0f0f;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+      display: flex;
+      flex-direction: column;
+    }
+    .viewer-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      background: #141414;
+      border-bottom: 1px solid #2a2a2a;
+    }
+    .viewer-title {
+      font-size: 12px;
+      font-weight: 900;
+      color: #eee;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .viewer-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      border: 1px solid #333;
+      background: #141414;
+      color: #bbb;
+      cursor: pointer;
+      font-weight: 900;
+    }
+    .viewer-close:hover {
+      border-color: #4a8fd9;
+      color: #fff;
+    }
+    .viewer-stage {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      min-height: 260px;
+    }
+    .viewer-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: block;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    .viewer-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(20, 20, 20, 0.65);
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 900;
+      backdrop-filter: blur(4px);
+    }
+    .viewer-arrow:hover {
+      border-color: rgba(74, 143, 217, 0.9);
+      background: rgba(30, 30, 30, 0.75);
+    }
+    .viewer-arrow.left {
+      left: 12px;
+    }
+    .viewer-arrow.right {
+      right: 12px;
+    }
+    .viewer-counter {
+      padding: 10px 12px;
+      border-top: 1px solid #2a2a2a;
+      background: #0f0f0f;
+      color: #bbb;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .viewer-counter strong {
+      color: #eee;
+    }
+
+    /* 계산기 팝업 */
+    .calc-popup {
+      position: fixed;
+      width: 280px;
+      background: #141414;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+      z-index: 9999;
+      overflow: hidden;
+      display: none;
+    }
+    .calc-header {
+      padding: 10px 12px;
+      background: #1a1a1a;
+      border-bottom: 1px solid #2a2a2a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .calc-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #eee;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .calc-close {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      background: #141414;
+      color: #bbb;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .calc-close:hover {
+      border-color: #4a8fd9;
+      color: #fff;
+    }
+    .calc-body {
+      padding: 12px;
+    }
+    .calc-modes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .mode-btn {
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      background: #1a1a1a;
+      color: #bbb;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .mode-btn.active {
+      background: #4a8fd9;
+      border-color: #4a8fd9;
+      color: #fff;
+    }
+    .calc-display {
+      background: #0f0f0f;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      padding: 10px 10px;
+      margin-bottom: 10px;
+    }
+    .calc-expr {
+      font-size: 12px;
+      color: #bbb;
+      min-height: 16px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .calc-result {
+      margin-top: 6px;
+      font-size: 18px;
+      font-weight: 800;
+      color: #4a8fd9;
+      letter-spacing: 0.2px;
+    }
+    .calc-keypad {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .key {
+      padding: 10px 0;
+      border-radius: 10px;
+      border: 1px solid #2a2a2a;
+      background: #1a1a1a;
+      color: #eee;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .key:hover {
+      border-color: #4a8fd9;
+      transform: translateY(-1px);
+    }
+    .key.op {
+      color: #fff;
+      background: #252525;
+    }
+    .key.alt {
+      color: #ddd;
+      background: #1c1c1c;
+    }
+    .key.wide {
+      grid-column: span 2;
+    }
+    .calc-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .action-btn {
+      padding: 10px 0;
+      border-radius: 10px;
+      border: 1px solid #333;
+      background: #1a1a1a;
+      color: #eee;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .action-btn.primary {
+      background: #4a8fd9;
+      border-color: #4a8fd9;
+      color: #fff;
+    }
+    .action-btn.primary:hover {
+      filter: brightness(1.05);
+    }
+    .action-btn.secondary:hover {
+      border-color: #4a8fd9;
+    }
+    .action-btn.danger:hover {
+      border-color: #d94a4a;
+    }
+    /* 스크롤바 */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f0f0f;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #333;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #444;
+    }
+    .content-section {
+      display: none;
+    }
+    .content-section.active {
+      display: block;
+    }
+    /* 효율 분석 섹션 */
+    .efficiency-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+    }
+    .efficiency-card:hover {
+      border-color: #4a8fd9;
+      box-shadow: 0 4px 12px rgba(74, 143, 217, 0.15);
+    }
+    .efficiency-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .efficiency-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .efficiency-badge {
+      background: #4a8fd9;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .efficiency-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+    .info-item {
+      background: #252525;
+      padding: 8px;
+      border-radius: 4px;
+      color: #bbb;
+    }
+    .info-label {
+      color: #888;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .info-value {
+      color: #4a8fd9;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+    .no-result {
+      text-align: center;
+      color: #666;
+      padding: 40px;
+      background: #1a1a1a;
+      border-radius: 8px;
+    }
+    /* 카테고리 필터 버튼 */
+    .category-filters {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .category-btn {
+      padding: 8px 16px;
+      background: #1a1a1a;
+      color: #bbb;
+      border: 1px solid #333;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    .category-btn:hover {
+      border-color: #555;
+      background: #252525;
+    }
+    .category-btn.active {
+      background: #4a8fd9;
+      color: #fff;
+      border-color: #4a8fd9;
+    }
+    .experts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .expert-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      padding: 14px;
+    }
+    .expert-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: #f1f1f1;
+      margin-bottom: 6px;
+    }
+    .expert-desc {
+      color: #9f9f9f;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+    .expert-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .expert-level {
+      min-width: 72px;
+      text-align: center;
+      color: #4a8fd9;
+      font-weight: 800;
+      font-size: 13px;
+    }
+    .expert-btn {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #3a3a3a;
+      border-radius: 8px;
+      background: #202020;
+      color: #eee;
+      cursor: pointer;
+      font-weight: 900;
+    }
+    .panel-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .stamina-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .stamina-row input {
+      width: 180px;
+      padding: 8px 10px;
+      background: #252525;
+      border: 1px solid #333;
+      border-radius: 6px;
+      color: #fff;
+      font-weight: 700;
+    }
+    .rod-visual {
+      width: 100%;
+      max-width: 420px;
+      height: 110px;
+      border-radius: 12px;
+      border: 1px solid #2f2f2f;
+      background: linear-gradient(120deg, #1b1b1b, #242424);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
+      margin-bottom: 10px;
+    }
+    .mini-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .mini-tab {
+      padding: 7px 11px;
+      border: 1px solid #333;
+      border-radius: 7px;
+      background: #1b1b1b;
+      color: #bbb;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .mini-tab.active {
+      background: #4a8fd9;
+      border-color: #4a8fd9;
+      color: #fff;
+    }
+    .mini-pane { display: none; }
+    .mini-pane.active { display: block; }
+    .ingredient-icon {
+      height: 1.2em;
+      vertical-align: middle;
+      margin-right: 4px;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+<div class="main-layout">
+  <!-- 사이드바 네비게이션 -->
+  <div class="sidebar">
+    <div class="sidebar-title">메뉴</div>
+    <div class="nav-item active" onclick="switchSection('craft')">제작 & 조합법</div>
+    <div class="nav-item" onclick="switchSection('warehouse')">재료 창고</div>
+    <div class="nav-item" onclick="switchSection('efficiency')">효율 분석</div>
+    <div id="efficiencySubNav" class="sub-nav">
+      <div class="sub-item" onclick="openEfficiencySub('stamina', this)">스태미나 계산</div>
+      <div class="sub-item" onclick="openEfficiencySub('alchemy', this)">연금품 계산</div>
+      <div class="sub-item" onclick="openEfficiencySub('craftPrice', this)">공예품 가격</div>
+    </div>
+    <div class="nav-item" onclick="switchSection('settings')">개인설정</div>
+    <div id="settingsSubNav" class="sub-nav">
+      <div class="sub-item" onclick="openSettingsSub('experts')">전문가</div>
+      <div class="sub-item" onclick="openSettingsSub('sageRod')">세이지 낚싯대</div>
+    </div>
+    <div class="nav-item" onclick="switchSection('factory')">공장 제작법</div>
+    <div id="factorySubNav" class="sub-nav">
+      <div class="sub-item" onclick="openFactorySub('seaweed')">해초 공장 제작법</div>
+      <div class="sub-item" onclick="openFactorySub('tunicate')">불우렁쉥이 제작법</div>
+    </div>
+  </div>
+
+  <!-- 메인 컨텐츠 -->
+  <div class="main-content">
+    <!-- 제작 & 조합법 섹션 -->
+    <div id="craft" class="content-section active">
+      <div class="header">
+        <h1>제작 & 조합법</h1>
+        <p class="header-subtitle">해양 아이템들을 제작하는 방법을 확인하세요</p>
+      </div>
+
+      <div class="search-filter">
+        <div class="search-box">
+          <input type="text" id="searchInput" placeholder="아이템 검색..." onkeyup="searchRecipes()">
+        </div>
+      </div>
+
+      <div id="recipesContainer" class="recipes-grid">
+        <!-- 레시피 카드들이 여기 생성됨 -->
+      </div>
+    </div>
+
+    <!-- 재료 창고 섹션 -->
+    <div id="warehouse" class="content-section">
+      <div class="header">
+        <div class="header-row">
+          <div>
+            <h1>재료 창고</h1>
+            <p class="header-subtitle">보유한 재료의 수량을 기입하세요</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn danger" type="button" onclick="resetAllWarehouse()">전체 초기화</button>
+            <div class="toggle-wrap">
+              <span>바닐라 재료 계산</span>
+              <label class="toggle-switch" title="켜짐: 바닐라 재료 수량 반영 / 꺼짐: 바닐라 재료 무한대">
+                <input id="vanillaCalcToggle" type="checkbox" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="warehouseContainer" class="warehouse-sections">
+        <!-- 재료 입력 항목들이 여기 생성됨 -->
+      </div>
+    </div>
+
+    <!-- 효율 분석 섹션 -->
+    <div id="efficiency" class="content-section">
+      <div class="header">
+        <h1>효율 분석</h1>
+        <p class="header-subtitle">보유한 재료로 만들 수 있는 최고 효율의 제작 루트를 확인하세요</p>
+      </div>
+      <div id="effStaminaPane" class="mini-pane active">
+        <div style="font-size:32px; font-weight:900; color:#fff; text-align:center; margin:8px 0 18px;">스태미나 계산</div>
+        <div class="panel-card">
+          <div class="stamina-row">
+            <label for="staminaInput">보유 스태미나</label>
+            <input id="staminaInput" type="number" min="0" value="" placeholder="스태미나 입력">
+            <button class="btn" type="button" onclick="renderStaminaPlan(); saveStaminaInputState();">계산</button>
+          </div>
+          <div id="staminaResult" class="no-result">스태미나를 입력하면 추천 분배를 계산합니다</div>
+        </div>
+      </div>
+      <div id="effAlchemyPane" class="mini-pane">
+        <div style="font-size:32px; font-weight:900; color:#fff; text-align:center; margin:8px 0 18px;">연금품 계산</div>
+        <div id="efficiencyContainerAlchemy">
+          <div class="no-result">연금품 계산 결과가 여기에 표시됩니다</div>
+        </div>
+      </div>
+      <div id="effCraftPricePane" class="mini-pane">
+        <div style="font-size:32px; font-weight:900; color:#fff; text-align:center; margin:8px 0 18px;">공예품 가격</div>
+        <div id="efficiencyContainerCraftPrice">
+          <div class="no-result">공예품 가격이 여기에 표시됩니다</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="settings" class="content-section">
+      <div class="header">
+        <h1>개인설정</h1>
+        <p class="header-subtitle">전문가와 세이지 낚싯대 설정</p>
+      </div>
+      <div id="settingsExpertsPane" class="mini-pane active">
+        <div id="expertsContainer" class="experts-grid"></div>
+      </div>
+      <div id="settingsSageRodPane" class="mini-pane">
+        <div class="panel-card">
+          <div class="expert-name">세이지 낚싯대</div>
+          <div class="expert-desc">강화 단계에 따라 어패류 채집 효율이 달라집니다</div>
+          <div class="rod-visual" id="sageRodVisual">🎣</div>
+          <div class="expert-controls" style="margin-bottom:10px;">
+            <button class="expert-btn" type="button" onclick="changeSageRodLevel(-1)">−</button>
+            <div class="expert-level" id="sageRodLevel">Lv.1</div>
+            <button class="expert-btn" type="button" onclick="changeSageRodLevel(1)">+</button>
+          </div>
+          <div id="sageRodStats"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 공장 제작법 섹션 -->
+    <div id="factory" class="content-section">
+      <div class="header">
+        <h1>공장 제작법</h1>
+        <p class="header-subtitle">해초 공장 / 불우렁쉥이 제작법을 확인하세요</p>
+      </div>
+
+      <div class="factory-tabs">
+        <button class="tab-btn active" type="button" onclick="showFactorySub('seaweed')">해초 공장 제작법</button>
+        <button class="tab-btn" type="button" onclick="showFactorySub('tunicate')">불우렁쉥이 제작법</button>
+      </div>
+
+      <div id="factorySeaweed" style="display:block;">
+        <div class="factory-media-grid" id="seaweedMediaGrid"></div>
+
+        <div class="factory-video-wrap">
+          <div class="factory-video-title">실험 영상</div>
+          <video class="factory-video" id="seaweedVideo" controls playsinline preload="metadata">
+            <source src="해초공장/해초 공장 실험 영상.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+
+      <div id="factoryTunicate" style="display:none;">
+        <div class="factory-media-grid" id="tunicateMediaGrid"></div>
+
+        <div class="factory-video-wrap">
+          <div class="factory-video-title">실험 영상</div>
+          <video class="factory-video" id="tunicateVideo" controls playsinline preload="metadata">
+            <source src="불우렁쉥이 공장/불우렁쉥이 시험가동 영상.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+
+      <div class="factory-credit">
+        이 정보는 디코 닉 <strong>hochool(호출)님</strong>의 사진 및 영상 사용에 대한 허가를 받고 사용하였음을 알려드립니다
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 공장 사진 확대 뷰어 -->
+<div class="viewer-overlay" id="factoryViewer" aria-hidden="true">
+  <div class="viewer-dialog" role="dialog" aria-modal="true" aria-label="공장 사진 확대">
+    <div class="viewer-topbar">
+      <div class="viewer-title" id="viewerTitle">사진</div>
+      <button class="viewer-close" type="button" id="viewerClose" aria-label="닫기">✕</button>
+    </div>
+    <div class="viewer-stage" id="viewerStage">
+      <button class="viewer-arrow left" type="button" id="viewerPrev" aria-label="이전">‹</button>
+      <img class="viewer-img" id="viewerImg" alt="">
+      <button class="viewer-arrow right" type="button" id="viewerNext" aria-label="다음">›</button>
+    </div>
+    <div class="viewer-counter">
+      <div><strong id="viewerStep">1</strong> / <span id="viewerTotal">1</span></div>
+      <div id="viewerSrc" style="opacity:.7; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== 데이터 =====
+const data = {
+  materials: {
+    // 어패류 합성
+    "굴 ★": { inputs: [{ name: "굴 ★★", count: 1 }] },
+    "소라 ★": { inputs: [{ name: "소라 ★★", count: 1 }] },
+    "문어 ★": { inputs: [{ name: "문어 ★★", count: 1 }] },
+    "미역 ★": { inputs: [{ name: "미역 ★★", count: 1 }] },
+    "성게 ★": { inputs: [{ name: "성게 ★★", count: 1 }] },
+
+
+
+    // 1성 연금품
+    "수호의 정수 ★": { inputs: [{ name: "굴 ★", count: 2 }, { name: "점토", count: 2 }] },
+    "파동의 정수 ★": { inputs: [{ name: "소라 ★", count: 2 }, { name: "모래", count: 4 }] },
+    "혼란의 정수 ★": { inputs: [{ name: "문어 ★", count: 2 }, { name: "흙", count: 8 }] },
+    "생명의 정수 ★": { inputs: [{ name: "미역 ★", count: 2 }, { name: "자갈", count: 4 }] },
+    "부식의 정수 ★": { inputs: [{ name: "성게 ★", count: 2 }, { name: "화강암", count: 2 }] },
+    "물결 수호의 핵 ★": { inputs: [{ name: "수호의 정수 ★", count: 1 }, { name: "파동의 정수 ★", count: 1 }, { name: "깐 새우", count: 1 }] },
+    "파동 오염의 핵 ★": { inputs: [{ name: "파동의 정수 ★", count: 1 }, { name: "혼란의 정수 ★", count: 1 }, { name: "도미 회", count: 1 }] },
+    "질서 파괴의 핵 ★": { inputs: [{ name: "혼란의 정수 ★", count: 1 }, { name: "생명의 정수 ★", count: 1 }, { name: "청어 회", count: 1 }] },
+    "활력 붕괴의 핵 ★": { inputs: [{ name: "생명의 정수 ★", count: 1 }, { name: "부식의 정수 ★", count: 1 }, { name: "금붕어 회", count: 1 }] },
+    "침식 방어의 핵 ★": { inputs: [{ name: "부식의 정수 ★", count: 1 }, { name: "수호의 정수 ★", count: 1 }, { name: "농어 회", count: 1 }] },
+
+    // 2성 연금품
+    "수호 에센스 ★★": { inputs: [{ name: "굴 ★★", count: 2 }, { name: "해초", count: 6 }, { name: "참나무 잎", count: 6 }] },
+    "파동 에센스 ★★": { inputs: [{ name: "소라 ★★", count: 2 }, { name: "해초", count: 6 }, { name: "가문비나무 잎", count: 6 }] },
+    "혼란 에센스 ★★": { inputs: [{ name: "문어 ★★", count: 2 }, { name: "해초", count: 6 }, { name: "자작나무 잎", count: 6 }] },
+    "생명 에센스 ★★": { inputs: [{ name: "미역 ★★", count: 2 }, { name: "해초", count: 6 }, { name: "벚나무 잎", count: 6 }] },
+    "부식 에센스 ★★": { inputs: [{ name: "성게 ★★", count: 2 }, { name: "해초", count: 6 }, { name: "짙은 참나무 잎", count: 6 }] },
+    "활기 보존의 결정 ★★": { inputs: [{ name: "수호 에센스 ★★", count: 1 }, { name: "생명 에센스 ★★", count: 1 }, { name: "켈프", count: 8 }, { name: "청금석 블록", count: 1 }] },
+    "파도 침식의 결정 ★★": { inputs: [{ name: "파동 에센스 ★★", count: 1 }, { name: "부식 에센스 ★★", count: 1 }, { name: "켈프", count: 8 }, { name: "레드스톤 블록", count: 1 }] },
+    "방어 오염의 결정 ★★": { inputs: [{ name: "혼란 에센스 ★★", count: 1 }, { name: "수호 에센스 ★★", count: 1 }, { name: "켈프", count: 8 }, { name: "철 주괴", count: 3 }] },
+    "격류 재생의 결정 ★★": { inputs: [{ name: "생명 에센스 ★★", count: 1 }, { name: "파동 에센스 ★★", count: 1 }, { name: "켈프", count: 8 }, { name: "금 주괴", count: 2 }] },
+    "맹독 혼란의 결정 ★★": { inputs: [{ name: "부식 에센스 ★★", count: 1 }, { name: "혼란 에센스 ★★", count: 1 }, { name: "켈프", count: 8 }, { name: "다이아몬드", count: 1 }] },
+
+    // 3성 연금품품
+    "수호의 엘릭서 ★★★": { inputs: [{ name: "굴 ★★★", count: 1 }, { name: "불우렁쉥이", count: 2 }, { name: "유리병", count: 3 }, { name: "네더랙", count: 8 }] },
+    "파동의 엘릭서 ★★★": { inputs: [{ name: "소라 ★★★", count: 1 }, { name: "불우렁쉥이", count: 2 }, { name: "유리병", count: 3 }, { name: "마그마 블록", count: 4 }] },
+    "혼란의 엘릭서 ★★★": { inputs: [{ name: "문어 ★★★", count: 1 }, { name: "불우렁쉥이", count: 2 }, { name: "유리병", count: 3 }, { name: "영혼 흙", count: 4 }] },
+    "생명의 엘릭서 ★★★": { inputs: [{ name: "미역 ★★★", count: 1 }, { name: "불우렁쉥이", count: 2 }, { name: "유리병", count: 3 }, { name: "진홍빛 자루", count: 4 }] },
+    "부식의 엘릭서 ★★★": { inputs: [{ name: "성게 ★★★", count: 1 }, { name: "불우렁쉥이", count: 2 }, { name: "유리병", count: 3 }, { name: "뒤틀린 자루", count: 4 }] },
+    "불멸 재생의 영약 ★★★": { inputs: [{ name: "수호의 엘릭서 ★★★", count: 1 }, { name: "생명의 엘릭서 ★★★", count: 1 }, { name: "켈프", count: 12 }, { name: "발광 열매", count: 4 }, { name: "죽은 관 산호 블록", count: 2 }] },
+    "파동 장벽의 영약 ★★★": { inputs: [{ name: "파동의 엘릭서 ★★★", count: 1 }, { name: "수호의 엘릭서 ★★★", count: 1 }, { name: "켈프", count: 12 }, { name: "발광 열매", count: 4 }, { name: "죽은 사방산호 블록", count: 2 }] },
+    "타락 침식의 영약 ★★★": { inputs: [{ name: "혼란의 엘릭서 ★★★", count: 1 }, { name: "부식의 엘릭서 ★★★", count: 1 }, { name: "켈프", count: 12 }, { name: "발광 열매", count: 4 }, { name: "죽은 거품 산호 블록", count: 2 }] },
+    "생명 광란의 영약 ★★★": { inputs: [{ name: "생명의 엘릭서 ★★★", count: 1 }, { name: "혼란의 엘릭서 ★★★", count: 1 }, { name: "켈프", count: 12 }, { name: "발광 열매", count: 4 }, { name: "죽은 불 산호 블록", count: 2 }] },
+    "맹독 파동의 영약 ★★★": { inputs: [{ name: "부식의 엘릭서 ★★★", count: 1 }, { name: "파동의 엘릭서 ★★★", count: 1 }, { name: "켈프", count: 12 }, { name: "발광 열매", count: 4 }, { name: "죽은 뇌 산호 블록", count: 2 }] }
+  },
+  recipes: [
+    {
+      name: "영생의 아쿠티스",
+      inputs: [{ name: "물결 수호의 핵 ★", count: 1 }, { name: "질서 파괴의 핵 ★", count: 1 }, { name: "활력 붕괴의 핵 ★", count: 1 }],
+      time: 1,
+      price: 5159,
+      group: "group1"
+    },
+    {
+      name: "크라켄의 광란체",
+      inputs: [{ name: "질서 파괴의 핵 ★", count: 1 }, { name: "활력 붕괴의 핵 ★", count: 1 }, { name: "파동 오염의 핵 ★", count: 1 }],
+      time: 1,
+      price: 5234,
+      group: "group1"
+    },
+    {
+      name: "리바이던의 깃털",
+      inputs: [{ name: "침식 방어의 핵 ★", count: 1 }, { name: "파동 오염의 핵 ★", count: 1 }, { name: "물결 수호의 핵 ★", count: 1 }],
+      time: 1,
+      price: 5393,
+      group: "group1"
+    },
+    {
+      name: "해구 파동의 코어",
+      inputs: [{ name: "활기 보존의 결정 ★★", count: 1 }, { name: "파도 침식의 결정 ★★", count: 1 }, { name: "격류 재생의 결정 ★★", count: 1 }],
+      time: 1,
+      price: 11131,
+      group: "group2"
+    },
+    {
+      name: "침묵의 심해 비약",
+      inputs: [{ name: "파도 침식의 결정 ★★", count: 1 }, { name: "격류 재생의 결정 ★★", count: 1 }, { name: "맹독 혼란의 결정 ★★", count: 1 }],
+      time: 1,
+      price: 11242,
+      group: "group2"
+    },
+    {
+      name: "청해룡의 날개",
+      inputs: [{ name: "방어 오염의 결정 ★★", count: 1 }, { name: "맹독 혼란의 결정 ★★", count: 1 }, { name: "활기 보존의 결정 ★★", count: 1 }],
+      time: 1,
+      price: 11399,
+      group: "group2"
+    },
+    {
+      name: "아쿠아 펄스 파편",
+      inputs: [{ name: "불멸 재생의 영약 ★★★", count: 1 }, { name: "파동 장벽의 영약 ★★★", count: 1 }, { name: "맹독 파동의 영약 ★★★", count: 1 }],
+      time: 1,
+      price: 21833,
+      group: "group3"
+    },
+    {
+      name: "나우틸러스의 손",
+      inputs: [{ name: "파동 장벽의 영약 ★★★", count: 1 }, { name: "생명 광란의 영약 ★★★", count: 1 }, { name: "불멸 재생의 영약 ★★★", count: 1 }],
+      time: 1,
+      price: 22088,
+      group: "group3"
+    },
+    {
+      name: "무저의 척추",
+      inputs: [{ name: "타락 침식의 영약 ★★★", count: 1 }, { name: "맹독 파동의 영약 ★★★", count: 1 }, { name: "생명 광란의 영약 ★★★", count: 1 }],
+      time: 1,
+      price: 22227,
+      group: "group3"
+    },
+
+    {
+      name: "조개껍데기 브로치",
+      inputs: [{ name: "깨진 조개껍데기", count: 1 }, { name: "노란빛 진주", count: 1 }, { name: "금속 재활용품", count: 1 }, { name: "거미줄", count: 4 }],
+      time: 1,
+      price: 3719,
+      group: "craft"
+    },
+    {
+      name: "푸른 향수병",
+      inputs: [{ name: "깨진 조개껍데기", count: 2 }, { name: "푸른빛 진주", count: 1 }, { name: "합성수지 재활용품", count: 1 }, { name: "플라스틱 재활용품", count: 1 }, { name: "양동이", count: 8 }],
+      time: 1,
+      price: 74522,
+      group: "craft"
+    },
+    {
+      name: "자개 손거울",
+      inputs: [{ name: "깨진 조개껍데기", count: 3 }, { name: "청록빛 진주", count: 1 }, { name: "합금 재활용품", count: 2 }, { name: "플라스틱 재활용품", count: 2 }, { name: "유리판", count: 16 }],
+      time: 1,
+      price: 1092,
+      group: "craft"
+    },
+    {
+      name: "분홍 헤어핀",
+      inputs: [{ name: "깨진 조개껍데기", count: 4 }, { name: "분홍빛 진주", count: 1 }, { name: "합성수지 재활용품", count: 3 }, { name: "섬유 재활용품", count: 3 }, { name: "대나무", count: 64 }, { name: "분홍 꽃잎", count: 16 }],
+      time: 1,
+      price: 430763,
+      group: "craft"
+    },
+    {
+      name: "자개 부채",
+      inputs: [{ name: "깨진 조개껍데기", count: 5 }, { name: "보라빛 진주", count: 1 }, { name: "합금 재활용품", count: 5 }, { name: "합성수지 재활용품", count: 5 }, { name: "막대기", count: 64 }, { name: "자수정 조각", count: 16 }],
+      time: 1,
+      price: 461359,
+      group: "craft"
+    },
+    {
+      name: "흑진주 시계",
+      inputs: [{ name: "깨진 조개껍데기", count: 7 }, { name: "흑진주", count: 1 }, { name: "금속 재활용품", count: 7 }, { name: "합금 재활용품", count: 7 }, { name: "섬유 재활용품", count: 7 }, { name: "흑요석", count: 16 }, { name: "시계", count: 8 }],
+      time: 1,
+      price: 845391,
+      group: "craft"
+    },
+    {
+      name: "추출된 희석액",
+      inputs: [
+        { name: "침식 방어의 핵 ★", count: 3 },
+        { name: "방어 오염의 결정 ★★", count: 2 },
+        { name: "타락 침식의 영약 ★★★", count: 1 }
+      ],
+      time: 1,
+      price: 18444,
+      group: "alchemyMat"
+    }
+  ]
+};
+
+
+
+// 카테고리 매핑
+const categoryMap = {
+  'synthesis': ['굴 ★', '소라 ★', '문어 ★', '미역 ★', '성게 ★'],
+
+  'alchemy1': ['물결 수호의 핵 ★', '파동 오염의 핵 ★', '질서 파괴의 핵 ★', '활력 붕괴의 핵 ★', '침식 방어의 핵 ★', '영생의 아쿠티스', '크라켄의 광란체 ★', '리바이던의 깃털 ★'],
+  'alchemy2': ['활기 보존의 결정 ★★', '파도 침식의 결정 ★★', '방어 오염의 결정 ★★', '격류 재생의 결정 ★★', '맹독 혼란의 결정 ★★', '해구 파동의 코어', '침묵의 심해 비약', '청해룡의 날개'],
+  'alchemy3': ['불멸 재생의 영약 ★★★', '파동 장벽의 영약 ★★★', '타락 침식의 영약 ★★★', '생명 광란의 영약 ★★★', '맹독 파동의 영약 ★★★', '아쿠아 펄스 파편', '나우틸러스의 손', '무저의 척추']
+};
+
+let currentFilter = 'all';
+let currentSearch = '';
+const STORAGE_KEY_INVENTORY = 'thingta_inventory_v1';
+const STORAGE_KEY_VANILLA_TOGGLE = 'thingta_vanilla_toggle_v1';
+const STORAGE_KEY_EXPERTS = 'thingta_experts_v1';
+const STORAGE_KEY_SAGE_ROD = 'thingta_sage_rod_v1';
+const STORAGE_KEY_STAMINA = 'thingta_stamina_v1';
+
+const expertMeta = {
+  craftPrice: {
+    key: 'craftPrice',
+    name: '조개 좀 사조개',
+    maxLevel: 8,
+    values: [0, 5, 7, 10, 15, 20, 30, 40, 50],
+    desc: '공예품 판매가 증가'
+  },
+  alchemyPrice: {
+    key: 'alchemyPrice',
+    name: '프리미엄 한정가',
+    maxLevel: 8,
+    values: [0, 5, 7, 9, 12, 15, 20, 25, 30],
+    desc: '연금품 판매가 증가'
+  },
+  timeReduce: {
+    key: 'timeReduce',
+    name: '물 흐르듯 술술',
+    maxLevel: 5,
+    values: [0, 10, 20, 30, 50, 70],
+    desc: '해양 제작/연금 제작 시간 감소'
+  },
+  deepCollector: { key: 'deepCollector', name: '심해 채집꾼', maxLevel: 5, values: [0, 5, 7, 10, 15, 20], desc: '어패류 추가 드롭 확률 증가' },
+  starshell: { key: 'starshell', name: '별별별!', maxLevel: 6, values: [0, 1, 3, 5, 7, 10, 15], desc: '3성 어패류 등장 확률 증가' },
+  shellRefill: { key: 'shellRefill', name: '조개 무한리필', maxLevel: 10, values: [0, 1,2,3,4,5,6,7,8,9,10], desc: '조개 등장 확률 증가' },
+  // 요청된 7개만 유지
+};
+
+let expertState = {
+  craftPrice: 0,
+  alchemyPrice: 0,
+  timeReduce: 0
+};
+const sageRodStats = {
+  timeReduce: [0,6,10,14,18,23,27,31,35,39,44,49,53,56,58,60],
+  shellChance: [0,1,1,2,2,2,3,3,3,5,5,7,7,9,9,15],
+  shellDrop: [0,2,2,3,3,3,4,4,4,5,5,5,6,6,7,10],
+  power: [0,17,20,22,25,30,35,45,50,57,65,78,90,100,110,150]
+};
+let sageRodLevel = 1;
+let efficiencySub = 'stamina';
+let settingsSub = 'experts';
+const SHELLFISH_NAMES = ['굴', '소라', '문어', '미역', '성게'];
+/** 어패류 ★를 ★★에서 깎아 만드는 제작 경로 (승급 제외 계산 시 무시) */
+const SHELLFISH_DOWNGRADE_ONE_STAR = new Set(['굴 ★', '소라 ★', '문어 ★', '미역 ★', '성게 ★']);
+const STAR_PROBS = { s1: 0.6, s2: 0.3, s3: 0.1 };
+const STAMINA_PER_GATHER = 15;
+
+function getImagePath(text) {
+  const t = String(text || '').trim();
+  if (t === '추출된 희석액') return '';
+  // 재료 이름에 맞는 이미지 경로를 반환
+  const imageMap = {
+    '굴 ★': '재료/굴.png',
+    '소라 ★': '재료/소라.png',
+    '문어 ★': '재료/문어.png',
+    '미역 ★': '재료/미역.png',
+    '성게 ★': '재료/성게.png',
+    '수호의 정수 ★': '재료/수호의 정수.png',
+    '파동의 정수 ★': '재료/파동의 정수.png',
+    '혼란의 정수 ★': '재료/혼란의 정수.png',
+    '생명의 정수 ★': '재료/생명의 정수.png',
+    '부식의 정수 ★': '재료/부식의 정수.png',
+    '물결 수호의 핵 ★': '재료/물결 수호의 핵.png',
+    '파동 오염의 핵 ★': '재료/파동 오염의 핵.png',
+    '질서 파괴의 핵 ★': '재료/질서 파괴의 핵.png',
+    '활력 붕괴의 핵 ★': '재료/활력 붕괴의 핵.png',
+    '침식 방어의 핵 ★': '재료/침식 방어의 핵.png',
+    '수호 에센스 ★★': '재료/수호 에센스.png',
+    '파동 에센스 ★★': '재료/파동 에센스.png',
+    '혼란 에센스 ★★': '재료/혼란 에센스.png',
+    '생명 에센스 ★★': '재료/생명 에센스.png',
+    '부식 에센스 ★★': '재료/부식 에센스.png',
+    '활기 보존의 결정 ★★': '재료/활기 보존의 결정.png',
+    '파도 침식의 결정 ★★': '재료/파도 침식의 결정.png',
+    '방어 오염의 결정 ★★': '재료/방어 오염의 결정.png',
+    '격류 재생의 결정 ★★': '재료/격류 재생의 결정.png',
+    '맹독 혼란의 결정 ★★': '재료/맹독 혼란의 결정.png',
+    '수호의 엘릭서 ★★★': '재료/수호의 엘릭서.png',
+    '파동의 엘릭서 ★★★': '재료/파동의 엘릭서.png',
+    '혼란의 엘릭서 ★★★': '재료/혼란의 엘릭서.png',
+    '생명의 엘릭서 ★★★': '재료/생명의 엘릭서.png',
+    '부식의 엘릭서 ★★★': '재료/부식의 엘릭서.png',
+    '불멸 재생의 영약 ★★★': '재료/불멸 재생의 영약.png',
+    '파동 장벽의 영약 ★★★': '재료/파동 장벽의 영약.png',
+    '타락 침식의 영약 ★★★': '재료/타락 침식의 영약.png',
+    '생명 광란의 영약 ★★★': '재료/생명 광란의 영약.png',
+    '맹독 파동의 영약 ★★★': '재료/맹독 파동의 영약.png',
+    '영생의 아쿠티스': '재료/영생의 아쿠티스.png',
+    '크라켄의 광란체': '재료/크라켄의 광란체.png',
+    '리바이던의 깃털': '재료/리바이던의 깃털.png',
+    '해구 파동의 코어': '재료/해구의 파동 코어.png',
+    '침묵의 심해 비약': '재료/침묵의 심해 비약.png',
+    '청해룡의 날개': '재료/청해룡의 날개.png',
+    '아쿠아 펄스 파편': '재료/아쿠아 펄스 파편.png',
+    '나우틸러스의 손': '재료/나우틸러스의 손.png',
+    '무저의 척추': '재료/무저의 척추.png',
+    '조개껍데기 브로치': '재료/조개껍데기 브로치.png',
+    '푸른 향수병': '재료/푸른 향수병.png',
+    '자개 손거울': '재료/자개 손거울.png',
+    '분홍 헤어핀': '재료/분홍 헤어핀.png',
+    '자개 부채': '재료/자개 부채.png',
+    '흑진주 시계': '재료/흑진주 시계.png'
+  };
+  if (imageMap[t]) return imageMap[t];
+  const noStars = t.replace(/\s*★+/g, '').trim();
+  return `재료/${noStars}.png`;
+}
+
+function withAlchemyIcon(text) {
+  // 이전 호환성을 위해 텍스트만 반환
+  return String(text || '');
+}
+
+function withAlchemyImage(text, style = '') {
+  const t = String(text || '');
+  const imagePath = getImagePath(t);
+  if (!imagePath) return t;
+  return `<img src="${imagePath}" alt="" class="ingredient-icon" style="height: 1.2em; vertical-align: middle; margin-right: 4px; ${style}" onerror="this.onerror=null;this.remove();">${t}`;
+}
+
+// ===== 창고 계산기(팝업) 상태 =====
+const SET_SIZE = 64;
+const calcState = {
+  isOpen: false,
+  targetInput: null,
+  materialName: '',
+  mode: 'count', // 'count' | 'set'
+  activePart: 'count', // 'count' | 'set' | 'rem'
+  countExpr: '',
+  setExpr: '',
+  remExpr: ''
+};
+
+function ensureCalcPopup() {
+  if (document.getElementById('calcPopup')) return;
+
+  const popup = document.createElement('div');
+  popup.id = 'calcPopup';
+  popup.className = 'calc-popup';
+  popup.innerHTML = `
+    <div class="calc-header">
+      <div class="calc-title" id="calcTitle">수량 입력</div>
+      <button class="calc-close" type="button" id="calcCloseBtn">×</button>
+    </div>
+    <div class="calc-body">
+      <div class="calc-modes">
+        <button type="button" class="mode-btn active" data-mode="count">개수량</button>
+        <button type="button" class="mode-btn" data-mode="set">세트당(64)</button>
+      </div>
+      <div class="calc-display">
+        <div class="calc-expr" id="calcExpr"></div>
+        <div class="calc-modes" id="calcPartModes" style="display:none; margin-top: 10px; margin-bottom: 0;">
+          <button type="button" class="mode-btn active" data-part="set">세트 입력</button>
+          <button type="button" class="mode-btn" data-part="rem">개 입력</button>
+        </div>
+        <div class="calc-result" id="calcResult">0</div>
+      </div>
+      <div class="calc-keypad" id="calcKeypad">
+        <button class="key alt" type="button" data-key="C">C</button>
+        <button class="key alt" type="button" data-key="BS">⌫</button>
+        <button class="key op" type="button" data-key="(">(</button>
+        <button class="key op" type="button" data-key=")">)</button>
+
+        <button class="key" type="button" data-key="7">7</button>
+        <button class="key" type="button" data-key="8">8</button>
+        <button class="key" type="button" data-key="9">9</button>
+        <button class="key op" type="button" data-key="/">÷</button>
+
+        <button class="key" type="button" data-key="4">4</button>
+        <button class="key" type="button" data-key="5">5</button>
+        <button class="key" type="button" data-key="6">6</button>
+        <button class="key op" type="button" data-key="*">×</button>
+
+        <button class="key" type="button" data-key="1">1</button>
+        <button class="key" type="button" data-key="2">2</button>
+        <button class="key" type="button" data-key="3">3</button>
+        <button class="key op" type="button" data-key="-">−</button>
+
+        <button class="key wide" type="button" data-key="0">0</button>
+        <button class="key" type="button" data-key=".">.</button>
+        <button class="key op" type="button" data-key="+">+</button>
+      </div>
+
+      <div class="calc-actions">
+        <button class="action-btn primary" type="button" id="calcApplyBtn">적용</button>
+        <button class="action-btn secondary" type="button" id="calcAddBtn">추가</button>
+        <button class="action-btn danger" type="button" id="calcResetBtn">초기화</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(popup);
+
+  // 닫기
+  popup.querySelector('#calcCloseBtn').addEventListener('click', closeCalculator);
+
+  // 모드 전환
+  popup.querySelectorAll('.mode-btn[data-mode]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const nextMode = btn.getAttribute('data-mode') || 'count';
+      if (nextMode === calcState.mode) return;
+      convertCalcMode(nextMode);
+      calcState.mode = nextMode;
+      calcState.activePart = nextMode === 'count' ? 'count' : 'set';
+      popup.querySelectorAll('.mode-btn[data-mode]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      syncCalcDisplay();
+    });
+  });
+
+  // 세트 모드에서 세트/개 입력 전환
+  popup.querySelector('#calcPartModes').addEventListener('click', (e) => {
+    const t = e.target;
+    if (!(t instanceof HTMLElement)) return;
+    const part = t.getAttribute('data-part');
+    if (!part) return;
+    if (calcState.mode !== 'set') return;
+    calcState.activePart = part;
+    popup.querySelectorAll('#calcPartModes .mode-btn').forEach(b => b.classList.remove('active'));
+    t.classList.add('active');
+  });
+
+  // 키패드
+  popup.querySelector('#calcKeypad').addEventListener('click', (e) => {
+    const t = e.target;
+    if (!(t instanceof HTMLElement)) return;
+    const key = t.getAttribute('data-key');
+    if (!key) return;
+    handleCalcKey(key);
+  });
+
+  // 액션
+  popup.querySelector('#calcApplyBtn').addEventListener('click', () => commitCalcValue('apply'));
+  popup.querySelector('#calcAddBtn').addEventListener('click', () => commitCalcValue('add'));
+  popup.querySelector('#calcResetBtn').addEventListener('click', () => commitCalcValue('reset'));
+
+  // 바깥 클릭으로 닫기
+  document.addEventListener('mousedown', (e) => {
+    if (!calcState.isOpen) return;
+    const pop = document.getElementById('calcPopup');
+    if (!pop) return;
+    const target = e.target;
+    if (!(target instanceof Node)) return;
+    if (pop.contains(target)) return;
+    if (calcState.targetInput && calcState.targetInput.contains(target)) return;
+    closeCalculator();
+  });
+
+  // 키보드 입력(esc, enter 등)
+  document.addEventListener('keydown', (e) => {
+    if (!calcState.isOpen) return;
+    if (e.key === 'Escape') {
+      closeCalculator();
+      return;
+    }
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      commitCalcValue('apply');
+      return;
+    }
+
+    // 숫자/연산자 입력 지원 (키패드 없이도 가능)
+    const allowed = '0123456789+-*/().';
+    if (allowed.includes(e.key)) {
+    if (calcState.mode === 'count') {
+      calcState.countExpr += e.key;
+    } else {
+      if (calcState.activePart === 'rem') calcState.remExpr += e.key;
+      else calcState.setExpr += e.key;
+    }
+
+    // 세트 모드 "개 입력"은 0~63 범위만 허용(키보드 입력)
+    if (calcState.mode === 'set' && calcState.activePart === 'rem') {
+      const trimmed = (calcState.remExpr || '').trim();
+      if (/^\d+$/.test(trimmed)) {
+        const n = parseInt(trimmed, 10);
+        if (Number.isFinite(n) && n >= SET_SIZE) {
+          calcState.remExpr = '63';
+        }
+      }
+    }
+    syncCalcDisplay();
+    e.preventDefault();
+    return;
+    }
+    if (e.key === 'Backspace') {
+      handleCalcKey('BS');
+      e.preventDefault();
+      return;
+    }
+  });
+}
+
+function openCalculatorForInput(inputEl) {
+  ensureCalcPopup();
+
+  const popup = document.getElementById('calcPopup');
+  if (!popup) return;
+
+  calcState.isOpen = true;
+  calcState.targetInput = inputEl;
+  calcState.materialName = inputEl.getAttribute('data-material') || '수량 입력';
+
+  // 새 입력(사용자가 계산/입력하는 용도)
+  calcState.countExpr = '';
+  calcState.setExpr = '';
+  calcState.remExpr = '';
+  calcState.activePart = calcState.mode === 'count' ? 'count' : 'set';
+  syncCalcDisplay();
+
+  // 위치: input 오른쪽, 화면 밖이면 아래/왼쪽으로 보정
+  const rect = inputEl.getBoundingClientRect();
+  const margin = 10;
+  const popupW = 280;
+  const popupH = 420; // 대략값, 보정용
+
+  let left = rect.right + margin;
+  let top = rect.top;
+
+  if (left + popupW > window.innerWidth - margin) {
+    left = Math.max(margin, rect.left - popupW - margin);
+  }
+  if (top + popupH > window.innerHeight - margin) {
+    top = Math.max(margin, window.innerHeight - popupH - margin);
+  }
+
+  popup.style.left = `${Math.round(left)}px`;
+  popup.style.top = `${Math.round(top)}px`;
+  popup.style.display = 'block';
+
+  const titleEl = document.getElementById('calcTitle');
+  if (titleEl) titleEl.textContent = calcState.materialName;
+}
+
+function closeCalculator() {
+  calcState.isOpen = false;
+  calcState.targetInput = null;
+  calcState.materialName = '';
+  calcState.countExpr = '';
+  calcState.setExpr = '';
+  calcState.remExpr = '';
+  calcState.activePart = 'count';
+  const popup = document.getElementById('calcPopup');
+  if (popup) popup.style.display = 'none';
+}
+
+function handleCalcKey(key) {
+  if (key === 'C') {
+    if (calcState.mode === 'count') calcState.countExpr = '';
+    else if (calcState.activePart === 'rem') calcState.remExpr = '';
+    else calcState.setExpr = '';
+    syncCalcDisplay();
+    return;
+  }
+  if (key === 'BS') {
+    if (calcState.mode === 'count') {
+      calcState.countExpr = calcState.countExpr.slice(0, -1);
+    } else {
+      if (calcState.activePart === 'rem') calcState.remExpr = calcState.remExpr.slice(0, -1);
+      else calcState.setExpr = calcState.setExpr.slice(0, -1);
+    }
+    syncCalcDisplay();
+    return;
+  }
+  if (calcState.mode === 'count') {
+    calcState.countExpr += key;
+  } else {
+    if (calcState.activePart === 'rem') calcState.remExpr += key;
+    else calcState.setExpr += key;
+  }
+
+  // 세트 모드 "개 입력"은 0~63 범위만 허용 (숫자만 단독 입력인 경우 즉시 제한)
+  if (calcState.mode === 'set' && calcState.activePart === 'rem') {
+    const trimmed = (calcState.remExpr || '').trim();
+    if (/^\d+$/.test(trimmed)) {
+      const n = parseInt(trimmed, 10);
+      if (Number.isFinite(n) && n >= SET_SIZE) {
+        calcState.remExpr = '63';
+      }
+    }
+  }
+  syncCalcDisplay();
+}
+
+function sanitizeExpr(expr) {
+  // 허용: 숫자, 공백, + - * / ( ) .
+  const cleaned = (expr || '')
+    .replace(/[×]/g, '*')
+    .replace(/[÷]/g, '/')
+    .replace(/[^0-9+\-*/().\s]/g, '')
+    .trim();
+  return cleaned;
+}
+
+function safeEval(expr) {
+  const cleaned = sanitizeExpr(expr);
+  if (!cleaned) return 0;
+  // 연속 연산자 같은 엣지는 JS가 처리하지만, 오류는 0으로
+  try {
+    // eslint-disable-next-line no-new-func
+    const v = Function(`"use strict"; return (${cleaned});`)();
+    if (typeof v !== 'number' || !Number.isFinite(v)) return null;
+    return v;
+  } catch {
+    return null;
+  }
+}
+
+function toNonNegativeInt(v) {
+  if (v === null) return null;
+  const n = Math.floor(v);
+  if (!Number.isFinite(n)) return null;
+  return Math.max(0, n);
+}
+
+function getTotalCountFromState() {
+  if (calcState.mode === 'count') {
+    const raw = safeEval(calcState.countExpr);
+    return toNonNegativeInt(raw);
+  }
+  const setRaw = safeEval(calcState.setExpr);
+  const remRaw = safeEval(calcState.remExpr);
+  if (setRaw === null || remRaw === null) return null;
+  const sets = toNonNegativeInt(setRaw);
+  const rem = toNonNegativeInt(remRaw);
+  if (sets === null || rem === null) return null;
+  if (rem >= SET_SIZE) return null;
+  return Math.max(0, sets * SET_SIZE + rem);
+}
+
+function getCalcResultValue() {
+  return getTotalCountFromState();
+}
+
+function syncCalcDisplay() {
+  const exprEl = document.getElementById('calcExpr');
+  const resultEl = document.getElementById('calcResult');
+  const partModes = document.getElementById('calcPartModes');
+
+  if (calcState.mode === 'set') {
+    if (partModes) partModes.style.display = 'grid';
+    const setText = (calcState.setExpr || '0');
+    const remText = (calcState.remExpr || '0');
+    if (exprEl) exprEl.textContent = `${setText}세트 ${remText}개`;
+
+    // part 버튼 active 보정
+    if (partModes) {
+      partModes.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+      const activeBtn = partModes.querySelector(`.mode-btn[data-part="${calcState.activePart === 'rem' ? 'rem' : 'set'}"]`);
+      if (activeBtn) activeBtn.classList.add('active');
+    }
+  } else {
+    if (partModes) partModes.style.display = 'none';
+    if (exprEl) exprEl.textContent = calcState.countExpr || ' ';
+  }
+
+  if (resultEl) {
+    const v = getCalcResultValue();
+    if (v === null) {
+      resultEl.textContent = '오류';
+      resultEl.style.color = '#d94a4a';
+    } else {
+      resultEl.textContent = String(v);
+      resultEl.style.color = '#4a8fd9';
+    }
+  }
+}
+
+function convertCalcMode(nextMode) {
+  if (nextMode === 'set') {
+    // count -> set (총 개수를 n세트 m개로)
+    const raw = safeEval(calcState.countExpr);
+    const total = toNonNegativeInt(raw);
+    if (total === null) {
+      calcState.setExpr = '';
+      calcState.remExpr = '';
+      return;
+    }
+    const sets = Math.floor(total / SET_SIZE);
+    const rem = total % SET_SIZE;
+    calcState.setExpr = String(sets);
+    calcState.remExpr = String(rem);
+    return;
+  }
+
+  // set -> count (n세트 m개를 총 개수로)
+  const total = getTotalCountFromState();
+  if (total === null) {
+    calcState.countExpr = '';
+    return;
+  }
+  calcState.countExpr = String(total);
+}
+
+function commitCalcValue(action) {
+  if (!calcState.targetInput) return;
+  const inputEl = calcState.targetInput;
+
+  const current = parseInt(inputEl.value) || 0;
+  const computed = getCalcResultValue();
+  if (computed === null) return;
+
+  if (action === 'apply') {
+    inputEl.value = String(computed);
+  } else if (action === 'add') {
+    inputEl.value = String(Math.max(0, current + computed));
+  } else if (action === 'reset') {
+    inputEl.value = '0';
+    calcState.countExpr = '';
+    calcState.setExpr = '';
+    calcState.remExpr = '';
+    syncCalcDisplay();
+  }
+
+  saveWarehouseInventory();
+  analyzeEfficiency();
+}
+
+function resetAllWarehouse() {
+  const inputs = document.querySelectorAll('#warehouseContainer input[type="number"]');
+  inputs.forEach(i => { i.value = '0'; });
+  saveWarehouseInventory();
+  analyzeEfficiency();
+  closeCalculator();
+}
+
+// ===== Tawk 위젯 유지 =====
+function keepTawkVisible() {
+  const tawkNodes = document.querySelectorAll('iframe[src*="tawk"], [id*="tawk"], [class*="tawk"]');
+  tawkNodes.forEach((el) => {
+    if (!(el instanceof HTMLElement)) return;
+    el.style.display = 'block';
+    el.style.visibility = 'visible';
+    el.style.opacity = '1';
+    el.style.zIndex = '2147483000';
+  });
+
+  if (window.Tawk_API && typeof window.Tawk_API.showWidget === 'function') {
+    try { window.Tawk_API.showWidget(); } catch (_) {}
+  }
+}
+
+// ===== 섹션 전환 =====
+function switchSection(sectionId) {
+  saveWarehouseInventory();
+  document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+  document.getElementById(sectionId).classList.add('active');
+  
+  document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+  event.target.classList.add('active');
+
+  const factorySub = document.getElementById('factorySubNav');
+  const settingsSubNav = document.getElementById('settingsSubNav');
+  const efficiencySubNav = document.getElementById('efficiencySubNav');
+  if (factorySub) factorySub.style.display = (sectionId === 'factory') ? 'block' : 'none';
+  if (settingsSubNav) settingsSubNav.style.display = (sectionId === 'settings') ? 'block' : 'none';
+  if (efficiencySubNav) efficiencySubNav.style.display = (sectionId === 'efficiency') ? 'block' : 'none';
+  if (sectionId !== 'factory') document.querySelectorAll('#factorySubNav .sub-item').forEach(i => i.classList.remove('active'));
+  if (sectionId !== 'settings') document.querySelectorAll('#settingsSubNav .sub-item').forEach(i => i.classList.remove('active'));
+  if (sectionId !== 'efficiency') document.querySelectorAll('#efficiencySubNav .sub-item').forEach(i => i.classList.remove('active'));
+  
+  if (sectionId === 'craft') {
+    renderRecipes();
+  } else if (sectionId === 'warehouse') {
+    renderWarehouse();
+  } else if (sectionId === 'efficiency') {
+    analyzeEfficiency();
+    showEfficiencySub(efficiencySub);
+  } else if (sectionId === 'settings') {
+    renderExperts();
+    renderSageRod();
+    showSettingsSub(settingsSub);
+  } else if (sectionId === 'factory') {
+    renderFactorySeaweedMedia();
+  }
+
+  keepTawkVisible();
+}
+
+function openFactorySub(subKey) {
+  saveWarehouseInventory();
+  document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('factory').classList.add('active');
+
+  document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+  const factoryNav = Array.from(document.querySelectorAll('.nav-item')).find(n => (n.textContent || '').includes('공장 제작법'));
+  if (factoryNav) factoryNav.classList.add('active');
+
+  const sub = document.getElementById('factorySubNav');
+  if (sub) sub.style.display = 'block';
+  document.querySelectorAll('#factorySubNav .sub-item').forEach(i => i.classList.remove('active'));
+  if (event && event.target) event.target.classList.add('active');
+
+  showFactorySub(subKey);
+  keepTawkVisible();
+}
+
+function showFactorySub(subKey) {
+  saveWarehouseInventory();
+  const sea = document.getElementById('factorySeaweed');
+  const tun = document.getElementById('factoryTunicate');
+  const tabs = document.querySelectorAll('.factory-tabs .tab-btn');
+  tabs.forEach(t => t.classList.remove('active'));
+
+  if (subKey === 'tunicate') {
+    if (sea) sea.style.display = 'none';
+    if (tun) tun.style.display = 'block';
+    if (tabs[1]) tabs[1].classList.add('active');
+    renderFactoryTunicateMedia();
+  } else {
+    if (sea) sea.style.display = 'block';
+    if (tun) tun.style.display = 'none';
+    if (tabs[0]) tabs[0].classList.add('active');
+    renderFactorySeaweedMedia();
+  }
+
+  keepTawkVisible();
+}
+
+const factoryMedia = {
+  seaweed: Array.from({ length: 11 }, (_, i) => {
+    const step = String(i + 1);
+    return { title: step, src: `해초공장/해초 ${step}.jpg` };
+  }),
+  tunicate: Array.from({ length: 5 }, (_, i) => {
+    const step = String(i + 1);
+    return { title: step, src: `불우렁쉥이 공장/불우렁쉥이 ${step}.jpg` };
+  })
+};
+
+function renderFactoryMedia(gridId, items, viewerKey, titlePrefix) {
+  const grid = document.getElementById(gridId);
+  if (!grid) return;
+  if (grid.getAttribute('data-rendered') === '1') return;
+
+  grid.innerHTML = '';
+  items.forEach((it, idx) => {
+    const card = document.createElement('div');
+    card.className = 'media-card';
+    card.innerHTML = `
+      <div class="media-card-title">${titlePrefix} ${it.title}</div>
+      <img class="media-img" src="${it.src}" alt="${titlePrefix} ${it.title}" loading="lazy">
+      <div class="media-card-body" style="display:none;"></div>
+    `;
+    const img = card.querySelector('img');
+    if (img) {
+      img.addEventListener('click', () => openFactoryViewer(viewerKey, idx));
+      img.addEventListener('error', () => {
+        img.style.display = 'none';
+        const body = card.querySelector('.media-card-body');
+        if (body) {
+          body.style.display = 'block';
+          body.textContent = `이미지 파일을 찾을 수 없습니다: ${it.src}`;
+        }
+      });
+    }
+    grid.appendChild(card);
+  });
+
+  grid.setAttribute('data-rendered', '1');
+}
+
+function renderFactorySeaweedMedia() {
+  renderFactoryMedia('seaweedMediaGrid', factoryMedia.seaweed, 'seaweed', '단계');
+}
+
+function renderFactoryTunicateMedia() {
+  renderFactoryMedia('tunicateMediaGrid', factoryMedia.tunicate, 'tunicate', '단계');
+}
+
+let viewerState = { key: 'seaweed', index: 0 };
+
+function setupFactoryViewerOnce() {
+  const overlay = document.getElementById('factoryViewer');
+  if (!overlay || overlay.getAttribute('data-ready') === '1') return;
+  overlay.setAttribute('data-ready', '1');
+
+  const closeBtn = document.getElementById('viewerClose');
+  const prevBtn = document.getElementById('viewerPrev');
+  const nextBtn = document.getElementById('viewerNext');
+  const stage = document.getElementById('viewerStage');
+
+  function onOverlayClick(e) {
+    if (e.target === overlay) closeFactoryViewer();
+  }
+  overlay.addEventListener('click', onOverlayClick);
+  if (closeBtn) closeBtn.addEventListener('click', closeFactoryViewer);
+  if (prevBtn) prevBtn.addEventListener('click', () => moveFactoryViewer(-1));
+  if (nextBtn) nextBtn.addEventListener('click', () => moveFactoryViewer(1));
+  if (stage) {
+    stage.addEventListener('click', (e) => {
+      if (e.target && e.target.id === 'viewerImg') return;
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    const ov = document.getElementById('factoryViewer');
+    if (!ov || !ov.classList.contains('open')) return;
+    if (e.key === 'Escape') closeFactoryViewer();
+    if (e.key === 'ArrowLeft') moveFactoryViewer(-1);
+    if (e.key === 'ArrowRight') moveFactoryViewer(1);
+  });
+}
+
+function openFactoryViewer(key, index) {
+  setupFactoryViewerOnce();
+  const overlay = document.getElementById('factoryViewer');
+  if (!overlay) return;
+
+  const items = factoryMedia[key] || [];
+  if (!items.length) return;
+
+  viewerState = { key, index: ((index % items.length) + items.length) % items.length };
+  overlay.classList.add('open');
+  overlay.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  renderFactoryViewerFrame();
+}
+
+function closeFactoryViewer() {
+  const overlay = document.getElementById('factoryViewer');
+  if (!overlay) return;
+  overlay.classList.remove('open');
+  overlay.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+function moveFactoryViewer(delta) {
+  const items = factoryMedia[viewerState.key] || [];
+  if (!items.length) return;
+  viewerState.index = (viewerState.index + delta + items.length) % items.length;
+  renderFactoryViewerFrame();
+}
+
+function renderFactoryViewerFrame() {
+  const items = factoryMedia[viewerState.key] || [];
+  const it = items[viewerState.index];
+  if (!it) return;
+
+  const img = document.getElementById('viewerImg');
+  const title = document.getElementById('viewerTitle');
+  const step = document.getElementById('viewerStep');
+  const total = document.getElementById('viewerTotal');
+  const srcEl = document.getElementById('viewerSrc');
+
+  const kindLabel = viewerState.key === 'tunicate' ? '불우렁쉥이 공장' : '해초 공장';
+  if (title) title.textContent = `${kindLabel} - 단계 ${it.title}`;
+  if (step) step.textContent = String(viewerState.index + 1);
+  if (total) total.textContent = String(items.length);
+  if (srcEl) srcEl.textContent = it.src;
+
+  if (img) {
+    img.alt = `${kindLabel} 단계 ${it.title}`;
+    img.src = it.src;
+  }
+}
+
+// ===== 레시피 필터링 =====
+function filterRecipes(category) {
+  currentFilter = category;
+  
+  document.querySelectorAll('.sidebar .nav-item').forEach(item => item.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  renderRecipes();
+}
+
+// ===== 레시피 검색 =====
+function searchRecipes() {
+  currentSearch = document.getElementById('searchInput').value.toLowerCase();
+  renderRecipes();
+}
+
+// ===== 레시피 카드 렌더링 =====
+function renderRecipes() {
+  const container = document.getElementById('recipesContainer');
+  let recipesToShow = data.recipes;
+  
+  if (currentSearch) {
+    recipesToShow = recipesToShow.filter(r => r.name.toLowerCase().includes(currentSearch));
+  }
+  
+  container.innerHTML = '';
+  
+  // 연금품만 필터링 (정수, 핵, 에센스, 결정, 엘릭서, 영약)
+  const alchemyRecipes = recipesToShow.filter(r => 
+    /(희석액|정수|핵|에센스|결정|엘릭서|영약|비약|코어|아쿠티스|광란체|깃털|날개|파편|나우틸러스|무저)/.test(r.name)
+  );
+  
+  const craftRecipes = recipesToShow.filter(r => r.group === 'craft');
+  
+  const groups = [
+    { title: '1성 연금품 (핵)', items: alchemyRecipes.filter(r => /핵\s+★$/.test(r.name)) },
+    { title: '1성 최종 산물', items: alchemyRecipes.filter(r => r.group === 'group1') },
+    { title: '2성 연금품 (결정)', items: alchemyRecipes.filter(r => /결정\s+★★$/.test(r.name)) },
+    { title: '2성 최종 산물', items: alchemyRecipes.filter(r => r.group === 'group2') },
+    { title: '3성 연금품 (영약)', items: alchemyRecipes.filter(r => /영약\s+★★★$/.test(r.name)) },
+    { title: '3성 최종 산물', items: alchemyRecipes.filter(r => r.group === 'group3') },
+    { title: '기타 연금 재료 (희석액)', items: alchemyRecipes.filter(r => /희석액/.test(r.name) && !/(정수|핵|에센스|결정|엘릭서|영약)\s+★/.test(r.name)) }
+  ];
+
+  const renderCard = (recipe) => {
+    const card = document.createElement('div');
+    card.className = 'recipe-card';
+    
+    let ingredientsHTML = '';
+    if (recipe.inputs.length > 0) {
+      ingredientsHTML = recipe.inputs.map(input => `
+        <div class="ingredient-item">
+          <span class="ingredient-name">${withAlchemyImage(input.name)}</span>
+          <span class="ingredient-count">${input.count}x</span>
+        </div>
+      `).join('');
+    } else {
+      ingredientsHTML = '<div style="color: #666; font-size: 12px;">기본 재료 없음</div>';
+    }
+    
+    card.innerHTML = `
+      <div class="recipe-card-header">
+        <div class="recipe-card-title">${withAlchemyImage(recipe.name)}</div>
+        <div class="recipe-card-price">${recipe.price}G</div>
+      </div>
+      <div class="recipe-card-body">
+        <div class="recipe-section">
+          <div class="recipe-section-title">필요 재료</div>
+          ${ingredientsHTML}
+        </div>
+      </div>
+    `;
+    
+    return card;
+  };
+
+  // 연금품 그룹 표시
+  groups.forEach((g) => {
+    if (!g.items.length) return;
+    const title = document.createElement('div');
+    title.style.gridColumn = '1 / -1';
+    title.style.fontSize = '15px';
+    title.style.fontWeight = '900';
+    title.style.color = '#e5e5e5';
+    title.style.margin = '8px 0 2px';
+    title.textContent = g.title;
+    container.appendChild(title);
+    g.items.forEach((r) => container.appendChild(renderCard(r)));
+  });
+
+  // 연금품 재료 섹션 (정수, 핵, 에센스, 결정, 엘릭서, 영약)
+  const alchemyMaterials = alchemyRecipes.filter(r => /(정수|핵|에센스|결정|엘릭서|영약)\s+★/.test(r.name));
+  if (alchemyMaterials.length > 0) {
+    const materialsTitle = document.createElement('div');
+    materialsTitle.style.gridColumn = '1 / -1';
+    materialsTitle.style.fontSize = '15px';
+    materialsTitle.style.fontWeight = '900';
+    materialsTitle.style.color = '#e5e5e5';
+    materialsTitle.style.margin = '20px 0 2px';
+    materialsTitle.textContent = '연금품 재료';
+    container.appendChild(materialsTitle);
+    
+    // 연금품 재료 그리드 생성 (3x2)
+    const materialsGrid = document.createElement('div');
+    materialsGrid.style.gridColumn = '1 / -1';
+    materialsGrid.style.display = 'grid';
+    materialsGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+    materialsGrid.style.gap = '15px';
+    
+    alchemyMaterials.forEach(recipe => {
+      const card = renderCard(recipe);
+      materialsGrid.appendChild(card);
+    });
+    
+    container.appendChild(materialsGrid);
+  }
+
+  if (container.children.length === 0) {
+    container.innerHTML = '<p style="grid-column: 1/-1; color: #666; text-align: center; padding: 40px;">검색 결과가 없습니다</p>';
+  }
+}
+
+// ===== 창고 렌더링 =====
+function renderWarehouse() {
+  const container = document.getElementById('warehouseContainer');
+  container.innerHTML = '';
+  const savedInventory = loadWarehouseInventory();
+  
+  // 창고에 표시할 전체 재료: (정의된 재료 + 모든 입력 재료) 합집합
+  const allMaterials = new Set();
+  Object.keys(data.materials).forEach(mat => {
+    allMaterials.add(mat);
+  });
+  Object.values(data.materials).forEach(recipe => {
+    (recipe.inputs || []).forEach(i => {
+      allMaterials.add(i.name);
+    });
+  });
+  (data.recipes || []).forEach(recipe => {
+    (recipe.inputs || []).forEach(i => {
+      allMaterials.add(i.name);
+    });
+  });
+
+  const isShellfishBase = (name) => /^(굴|소라|문어|미역|성게)\s+★+$/.test(name);
+  const starCount = (name) => {
+    const m = name.match(/★+/);
+    return m ? m[0].length : 0;
+  };
+
+  const pick = (arr, pred) => arr.filter(pred).sort((a, b) => a.localeCompare(b, 'ko'));
+  const all = Array.from(allMaterials);
+
+  // 어패류(1/2/3성)
+  const shellfish1 = pick(all, n => isShellfishBase(n) && starCount(n) === 1);
+  const shellfish2 = pick(all, n => isShellfishBase(n) && starCount(n) === 2);
+  const shellfish3 = pick(all, n => isShellfishBase(n) && starCount(n) === 3);
+
+  // 1성 연금품(핵/정수)
+  const alchemy1Core = pick(all, n => /핵\s+★$/.test(n));
+  const alchemy1Ess = pick(all, n => /정수\s+★$/.test(n));
+
+  // 2성 연금품(에센스/결정)
+  const alchemy2Ess = pick(all, n => /에센스\s+★★$/.test(n));
+  const alchemy2Crystal = pick(all, n => /결정\s+★★$/.test(n));
+
+  // 3성 연금품(엘릭서/영약)
+  const alchemy3Elixir = pick(all, n => /엘릭서\s+★★★$/.test(n));
+  const alchemy3Potion = pick(all, n => /영약\s+★★★$/.test(n));
+
+  const assigned = new Set([
+    ...shellfish1, ...shellfish2, ...shellfish3,
+    ...alchemy1Core, ...alchemy1Ess,
+    ...alchemy2Ess, ...alchemy2Crystal,
+    ...alchemy3Elixir, ...alchemy3Potion
+  ]);
+
+  const craftRecipes = (data.recipes || []).filter(r => r.group === 'craft');
+  const craftRelated = new Set();
+  craftRecipes.forEach((r) => {
+    craftRelated.add(r.name);
+    (r.inputs || []).forEach(i => craftRelated.add(i.name));
+  });
+  const nonCraftUsed = new Set();
+  Object.keys(data.materials).forEach(n => nonCraftUsed.add(n));
+  Object.values(data.materials).forEach(recipe => (recipe.inputs || []).forEach(i => nonCraftUsed.add(i.name)));
+  (data.recipes || []).filter(r => r.group !== 'craft').forEach(r => {
+    nonCraftUsed.add(r.name);
+    (r.inputs || []).forEach(i => nonCraftUsed.add(i.name));
+  });
+
+  const isCraftOnlyMaterial = (name) => craftRelated.has(name) && !nonCraftUsed.has(name);
+  const isCraftRelatedVanilla = (name) => {
+    // 공예품 관련 바닐라 재료 패턴
+    return /진주|재활용품|거미줄|양동이|유리판|대나무|꽃잎|막대기|자수정|흑요석|시계|조개껍데기/.test(name);
+  };
+  const vanillaSortRank = (name) => {
+    if (/산호/.test(name)) return 0;
+    if (/나무 잎$/.test(name)) return 1;
+    return 2;
+  };
+  const other = pick(all, n => !assigned.has(n) && !isCraftOnlyMaterial(n) && !isCraftRelatedVanilla(n))
+    .sort((a, b) => {
+      const ra = vanillaSortRank(a);
+      const rb = vanillaSortRank(b);
+      if (ra !== rb) return ra - rb;
+      return a.localeCompare(b, 'ko');
+    });
+
+  function createSection(title, items, subtitle = '', options = {}) {
+    if (!items || items.length === 0) return;
+    const isVanillaSection = !!options.isVanillaSection;
+    const appendTarget = options.appendTo || container;
+    const section = document.createElement('div');
+    section.className = 'warehouse-section';
+    if (isVanillaSection) section.setAttribute('data-vanilla-section', '1');
+    section.innerHTML = `
+      <div class="warehouse-section-title">
+        <h2>${title}</h2>
+        <div class="warehouse-section-sub">${subtitle || (items.length + '종')}</div>
+      </div>
+      <div class="warehouse-grid"></div>
+    `;
+
+    const grid = section.querySelector('.warehouse-grid');
+    if (options.vanillaDense) {
+      grid.classList.add('vanilla-dense');
+    }
+    items.forEach(material => {
+      const item = document.createElement('div');
+      item.className = 'warehouse-item' + (options.vanillaDense ? ' vanilla-item' : '');
+      const imagePath = getImagePath(material);
+      const imageHTML = imagePath ? `<img src="${imagePath}" alt="${material}" style="height: 18px; margin-right: 4px; vertical-align: middle;" onerror="this.onerror=null;this.style.display='none';">` : '';
+      item.innerHTML = `
+        <div class="warehouse-item-name">${imageHTML}${material}</div>
+        <input type="number" min="0" value="${savedInventory[material] ?? 0}" data-material="${material}" ${isVanillaSection ? 'data-vanilla="1"' : ''} placeholder="수량 입력">
+      `;
+      grid.appendChild(item);
+    });
+
+    appendTarget.appendChild(section);
+  }
+
+  createSection('어패류 (1성)', shellfish1);
+  createSection('어패류 (2성)', shellfish2);
+  createSection('어패류 (3성)', shellfish3);
+
+  createSection('1성 연금품 - 핵', alchemy1Core);
+  createSection('1성 연금품 - 정수', alchemy1Ess);
+
+  createSection('2성 연금품 - 에센스', alchemy2Ess);
+  createSection('2성 연금품 - 결정', alchemy2Crystal);
+
+  createSection('3성 연금품 - 엘릭서', alchemy3Elixir);
+  createSection('3성 연금품 - 영약', alchemy3Potion);
+
+  const vanillaWrap = document.createElement('div');
+  vanillaWrap.className = 'warehouse-vanilla-wrap';
+  container.appendChild(vanillaWrap);
+
+  const vanillaCoralSea = other.filter((n) => /산호|켈프|해초/.test(n));
+  const vanillaLeaves = other.filter((n) => /잎$/.test(n));
+  const vanillaOther = other.filter((n) => !vanillaCoralSea.includes(n) && !vanillaLeaves.includes(n));
+
+  createSection('바닐라 · 산호·해양', vanillaCoralSea, '', { isVanillaSection: true, appendTo: vanillaWrap, vanillaDense: true });
+  createSection('바닐라 · 나무 잎', vanillaLeaves, '', { isVanillaSection: true, appendTo: vanillaWrap, vanillaDense: true });
+  createSection('바닐라 · 기타', vanillaOther, '', { isVanillaSection: true, appendTo: vanillaWrap, vanillaDense: true });
+  
+  // 입력 필드에 이벤트 리스너 추가
+  const inputs = document.querySelectorAll('#warehouseContainer input[type="number"]');
+  inputs.forEach(input => {
+    input.addEventListener('change', () => {
+      saveWarehouseInventory();
+      analyzeEfficiency();
+    });
+    input.addEventListener('input', () => {
+      saveWarehouseInventory();
+      analyzeEfficiency();
+    });
+    input.addEventListener('focus', () => openCalculatorForInput(input));
+    input.addEventListener('click', () => openCalculatorForInput(input));
+  });
+
+  updateVanillaInputState();
+}
+
+// ===== 창고에서 현재 수량 가져오기 =====
+function getWarehouseInventory() {
+  const inventory = {};
+  const inputs = document.querySelectorAll('#warehouseContainer input[type="number"]');
+  inputs.forEach(input => {
+    const material = input.getAttribute('data-material');
+    inventory[material] = parseInt(input.value) || 0;
+  });
+  return inventory;
+}
+
+function getVanillaMaterials() {
+  const craftable = new Set(Object.keys(data.materials));
+  const base = new Set();
+
+  Object.values(data.materials).forEach(recipe => {
+    (recipe.inputs || []).forEach(input => {
+      if (!craftable.has(input.name)) base.add(input.name);
+    });
+  });
+
+  (data.recipes || []).forEach(recipe => {
+    (recipe.inputs || []).forEach(input => {
+      if (!craftable.has(input.name)) base.add(input.name);
+    });
+  });
+
+  return Array.from(base);
+}
+
+function getInfiniteVanillaMaterials() {
+  const isShellfishStar = (name) => /^(굴|소라|문어|미역|성게)\s+★+$/.test(name);
+  const isAlchemyItem = (name) => /(희석액|정수|핵|에센스|결정|엘릭서|영약)/.test(name);
+  const inputs = Array.from(document.querySelectorAll('#warehouseContainer input[data-vanilla="1"]'));
+  const names = inputs
+    .map((i) => i.getAttribute('data-material') || '')
+    .filter((n) => n && !isShellfishStar(n) && !isAlchemyItem(n));
+  return Array.from(new Set(names));
+}
+
+function saveWarehouseInventory() {
+  const inventory = getWarehouseInventory();
+  try {
+    localStorage.setItem(STORAGE_KEY_INVENTORY, JSON.stringify(inventory));
+  } catch (_) {}
+}
+
+function loadWarehouseInventory() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_INVENTORY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return {};
+    return parsed;
+  } catch (_) {
+    return {};
+  }
+}
+
+function saveVanillaToggleState() {
+  const toggle = document.getElementById('vanillaCalcToggle');
+  if (!toggle) return;
+  try {
+    localStorage.setItem(STORAGE_KEY_VANILLA_TOGGLE, toggle.checked ? '1' : '0');
+  } catch (_) {}
+}
+
+function loadVanillaToggleState() {
+  const toggle = document.getElementById('vanillaCalcToggle');
+  if (!toggle) return;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_VANILLA_TOGGLE);
+    if (raw === '1') toggle.checked = true;
+    if (raw === '0') toggle.checked = false;
+  } catch (_) {}
+}
+
+function loadExpertState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_EXPERTS);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return;
+    Object.keys(expertMeta).forEach((k) => {
+      const v = parseInt(parsed[k], 10);
+      if (Number.isFinite(v)) {
+        expertState[k] = Math.max(0, Math.min(expertMeta[k].maxLevel, v));
+      }
+    });
+  } catch (_) {}
+}
+
+function saveExpertState() {
+  try {
+    localStorage.setItem(STORAGE_KEY_EXPERTS, JSON.stringify(expertState));
+  } catch (_) {}
+}
+
+function renderExperts() {
+  const container = document.getElementById('expertsContainer');
+  if (!container) return;
+  container.innerHTML = '';
+
+  Object.values(expertMeta).forEach((meta) => {
+    const lv = expertState[meta.key] || 0;
+    const value = meta.values[lv] || 0;
+    const unit = (meta.key === 'timeReduce') ? '% 감소'
+      : ((meta.key.includes('Slots') || meta.key === 'oceanOrder') ? '' : '%');
+    const card = document.createElement('div');
+    card.className = 'expert-card';
+    card.innerHTML = `
+      <div class="expert-name">${meta.name}</div>
+      <div class="expert-desc">${meta.desc}</div>
+      <div class="expert-controls">
+        <button class="expert-btn" type="button" data-expert="${meta.key}" data-delta="-1">−</button>
+        <div class="expert-level">Lv.${lv} (${value}${unit})</div>
+        <button class="expert-btn" type="button" data-expert="${meta.key}" data-delta="1">+</button>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+
+  container.querySelectorAll('button[data-expert]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const key = btn.getAttribute('data-expert');
+      const delta = parseInt(btn.getAttribute('data-delta'), 10) || 0;
+      changeExpertLevel(key, delta);
+    });
+  });
+}
+
+function changeExpertLevel(key, delta) {
+  const meta = expertMeta[key];
+  if (!meta) return;
+  const next = Math.max(0, Math.min(meta.maxLevel, (expertState[key] || 0) + delta));
+  if (next === expertState[key]) return;
+  expertState[key] = next;
+  saveExpertState();
+  renderExperts();
+  analyzeEfficiency();
+}
+
+function getExpertEffects() {
+  const craftPriceBoost = expertMeta.craftPrice.values[expertState.craftPrice] || 0;
+  const alchemyPriceBoost = expertMeta.alchemyPrice.values[expertState.alchemyPrice] || 0;
+  const timeReduce = expertMeta.timeReduce.values[expertState.timeReduce] || 0;
+  return { craftPriceBoost, alchemyPriceBoost, timeReduce };
+}
+
+function getBaseAlchemyTimeSec(name) {
+  if (name === '추출된 희석액') return 60;
+  if (/(영생의 아쿠티스|크라켄의 광란체|리바이던의 깃털)/.test(name)) return 30;
+  if (/(해구 파동의 코어|침묵의 심해 비약|청해룡의 날개)/.test(name)) return 30;
+  if (/(아쿠아 펄스 파편|나우틸러스의 손|무저의 척추)/.test(name)) return 60;
+  if (/(정수|에센스)/.test(name)) return 5;
+  if (/(핵|결정|엘릭서)/.test(name)) return 10;
+  if (/영약/.test(name)) return 20;
+  return 60;
+}
+
+function formatDuration(sec) {
+  const s = Math.max(1, Math.round(sec));
+  if (s >= 60) return `${(s / 60).toFixed(2)}분`;
+  return `${s}초`;
+}
+
+const FINAL_GROUP1 = ['영생의 아쿠티스', '크라켄의 광란체', '리바이던의 깃털'];
+const FINAL_GROUP2 = ['해구 파동의 코어', '침묵의 심해 비약', '청해룡의 날개'];
+const FINAL_GROUP3 = ['아쿠아 펄스 파편', '나우틸러스의 손', '무저의 척추'];
+
+function deductCraftTree(name, count, inv, options = {}) {
+  if (!count || count <= 0) return;
+  const skip = options.skipShellfishTierConvert === true;
+  const recipe = data.materials[name];
+  if (recipe && recipe.inputs && recipe.inputs.length) {
+    if (skip && SHELLFISH_DOWNGRADE_ONE_STAR.has(name)) {
+      inv[name] = (inv[name] || 0) - count;
+      return;
+    }
+    for (const inp of recipe.inputs) {
+      deductCraftTree(inp.name, inp.count * count, inv, options);
+    }
+  } else {
+    inv[name] = (inv[name] || 0) - count;
+  }
+}
+
+function deductFinalRecipe(recipe, inv, options = {}) {
+  for (const inp of recipe.inputs || []) {
+    deductCraftTree(inp.name, inp.count, inv, options);
+  }
+}
+
+function unitAlchemyEfficiency(recipe, effects) {
+  const priceMultiplier = 1 + (effects.alchemyPriceBoost / 100);
+  const adjustedPrice = Math.round((recipe.price || 0) * priceMultiplier);
+  const baseTimeSec = getBaseAlchemyTimeSec(recipe.name);
+  const adjustedTimeSec = Math.max(1, baseTimeSec * (1 - effects.timeReduce / 100));
+  const adjustedTimeMin = adjustedTimeSec / 60;
+  return adjustedTimeMin > 0 ? adjustedPrice / adjustedTimeMin : 0;
+}
+
+function greedyCraftFinalCounts(recipeNames, inv) {
+  const counts = {};
+  recipeNames.forEach((n) => { counts[n] = 0; });
+  const effects = getExpertEffects();
+  const guard = 200000;
+  let iter = 0;
+  while (iter++ < guard) {
+    let bestRecipe = null;
+    let bestScore = -1;
+    for (const name of recipeNames) {
+      const recipe = data.recipes.find((r) => r.name === name);
+      if (!recipe) continue;
+      const craftOpts = { skipShellfishTierConvert: true };
+      if (calculateMaxCraft(recipe, inv, {}, craftOpts) < 1) continue;
+      const score = unitAlchemyEfficiency(recipe, effects);
+      if (score > bestScore) {
+        bestScore = score;
+        bestRecipe = recipe;
+      }
+    }
+    if (!bestRecipe) break;
+    deductFinalRecipe(bestRecipe, inv, { skipShellfishTierConvert: true });
+    counts[bestRecipe.name]++;
+  }
+  return counts;
+}
+
+function renderTriFinalPlan(title, orderedNames, counts) {
+  const cells = orderedNames.map((name) => {
+    const n = counts[name] || 0;
+    const img = getImagePath(name);
+    const imgH = img ? `<img src="${img}" alt="" style="height:22px;vertical-align:middle;margin-right:6px;" onerror="this.style.display='none';">` : '';
+    return `<div style="background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:10px 8px;text-align:center;min-height:72px;display:flex;flex-direction:column;justify-content:center;">
+      <div style="font-size:11px;color:#9eb2c8;line-height:1.25;word-break:keep-all;">${imgH}${name}</div>
+      <div style="font-size:17px;font-weight:900;color:#8fd5ff;margin-top:6px;">${n}개</div>
+    </div>`;
+  }).join('');
+  return `<div style="margin-bottom:14px;">
+    <div style="font-size:13px;font-weight:800;color:#e5e5e5;margin-bottom:8px;">${title}</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">${cells}</div>
+  </div>`;
+}
+
+function computeShellfishEfficiencyScores(inv) {
+  const effects = getExpertEffects();
+  const scores = {};
+  SHELLFISH_NAMES.forEach((s) => { scores[s] = 0.001; });
+  data.recipes.forEach((recipe) => {
+    const isAlchemy = /(희석액|핵|정수|에센스|결정|엘릭서|영약|비약|코어|아쿠티스|광란체|깃털|날개|파편|나우틸러스|무저)/.test(recipe.name);
+    if (!isAlchemy) return;
+    if (calculateMaxCraft(recipe, inv, {}, { skipShellfishTierConvert: true }) < 1) return;
+    const ue = unitAlchemyEfficiency(recipe, effects);
+    const req = calculateRequiredMaterials(recipe, 1);
+    SHELLFISH_NAMES.forEach((base) => {
+      [1, 2, 3].forEach((st) => {
+        const key = `${base} ${'★'.repeat(st)}`;
+        const c = req[key] || 0;
+        if (c > 0) scores[base] += ue * c;
+      });
+    });
+  });
+  return scores;
+}
+
+function sumFinalPlanGold(countsByName, effects) {
+  const mult = 1 + (effects.alchemyPriceBoost / 100);
+  let base = 0;
+  let boosted = 0;
+  Object.entries(countsByName).forEach(([name, n]) => {
+    const r = data.recipes.find((x) => x.name === name);
+    if (!r || !n) return;
+    base += (r.price || 0) * n;
+    boosted += Math.round((r.price || 0) * mult) * n;
+  });
+  return { base, boosted };
+}
+
+function saveSageRodState() {
+  try { localStorage.setItem(STORAGE_KEY_SAGE_ROD, String(sageRodLevel)); } catch (_) {}
+}
+
+function loadSageRodState() {
+  try {
+    const raw = parseInt(localStorage.getItem(STORAGE_KEY_SAGE_ROD) || '1', 10);
+    if (Number.isFinite(raw)) sageRodLevel = Math.max(1, Math.min(15, raw));
+  } catch (_) {}
+}
+
+function saveStaminaInputState() {
+  const input = document.getElementById('staminaInput');
+  if (!input) return;
+  try {
+    const v = parseInt(input.value || '0', 10);
+    localStorage.setItem(STORAGE_KEY_STAMINA, String(Number.isFinite(v) ? Math.max(0, v) : 0));
+  } catch (_) {}
+}
+
+function loadStaminaInputState() {
+  const input = document.getElementById('staminaInput');
+  if (!input) return;
+  try {
+    const v = parseInt(localStorage.getItem(STORAGE_KEY_STAMINA) || '0', 10);
+    const n = Number.isFinite(v) ? Math.max(0, v) : 0;
+    input.value = n > 0 ? String(n) : '';
+  } catch (_) {}
+}
+
+function renderSageRod() {
+  const lvEl = document.getElementById('sageRodLevel');
+  const statEl = document.getElementById('sageRodStats');
+  const visEl = document.getElementById('sageRodVisual');
+  if (!lvEl || !statEl || !visEl) return;
+  lvEl.textContent = `Lv.${sageRodLevel}`;
+  visEl.textContent = sageRodLevel >= 11 ? '🎣✨' : (sageRodLevel >= 6 ? '🎣⭐' : '🎣');
+  statEl.innerHTML = `
+    <div class="expert-desc">시간 감소율: ${sageRodStats.timeReduce[sageRodLevel]}%</div>
+    <div class="expert-desc">조개 등장 확률: ${sageRodStats.shellChance[sageRodLevel]}%</div>
+    <div class="expert-desc">어패류 드롭 수: ${sageRodStats.shellDrop[sageRodLevel]}개</div>
+    <div class="expert-desc">수중 어획력: ${sageRodStats.power[sageRodLevel]}</div>
+  `;
+}
+
+function changeSageRodLevel(delta) {
+  const next = Math.max(1, Math.min(15, sageRodLevel + delta));
+  if (next === sageRodLevel) return;
+  sageRodLevel = next;
+  saveSageRodState();
+  renderSageRod();
+  renderStaminaPlan();
+}
+
+function showSettingsSub(subKey) {
+  settingsSub = subKey;
+  const expertsPane = document.getElementById('settingsExpertsPane');
+  const rodPane = document.getElementById('settingsSageRodPane');
+  if (expertsPane) expertsPane.classList.toggle('active', subKey === 'experts');
+  if (rodPane) rodPane.classList.toggle('active', subKey === 'sageRod');
+}
+
+function openSettingsSub(subKey) {
+  switchSection('settings');
+  const settingsNav = Array.from(document.querySelectorAll('.nav-item')).find(n => (n.textContent || '').includes('개인설정'));
+  if (settingsNav) settingsNav.classList.add('active');
+  showSettingsSub(subKey);
+  document.querySelectorAll('#settingsSubNav .sub-item').forEach(i => i.classList.remove('active'));
+  if (event && event.target) event.target.classList.add('active');
+}
+
+function showEfficiencySub(subKey) {
+  efficiencySub = subKey;
+  document.querySelectorAll('.mini-tab[data-eff-tab]').forEach(t => {
+    t.classList.toggle('active', t.getAttribute('data-eff-tab') === subKey);
+  });
+  const panes = {
+    stamina: document.getElementById('effStaminaPane'),
+    alchemy: document.getElementById('effAlchemyPane'),
+    craftPrice: document.getElementById('effCraftPricePane')
+  };
+  Object.entries(panes).forEach(([k, el]) => { if (el) el.classList.toggle('active', k === subKey); });
+}
+
+function openEfficiencySub(subKey, el) {
+  switchSection('efficiency');
+  const effNav = Array.from(document.querySelectorAll('.nav-item')).find(n => (n.textContent || '').includes('효율 분석'));
+  if (effNav) effNav.classList.add('active');
+  showEfficiencySub(subKey);
+  document.querySelectorAll('#efficiencySubNav .sub-item').forEach(i => i.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+
+function renderStaminaPlan() {
+  const input = document.getElementById('staminaInput');
+  const result = document.getElementById('staminaResult');
+  if (!input || !result) return;
+  const rawStr = String(input.value ?? '').trim();
+  const staminaRaw = Math.max(0, parseInt(rawStr || '0', 10) || 0);
+  const stamina = staminaRaw - (staminaRaw % STAMINA_PER_GATHER);
+  const gathers = Math.floor(stamina / STAMINA_PER_GATHER);
+  if (rawStr === '') {
+    result.innerHTML = '<div class="no-result">스태미나를 입력하면 추천 분배를 계산합니다</div>';
+    return;
+  }
+  if (gathers <= 0) {
+    result.innerHTML = '<div class="no-result">스태미나가 부족합니다 (어패류 1회 채집에 15 소모). 채집에는 15의 배수만 반영됩니다.</div>';
+    return;
+  }
+  const inventory = getWarehouseInventory();
+  const vanillaToggle = document.getElementById('vanillaCalcToggle');
+  const isVanillaCalcOn = vanillaToggle ? vanillaToggle.checked : true;
+  const invForEff = { ...inventory };
+  if (!isVanillaCalcOn) {
+    getInfiniteVanillaMaterials().forEach((n) => { invForEff[n] = Number.MAX_SAFE_INTEGER; });
+  }
+  const effScores = computeShellfishEfficiencyScores(invForEff);
+  const baseStock = {};
+  SHELLFISH_NAMES.forEach((name) => {
+    const p3 = Math.min(0.95, STAR_PROBS.s3 + ((expertMeta.starshell.values[expertState.starshell] || 0) / 100));
+    const p1 = Math.max(0.05, STAR_PROBS.s1 - (p3 - STAR_PROBS.s3) * 0.7);
+    const p2 = Math.max(0.05, 1 - p1 - p3);
+    const w1 = 1 / p1;
+    const w2 = 1 / p2;
+    const w3 = 1 / p3;
+    baseStock[name] =
+      (inventory[`${name} ★`] || 0) * w1 +
+      (inventory[`${name} ★★`] || 0) * w2 +
+      (inventory[`${name} ★★★`] || 0) * w3;
+  });
+  const stockW = SHELLFISH_NAMES.map((n) => 1 / (baseStock[n] + 1));
+  const effW = SHELLFISH_NAMES.map((n) => effScores[n] || 0.001);
+  const combined = SHELLFISH_NAMES.map((_, idx) => stockW[idx] * effW[idx]);
+  const totalW = combined.reduce((a, b) => a + b, 0);
+  const baseAlloc = SHELLFISH_NAMES.map((_, idx) => Math.floor(((stamina * combined[idx]) / totalW) / STAMINA_PER_GATHER) * STAMINA_PER_GATHER);
+  let remain = stamina - baseAlloc.reduce((a, b) => a + b, 0);
+  let turn = 0;
+  while (remain >= STAMINA_PER_GATHER) {
+    baseAlloc[turn % baseAlloc.length] += STAMINA_PER_GATHER;
+    remain -= STAMINA_PER_GATHER;
+    turn += 1;
+  }
+  const shellfishImages = { 굴: '재료/굴.png', 소라: '재료/소라.png', 문어: '재료/문어.png', 미역: '재료/미역.png', 성게: '재료/성게.png' };
+  const deepBonus = (expertMeta.deepCollector.values[expertState.deepCollector] || 0) / 100;
+  const effectiveDrops = (sageRodStats.shellDrop[sageRodLevel] || 1) * (1 + deepBonus);
+  const star3Chance = Math.min(100, 10 + (expertMeta.starshell.values[expertState.starshell] || 0));
+  const rows = SHELLFISH_NAMES.map((name, idx) => {
+    const useStamina = baseAlloc[idx];
+    const localGathers = Math.floor(useStamina / STAMINA_PER_GATHER);
+    const imgPath = shellfishImages[name];
+    const imgHTML = imgPath ? `<img src="${imgPath}" alt="${name}" style="height:24px; vertical-align:middle; margin-right:6px;" onerror="this.style.display='none';">` : '';
+    return `
+      <div style="display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:10px; align-items:center; padding:12px 10px; border-top:1px solid #2a2a2a;">
+        <div style="font-weight:900; color:#fff;">${imgHTML}${name}</div>
+        <div style="font-weight:900; color:#66a7ff;">${useStamina}</div>
+        <div style="font-weight:900; color:#fff;">${localGathers}회</div>
+      </div>
+    `;
+  });
+
+  result.innerHTML = `
+    <div style="font-size:13px; color:#9eb2c8; margin-bottom:8px; text-align:center;">입력 ${staminaRaw} → 채집에 사용 <strong style="color:#cde7ff;">${stamina}</strong> (15 단위)</div>
+    <div style="font-size:14px; font-weight:900; color:#f2f2f2; margin-bottom:10px; padding:12px; background:#1a1a1a; border-radius:8px; text-align:center;">⚡ 총 채집 가능: ${gathers}회 (스태미나 15 소모 기준)</div>
+    <div style="font-size:12px; color:#9eb2c8; margin-bottom:10px; text-align:center;">세이지 드롭 ${effectiveDrops.toFixed(2)}개/회 (심해채집꾼 반영), 3성 확률 ${star3Chance.toFixed(1)}% (별별별 반영)</div>
+    <div style="background:#1f1f1f; border:1px solid #2a2a2a; border-radius:10px; overflow:hidden;">
+      <div style="display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:10px; padding:10px; background:#262626; color:#9ea7b3; font-size:12px; font-weight:900;">
+        <div>품목 이름</div><div>스태미나</div><div>채집 횟수</div>
+      </div>
+      ${rows.join('')}
+    </div>
+  `;
+}
+
+function updateVanillaInputState() {
+  const toggle = document.getElementById('vanillaCalcToggle');
+  const isVanillaCalcOn = toggle ? toggle.checked : true;
+  const vanillaSections = document.querySelectorAll('[data-vanilla-section="1"]');
+  const vanillaInputs = document.querySelectorAll('#warehouseContainer input[data-vanilla="1"]');
+
+  vanillaSections.forEach((sec) => {
+    sec.classList.toggle('vanilla-disabled', !isVanillaCalcOn);
+    const sub = sec.querySelector('.warehouse-section-sub');
+    const nIn = sec.querySelectorAll('input[data-vanilla="1"]').length;
+    if (sub) sub.textContent = isVanillaCalcOn ? `${nIn}종` : '무한';
+  });
+
+  vanillaInputs.forEach((input) => {
+    input.disabled = !isVanillaCalcOn;
+    input.placeholder = isVanillaCalcOn ? '수량 입력' : '무한';
+  });
+}
+
+// ===== 재료 수량 가져오기 (요리 가능 최대량 계산) =====
+function calculateMaxCraft(recipe, inventory, memo = {}, options = {}) {
+  if (!recipe.inputs || recipe.inputs.length === 0) {
+    return Infinity;
+  }
+  const skipShell = options.skipShellfishTierConvert === true;
+
+  let maxCount = Infinity;
+
+  for (let input of recipe.inputs) {
+    let available = inventory[input.name] || 0;
+
+    if (input.name in data.materials) {
+      if (skipShell && SHELLFISH_DOWNGRADE_ONE_STAR.has(input.name)) {
+        /* 창고에 있는 해당 성급만 사용 (★★→★ 분해 제작 안 함) */
+      } else {
+        const materialRecipe = data.materials[input.name];
+        const craftableFromRecipe = calculateMaxCraft(materialRecipe, inventory, memo, options);
+        available += craftableFromRecipe;
+      }
+    }
+
+    const possibleCount = Math.floor(available / input.count);
+    maxCount = Math.min(maxCount, possibleCount);
+  }
+
+  return maxCount === Infinity ? 0 : maxCount;
+}
+
+// ===== 최종 산물에 필요한 모든 재료 계산 =====
+function calculateRequiredMaterials(recipe, count, visited = new Set()) {
+  const required = {};
+  
+  if (!recipe.inputs || recipe.inputs.length === 0) {
+    return required;
+  }
+  
+  for (let input of recipe.inputs) {
+    const neededCount = input.count * count;
+    
+    if (!required[input.name]) {
+      required[input.name] = 0;
+    }
+    required[input.name] += neededCount;
+    
+    // 중간 재료를 만들 수 있는지 확인
+    if (input.name in data.materials && !visited.has(input.name)) {
+      visited.add(input.name);
+      const subRequired = calculateRequiredMaterials(data.materials[input.name], neededCount, visited);
+      for (let [mat, matCount] of Object.entries(subRequired)) {
+        if (!required[mat]) {
+          required[mat] = 0;
+        }
+        required[mat] += matCount;
+      }
+    }
+  }
+  
+  return required;
+}
+
+// ===== 효율성 분석 =====
+function analyzeEfficiency() {
+  const inventory = getWarehouseInventory();
+  const effects = getExpertEffects();
+  const vanillaToggle = document.getElementById('vanillaCalcToggle');
+  const isVanillaCalcOn = vanillaToggle ? vanillaToggle.checked : true;
+  const infiniteVanillaMaterials = getInfiniteVanillaMaterials();
+  const hasItems = Object.values(inventory).some(v => (parseInt(v, 10) || 0) > 0);
+  if (!hasItems) {
+    const al = document.getElementById('efficiencyContainerAlchemy');
+    const cp = document.getElementById('efficiencyContainerCraftPrice');
+    if (al) al.innerHTML = '<div class="no-result">재료 창고에 수량을 입력하면 연금품 계산이 표시됩니다</div>';
+    if (cp) cp.innerHTML = '<div class="no-result">공예품 가격 정보가 여기에 표시됩니다</div>';
+    renderStaminaPlan();
+    return;
+  }
+
+  if (!isVanillaCalcOn) {
+    infiniteVanillaMaterials.forEach(name => {
+      inventory[name] = Number.MAX_SAFE_INTEGER;
+    });
+  }
+
+  const inventoryForRequired = { ...inventory };
+  if (!isVanillaCalcOn) {
+    infiniteVanillaMaterials.forEach(name => {
+      inventoryForRequired[name] = Number.MAX_SAFE_INTEGER;
+    });
+  }
+
+  const results = [];
+  
+  const craftNoPromote = { skipShellfishTierConvert: true };
+
+  // 각 최종 산물에 대해 분석
+  data.recipes.forEach(recipe => {
+    const maxCraft = calculateMaxCraft(recipe, inventory, {}, craftNoPromote);
+    
+    if (maxCraft > 0) {
+      const isAlchemy = /(희석액|핵|정수|에센스|결정|엘릭서|영약|비약|코어|아쿠티스|광란체|깃털|날개|파편|나우틸러스|무저)/.test(recipe.name);
+      const isCraft = recipe.group === 'craft';
+      const priceMultiplier = isAlchemy ? (1 + effects.alchemyPriceBoost / 100) : (isCraft ? (1 + effects.craftPriceBoost / 100) : 1);
+      const adjustedPrice = Math.round((recipe.price || 0) * priceMultiplier);
+      const baseTimeSec = isAlchemy ? getBaseAlchemyTimeSec(recipe.name) : Math.max(1, Math.round((recipe.time || 1) * 60));
+      const adjustedTimeSec = Math.max(1, baseTimeSec * (1 - effects.timeReduce / 100));
+      const adjustedTimeMin = adjustedTimeSec / 60;
+      const kind = isAlchemy ? 'alchemy' : (isCraft ? 'craft' : 'other');
+      results.push({
+        name: recipe.name,
+        kind: kind,
+        maxCount: maxCraft,
+        price: adjustedPrice,
+        totalPrice: adjustedPrice * maxCraft,
+        efficiency: adjustedTimeMin > 0 ? (adjustedPrice * maxCraft) / adjustedTimeMin : 0,
+        recipe: recipe,
+        requiredMaterials: calculateRequiredMaterials(recipe, maxCraft),
+        adjustedTimeSec
+      });
+    }
+  });
+  
+  // 정렬: 바닐라 OFF면 어패류 수량(제작 가능 수량) 우선, 그 외는 효율성 우선
+  if (!isVanillaCalcOn) {
+    results.sort((a, b) => {
+      if (b.maxCount !== a.maxCount) return b.maxCount - a.maxCount;
+      return b.efficiency - a.efficiency;
+    });
+  } else {
+    results.sort((a, b) => b.efficiency - a.efficiency);
+  }
+  
+  const containerAlchemy = document.getElementById('efficiencyContainerAlchemy');
+  const containerCraftPrice = document.getElementById('efficiencyContainerCraftPrice');
+  if (!containerAlchemy) return;
+  containerAlchemy.innerHTML = '';
+  if (containerCraftPrice) containerCraftPrice.innerHTML = '';
+  const renderResultCard = (result, index) => {
+    const card = document.createElement('div');
+    card.className = 'efficiency-card';
+    
+    // 필요한 재료 목록
+    const requiredList = Object.entries(result.requiredMaterials)
+      .filter(([mat]) => mat in data.materials)
+      .filter(([mat]) => /(핵|결정|영약|희석액)/.test(mat))
+      .map(([mat, count]) => {
+        const current = inventoryForRequired[mat] || 0;
+        const status = current >= count ? '✓' : '✗';
+        const img = getImagePath(mat);
+        const label = img ? `<img src="${img}" alt="${mat}" style="height:14px; margin-right:4px; vertical-align:middle;" onerror="this.style.display='none';">${mat}` : mat;
+        return `<div style="font-size: 12px; color: #b8b8b8; margin: 6px 0; white-space: nowrap;">${status} ${label} ${count}개</div>`;
+      })
+      .join('');
+    
+    const imagePath = getImagePath(result.name);
+    const imageHTML = imagePath ? `<img src="${imagePath}" alt="${result.name}" style="height: 24px; margin-right: 6px; vertical-align: middle;" onerror="this.onerror=null;this.style.display='none';">` : '';
+    
+    card.innerHTML = `
+      <div class="efficiency-header">
+        <div class="efficiency-title">${imageHTML}${result.name}</div>
+        <div class="efficiency-badge">#${index + 1}</div>
+      </div>
+      <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #2a2a2a;">
+        <div class="info-item" style="margin-bottom: 8px;">
+          <div class="info-label">제작 가능 수량</div>
+          <div class="info-value" style="font-size: 18px;">${result.maxCount}개</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">총 획득 수익</div>
+          <div class="info-value" style="font-size: 16px;">${result.totalPrice.toLocaleString()}G</div>
+        </div>
+      </div>
+      ${requiredList ? `<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #2a2a2a;">
+        <div style="font-size: 12px; font-weight: 700; color: #bbb; margin-bottom: 8px;">📋 필요 연금재료:</div>
+        ${requiredList}
+      </div>` : ''}
+    `;
+    return card;
+  };
+
+  const alchemyResults = results.filter(r => r.kind === 'alchemy');
+  const craftResults = results.filter(r => r.kind === 'craft');
+
+  const baseInvForPlan = { ...inventory };
+  if (!isVanillaCalcOn) {
+    infiniteVanillaMaterials.forEach(name => {
+      baseInvForPlan[name] = Number.MAX_SAFE_INTEGER;
+    });
+  }
+
+  // 검증: 모든 성급 순서 조합 + 전역 탐욕법을 시도해서 최대 수익 조합 선택
+  const tierGroups = [
+    { key: '1', names: FINAL_GROUP1 },
+    { key: '2', names: FINAL_GROUP2 },
+    { key: '3', names: FINAL_GROUP3 }
+  ];
+  const permutations = [
+    [0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]
+  ];
+
+  function tryTierOrder(order, srcInv) {
+    const inv = { ...srcInv };
+    const plans = [{},{},{}];
+    for (const idx of order) {
+      plans[idx] = greedyCraftFinalCounts(tierGroups[idx].names, inv);
+    }
+    // 희석액
+    let dCount = 0;
+    const dRecipe = data.recipes.find(r => r.name === '추출된 희석액');
+    if (dRecipe) {
+      const opts = { skipShellfishTierConvert: true };
+      while (calculateMaxCraft(dRecipe, inv, {}, opts) >= 1) {
+        deductFinalRecipe(dRecipe, inv, opts);
+        dCount++;
+        if (dCount > 100000) break;
+      }
+    }
+    const gold = [0,1,2].reduce((sum, idx) => sum + sumFinalPlanGold(plans[idx], effects).boosted, 0);
+    const dGold = dRecipe ? Math.round((dRecipe.price || 0) * (1 + effects.alchemyPriceBoost / 100)) * dCount : 0;
+    return { plans, diluentCount: dCount, totalGold: gold + dGold };
+  }
+
+  // 전역 탐욕법: 모든 최종 산물이 동시에 경쟁
+  function tryGlobalGreedy(srcInv) {
+    const inv = { ...srcInv };
+    const allFinals = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3];
+    const counts = {};
+    allFinals.forEach(n => { counts[n] = 0; });
+    const eff = getExpertEffects();
+    let iter = 0;
+    while (iter++ < 200000) {
+      let bestRecipe = null, bestScore = -1;
+      for (const name of allFinals) {
+        const recipe = data.recipes.find(r => r.name === name);
+        if (!recipe) continue;
+        if (calculateMaxCraft(recipe, inv, {}, { skipShellfishTierConvert: true }) < 1) continue;
+        const score = unitAlchemyEfficiency(recipe, eff);
+        if (score > bestScore) { bestScore = score; bestRecipe = recipe; }
+      }
+      if (!bestRecipe) break;
+      deductFinalRecipe(bestRecipe, inv, { skipShellfishTierConvert: true });
+      counts[bestRecipe.name]++;
+    }
+    let dCount = 0;
+    const dRecipe = data.recipes.find(r => r.name === '추출된 희석액');
+    if (dRecipe) {
+      const opts = { skipShellfishTierConvert: true };
+      while (calculateMaxCraft(dRecipe, inv, {}, opts) >= 1) {
+        deductFinalRecipe(dRecipe, inv, opts);
+        dCount++;
+        if (dCount > 100000) break;
+      }
+    }
+    const plans = [
+      Object.fromEntries(FINAL_GROUP1.map(n => [n, counts[n] || 0])),
+      Object.fromEntries(FINAL_GROUP2.map(n => [n, counts[n] || 0])),
+      Object.fromEntries(FINAL_GROUP3.map(n => [n, counts[n] || 0]))
+    ];
+    const gold = plans.reduce((sum, p) => sum + sumFinalPlanGold(p, effects).boosted, 0);
+    const dGold = dRecipe ? Math.round((dRecipe.price || 0) * (1 + effects.alchemyPriceBoost / 100)) * dCount : 0;
+    return { plans, diluentCount: dCount, totalGold: gold + dGold };
+  }
+
+  // 모든 후보 중 최대 수익 선택
+  let bestResult = null;
+  for (const perm of permutations) {
+    const result = tryTierOrder(perm, baseInvForPlan);
+    if (!bestResult || result.totalGold > bestResult.totalGold) bestResult = result;
+  }
+  const globalResult = tryGlobalGreedy(baseInvForPlan);
+  if (globalResult.totalGold > bestResult.totalGold) bestResult = globalResult;
+
+  const plan1 = bestResult.plans[0];
+  const plan2 = bestResult.plans[1];
+  const plan3 = bestResult.plans[2];
+  const diluentCount = bestResult.diluentCount;
+  const planWrap = document.createElement('div');
+  planWrap.style.marginBottom = '18px';
+  planWrap.style.padding = '14px';
+  planWrap.style.background = '#121212';
+  planWrap.style.border = '1px solid #2a3140';
+  planWrap.style.borderRadius = '12px';
+  planWrap.innerHTML = `
+    <div style="font-size:14px;font-weight:900;color:#e8f4ff;margin-bottom:10px;">제작 추천</div>
+    ${renderTriFinalPlan('1성', FINAL_GROUP1, plan1)}
+    ${renderTriFinalPlan('2성', FINAL_GROUP2, plan2)}
+    ${renderTriFinalPlan('3성', FINAL_GROUP3, plan3)}
+  `;
+  containerAlchemy.appendChild(planWrap);
+
+  const g1 = sumFinalPlanGold(plan1, effects);
+  const g2 = sumFinalPlanGold(plan2, effects);
+  const g3 = sumFinalPlanGold(plan3, effects);
+  const totalBase = g1.base + g2.base + g3.base;
+  const totalBoosted = g1.boosted + g2.boosted + g3.boosted;
+  const revBox = document.createElement('div');
+  revBox.style.marginBottom = '18px';
+  revBox.style.padding = '12px 14px';
+  revBox.style.background = '#0f1419';
+  revBox.style.border = '1px solid #2a3a4d';
+  revBox.style.borderRadius = '10px';
+  revBox.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;font-size:13px;color:#ddd;align-items:center;">
+      <div>기본가 합 <strong style="color:#fff;">${totalBase.toLocaleString()}G</strong></div>
+      <div>전문가 적용 합 <strong style="color:#8fd5ff;">${totalBoosted.toLocaleString()}G</strong></div>
+    </div>
+  `;
+  containerAlchemy.appendChild(revBox);
+  
+  // 연금품 섹션 - 제작 추천 결과 기반으로 표시
+  const allPlanCounts = { ...plan1, ...plan2, ...plan3 };
+  if (diluentCount > 0) allPlanCounts['추출된 희석액'] = diluentCount;
+  const planEntries = Object.entries(allPlanCounts).filter(([, n]) => n > 0);
+  if (planEntries.length > 0) {
+    const alchemyTitle = document.createElement('div');
+    alchemyTitle.style.fontSize = '14px';
+    alchemyTitle.style.fontWeight = '900';
+    alchemyTitle.style.color = '#e5e5e5';
+    alchemyTitle.style.marginBottom = '15px';
+    alchemyTitle.textContent = '연금품 제작';
+    containerAlchemy.appendChild(alchemyTitle);
+    
+    planEntries.forEach(([name, count], i) => {
+      const recipe = data.recipes.find(r => r.name === name);
+      if (!recipe) return;
+      const priceMultiplier = 1 + (effects.alchemyPriceBoost / 100);
+      const adjustedPrice = Math.round((recipe.price || 0) * priceMultiplier);
+      
+      // 바로 아랫단계 필요 재료 계산
+      const subMatsHTML = (recipe.inputs || []).map((inp) => {
+        const totalNeed = inp.count * count;
+        const img = getImagePath(inp.name);
+        const imgTag = img ? `<img src="${img}" alt="" style="height:16px;margin-right:4px;vertical-align:middle;" onerror="this.style.display='none';">` : '';
+        return `<div style="font-size:12px;color:#bbb;padding:3px 0;">${imgTag}${inp.name} <strong style="color:#4a8fd9;">${totalNeed}개</strong></div>`;
+      }).join('');
+      
+      const card = document.createElement('div');
+      card.className = 'efficiency-card';
+      const imagePath = getImagePath(name);
+      const imageHTML = imagePath ? `<img src="${imagePath}" alt="${name}" style="height: 24px; margin-right: 6px; vertical-align: middle;" onerror="this.onerror=null;this.style.display='none';">` : '';
+      card.innerHTML = `
+        <div class="efficiency-header">
+          <div class="efficiency-title">${imageHTML}${name}</div>
+          <div class="efficiency-badge">#${i + 1}</div>
+        </div>
+        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #2a2a2a;">
+          <div class="info-item" style="margin-bottom: 8px;">
+            <div class="info-label">제작 수량</div>
+            <div class="info-value" style="font-size: 18px;">${count}개</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">총 획득 수익</div>
+            <div class="info-value" style="font-size: 16px;">${(adjustedPrice * count).toLocaleString()}G</div>
+          </div>
+        </div>
+        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #2a2a2a;">
+          <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">필요 재료</div>
+          ${subMatsHTML}
+        </div>
+      `;
+      containerAlchemy.appendChild(card);
+    });
+  }
+  
+  if (containerCraftPrice) {
+    containerCraftPrice.innerHTML = '';
+    const craftItems = data.recipes.filter(r => r.group === 'craft');
+    const headerRow = document.createElement('div');
+    headerRow.style.cssText = 'display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;flex-wrap:wrap;gap:8px;';
+    headerRow.innerHTML = `
+      <div style="font-size:14px;font-weight:900;color:#e5e5e5;">공예품 가격</div>
+      <div style="font-size:11px;color:#e8945a;font-weight:600;">이 가격은 매일 오전 3시마다 초기화됩니다.</div>
+    `;
+    containerCraftPrice.appendChild(headerRow);
+    const list = document.createElement('div');
+    list.style.display = 'grid';
+    list.style.gridTemplateColumns = 'repeat(auto-fill, minmax(340px, 1fr))';
+    list.style.gap = '12px';
+    craftItems.forEach((recipe) => {
+      const basePrice = recipe.price || 0;
+      const boostedPrice = Math.round(basePrice * (1 + (effects.craftPriceBoost / 100)));
+      const hasCraftBoost = effects.craftPriceBoost > 0;
+      const maxPriceMap = { '조개껍데기 브로치': 50000, '푸른 향수병': 150000, '자개 손거울': 300000, '분홍 헤어핀': 500000, '자개 부채': 700000, '흑진주 시계': 1000000 };
+      const maxPrice = maxPriceMap[recipe.name] || 0;
+      const pct = maxPrice > 0 ? (basePrice / maxPrice * 100) : 0;
+      const pctColor = pct >= 80 ? '#4ade80' : pct <= 50 ? '#f87171' : '#facc15';
+      const pctHTML = maxPrice > 0 ? `<div style="font-size:11px;font-weight:800;color:${pctColor};margin-top:2px;">${pct.toFixed(1)}% <span style="font-size:9px;color:#888;font-weight:600;">(최고가 ${maxPrice.toLocaleString()}G)</span></div>` : '';
+      const card = document.createElement('div');
+      card.className = 'panel-card';
+      card.style.marginBottom = '0';
+      const titleImg = getImagePath(recipe.name);
+      const titleHTML = titleImg ? `<img src="${titleImg}" alt="${recipe.name}" style="height:22px; margin-right:6px; vertical-align:middle;" onerror="this.style.display='none';">${recipe.name}` : recipe.name;
+      const ingredientsHTML = (recipe.inputs || []).map((i) => {
+        const img = getImagePath(i.name);
+        const label = img ? `<img src="${img}" alt="${i.name}" style="height:16px; margin-right:4px; vertical-align:middle;" onerror="this.style.display='none';">${i.name}` : i.name;
+        return `<div style="font-size:12px;color:#bbb;padding:3px 0;white-space:nowrap;">${label} x${i.count}</div>`;
+      }).join('');
+      const priceHTML = hasCraftBoost
+        ? `<div style="font-size:12px;color:#888;text-decoration:line-through;">${basePrice.toLocaleString()}G</div>
+           <div style="font-size:16px;font-weight:900;color:#8fd5ff;">${boostedPrice.toLocaleString()}G</div>
+           <div style="font-size:10px;color:#6aad6a;">전문가 +${effects.craftPriceBoost}%</div>
+           ${pctHTML}`
+        : `<div style="font-size:16px;font-weight:900;color:#4a8fd9;">${basePrice.toLocaleString()}G</div>
+           ${pctHTML}`;
+      card.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div class="expert-name" style="margin-bottom:0;">${titleHTML}</div>
+          <div style="text-align:right;">${priceHTML}</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:2px 12px;padding-top:8px;border-top:1px solid #2a2a2a;">
+          ${ingredientsHTML}
+        </div>
+      `;
+      list.appendChild(card);
+    });
+    containerCraftPrice.appendChild(list);
+  }
+  
+  if (!alchemyResults.length) {
+    const emptyNote = document.createElement('div');
+    emptyNote.className = 'no-result';
+    emptyNote.style.marginTop = '12px';
+    emptyNote.textContent = '연금품 계산 결과가 없습니다';
+    containerAlchemy.appendChild(emptyNote);
+  }
+  
+  renderStaminaPlan();
+}
+
+// ===== 초기 렌더링 =====
+window.addEventListener('DOMContentLoaded', function() {
+  loadVanillaToggleState();
+  loadExpertState();
+  loadSageRodState();
+  renderRecipes();
+  renderWarehouse();
+  renderExperts();
+  renderSageRod();
+  renderFactorySeaweedMedia();
+  loadStaminaInputState();
+  const staminaInput = document.getElementById('staminaInput');
+  if (staminaInput) {
+    staminaInput.addEventListener('input', renderStaminaPlan);
+    staminaInput.addEventListener('blur', saveStaminaInputState);
+    staminaInput.addEventListener('change', saveStaminaInputState);
+  }
+  const vanillaToggle = document.getElementById('vanillaCalcToggle');
+  if (vanillaToggle) {
+    vanillaToggle.addEventListener('change', () => {
+      saveVanillaToggleState();
+      updateVanillaInputState();
+      analyzeEfficiency();
+    });
+  }
+  showSettingsSub(settingsSub);
+  showEfficiencySub(efficiencySub);
+  updateVanillaInputState();
+  analyzeEfficiency();
+  keepTawkVisible();
+  setTimeout(keepTawkVisible, 500);
+  setTimeout(keepTawkVisible, 1500);
+});
+</script>
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+  var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+  (function(){
+  var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+  s1.async=true;
+  s1.src='https://embed.tawk.to/69f36ba62070c31c3990d32a/1jnfdp0l1';
+  s1.charset='UTF-8';
+  s1.setAttribute('crossorigin','*');
+  s0.parentNode.insertBefore(s1,s0);
+  })();
+  </script>
+  <!--End of Tawk.to Script-->
+</body>
+</html>
