@@ -3028,6 +3028,23 @@ function formatDuration(sec) {
   return `${seconds}초`;
 }
 
+/** 최종 레시피·중간 연금(data.materials) 체인 전체 제작 시간(초), 전문가 시간 감소 반영 */
+function adjustedAlchemyUnitTimeSec(itemName, effects) {
+  const tr = 1 - (effects.timeReduce || 0) / 100;
+  return Math.max(1, getBaseAlchemyTimeSec(itemName) * tr);
+}
+
+function totalAlchemyRecipeChainTimeSec(recipe, count, effects) {
+  if (!recipe || !count || count <= 0) return 0;
+  let total = count * adjustedAlchemyUnitTimeSec(recipe.name, effects);
+  for (const inp of recipe.inputs || []) {
+    if (inp.name in data.materials) {
+      total += totalAlchemyRecipeChainTimeSec(data.materials[inp.name], inp.count * count, effects);
+    }
+  }
+  return total;
+}
+
 const FINAL_GROUP1 = ['영생의 아쿠티스', '크라켄의 광란체', '리바이던의 깃털'];
 const FINAL_GROUP2 = ['해구 파동의 코어', '침묵의 심해 비약', '청해룡의 날개'];
 const FINAL_GROUP3 = ['아쿠아 펄스 파편', '나우틸러스의 손', '무저의 척추'];
@@ -3868,9 +3885,9 @@ function analyzeEfficiency() {
       const adjustedPrice = Math.round((recipe.price || 0) * priceMultiplier);
       const totalBasePrice = basePrice * count;
       const totalAdjustedPrice = adjustedPrice * count;
-      const unitTimeSec = Math.max(1, getBaseAlchemyTimeSec(name) * (1 - effects.timeReduce / 100));
-      const totalTimeSec = unitTimeSec * count;
-      totalAlchemyTimeSec += totalTimeSec;
+      const perItemChainSec = totalAlchemyRecipeChainTimeSec(recipe, 1, effects);
+      const totalChainSec = totalAlchemyRecipeChainTimeSec(recipe, count, effects);
+      totalAlchemyTimeSec += totalChainSec;
       
       // 바로 아랫단계 필요 재료 계산
       const subMatsHTML = (recipe.inputs || []).map((inp) => {
@@ -3893,10 +3910,10 @@ function analyzeEfficiency() {
             <div class="info-value" style="font-size: 18px;">${count}개</div>
           </div>
           <div class="info-item" style="margin-bottom: 8px;">
-            <div class="info-label">제작 시간</div>
+            <div class="info-label">제작 시간 <span style="font-size:10px;color:#777;font-weight:600;">(하위 연금 포함)</span></div>
             <div style="display:flex;flex-direction:column;gap:2px;text-align:right;">
-              <div style="font-size:12px;color:#b7b7b7;">1회: <strong style="color:#ffffff;">${formatDuration(unitTimeSec)}</strong></div>
-              <div style="font-size:12px;color:#9acfff;">총: <strong style="color:#8fd5ff;">${formatDuration(totalTimeSec)}</strong></div>
+              <div style="font-size:12px;color:#b7b7b7;">1개: <strong style="color:#ffffff;">${formatDuration(perItemChainSec)}</strong></div>
+              <div style="font-size:12px;color:#9acfff;">총 ${count}개: <strong style="color:#8fd5ff;">${formatDuration(totalChainSec)}</strong></div>
             </div>
           </div>
           <div class="info-item">
@@ -3923,11 +3940,11 @@ function analyzeEfficiency() {
     timeSummary.style.borderRadius = '10px';
     timeSummary.innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
-        <div style="font-size:12px;color:#9eb2c8;">연금품 제작 총 소요 시간</div>
+        <div style="font-size:12px;color:#9eb2c8;">연금품 제작 총 소요 시간 <span style="color:#6d7a88;font-size:11px;">(하위 연금 포함)</span></div>
         <div style="font-size:14px;font-weight:800;color:#8fd5ff;">${formatDuration(totalAlchemyTimeSec)}</div>
       </div>
     `;
-    containerAlchemy.insertBefore(timeSummary, containerAlchemy.children[containerAlchemy.children.length - planEntries.length]);
+    alchemyTitle.insertAdjacentElement('afterend', timeSummary);
   }
   
   renderCraftPricePanel(effects);
