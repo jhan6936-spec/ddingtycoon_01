@@ -3910,10 +3910,10 @@ function analyzeEfficiency() {
             <div class="info-value" style="font-size: 18px;">${count}개</div>
           </div>
           <div class="info-item" style="margin-bottom: 8px;">
-            <div class="info-label">제작 시간 <span style="font-size:10px;color:#777;font-weight:600;">(하위 연금 포함)</span></div>
+            <div class="info-label">제작 시간</div>
             <div style="display:flex;flex-direction:column;gap:2px;text-align:right;">
-              <div style="font-size:12px;color:#b7b7b7;">1개: <strong style="color:#ffffff;">${formatDuration(perItemChainSec)}</strong></div>
-              <div style="font-size:12px;color:#9acfff;">총 ${count}개: <strong style="color:#8fd5ff;">${formatDuration(totalChainSec)}</strong></div>
+              <div style="font-size:12px;color:#b7b7b7;"><strong style="color:#ffffff;">${formatDuration(perItemChainSec)}</strong></div>
+              <div style="font-size:12px;color:#9acfff;"><strong style="color:#8fd5ff;">${formatDuration(totalChainSec)}</strong></div>
             </div>
           </div>
           <div class="info-item">
@@ -3940,7 +3940,7 @@ function analyzeEfficiency() {
     timeSummary.style.borderRadius = '10px';
     timeSummary.innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
-        <div style="font-size:12px;color:#9eb2c8;">연금품 제작 총 소요 시간 <span style="color:#6d7a88;font-size:11px;">(하위 연금 포함)</span></div>
+        <div style="font-size:12px;color:#9eb2c8;">연금품 제작 총 소요 시간</div>
         <div style="font-size:14px;font-weight:800;color:#8fd5ff;">${formatDuration(totalAlchemyTimeSec)}</div>
       </div>
     `;
