@@ -2796,15 +2796,19 @@ function renderWarehouse() {
     appendTarget.appendChild(section);
   }
 
-  // 아일랜드 재료 제목 추가
-  const islandTitle = document.createElement('div');
-  islandTitle.className = 'warehouse-category-title';
-  islandTitle.textContent = '🏝️ 아일랜드 재료';
-  container.appendChild(islandTitle);
+  const shellfishCategoryTitle = document.createElement('div');
+  shellfishCategoryTitle.className = 'warehouse-category-title';
+  shellfishCategoryTitle.textContent = '🐚 어패류';
+  container.appendChild(shellfishCategoryTitle);
 
   createSection('어패류 (1성)', shellfish1, '', { isShellfish: true });
   createSection('어패류 (2성)', shellfish2, '', { isShellfish: true });
   createSection('어패류 (3성)', shellfish3, '', { isShellfish: true });
+
+  const alchemyCategoryTitle = document.createElement('div');
+  alchemyCategoryTitle.className = 'warehouse-category-title';
+  alchemyCategoryTitle.textContent = '⚗️ 연금품';
+  container.appendChild(alchemyCategoryTitle);
 
   createSection('1성 연금품 · 핵', alchemy1Core, '', { isAlchemy: true });
   createSection('1성 연금품 · 정수', alchemy1Ess, '', { isAlchemy: true });
