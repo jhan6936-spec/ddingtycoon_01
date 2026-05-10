@@ -3852,6 +3852,7 @@ function analyzeEfficiency() {
     alchemyTitle.style.marginBottom = '15px';
     alchemyTitle.textContent = '연금품 제작';
     containerAlchemy.appendChild(alchemyTitle);
+    let totalAlchemyTimeSec = 0;
     
     planEntries.forEach(([name, count], i) => {
       const recipe = data.recipes.find(r => r.name === name);
@@ -3861,6 +3862,9 @@ function analyzeEfficiency() {
       const adjustedPrice = Math.round((recipe.price || 0) * priceMultiplier);
       const totalBasePrice = basePrice * count;
       const totalAdjustedPrice = adjustedPrice * count;
+      const unitTimeSec = Math.max(1, getBaseAlchemyTimeSec(name) * (1 - effects.timeReduce / 100));
+      const totalTimeSec = unitTimeSec * count;
+      totalAlchemyTimeSec += totalTimeSec;
       
       // 바로 아랫단계 필요 재료 계산
       const subMatsHTML = (recipe.inputs || []).map((inp) => {
@@ -3882,6 +3886,13 @@ function analyzeEfficiency() {
             <div class="info-label">제작 수량</div>
             <div class="info-value" style="font-size: 18px;">${count}개</div>
           </div>
+          <div class="info-item" style="margin-bottom: 8px;">
+            <div class="info-label">제작 시간</div>
+            <div style="display:flex;flex-direction:column;gap:2px;text-align:right;">
+              <div style="font-size:12px;color:#b7b7b7;">1회: <strong style="color:#ffffff;">${formatDuration(unitTimeSec)}</strong></div>
+              <div style="font-size:12px;color:#9acfff;">총: <strong style="color:#8fd5ff;">${formatDuration(totalTimeSec)}</strong></div>
+            </div>
+          </div>
           <div class="info-item">
             <div class="info-label">총 획득 수익</div>
             <div style="display:flex;flex-direction:column;gap:2px;text-align:right;">
@@ -3897,6 +3908,20 @@ function analyzeEfficiency() {
       `;
       containerAlchemy.appendChild(card);
     });
+
+    const timeSummary = document.createElement('div');
+    timeSummary.style.margin = '8px 0 16px 0';
+    timeSummary.style.padding = '10px 12px';
+    timeSummary.style.background = '#10161d';
+    timeSummary.style.border = '1px solid #2a3a4d';
+    timeSummary.style.borderRadius = '10px';
+    timeSummary.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+        <div style="font-size:12px;color:#9eb2c8;">연금품 제작 총 소요 시간</div>
+        <div style="font-size:14px;font-weight:800;color:#8fd5ff;">${formatDuration(totalAlchemyTimeSec)}</div>
+      </div>
+    `;
+    containerAlchemy.insertBefore(timeSummary, containerAlchemy.children[containerAlchemy.children.length - planEntries.length]);
   }
   
   renderCraftPricePanel(effects);
