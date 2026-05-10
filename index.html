@@ -2386,7 +2386,6 @@ function openFactorySub(subKey) {
   if (event && event.target) event.target.classList.add('active');
 
   showFactorySub(subKey);
-  keepTawkVisible();
 }
 
 function showFactorySub(subKey) {
@@ -2407,8 +2406,6 @@ function showFactorySub(subKey) {
     if (tabs[0]) tabs[0].classList.add('active');
     renderFactorySeaweedMedia();
   }
-
-  keepTawkVisible();
 }
 
 const factoryMedia = {
@@ -3941,23 +3938,7 @@ window.addEventListener('DOMContentLoaded', function() {
   showEfficiencySub(efficiencySub);
   updateVanillaInputState();
   analyzeEfficiency();
-  keepTawkVisible();
-  setTimeout(keepTawkVisible, 500);
-  setTimeout(keepTawkVisible, 1500);
 });
 </script>
-<!--Start of Tawk.to Script-->
-<script type="text/javascript">
-  var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-  (function(){
-  var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-  s1.async=true;
-  s1.src='https://embed.tawk.to/69f36ba62070c31c3990d32a/1jnfdp0l1';
-  s1.charset='UTF-8';
-  s1.setAttribute('crossorigin','*');
-  s0.parentNode.insertBefore(s1,s0);
-  })();
-  </script>
-  <!--End of Tawk.to Script-->
 </body>
 </html>
