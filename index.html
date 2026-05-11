@@ -3212,7 +3212,7 @@
         <p class="marine-guide-note">다만 각인은 최소 여유자금 1000만원 있으실 때 시작하시는 걸 추천드립니다.</p>
       </div>
 
-      <p class="marine-guide-credit">이 정보는 디코 닉 x_x님과해드림 율님의 정보를 기반으로 사용 & 제작되었습니다 .</p>
+      <p class="marine-guide-credit">이 정보는 디코 닉 x_x님과 해드림 율님의 정보를 기반으로 사용 & 제작되었습니다 .</p>
     </div>
 
     <!-- 거래소 -->
@@ -5904,11 +5904,6 @@ function submitTradeReply() {
   renderTradeMessages();
 }
 
-function tradeComposeEmojiClick() {
-  const ta = document.getElementById('tradePostBody');
-  if (ta) ta.focus();
-}
-
 function setTradeSort(order) {
   tradeSortOrder = order === 'old' ? 'old' : 'new';
   const sel = document.getElementById('tradeSortSelect');
@@ -5998,9 +5993,7 @@ function renderTradeMessages() {
     if (rx) {
       e.preventDefault();
       e.stopPropagation();
-      const rid = rx.getAttribute('data-trade-react');
-      const rk = rx.getAttribute('data-react-key') || 'thumb';
-      tradeToggleReaction(rid, rk);
+      tradeOpenReactionEmoji(rx, rx.getAttribute('data-trade-react'));
       return;
     }
     const card = e.target.closest('.trade-forum-card[data-post-id]');
