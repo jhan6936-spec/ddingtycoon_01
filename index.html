@@ -2686,6 +2686,10 @@ function commitCalcValue(action) {
     }
   } else if (action === 'reset') {
     inputEl.value = '0';
+    inputEl.setAttribute('data-warehouse-count', '0');
+    if (warehouseSetViewEnabled()) {
+      inputEl.value = formatWarehouseStackCount(0);
+    }
     calcState.countExpr = '';
     calcState.setExpr = '';
     calcState.remExpr = '';
