@@ -4574,12 +4574,18 @@ function normalizeTradeComment(c) {
       body: '',
       ts: Date.now(),
       userId: null,
+      authorGuestKey: null,
       attachments: []
     };
   }
   let userId = c.userId;
   if (userId !== null && userId !== undefined && typeof userId !== 'string') userId = String(userId);
   if (userId === '') userId = null;
+  let authorGuestKey = c.authorGuestKey;
+  if (authorGuestKey !== null && authorGuestKey !== undefined && typeof authorGuestKey !== 'string') {
+    authorGuestKey = String(authorGuestKey);
+  }
+  if (authorGuestKey === '') authorGuestKey = null;
   const authorName =
     typeof c.authorName === 'string' && c.authorName.trim() ? c.authorName.trim() : '알 수 없음';
   const authorInitial =
@@ -4601,6 +4607,7 @@ function normalizeTradeComment(c) {
     body: typeof c.body === 'string' ? c.body : '',
     ts: typeof c.ts === 'number' && Number.isFinite(c.ts) ? c.ts : Date.now(),
     userId,
+    authorGuestKey,
     attachments
   };
 }
