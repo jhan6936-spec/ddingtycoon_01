@@ -233,6 +233,228 @@
       text-align: center;
       line-height: 1.6;
     }
+
+    /* 거래소 (디스코드 채널 느낌) */
+    .trade-hub-wrap {
+      margin-top: 8px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #2f3136;
+      background: #313338;
+      max-width: 920px;
+    }
+    .trade-category-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 12px 14px;
+      background: #2b2d31;
+      border-bottom: 1px solid #1e1f22;
+    }
+    .trade-tab {
+      padding: 8px 14px;
+      border-radius: 6px;
+      border: none;
+      background: #313338;
+      color: #b5bac1;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .trade-tab:hover {
+      background: #3f4248;
+      color: #f2f3f5;
+    }
+    .trade-tab.active {
+      background: #5865f2;
+      color: #fff;
+    }
+    .trade-channel {
+      min-height: 220px;
+      max-height: min(52vh, 520px);
+      overflow-y: auto;
+      padding: 16px 12px 20px;
+      background: #313338;
+    }
+    .trade-channel::-webkit-scrollbar {
+      width: 10px;
+    }
+    .trade-channel::-webkit-scrollbar-thumb {
+      background: #1e1f22;
+      border-radius: 8px;
+    }
+    .trade-empty {
+      text-align: center;
+      color: #949ba4;
+      font-size: 14px;
+      padding: 36px 16px;
+    }
+    .trade-message {
+      display: flex;
+      gap: 14px;
+      padding: 4px 10px 12px 8px;
+      margin-bottom: 2px;
+      border-radius: 6px;
+      transition: background 0.12s ease;
+    }
+    .trade-message:hover {
+      background: rgba(0, 0, 0, 0.18);
+    }
+    .trade-message-avatar {
+      flex-shrink: 0;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #5865f2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .trade-message-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .trade-message-body {
+      min-width: 0;
+      flex: 1;
+    }
+    .trade-message-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .trade-author {
+      font-weight: 600;
+      font-size: 15px;
+      color: #f2f3f5;
+    }
+    .trade-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #4e5058;
+      color: #dbdee1;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .trade-badge.buy { background: #248046; }
+    .trade-badge.sell { background: #c03537; }
+    .trade-badge.exchange { background: #9b59b6; }
+    .trade-badge.job { background: #f0b232; color: #1e1f22; }
+    .trade-time {
+      font-size: 11px;
+      color: #949ba4;
+      font-weight: 500;
+    }
+    .trade-message-content {
+      font-size: 15px;
+      line-height: 1.45;
+      color: #dcddde;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .trade-composer {
+      padding: 14px;
+      background: #2b2d31;
+      border-top: 1px solid #1e1f22;
+    }
+    .trade-composer-inner {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      max-width: 100%;
+    }
+    .trade-composer-avatar {
+      flex-shrink: 0;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #5865f2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .trade-composer-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .trade-composer-fields {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .trade-cat-select {
+      align-self: flex-start;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: none;
+      background: #1e1f22;
+      color: #dbdee1;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      max-width: 100%;
+    }
+    .trade-input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: none;
+      background: #383a40;
+      color: #dcddde;
+      font-size: 15px;
+      font-family: inherit;
+      line-height: 1.45;
+      resize: vertical;
+      min-height: 72px;
+    }
+    .trade-input::placeholder {
+      color: #6d747f;
+    }
+    .trade-input:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.45);
+    }
+    .trade-composer-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+    .trade-send-btn {
+      padding: 9px 18px;
+      border-radius: 6px;
+      border: none;
+      background: #5865f2;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: filter 0.15s ease;
+    }
+    .trade-send-btn:hover {
+      filter: brightness(1.08);
+    }
+    .trade-send-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
     /* 계정 (Discord / Supabase) */
     .site-auth-bar {
       display: flex;
@@ -2022,6 +2244,7 @@
     </div>
 
     <div class="nav-item" data-nav-section="marine-guide" onclick="switchSection('marine-guide', this)">해양전문가 가이드</div>
+    <div class="nav-item" data-nav-section="trade-hub" onclick="switchSection('trade-hub', this)">거래소</div>
     <div class="nav-item" data-nav-section="factory" onclick="switchSection('factory', this)">공장 제작법</div>
   </div>
 
