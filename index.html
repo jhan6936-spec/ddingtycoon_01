@@ -4644,7 +4644,284 @@ function updateTradeComposerAvatar() {
 }
 
 function tradeComposeAttachClick() {
-  alert('거래소 글은 이 브라우저에만 저장됩니다. 파일·이미지 첨부는 아직 지원하지 않습니다.');
+  const inp = document.getElementById('tradeComposeFileInput');
+  if (inp) inp.click();
+}
+
+async function onTradeComposeFilesSelected(ev) {
+  const input = ev.target;
+  const files = input && input.files;
+  if (!files || !files.length) return;
+  let room = TRADE_MAX_IMAGES_PER_POST - tradeComposePendingAttachments.length;
+  for (let i = 0; i < files.length && room > 0; i++) {
+    const f = files[i];
+    if (!f.type.startsWith('image/')) continue;
+    try {
+      const dataUrl = await tradeCompressImageToDataUrl(f);
+      tradeComposePendingAttachments.push({
+        id: `${Date.now()}_${i}_${Math.random().toString(36).slice(2, 8)}`,
+        kind: 'image',
+        name: f.name || 'image.jpg',
+        dataUrl
+      });
+      room--;
+    } catch (err) {
+      console.warn('[거래소] 이미지 처리 실패:', err);
+    }
+  }
+  input.value = '';
+  renderComposeAttachPreview();
+}
+
+function renderComposeAttachPreview() {
+  const el = document.getElementById('tradeComposeAttachPreview');
+  if (!el) return;
+  el.innerHTML = tradeComposePendingAttachments
+    .map(
+      (a) =>
+        `<div class="trade-attach-chip"><img src="${escapeHtmlTrade(a.dataUrl)}" alt=""><button type="button" aria-label="첨부 제거" onclick="tradeRemoveComposeAttachmentById('${escapeHtmlTrade(a.id)}')">×</button></div>`
+    )
+    .join('');
+}
+
+function tradeRemoveComposeAttachmentById(id) {
+  tradeComposePendingAttachments = tradeComposePendingAttachments.filter((x) => x.id !== id);
+  renderComposeAttachPreview();
+}
+
+function tradeReplyAttachClick() {
+  const inp = document.getElementById('tradeReplyFileInput');
+  if (inp) inp.click();
+}
+
+async function onTradeReplyFilesSelected(ev) {
+  const input = ev.target;
+  const files = input && input.files;
+  if (!files || !files.length) return;
+  let room = TRADE_MAX_IMAGES_PER_POST - tradeReplyPendingAttachments.length;
+  for (let i = 0; i < files.length && room > 0; i++) {
+    const f = files[i];
+    if (!f.type.startsWith('image/')) continue;
+    try {
+      const dataUrl = await tradeCompressImageToDataUrl(f);
+      tradeReplyPendingAttachments.push({
+        id: `${Date.now()}_${i}_${Math.random().toString(36).slice(2, 8)}`,
+        kind: 'image',
+        name: f.name || 'image.jpg',
+        dataUrl
+      });
+      room--;
+    } catch (err) {
+      console.warn('[거래소] 이미지 처리 실패:', err);
+    }
+  }
+  input.value = '';
+  renderReplyAttachPreview();
+}
+
+function renderReplyAttachPreview() {
+  const el = document.getElementById('tradeReplyAttachPreview');
+  if (!el) return;
+  el.innerHTML = tradeReplyPendingAttachments
+    .map(
+      (a) =>
+        `<div class="trade-attach-chip"><img src="${escapeHtmlTrade(a.dataUrl)}" alt=""><button type="button" aria-label="첨부 제거" onclick="tradeRemoveReplyAttachmentById('${escapeHtmlTrade(a.id)}')">×</button></div>`
+    )
+    .join('');
+}
+
+function tradeRemoveReplyAttachmentById(id) {
+  tradeReplyPendingAttachments = tradeReplyPendingAttachments.filter((x) => x.id !== id);
+  renderReplyAttachPreview();
+}
+
+function ensureTradeThreadPanelBindings() {
+  const panel = document.getElementById('tradeThreadPanel');
+  if (!panel || panel.__tradeReactBound) return;
+  panel.__tradeReactBound = true;
+  panel.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-trade-thread-react]');
+    if (!btn || !selectedTradePostId) return;
+    e.preventDefault();
+    tradeToggleReaction(selectedTradePostId, btn.getAttribute('data-trade-thread-react'));
+  });
+}
+
+function buildTradeThreadRootHtml(post) {
+  const meta = TRADE_CAT_META[post.category] || TRADE_CAT_META.buy;
+  const initial = escapeHtmlTrade((post.authorInitial || (post.authorName || '?').charAt(0)).toUpperCase());
+  const avatarInner = post.avatarUrl
+    ? `<img src="${escapeHtmlTrade(post.avatarUrl)}" alt="">`
+    : `<span>${initial}</span>`;
+  const isSelf =
+    post.userId && currentAuthUserId && String(post.userId) === String(currentAuthUserId);
+  const authorTag = isSelf ? '<span class="trade-author-tag">작성자</span>' : '';
+  const imgs =
+    post.attachments && post.attachments.length
+      ? `<div class="trade-thread-images">${post.attachments
+          .map(
+            (a) =>
+              `<img src="${escapeHtmlTrade(a.dataUrl)}" alt="${escapeHtmlTrade(a.name)}">`
+          )
+          .join('')}</div>`
+      : '';
+  const reactBtns = TRADE_REACTION_KEYS.map((k) => {
+    const em = TRADE_REACTION_META[k].emoji;
+    const cnt = (post.reactions && post.reactions[k]) || 0;
+    return `<button type="button" class="trade-thread-react-btn" data-trade-thread-react="${k}">${em} ${cnt}</button>`;
+  }).join('');
+  return `<div class="trade-msg-row">
+    <div class="trade-msg-avatar">${avatarInner}</div>
+    <div class="trade-msg-main">
+      <div class="trade-msg-head">
+        <span class="trade-msg-author">${escapeHtmlTrade(post.authorName || '알 수 없음')}</span>
+        ${authorTag}
+        <span class="trade-badge ${meta.cls}">${escapeHtmlTrade(meta.badge)}</span>
+        <span class="trade-msg-time">${escapeHtmlTrade(formatTradeTimestamp(post.ts))}</span>
+      </div>
+      <div class="trade-thread-root-body">${escapeHtmlTrade(post.body || '').replace(/\n/g, '<br>')}</div>
+      ${imgs}
+      <div class="trade-thread-reactions">${reactBtns}</div>
+    </div>
+  </div>`;
+}
+
+function buildTradeCommentsHtml(post) {
+  const comments = (post.comments || []).slice().sort((a, b) => (a.ts || 0) - (b.ts || 0));
+  let lastDay = '';
+  let html = '';
+  comments.forEach((c) => {
+    const dk = tradeCommentDayKey(c.ts);
+    if (dk !== lastDay) {
+      lastDay = dk;
+      html += `<div class="trade-date-sep">${escapeHtmlTrade(tradeCommentDayLabel(c.ts))}</div>`;
+    }
+    html += buildTradeCommentRowHtml(c);
+  });
+  return html;
+}
+
+function buildTradeCommentRowHtml(c) {
+  const initial = escapeHtmlTrade((c.authorInitial || (c.authorName || '?').charAt(0)).toUpperCase());
+  const avatarInner = c.avatarUrl
+    ? `<img src="${escapeHtmlTrade(c.avatarUrl)}" alt="">`
+    : `<span>${initial}</span>`;
+  const isSelf =
+    c.userId && currentAuthUserId && String(c.userId) === String(currentAuthUserId);
+  const authorTag = isSelf ? '<span class="trade-author-tag">작성자</span>' : '';
+  const imgs =
+    c.attachments && c.attachments.length
+      ? `<div class="trade-msg-images">${c.attachments
+          .map(
+            (a) =>
+              `<img src="${escapeHtmlTrade(a.dataUrl)}" alt="${escapeHtmlTrade(a.name)}">`
+          )
+          .join('')}</div>`
+      : '';
+  return `<div class="trade-msg-row">
+    <div class="trade-msg-avatar">${avatarInner}</div>
+    <div class="trade-msg-main">
+      <div class="trade-msg-head">
+        <span class="trade-msg-author">${escapeHtmlTrade(c.authorName || '알 수 없음')}</span>
+        ${authorTag}
+        <span class="trade-msg-time">${escapeHtmlTrade(formatTradeTimestamp(c.ts))}</span>
+      </div>
+      <div class="trade-msg-body">${escapeHtmlTrade(c.body || '').replace(/\n/g, '<br>')}</div>
+      ${imgs}
+    </div>
+  </div>`;
+}
+
+function renderTradeThreadPanel() {
+  const rootEl = document.getElementById('tradeThreadRootBlock');
+  const comEl = document.getElementById('tradeThreadComments');
+  const titleEl = document.getElementById('tradeThreadTitle');
+  const sc = document.getElementById('tradeThreadScroll');
+  if (!rootEl || !comEl || !titleEl) return;
+  if (!selectedTradePostId) return;
+  const posts = loadTradePosts();
+  const post = posts.find((x) => x.id === selectedTradePostId);
+  if (!post) {
+    closeTradeThreadPanel();
+    return;
+  }
+  titleEl.textContent = post.title || '제목 없음';
+  rootEl.innerHTML = buildTradeThreadRootHtml(post);
+  comEl.innerHTML = buildTradeCommentsHtml(post);
+  if (sc) sc.scrollTop = sc.scrollHeight;
+}
+
+function openTradeThreadPanel(postId) {
+  const posts = loadTradePosts();
+  const p = posts.find((x) => x.id === postId);
+  if (!p) return;
+  selectedTradePostId = postId;
+  ensureTradeThreadPanelBindings();
+  const wrap = document.getElementById('tradeHubWrap');
+  const panel = document.getElementById('tradeThreadPanel');
+  if (wrap) wrap.classList.add('trade-split-open');
+  if (panel) {
+    panel.hidden = false;
+    panel.setAttribute('aria-hidden', 'false');
+  }
+  const tb = document.getElementById('tradeReplyBody');
+  const t = p.title || '글';
+  if (tb) tb.placeholder = `"${t}"에 메시지 보내기`;
+  renderTradeThreadPanel();
+  document.querySelectorAll('.trade-forum-card').forEach((c) => {
+    c.classList.toggle('trade-card-active', c.getAttribute('data-post-id') === postId);
+  });
+}
+
+function closeTradeThreadPanel() {
+  selectedTradePostId = null;
+  tradeReplyPendingAttachments = [];
+  renderReplyAttachPreview();
+  const tb = document.getElementById('tradeReplyBody');
+  if (tb) tb.value = '';
+  const wrap = document.getElementById('tradeHubWrap');
+  const panel = document.getElementById('tradeThreadPanel');
+  if (wrap) wrap.classList.remove('trade-split-open');
+  if (panel) {
+    panel.hidden = true;
+    panel.setAttribute('aria-hidden', 'true');
+  }
+  document.querySelectorAll('.trade-forum-card').forEach((c) => c.classList.remove('trade-card-active'));
+}
+
+function submitTradeReply() {
+  if (!selectedTradePostId) return;
+  const ta = document.getElementById('tradeReplyBody');
+  const body = ta ? ta.value.trim() : '';
+  const imgs = tradeReplyPendingAttachments.map(normalizeTradeAttachment).filter(Boolean);
+  if (!body && !imgs.length) {
+    alert('댓글 내용을 입력하거나 이미지를 첨부해 주세요.');
+    return;
+  }
+  const posts = loadTradePosts();
+  const i = posts.findIndex((x) => x.id === selectedTradePostId);
+  if (i === -1) return;
+  const author = getTradeAuthorForPost();
+  const uid = cachedAuthUserForProfile && cachedAuthUserForProfile.id ? cachedAuthUserForProfile.id : null;
+  const comment = normalizeTradeComment({
+    id: `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`,
+    authorName: author.name,
+    avatarUrl: author.avatarUrl || '',
+    authorInitial: author.initial,
+    body,
+    ts: Date.now(),
+    userId: uid,
+    attachments: imgs
+  });
+  const cur = posts[i];
+  const nextComments = (cur.comments || []).concat(comment);
+  posts[i] = normalizeTradePost({ ...cur, comments: nextComments });
+  saveTradePosts(posts);
+  if (ta) ta.value = '';
+  tradeReplyPendingAttachments = [];
+  renderReplyAttachPreview();
+  renderTradeThreadPanel();
+  renderTradeMessages();
 }
 
 function tradeComposeEmojiClick() {
@@ -4657,6 +4934,7 @@ function setTradeSort(order) {
   const sel = document.getElementById('tradeSortSelect');
   if (sel && sel.value !== tradeSortOrder) sel.value = tradeSortOrder;
   renderTradeMessages();
+  if (selectedTradePostId) renderTradeThreadPanel();
 }
 
 function renderTradeMessages() {
@@ -4690,8 +4968,18 @@ function renderTradeMessages() {
       const rawBody = (p.body || '').trim();
       const previewText = rawBody.length > 220 ? `${rawBody.slice(0, 220)}…` : rawBody;
       const previewHtml = escapeHtmlTrade(previewText).replace(/\n/g, '<br>');
-      const thumbs = p.reactions && typeof p.reactions.thumb === 'number' ? p.reactions.thumb : 0;
+      const rmap = normalizeReactionMap(p.reactions);
+      const thumbs = rmap.thumb || 0;
+      const reactTotal = tradeTotalReactionCount(p.reactions);
       const pid = escapeHtmlTrade(p.id);
+      const comCount = Array.isArray(p.comments) ? p.comments.length : 0;
+      const firstImg =
+        p.attachments && p.attachments[0] && p.attachments[0].dataUrl
+          ? escapeHtmlTrade(p.attachments[0].dataUrl)
+          : '';
+      const thumbBlock = firstImg
+        ? `<div class="trade-forum-card-thumb"><img src="${firstImg}" alt=""></div>`
+        : '<div class="trade-forum-card-thumb trade-thumb-empty" aria-hidden="true"></div>';
       const isSelf =
         p.userId && currentAuthUserId && String(p.userId) === String(currentAuthUserId);
       const authorTag = isSelf ? '<span class="trade-author-tag" title="현재 기기에서 내 계정으로 작성">작성자</span>' : '';
@@ -4707,10 +4995,12 @@ function renderTradeMessages() {
           </div>
           <div class="trade-forum-preview">${previewHtml}</div>
           <div class="trade-forum-footer">
-            <button type="button" class="trade-reaction-btn" data-trade-react="${pid}" aria-label="좋아요">👍 ${thumbs}</button>
-            <span class="trade-forum-stat-muted">💬 댓글 0</span>
+            <button type="button" class="trade-reaction-btn" data-trade-react="${pid}" data-react-key="thumb" aria-label="좋아요">👍 ${thumbs}</button>
+            <span class="trade-forum-stat-muted">✨ 반응 ${reactTotal}</span>
+            <span class="trade-forum-stat-muted">💬 댓글 ${comCount}</span>
           </div>
         </div>
+        ${thumbBlock}
       </article>`;
     })
     .join('');
@@ -4718,15 +5008,30 @@ function renderTradeMessages() {
   list.onclick = function tradeListClickDelegate(e) {
     const av = e.target.closest('.trade-forum-avatar-btn[data-trade-profile]');
     if (av) {
+      e.stopPropagation();
       openTradeProfileModal(av.getAttribute('data-trade-profile'));
       return;
     }
     const rx = e.target.closest('.trade-reaction-btn[data-trade-react]');
     if (rx) {
       e.preventDefault();
-      tradeToggleReaction(rx.getAttribute('data-trade-react'));
+      e.stopPropagation();
+      const rid = rx.getAttribute('data-trade-react');
+      const rk = rx.getAttribute('data-react-key') || 'thumb';
+      tradeToggleReaction(rid, rk);
+      return;
+    }
+    const card = e.target.closest('.trade-forum-card[data-post-id]');
+    if (card) {
+      openTradeThreadPanel(card.getAttribute('data-post-id'));
     }
   };
+
+  if (selectedTradePostId) {
+    document.querySelectorAll('.trade-forum-card').forEach((c) => {
+      c.classList.toggle('trade-card-active', c.getAttribute('data-post-id') === selectedTradePostId);
+    });
+  }
 }
 
 function setTradeCategoryFilter(cat) {
@@ -4742,14 +5047,15 @@ function submitTradePost() {
   const ta = document.getElementById('tradePostBody');
   const sel = document.getElementById('tradePostCategory');
   const body = ta ? ta.value.trim() : '';
-  if (!body) {
-    alert('본문을 입력해 주세요.');
+  const attachSnap = tradeComposePendingAttachments.map(normalizeTradeAttachment).filter(Boolean);
+  if (!body && !attachSnap.length) {
+    alert('본문을 입력하거나 이미지를 첨부해 주세요.');
     return;
   }
   let title = titleIn && titleIn.value.trim() ? titleIn.value.trim() : '';
   if (!title) {
     const line = body.split(/\r?\n/)[0] || '';
-    title = line ? (line.length > 80 ? `${line.slice(0, 80)}…` : line) : '제목 없음';
+    title = line ? (line.length > 80 ? `${line.slice(0, 80)}…` : line) : attachSnap.length ? '(이미지)' : '제목 없음';
   }
   const category = sel && sel.value ? sel.value : 'buy';
   if (!TRADE_CAT_META[category]) return;
@@ -4765,29 +5071,33 @@ function submitTradePost() {
     body,
     ts: Date.now(),
     userId: uid,
-    reactions: { thumb: 0 }
+    reactions: normalizeReactionMap(null),
+    attachments: attachSnap,
+    comments: []
   });
   const posts = loadTradePosts();
   posts.unshift(post);
   saveTradePosts(posts);
   if (ta) ta.value = '';
   if (titleIn) titleIn.value = '';
+  tradeComposePendingAttachments = [];
+  renderComposeAttachPreview();
   renderTradeMessages();
 }
 
-function tradeToggleReaction(postId) {
+function tradeToggleReaction(postId, reactionKey) {
   if (!postId) return;
+  const k = TRADE_REACTION_KEYS.includes(reactionKey) ? reactionKey : 'thumb';
   const posts = loadTradePosts();
   const i = posts.findIndex((x) => x.id === postId);
   if (i === -1) return;
   const cur = posts[i];
-  const nextThumb = ((cur.reactions && cur.reactions.thumb) || 0) + 1;
-  posts[i] = normalizeTradePost({
-    ...cur,
-    reactions: { thumb: nextThumb }
-  });
+  const r = normalizeReactionMap(cur.reactions);
+  r[k] = (r[k] || 0) + 1;
+  posts[i] = normalizeTradePost({ ...cur, reactions: r });
   saveTradePosts(posts);
   renderTradeMessages();
+  if (selectedTradePostId === postId) renderTradeThreadPanel();
 }
 
 function openTradeProfileModal(postId) {
