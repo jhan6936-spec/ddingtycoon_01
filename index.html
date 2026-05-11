@@ -5734,7 +5734,10 @@ function buildTradeThreadRootHtml(post) {
       </div>
       <div class="trade-thread-root-body">${escapeHtmlTrade(post.body || '').replace(/\n/g, '<br>')}</div>
       ${imgs}
-      <div class="trade-thread-reactions">${reactBtns}</div>
+      <div class="trade-thread-reactions">
+        <button type="button" class="trade-thread-react-trigger trade-icon-btn${activeCls}" data-trade-thread-react-trigger aria-label="반응 추가">🙂</button>
+        ${reactCountHtml}
+      </div>
     </div>
   </div>`;
 }
