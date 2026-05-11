@@ -3286,10 +3286,15 @@ function toggleWarehouseSetDisplayMode() {
 // ===== 창고에서 현재 수량 가져오기 =====
 function getWarehouseInventory() {
   const inventory = {};
-  const inputs = document.querySelectorAll('#warehouseContainer input[type="number"]');
-  inputs.forEach(input => {
+  document.querySelectorAll('#warehouseContainer input[data-material]').forEach((input) => {
     const material = input.getAttribute('data-material');
-    inventory[material] = parseInt(input.value) || 0;
+    let raw = parseInt(input.getAttribute('data-warehouse-count'), 10);
+    if (!Number.isFinite(raw)) {
+      raw = Math.max(0, parseInt(input.value, 10) || 0);
+    } else {
+      raw = Math.max(0, raw);
+    }
+    inventory[material] = raw;
   });
   return inventory;
 }
