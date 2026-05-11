@@ -4701,7 +4701,7 @@ function escapeHtmlTrade(s) {
   return d.innerHTML;
 }
 
-function loadTradePosts() {
+function loadTradePostsFromStorage() {
   try {
     const raw = localStorage.getItem(TRADE_STORAGE_KEY);
     if (!raw) return [];
@@ -4712,13 +4712,117 @@ function loadTradePosts() {
   }
 }
 
+function loadTradePosts() {
+  if (tradePostsCache !== null) return tradePostsCache;
+  tradePostsCache = loadTradePostsFromStorage();
+  return tradePostsCache;
+}
+
+function invalidateTradePostsCache() {
+  tradePostsCache = null;
+}
+
 function saveTradePosts(posts) {
+  tradePostsCache = posts.map(normalizeTradePost);
   try {
-    localStorage.setItem(TRADE_STORAGE_KEY, JSON.stringify(posts));
+    localStorage.setItem(TRADE_STORAGE_KEY, JSON.stringify(tradePostsCache));
   } catch (e) {
     console.warn('[거래소] 저장 실패:', e);
     alert('브라우저 저장 공간이 부족합니다. 이미지 수·크기를 줄이거나 다른 글을 지운 뒤 다시 시도해 주세요.');
+    return;
   }
+  scheduleTradeRemoteSync();
+}
+
+function scheduleTradeRemoteSync() {
+  clearTimeout(tradeRemoteSyncTimer);
+  tradeRemoteSyncTimer = setTimeout(() => {
+    syncTradePostsToSupabase(tradePostsCache || []);
+  }, 450);
+}
+
+async function syncTradePostsToSupabase(posts) {
+  const sb = getSupabaseClient();
+  if (!sb || !posts || !posts.length) return;
+  for (let i = 0; i < posts.length; i++) {
+    await tradeUpsertRemote(posts[i]);
+  }
+}
+
+async function tradeUpsertRemote(post) {
+  const sb = getSupabaseClient();
+  if (!sb) return;
+  const row = normalizeTradePost(post);
+  const { error } = await sb.from(TRADE_REMOTE_TABLE).upsert(
+    {
+      id: row.id,
+      payload: row,
+      updated_at: new Date(row.updatedAt || row.ts).toISOString()
+    },
+    { onConflict: 'id' }
+  );
+  if (error) console.warn('[거래소] Supabase upsert 실패:', error.message || error);
+}
+
+async function tradeDeleteRemote(id) {
+  const sb = getSupabaseClient();
+  if (!sb || !id) return;
+  const { error } = await sb.from(TRADE_REMOTE_TABLE).delete().eq('id', id);
+  if (error) console.warn('[거래소] Supabase 삭제 실패:', error.message || error);
+}
+
+async function tradeFetchRemotePosts() {
+  const sb = getSupabaseClient();
+  if (!sb) return null;
+  const { data, error } = await sb.from(TRADE_REMOTE_TABLE).select('id,payload,updated_at');
+  if (error) {
+    console.warn('[거래소] Supabase 불러오기 실패:', error.message || error);
+    return null;
+  }
+  return (data || []).map((row) =>
+    normalizeTradePost({
+      ...(row.payload && typeof row.payload === 'object' ? row.payload : {}),
+      id: row.id,
+      updatedAt: row.updated_at ? new Date(row.updated_at).getTime() : undefined
+    })
+  );
+}
+
+function mergeTradePostsByUpdated(localArr, remoteArr) {
+  const map = new Map();
+  remoteArr.forEach((p) => {
+    const cur = normalizeTradePost(p);
+    map.set(cur.id, cur);
+  });
+  localArr.forEach((p) => {
+    const cur = normalizeTradePost(p);
+    const prev = map.get(cur.id);
+    if (!prev) {
+      map.set(cur.id, cur);
+      return;
+    }
+    const pt = prev.updatedAt || prev.ts || 0;
+    const ct = cur.updatedAt || cur.ts || 0;
+    if (ct >= pt) map.set(cur.id, cur);
+  });
+  return Array.from(map.values());
+}
+
+async function refreshTradeBoardFromRemote() {
+  const remote = await tradeFetchRemotePosts();
+  const local = loadTradePostsFromStorage();
+  if (remote === null) {
+    tradePostsCache = local;
+    return;
+  }
+  const merged = mergeTradePostsByUpdated(local, remote);
+  tradePostsCache = merged.map(normalizeTradePost);
+  try {
+    localStorage.setItem(TRADE_STORAGE_KEY, JSON.stringify(tradePostsCache));
+  } catch (e) {
+    console.warn('[거래소] 로컬 병합 저장 실패:', e);
+  }
+  await syncTradePostsToSupabase(tradePostsCache);
 }
 
 function formatTradeTimestamp(ts) {
