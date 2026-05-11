@@ -71,16 +71,16 @@
       --t-body-glow-2: rgba(20, 108, 168, 0.14);
       --t-body-grad-top: #0c1520;
       --t-body-grad-mid: #0f1012;
-      --t-body-grad-bot: #0f0f0f;
+      --t-body-grad-bot: var(--t-deep0);
       --t-main-hero-bg: linear-gradient(130deg, rgba(17, 29, 41, 0.94) 0%, rgba(14, 23, 33, 0.86) 100%);
       --t-main-section-grad: linear-gradient(140deg, rgba(6, 15, 22, 0.45) 0%, rgba(8, 24, 36, 0.52) 60%, rgba(9, 17, 25, 0.58) 100%);
       --t-viewer-overlay: rgba(0, 0, 0, 0.78);
       --t-patch-overlay: rgba(0, 0, 0, 0.55);
-      --t-scroll-track: #0f0f0f;
+      --t-scroll-track: var(--t-deep0);
       --t-scroll-thumb: #333;
       --t-scroll-thumb-hover: #444;
       --t-ingredient-count-bg: #2a2a2a;
-      --t-media-bg: #0f0f0f;
+      --t-media-bg: var(--t-deep0);
       --t-credit-plaque-bg-1: #1e2429;
       --t-credit-plaque-bg-2: #171a1d;
       --t-credit-plaque-border: #2f3a44;
@@ -842,7 +842,7 @@
       aspect-ratio: 1 / 1;
       object-fit: cover;
       display: block;
-      background: #0f0f0f;
+      background: var(--t-deep0);
       cursor: zoom-in;
     }
     .factory-video-wrap {
@@ -919,7 +919,7 @@
     .viewer-dialog {
       width: min(1100px, 100%);
       max-height: min(86vh, 920px);
-      background: #0f0f0f;
+      background: var(--t-deep0);
       border: 1px solid var(--t-border);
       border-radius: 12px;
       overflow: hidden;
@@ -1007,7 +1007,7 @@
     .viewer-counter {
       padding: 10px 12px;
       border-top: 1px solid var(--t-border);
-      background: #0f0f0f;
+      background: var(--t-deep0);
       color: #bbb;
       font-size: 12px;
       display: flex;
@@ -1092,7 +1092,7 @@
       color: #fff;
     }
     .calc-display {
-      background: #0f0f0f;
+      background: var(--t-deep0);
       border: 1px solid var(--t-border);
       border-radius: 10px;
       padding: 10px 10px;
@@ -1180,7 +1180,7 @@
       width: 8px;
     }
     ::-webkit-scrollbar-track {
-      background: #0f0f0f;
+      background: var(--t-deep0);
     }
     ::-webkit-scrollbar-thumb {
       background: var(--t-scroll-thumb);
@@ -1322,7 +1322,7 @@
     .expert-btn {
       width: 30px;
       height: 30px;
-      border: 1px solid #3a3a3a;
+      border: 1px solid var(--t-border-accent);
       border-radius: 8px;
       background: var(--t-expert-btn-bg);
       color: #eee;
@@ -1447,7 +1447,7 @@
       font-weight: 600;
     }
     .patch-close-btn {
-      border: 1px solid #3c3c3c;
+      border: 1px solid var(--t-btn-border);
       background: #222;
       color: #ddd;
       border-radius: 8px;
