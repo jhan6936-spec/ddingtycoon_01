@@ -1002,6 +1002,120 @@
       display: flex;
       justify-content: flex-end;
     }
+    .trade-restriction-banner {
+      margin: 0 14px 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: rgba(237, 66, 69, 0.12);
+      border: 1px solid rgba(237, 66, 69, 0.45);
+      color: #f6d4d5;
+      font-size: clamp(12px, 3.2vw, 14px);
+      line-height: 1.45;
+    }
+    .trade-thread-admin-bar {
+      padding: 8px 12px 10px;
+      border-bottom: 1px solid #1e1f28;
+      background: rgba(88, 101, 242, 0.06);
+    }
+    .trade-thread-admin-bar-inner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .trade-admin-target {
+      font-size: 12px;
+      color: #b5bac1;
+      flex: 1 1 140px;
+      min-width: 0;
+    }
+    .trade-admin-hours-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #b5bac1;
+    }
+    .trade-admin-hours-input {
+      width: 4.5rem;
+      padding: 4px 6px;
+      border-radius: 4px;
+      border: 1px solid #3f4152;
+      background: #0f1016;
+      color: #e8eaef;
+      font-size: 13px;
+    }
+    .trade-admin-btn {
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: 1px solid #3f4152;
+      background: #1e1f28;
+      color: #dee0e6;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .trade-admin-btn:hover {
+      background: #2b2d38;
+    }
+    .trade-admin-btn-warn {
+      border-color: rgba(237, 66, 69, 0.55);
+      color: #faa61a;
+    }
+    .trade-admin-btn-ok {
+      border-color: rgba(59, 165, 93, 0.65);
+      color: #3ba55d;
+    }
+    .trade-emoji-popover {
+      position: fixed;
+      z-index: 10060;
+      min-width: 220px;
+      max-width: min(92vw, 320px);
+      padding: 10px;
+      border-radius: 10px;
+      background: #111214;
+      border: 1px solid #2b2d31;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
+    }
+    .trade-emoji-popover-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #949ba4;
+      margin-bottom: 8px;
+      letter-spacing: 0.02em;
+    }
+    .trade-emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 4px;
+    }
+    .trade-emoji-grid button {
+      margin: 0;
+      padding: 6px 0;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+      transition: background 0.12s ease;
+    }
+    .trade-emoji-grid button:hover {
+      background: rgba(88, 101, 242, 0.25);
+    }
+    .trade-body-input {
+      min-height: clamp(72px, 22vw, 140px);
+      font-size: clamp(13px, 3.4vw, 15px);
+    }
+    .trade-forum-compose {
+      padding: clamp(10px, 2.8vw, 16px) clamp(12px, 3vw, 16px) clamp(12px, 3vw, 16px);
+    }
+    .trade-thread-composer {
+      padding: clamp(10px, 2.5vw, 14px) clamp(10px, 2.5vw, 14px) clamp(12px, 3vw, 14px);
+    }
+    .trade-title-input {
+      font-size: clamp(14px, 3.8vw, 16px);
+    }
     @media (max-width: 960px) {
       .trade-hub-wrap {
         flex-direction: column;
@@ -3116,6 +3230,7 @@
             <button type="button" class="trade-tab" data-trade-cat="exchange" onclick="setTradeCategoryFilter('exchange')">교환</button>
             <button type="button" class="trade-tab" data-trade-cat="job" onclick="setTradeCategoryFilter('job')">알바(구인)</button>
           </div>
+          <div id="tradeRestrictionBanner" class="trade-restriction-banner" hidden role="status"></div>
           <div class="trade-forum-compose">
             <div class="trade-forum-compose-top">
               <input type="text" id="tradePostTitle" class="trade-title-input" placeholder="제목" maxlength="200" autocomplete="off">
@@ -3160,6 +3275,24 @@
                 <button type="button" class="trade-thread-close" onclick="closeTradeThreadPanel()" aria-label="스레드 닫기">✕</button>
               </div>
             </div>
+            <div id="tradeThreadAdminBar" class="trade-thread-admin-bar" hidden>
+              <div class="trade-thread-admin-bar-inner">
+                <span id="tradeAdminTargetLabel" class="trade-admin-target"></span>
+                <label class="trade-admin-hours-wrap"
+                  >시간
+                  <input
+                    type="number"
+                    id="tradeAdminHoursInput"
+                    class="trade-admin-hours-input"
+                    min="0.25"
+                    step="0.25"
+                    value="24"
+                /></label>
+                <button type="button" class="trade-admin-btn" onclick="tradeAdminApplyTimed()">시간 제한</button>
+                <button type="button" class="trade-admin-btn trade-admin-btn-warn" onclick="tradeAdminApplyManual()">수동 정지</button>
+                <button type="button" class="trade-admin-btn trade-admin-btn-ok" onclick="tradeAdminReleaseAuthor()">제재 해제</button>
+              </div>
+            </div>
             <div id="tradeThreadEditPanel" class="trade-thread-edit-panel" hidden>
               <label class="trade-edit-label" for="tradeEditTitle">제목</label>
               <input type="text" id="tradeEditTitle" class="trade-title-input" maxlength="200" autocomplete="off">
@@ -3180,6 +3313,7 @@
             <input type="file" id="tradeReplyFileInput" accept="image/*" multiple hidden onchange="onTradeReplyFilesSelected(event)">
             <div class="trade-thread-compose-row">
               <button type="button" class="trade-icon-btn" title="이미지 첨부" aria-label="이미지 첨부" onclick="tradeReplyAttachClick()">＋</button>
+              <button type="button" class="trade-icon-btn" aria-label="이모지" title="이모지" onclick="tradeReplyEmojiClick(event)">🙂</button>
               <textarea id="tradeReplyBody" class="trade-body-input" placeholder="" rows="3" maxlength="2000"></textarea>
             </div>
             <div class="trade-thread-send-row">
@@ -3188,6 +3322,7 @@
           </div>
         </aside>
       </div>
+      <div id="tradeEmojiPopover" class="trade-emoji-popover" hidden role="dialog" aria-label="이모지 선택"></div>
     </div>
 
     <!-- 공장 제작법 섹션 -->
