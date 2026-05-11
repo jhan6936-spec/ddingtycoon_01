@@ -6628,6 +6628,8 @@ function syncMarineGuideSlideWidths() {
   const track = document.getElementById('marineGuideTrack');
   if (!viewport || !track) return;
   const w = viewport.offsetWidth;
+  /* 숨겨진 섹션(display:none)에서는 너비가 0 → 슬라이드를 0px로 고정하면 이미지가 보이지 않음 */
+  if (!w || w < 2) return;
   track.querySelectorAll('.marine-guide-slide').forEach((el) => {
     el.style.flex = `0 0 ${w}px`;
     el.style.width = `${w}px`;
@@ -6640,8 +6642,10 @@ function applyMarineGuideSlide() {
   const counter = document.getElementById('marineGuideSlideCounter');
   if (!viewport || !track) return;
   syncMarineGuideSlideWidths();
-  const w = viewport.offsetWidth || 1;
-  track.style.transform = `translateX(${-marineGuideSlideIndex * w}px)`;
+  const w = viewport.offsetWidth || 0;
+  if (w >= 2) {
+    track.style.transform = `translateX(${-marineGuideSlideIndex * w}px)`;
+  }
   if (counter) counter.textContent = `${marineGuideSlideIndex + 1} / ${MARINE_GUIDE_SLIDES.length}`;
 }
 
@@ -6649,6 +6653,17 @@ function marineGuideStep(delta) {
   if (!MARINE_GUIDE_SLIDES.length) return;
   marineGuideSlideIndex = (marineGuideSlideIndex + delta + MARINE_GUIDE_SLIDES.length) % MARINE_GUIDE_SLIDES.length;
   applyMarineGuideSlide();
+}
+
+function setupMarineGuideResizeObserver() {
+  const viewport = document.getElementById('marineGuideViewport');
+  if (!viewport || viewport.__marineGuideRo) return;
+  viewport.__marineGuideRo = true;
+  if (typeof ResizeObserver === 'undefined') return;
+  const ro = new ResizeObserver(() => {
+    applyMarineGuideSlide();
+  });
+  ro.observe(viewport);
 }
 
 function initMarineGuideCarousel() {
@@ -6662,12 +6677,16 @@ function initMarineGuideCarousel() {
     img.src = slide.src;
     img.alt = slide.alt;
     img.loading = idx === 0 ? 'eager' : 'lazy';
-    if (idx === 0) img.setAttribute('fetchpriority', 'high');
+    if (idx === 0) {
+      img.setAttribute('fetchpriority', 'high');
+      img.decoding = 'sync';
+    }
     img.draggable = false;
     wrap.appendChild(img);
     track.appendChild(wrap);
   });
   track.setAttribute('data-built', '1');
+  setupMarineGuideResizeObserver();
   applyMarineGuideSlide();
   requestAnimationFrame(() => applyMarineGuideSlide());
   let resizeTimer;
