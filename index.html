@@ -4236,10 +4236,7 @@ function submitTradePost() {
   let title = titleIn && titleIn.value.trim() ? titleIn.value.trim() : '';
   if (!title) {
     const line = body.split(/\r?\n/)[0] || '';
-    title = line ? (line.length > 80 ? `${line.length > 80 ? line.slice(0, 80) : line}…` : line) : '제목 없음';
-  }
-  if (title.includes('…') && title.length > 81) {
-    /* noop — fixed below */
+    title = line ? (line.length > 80 ? `${line.slice(0, 80)}…` : line) : '제목 없음';
   }
   const category = sel && sel.value ? sel.value : 'buy';
   if (!TRADE_CAT_META[category]) return;
@@ -4308,6 +4305,7 @@ function openTradeProfileModal(postId) {
   if (p.avatarUrl) {
     av.innerHTML = `<img src="${escapeHtmlTrade(p.avatarUrl)}" alt="">`;
   } else {
+    av.innerHTML = '';
     av.textContent = initial;
   }
 
@@ -4522,6 +4520,7 @@ function clearSupabaseAuthStorage() {
 async function authSignOut() {
   authUiNonce++;
   closeProfileSettingsModal();
+  closeTradeProfileModal();
 
   const sb = getSupabaseClient();
   if (sb) {
