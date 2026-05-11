@@ -3770,6 +3770,153 @@ function saveStoredUserProfile(userId, displayName, bio) {
   );
 }
 
+// ===== 거래소 (디스코드 스타일 · 로컬 저장) =====
+const TRADE_STORAGE_KEY = 'ddingty_trade_posts_v1';
+const TRADE_CAT_META = {
+  buy: { label: '구매', badge: '구매', cls: 'buy' },
+  sell: { label: '판매', badge: '판매', cls: 'sell' },
+  exchange: { label: '교환', badge: '교환', cls: 'exchange' },
+  job: { label: '알바', badge: '알바', cls: 'job' }
+};
+let tradeCategoryFilter = 'all';
+
+function escapeHtmlTrade(s) {
+  if (s == null || s === '') return '';
+  const d = document.createElement('div');
+  d.textContent = String(s);
+  return d.innerHTML;
+}
+
+function loadTradePosts() {
+  try {
+    const raw = localStorage.getItem(TRADE_STORAGE_KEY);
+    if (!raw) return [];
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr : [];
+  } catch (_) {
+    return [];
+  }
+}
+
+function saveTradePosts(posts) {
+  try {
+    localStorage.setItem(TRADE_STORAGE_KEY, JSON.stringify(posts));
+  } catch (e) {
+    console.warn('[거래소] 저장 실패:', e);
+  }
+}
+
+function formatTradeTimestamp(ts) {
+  const d = new Date(ts);
+  const now = new Date();
+  if (Number.isNaN(d.getTime())) return '';
+  const sameDay =
+    d.getFullYear() === now.getFullYear() &&
+    d.getMonth() === now.getMonth() &&
+    d.getDate() === now.getDate();
+  if (sameDay) {
+    return d.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit', hour12: true });
+  }
+  return d.toLocaleString('ko-KR', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit'
+  });
+}
+
+function getTradeAuthorForPost() {
+  const u = cachedAuthUserForProfile;
+  if (!u || !u.id) {
+    return { name: '게스트', avatarUrl: '', initial: '?' };
+  }
+  const prof = loadStoredUserProfile(u.id);
+  const { name, avatarUrl } = extractDiscordProfile(u);
+  const displayName = prof.displayName && prof.displayName.trim() ? prof.displayName.trim() : name;
+  const initial = ((displayName || '?').trim().charAt(0) || '?').toUpperCase();
+  return { name: displayName || '사용자', avatarUrl: avatarUrl || '', initial };
+}
+
+function updateTradeComposerAvatar() {
+  const el = document.getElementById('tradeComposerAvatar');
+  if (!el) return;
+  const a = getTradeAuthorForPost();
+  if (a.avatarUrl) {
+    el.innerHTML = `<img src="${escapeHtmlTrade(a.avatarUrl)}" alt="" width="42" height="42" decoding="async">`;
+  } else {
+    el.textContent = a.initial;
+  }
+}
+
+function renderTradeMessages() {
+  const list = document.getElementById('tradeMessageList');
+  if (!list) return;
+  let posts = loadTradePosts().slice().sort((x, y) => (y.ts || 0) - (x.ts || 0));
+  if (tradeCategoryFilter !== 'all') {
+    posts = posts.filter((p) => p.category === tradeCategoryFilter);
+  }
+  if (!posts.length) {
+    list.innerHTML = '<div class="trade-empty">아직 메시지가 없습니다. 아래에서 첫 글을 남겨 보세요.</div>';
+    return;
+  }
+  list.innerHTML = posts
+    .map((p) => {
+      const meta = TRADE_CAT_META[p.category] || TRADE_CAT_META.buy;
+      const av = p.avatarUrl
+        ? `<img src="${escapeHtmlTrade(p.avatarUrl)}" alt="">`
+        : escapeHtmlTrade((p.authorInitial || (p.authorName || '?').charAt(0)).toUpperCase());
+      const safeBody = escapeHtmlTrade(p.body || '').replace(/\n/g, '<br>');
+      return `<div class="trade-message" data-post-id="${escapeHtmlTrade(p.id)}">
+        <div class="trade-message-avatar">${p.avatarUrl ? `<img src="${escapeHtmlTrade(p.avatarUrl)}" alt="">` : `<span>${escapeHtmlTrade((p.authorInitial || (p.authorName || '?').charAt(0)).toUpperCase())}</span>`}</div>
+        <div class="trade-message-body">
+          <div class="trade-message-header">
+            <span class="trade-author">${escapeHtmlTrade(p.authorName || '알 수 없음')}</span>
+            <span class="trade-badge ${meta.cls}">${escapeHtmlTrade(meta.badge)}</span>
+            <span class="trade-time">${escapeHtmlTrade(formatTradeTimestamp(p.ts))}</span>
+          </div>
+          <div class="trade-message-content">${safeBody}</div>
+        </div>
+      </div>`;
+    })
+    .join('');
+}
+
+function setTradeCategoryFilter(cat) {
+  tradeCategoryFilter = cat || 'all';
+  document.querySelectorAll('.trade-tab').forEach((btn) => {
+    btn.classList.toggle('active', btn.getAttribute('data-trade-cat') === tradeCategoryFilter);
+  });
+  renderTradeMessages();
+}
+
+function submitTradePost() {
+  const ta = document.getElementById('tradePostBody');
+  const sel = document.getElementById('tradePostCategory');
+  const body = ta ? ta.value.trim() : '';
+  if (!body) {
+    alert('내용을 입력해 주세요.');
+    return;
+  }
+  const category = sel && sel.value ? sel.value : 'buy';
+  if (!TRADE_CAT_META[category]) return;
+  const author = getTradeAuthorForPost();
+  const post = {
+    id: `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`,
+    category,
+    authorName: author.name,
+    avatarUrl: author.avatarUrl || '',
+    authorInitial: author.initial,
+    body,
+    ts: Date.now()
+  };
+  const posts = loadTradePosts();
+  posts.unshift(post);
+  saveTradePosts(posts);
+  if (ta) ta.value = '';
+  renderTradeMessages();
+}
+
 function updateAuthUI(user) {
   const bar = document.getElementById('siteAuthBar');
   const trigger = document.getElementById('authProfileTrigger');
