@@ -3204,6 +3204,85 @@ function renderWarehouse() {
   updateVanillaInputState();
 }
 
+// ===== 창고 세트(64) 표시 모드 =====
+function loadWarehouseSetViewState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_WAREHOUSE_SET_VIEW);
+    if (raw === '1') document.documentElement.classList.add('warehouse-set-view');
+    else document.documentElement.classList.remove('warehouse-set-view');
+  } catch (_) {}
+}
+
+function saveWarehouseSetViewState() {
+  try {
+    localStorage.setItem(STORAGE_KEY_WAREHOUSE_SET_VIEW, document.documentElement.classList.contains('warehouse-set-view') ? '1' : '0');
+  } catch (_) {}
+}
+
+function warehouseSetViewEnabled() {
+  return document.documentElement.classList.contains('warehouse-set-view');
+}
+
+function formatWarehouseStackCount(total) {
+  const n = Math.max(0, Math.floor(Number(total) || 0));
+  if (n === 0) return '0개';
+  const sets = Math.floor(n / SET_SIZE);
+  const rem = n % SET_SIZE;
+  if (sets === 0) return `${rem}개`;
+  if (rem === 0) return `${sets}세트`;
+  return `${sets}세트 ${rem}개`;
+}
+
+function syncWarehouseInputRawAttribute(input) {
+  if (!input || warehouseSetViewEnabled()) return;
+  const raw = Math.max(0, parseInt(input.value, 10) || 0);
+  input.setAttribute('data-warehouse-count', String(raw));
+  input.value = String(raw);
+}
+
+function applyWarehouseSetDisplayMode() {
+  const setMode = warehouseSetViewEnabled();
+  document.querySelectorAll('#warehouseContainer input[data-material]').forEach((input) => {
+    let raw = parseInt(input.getAttribute('data-warehouse-count'), 10);
+    if (!Number.isFinite(raw)) {
+      raw = Math.max(0, parseInt(input.value, 10) || 0);
+    } else {
+      raw = Math.max(0, raw);
+    }
+    input.setAttribute('data-warehouse-count', String(raw));
+    if (setMode) {
+      input.type = 'text';
+      input.readOnly = true;
+      input.removeAttribute('min');
+      input.value = formatWarehouseStackCount(raw);
+      input.classList.add('warehouse-input--setview');
+    } else {
+      input.type = 'number';
+      input.min = '0';
+      input.readOnly = false;
+      input.value = String(raw);
+      input.classList.remove('warehouse-input--setview');
+    }
+  });
+  const btn = document.getElementById('warehouseSetDisplayToggle');
+  if (btn) {
+    btn.textContent = setMode ? '개수(전체)로 보기' : '갯수/세트 변환';
+    btn.setAttribute('aria-pressed', setMode ? 'true' : 'false');
+  }
+}
+
+function toggleWarehouseSetDisplayMode() {
+  if (!warehouseSetViewEnabled()) {
+    document.querySelectorAll('#warehouseContainer input[data-material]').forEach((input) => {
+      const raw = Math.max(0, parseInt(input.value, 10) || 0);
+      input.setAttribute('data-warehouse-count', String(raw));
+    });
+  }
+  document.documentElement.classList.toggle('warehouse-set-view');
+  saveWarehouseSetViewState();
+  applyWarehouseSetDisplayMode();
+}
+
 // ===== 창고에서 현재 수량 가져오기 =====
 function getWarehouseInventory() {
   const inventory = {};
