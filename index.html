@@ -4541,6 +4541,7 @@ function analyzeEfficiency() {
   const infiniteVanillaMaterials = getInfiniteVanillaMaterials();
   const hasItems = Object.values(inventory).some(v => (parseInt(v, 10) || 0) > 0);
   if (!hasItems) {
+    lastAlchemySummaryData = null;
     const al = document.getElementById('efficiencyContainerAlchemy');
     if (al) al.innerHTML = '<div class="no-result">재료 창고에 수량을 입력하면 연금품 계산이 표시됩니다</div>';
     renderCraftPricePanel(effects);
