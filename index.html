@@ -2199,6 +2199,7 @@ function ensureCalcPopup() {
   `;
 
   document.body.appendChild(popup);
+  popup.classList.add('calc-popup--fixed');
 
   // 닫기
   popup.querySelector('#calcCloseBtn').addEventListener('click', closeCalculator);
