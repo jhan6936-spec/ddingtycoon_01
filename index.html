@@ -876,31 +876,28 @@
     }
     .trade-thread-reactions {
       display: flex;
+      align-items: center;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
       margin-bottom: 16px;
       padding-bottom: 14px;
       border-bottom: 1px solid #16171f;
     }
-    .trade-thread-react-btn {
-      border: 1px solid #2a2b36;
-      background: #111218;
-      color: #e8ecf4;
-      padding: 5px 11px;
-      border-radius: 14px;
+    .trade-thread-react-trigger {
+      flex-shrink: 0;
+      padding: 4px 8px;
+      font-size: 22px;
+    }
+    .trade-thread-react-count {
       font-size: 13px;
-      cursor: pointer;
-      transition: box-shadow 0.12s ease;
+      color: #7a8294;
     }
-    .trade-thread-react-btn:hover {
-      box-shadow: 0 0 16px rgba(88, 101, 242, 0.45);
-    }
-    .trade-thread-react-active {
-      border-color: rgba(88, 101, 242, 0.85) !important;
+    .trade-icon-btn.trade-thread-react-active {
+      background: rgba(88, 101, 242, 0.22);
+      color: #fff;
       box-shadow:
-        0 0 14px rgba(88, 101, 242, 0.55),
-        inset 0 0 12px rgba(88, 101, 242, 0.12);
-      background: #1a1e32 !important;
+        0 0 14px rgba(88, 101, 242, 0.45),
+        inset 0 0 10px rgba(88, 101, 242, 0.08);
     }
     .trade-date-sep {
       display: flex;
