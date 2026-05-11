@@ -3022,7 +3022,7 @@
             </div>
             <textarea id="tradePostBody" class="trade-body-input" placeholder="메시지를 입력하세요..." rows="5" maxlength="2000"></textarea>
             <div id="tradeComposeAttachPreview" class="trade-attach-preview-strip" aria-live="polite"></div>
-            <input type="file" id="tradeComposeFileInput" accept="image/*" multiple hidden>
+            <input type="file" id="tradeComposeFileInput" accept="image/*" multiple hidden onchange="onTradeComposeFilesSelected(event)">
             <div class="trade-forum-compose-bottom">
               <button type="button" class="trade-icon-btn" aria-label="이모지" onclick="tradeComposeEmojiClick()">🙂</button>
               <div class="trade-compose-spacer"></div>
@@ -3055,7 +3055,7 @@
           </div>
           <div class="trade-thread-composer">
             <div id="tradeReplyAttachPreview" class="trade-attach-preview-strip" aria-live="polite"></div>
-            <input type="file" id="tradeReplyFileInput" accept="image/*" multiple hidden>
+            <input type="file" id="tradeReplyFileInput" accept="image/*" multiple hidden onchange="onTradeReplyFilesSelected(event)">
             <div class="trade-thread-compose-row">
               <button type="button" class="trade-icon-btn" title="이미지 첨부" aria-label="이미지 첨부" onclick="tradeReplyAttachClick()">＋</button>
               <textarea id="tradeReplyBody" class="trade-body-input" placeholder="" rows="3" maxlength="2000"></textarea>
