@@ -3525,16 +3525,21 @@ function formatAlchemySummaryBoxSetPiece(total) {
   return parts.length ? parts.join(' ') : '0개';
 }
 
+function formatAlchemyPlainPiece(count) {
+  const n = Math.max(0, Math.floor(Number(count) || 0));
+  return `${n.toLocaleString()}개`;
+}
+
 function formatAlchemySummaryQty(count, mode) {
-  const m = mode === 'boxSetPiece' ? 'boxSetPiece' : 'setPiece';
-  if (m === 'boxSetPiece') return formatAlchemySummaryBoxSetPiece(count);
+  if (mode === 'boxSetPiece') return formatAlchemySummaryBoxSetPiece(count);
+  if (mode === 'plainPiece') return formatAlchemyPlainPiece(count);
   return formatWarehouseStackCount(count);
 }
 
 function loadAlchemySummaryQtyMode() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY_ALCHEMY_SUMMARY_QTY);
-    if (raw === 'boxSetPiece' || raw === 'setPiece') alchemySummaryQtyMode = raw;
+    if (raw === 'boxSetPiece' || raw === 'setPiece' || raw === 'plainPiece') alchemySummaryQtyMode = raw;
   } catch (_) {}
 }
 
@@ -3548,7 +3553,7 @@ function syncAlchemySummaryQtyButtons() {
 }
 
 function setAlchemySummaryQtyMode(mode) {
-  if (mode !== 'setPiece' && mode !== 'boxSetPiece') return;
+  if (mode !== 'setPiece' && mode !== 'boxSetPiece' && mode !== 'plainPiece') return;
   alchemySummaryQtyMode = mode;
   try {
     localStorage.setItem(STORAGE_KEY_ALCHEMY_SUMMARY_QTY, mode);
@@ -4821,6 +4826,7 @@ function analyzeEfficiency() {
         <div class="alchemy-qty-mode-toggles" role="group" aria-label="수량 표시 단위">
           <button type="button" class="alchemy-qty-mode-btn" data-alchemy-qty-mode="boxSetPiece" onclick="setAlchemySummaryQtyMode('boxSetPiece')">상자/세트/개</button>
           <button type="button" class="alchemy-qty-mode-btn" data-alchemy-qty-mode="setPiece" onclick="setAlchemySummaryQtyMode('setPiece')">세트/개</button>
+          <button type="button" class="alchemy-qty-mode-btn" data-alchemy-qty-mode="plainPiece" onclick="setAlchemySummaryQtyMode('plainPiece')">개</button>
         </div>
       </div>
       <div style="font-size:11px;color:#8899aa;line-height:1.5;margin-bottom:12px;">바닐라 무한 계산을 켠 경우에도, 레시피상 필요한 개수는 아래와 같습니다.</div>
