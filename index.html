@@ -233,6 +233,9 @@
       line-height: 1.6;
     }
     /* 계정 (Discord / Supabase) */
+    .main-content {
+      position: relative;
+    }
     .site-auth-bar {
       display: flex;
       justify-content: flex-end;
@@ -240,6 +243,9 @@
       margin: -6px 0 22px;
       padding-bottom: 16px;
       border-bottom: 1px solid #2a2a2a;
+    }
+    .site-auth-bar[hidden] {
+      display: none !important;
     }
     .site-auth-inner {
       display: flex;
@@ -250,12 +256,13 @@
       width: 100%;
       max-width: 100%;
     }
-    .auth-state {
+    .auth-state-guest {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
       gap: 10px;
       justify-content: flex-end;
+      width: 100%;
     }
     .btn-discord {
       display: inline-flex;
