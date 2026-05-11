@@ -4195,13 +4195,14 @@ function initMarineGuideCarousel() {
   const track = document.getElementById('marineGuideTrack');
   if (!track || track.getAttribute('data-built') === '1') return;
   track.innerHTML = '';
-  MARINE_GUIDE_SLIDES.forEach((slide) => {
+  MARINE_GUIDE_SLIDES.forEach((slide, idx) => {
     const wrap = document.createElement('div');
     wrap.className = 'marine-guide-slide';
     const img = document.createElement('img');
     img.src = slide.src;
     img.alt = slide.alt;
-    img.loading = 'lazy';
+    img.loading = idx === 0 ? 'eager' : 'lazy';
+    if (idx === 0) img.setAttribute('fetchpriority', 'high');
     img.draggable = false;
     wrap.appendChild(img);
     track.appendChild(wrap);
@@ -4279,6 +4280,9 @@ function switchSection(sectionId, clickedEl) {
     showSettingsSub(settingsSub);
   } else if (sectionId === 'factory') {
     renderFactorySeaweedMedia();
+  } else if (sectionId === 'trade-hub') {
+    renderTradeMessages();
+    updateTradeComposerAvatar();
   }
 }
 
