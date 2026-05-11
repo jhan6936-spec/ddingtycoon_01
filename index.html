@@ -2561,6 +2561,11 @@ function openCalculatorForInput(inputEl) {
   calcState.activePart = calcState.mode === 'count' ? 'count' : 'set';
   syncCalcDisplay();
 
+  const cm = calcState.commitMode === 'add' ? 'add' : 'apply';
+  popup.querySelectorAll('#calcCommitModes [data-commit]').forEach((b) => {
+    b.classList.toggle('active', b.getAttribute('data-commit') === cm);
+  });
+
   const host = inputEl.closest('.warehouse-item');
   if (host) {
     popup.classList.remove('calc-popup--fixed');
