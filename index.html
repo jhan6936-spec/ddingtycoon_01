@@ -68,44 +68,77 @@
     }
     /* 사이드바 */
     .sidebar {
-      width: 220px;
-      background: #1a1a1a;
-      border-right: 1px solid #333;
-      padding: 20px 0;
+      width: 236px;
+      flex-shrink: 0;
+      background: linear-gradient(165deg, #17181c 0%, #121316 55%, #101114 100%);
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 0;
+      overflow-x: hidden;
       overflow-y: auto;
       position: sticky;
       top: 0;
       height: 100vh;
+      scrollbar-gutter: stable;
+    }
+    .sidebar-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 18px 12px 28px 14px;
+      min-height: min-content;
     }
     .sidebar-title {
-      padding: 15px 20px;
-      font-size: 14px;
-      font-weight: 700;
-      color: #999;
+      padding: 4px 10px 14px;
+      margin: 0 0 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #6b7280;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.14em;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     }
     .sidebar-group-label {
-      padding: 14px 20px 6px;
-      font-size: 11px;
-      font-weight: 700;
-      color: #666;
+      padding: 0 8px 8px;
+      margin: 0;
+      font-size: 10px;
+      font-weight: 600;
+      color: #7c8498;
       text-transform: uppercase;
-      letter-spacing: 0.8px;
+      letter-spacing: 0.1em;
+    }
+    .sidebar-calc-group {
+      background: rgba(0, 0, 0, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 12px 10px 10px;
+      margin-bottom: 6px;
+    }
+    .sidebar-calc-group .sidebar-group-label {
+      padding-bottom: 10px;
+    }
+    .sidebar-divider {
+      height: 1px;
+      margin: 12px 10px 14px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.08) 15%,
+        rgba(255, 255, 255, 0.08) 85%,
+        transparent
+      );
+      flex-shrink: 0;
     }
     #calculatorSubNav.calc-sub {
       display: block;
-      margin-top: 0;
-      margin-bottom: 8px;
-      padding-left: 6px;
-      margin-left: 14px;
-      border-left: 2px solid #2a2a2a;
+      margin: 0;
+      padding: 0;
+      border-left: none;
+      margin-left: 0;
     }
     #efficiencySubNav.nested-eff {
-      margin-left: 28px;
-      margin-bottom: 10px;
-      padding-left: 10px;
-      border-left: 2px solid #333;
+      margin: 8px 0 2px;
+      padding: 8px 0 4px 12px;
+      border-left: 2px solid rgba(74, 143, 217, 0.45);
     }
     .marine-guide-carousel {
       display: flex;
@@ -1401,47 +1434,61 @@
       }
     }
     .nav-item {
-      padding: 10px 20px;
+      padding: 10px 12px;
+      margin: 1px 0;
       cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 14px;
-      color: #bbb;
-      border-left: 3px solid transparent;
+      transition:
+        background 0.15s ease,
+        color 0.15s ease,
+        box-shadow 0.15s ease;
+      font-size: 13.5px;
+      line-height: 1.35;
+      color: #b8bcc8;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      box-sizing: border-box;
     }
     .nav-item:hover {
-      background: #252525;
-      color: #fff;
-      border-left-color: #4a8fd9;
+      background: rgba(255, 255, 255, 0.06);
+      color: #f0f2f5;
+      border-color: rgba(255, 255, 255, 0.04);
     }
     .nav-item.active {
-      background: #252525;
-      color: #4a8fd9;
-      border-left-color: #4a8fd9;
+      background: rgba(74, 143, 217, 0.16);
+      color: #9dc8f4;
+      border-color: rgba(74, 143, 217, 0.35);
+      box-shadow: inset 3px 0 0 rgba(74, 143, 217, 0.85);
       font-weight: 600;
     }
     .sub-nav {
-      margin-top: 6px;
-      padding-left: 8px;
+      margin-top: 0;
+      padding-left: 0;
       display: none;
     }
     .sub-nav .sub-item {
-      padding: 8px 20px 8px 28px;
+      padding: 8px 10px 8px 12px;
+      margin: 2px 0;
       cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 12px;
-      color: #9a9a9a;
-      border-left: 3px solid transparent;
+      transition:
+        background 0.15s ease,
+        color 0.15s ease;
+      font-size: 12.5px;
+      line-height: 1.35;
+      color: #9aa3b2;
+      border-radius: 7px;
+      border: 1px solid transparent;
+      box-sizing: border-box;
     }
     .sub-nav .sub-item:hover {
-      background: #222;
-      color: #fff;
-      border-left-color: #4a8fd9;
+      background: rgba(255, 255, 255, 0.05);
+      color: #e8eaef;
+      border-color: rgba(255, 255, 255, 0.04);
     }
     .sub-nav .sub-item.active {
-      background: #222;
-      color: #4a8fd9;
-      border-left-color: #4a8fd9;
-      font-weight: 700;
+      background: rgba(74, 143, 217, 0.12);
+      color: #8ebfef;
+      border-color: rgba(74, 143, 217, 0.28);
+      font-weight: 600;
     }
     /* 메인 컨텐츠 */
     .main-content {
