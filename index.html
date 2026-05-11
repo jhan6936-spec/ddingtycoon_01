@@ -5569,7 +5569,8 @@ function ensureTradeThreadPanelBindings() {
     const btn = e.target.closest('[data-trade-thread-react]');
     if (!btn || !selectedTradePostId) return;
     e.preventDefault();
-    tradeToggleReaction(selectedTradePostId, btn.getAttribute('data-trade-thread-react'));
+    e.stopPropagation();
+    tradeOpenReactionEmoji(btn, selectedTradePostId);
   });
 }
 
