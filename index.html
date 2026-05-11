@@ -2345,6 +2345,14 @@ function ensureCalcPopup() {
         <button class="key op" type="button" data-key="+">+</button>
       </div>
 
+      <div class="calc-commit-modes" id="calcCommitModes">
+        <div class="calc-commit-hint">엔터 시 동작 (버튼 없이 입력 확정)</div>
+        <div class="calc-commit-btns">
+          <button type="button" class="mode-btn active" data-commit="apply">적용모드</button>
+          <button type="button" class="mode-btn" data-commit="add">추가모드</button>
+        </div>
+      </div>
+
       <div class="calc-actions">
         <button class="action-btn primary" type="button" id="calcApplyBtn">적용</button>
         <button class="action-btn secondary" type="button" id="calcAddBtn">추가</button>
@@ -2399,6 +2407,16 @@ function ensureCalcPopup() {
   popup.querySelector('#calcAddBtn').addEventListener('click', () => commitCalcValue('add'));
   popup.querySelector('#calcResetBtn').addEventListener('click', () => commitCalcValue('reset'));
 
+  popup.querySelectorAll('#calcCommitModes [data-commit]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const m = btn.getAttribute('data-commit');
+      if (m !== 'apply' && m !== 'add') return;
+      calcState.commitMode = m;
+      popup.querySelectorAll('#calcCommitModes [data-commit]').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
   // 바깥 클릭으로 닫기
   document.addEventListener('mousedown', (e) => {
     if (!calcState.isOpen) return;
@@ -2420,7 +2438,7 @@ function ensureCalcPopup() {
     }
     if (e.key === 'Enter') {
       e.preventDefault();
-      commitCalcValue('apply');
+      commitCalcValue(calcState.commitMode === 'add' ? 'add' : 'apply');
       return;
     }
 
