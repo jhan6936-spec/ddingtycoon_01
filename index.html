@@ -234,14 +234,41 @@
       line-height: 1.6;
     }
 
-    /* 거래소 — 디스코드 포럼 작성 + 카드 피드 + 프로필 팝업 */
+    /* 거래소 — 검정 톤 + 글로우 강조 + 2열 스레드 패널 */
+    #trade-hub .header h1 {
+      color: #f6f7f9;
+      text-shadow:
+        0 0 12px rgba(88, 101, 242, 0.55),
+        0 0 28px rgba(235, 69, 159, 0.35);
+    }
+    #trade-hub .header-subtitle {
+      color: #a8adb8;
+      text-shadow: 0 0 14px rgba(255, 255, 255, 0.12);
+    }
     .trade-hub-wrap {
       margin-top: 8px;
       border-radius: 12px;
       overflow: hidden;
-      border: 1px solid #2f3136;
-      background: #313338;
-      max-width: 920px;
+      border: 1px solid #1a1b22;
+      background: #050508;
+      box-shadow:
+        0 0 0 1px rgba(88, 101, 242, 0.12),
+        0 0 40px rgba(88, 101, 242, 0.08);
+      max-width: min(1180px, 100%);
+      display: flex;
+      align-items: stretch;
+      min-height: min(68vh, 720px);
+      position: relative;
+    }
+    .trade-hub-main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid transparent;
+    }
+    .trade-hub-wrap.trade-split-open .trade-hub-main {
+      border-right-color: #1e1f28;
     }
     .trade-category-tabs {
       display: flex;
