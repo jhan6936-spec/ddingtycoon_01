@@ -1,7 +1,7 @@
 @echo off
 
 :loop
-timeout /t 10 >nul
+timeout /t 5 >nul
 
 git diff --quiet
 IF ERRORLEVEL 1 (
