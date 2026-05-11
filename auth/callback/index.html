@@ -11,14 +11,16 @@
   <p id="msg">로그인 확인 중…</p>
   <script>
 (function () {
-  var HOME = 'https://ddingtycoon-01.vercel.app/';
   var cfg = window.SUPABASE_CONFIG;
   var mod = window.supabase;
   var createClient = mod && mod.createClient ? mod.createClient : (mod && mod.default && mod.default.createClient);
+  function goHome() {
+    window.location.replace('/');
+  }
   function fail() {
     var el = document.getElementById('msg');
     if (el) el.textContent = '설정 오류 — 메인으로 이동합니다';
-    setTimeout(function () { window.location.replace(HOME); }, 800);
+    setTimeout(goHome, 800);
   }
   if (!cfg || !cfg.url || !cfg.anonKey || !createClient) return fail();
   var sb = createClient(cfg.url, cfg.anonKey, {
@@ -30,11 +32,9 @@
       storage: window.localStorage
     }
   });
-  sb.auth.getSession().then(function () {
-    window.location.replace(HOME);
-  }).catch(function (e) {
+  sb.auth.getSession().then(goHome).catch(function (e) {
     console.error('[auth/callback]', e);
-    window.location.replace(HOME);
+    goHome();
   });
 })();
   </script>

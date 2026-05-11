@@ -3488,7 +3488,9 @@ async function authSignInDiscord() {
     alert('Supabase 설정을 확인할 수 없습니다. 콘솔 로그를 확인하세요.');
     return;
   }
-  const redirectTo = `${window.location.origin}${window.location.pathname}`;
+  const cfgAuth = window.SUPABASE_CONFIG || {};
+  const redirectTo =
+    cfgAuth.oauthRedirectUrl || 'https://ddingtycoon-01.vercel.app/auth/callback';
   const { data, error } = await sb.auth.signInWithOAuth({
     provider: 'discord',
     options: {
