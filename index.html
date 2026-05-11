@@ -3781,7 +3781,8 @@ function partitionShellfishByStar(shellObj) {
   return { t1, t2, t3 };
 }
 
-function renderShellfishTiersHTML(shellObj) {
+function renderShellfishTiersHTML(shellObj, qtyMode) {
+  const qm = qtyMode != null ? qtyMode : alchemySummaryQtyMode;
   const { t1, t2, t3 } = partitionShellfishByStar(shellObj);
   const cols = [
     { label: '1성 어패류', obj: t1 },
@@ -3796,7 +3797,7 @@ function renderShellfishTiersHTML(shellObj) {
       (c) => `
     <div class="alchemy-shell-col">
       <div class="alchemy-shell-col-title">${c.label}</div>
-      ${formatAlchemyMaterialLinesHTML(c.obj)}
+      ${formatAlchemyMaterialLinesHTML(c.obj, qm)}
     </div>`
     )
     .join('');
@@ -3830,7 +3831,8 @@ function partitionVanillaByWarehouseCategory(vanillaObj) {
   return { minerals, vanillaFish, coralSea, leaves, other };
 }
 
-function renderVanillaWarehouseCategoriesHTML(vanillaObj) {
+function renderVanillaWarehouseCategoriesHTML(vanillaObj, qtyMode) {
+  const qm = qtyMode != null ? qtyMode : alchemySummaryQtyMode;
   const { minerals, vanillaFish, coralSea, leaves, other } = partitionVanillaByWarehouseCategory(vanillaObj);
   const blocks = [
     { title: '광물', obj: minerals },
@@ -3847,7 +3849,7 @@ function renderVanillaWarehouseCategoriesHTML(vanillaObj) {
       (b) => `
     <div class="alchemy-vanilla-col">
       <div class="alchemy-vanilla-col-title">${b.title}</div>
-      ${formatAlchemyMaterialLinesHTML(b.obj)}
+      ${formatAlchemyMaterialLinesHTML(b.obj, qm)}
     </div>`
     )
     .join('')}</div>`;
