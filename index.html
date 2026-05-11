@@ -6918,7 +6918,7 @@ function renderTradeMessages() {
 
 function setTradeCategoryFilter(cat) {
   tradeCategoryFilter = cat || 'all';
-  document.querySelectorAll('.trade-tab').forEach((btn) => {
+  document.querySelectorAll('#trade-hub .trade-tab').forEach((btn) => {
     btn.classList.toggle('active', btn.getAttribute('data-trade-cat') === tradeCategoryFilter);
   });
   renderTradeMessages();
