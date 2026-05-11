@@ -3458,17 +3458,22 @@ function extractDiscordProfile(user) {
   let avatarUrl = meta.avatar_url || meta.picture || '';
 
   const identities = user.identities || [];
-  const discordId = identities.find((i) => i.provider === 'discord');
-  const idData = discordId && discordId.identity_data ? discordId.identity_data : {};
-  if (idData) {
-    if (idData.full_name) name = idData.full_name;
-    else if (idData.name) name = idData.name;
-    else if (idData.global_name) name = idData.global_name;
-    else if (idData.username) name = idData.username;
-    if (idData.avatar_url) avatarUrl = idData.avatar_url;
-    if (!avatarUrl && idData.avatar && idData.sub) {
-      avatarUrl = `https://cdn.discordapp.com/avatars/${idData.sub}/${idData.avatar}.png?size=64`;
-    }
+  const discordIdentity = identities.find((i) => i.provider === 'discord');
+  const idData = discordIdentity && discordIdentity.identity_data ? discordIdentity.identity_data : {};
+  if (idData.full_name) name = idData.full_name;
+  else if (idData.name) name = idData.name;
+  else if (idData.global_name) name = idData.global_name;
+  else if (idData.username) name = idData.username;
+  if (idData.avatar_url) avatarUrl = idData.avatar_url;
+
+  const discordSnowflake =
+    idData.sub ||
+    idData.provider_id ||
+    (discordIdentity && discordIdentity.identity_id) ||
+    '';
+
+  if (!avatarUrl && idData.avatar && discordSnowflake) {
+    avatarUrl = `https://cdn.discordapp.com/avatars/${discordSnowflake}/${idData.avatar}.png?size=64`;
   }
   return { name, avatarUrl };
 }
