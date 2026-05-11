@@ -4170,7 +4170,7 @@ function renderCraftPricePanel(effects) {
     return `<div style="margin-bottom:12px;">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
         <div style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--t-title-muted);">${imgHTML}<span>${name}</span></div>
-        <input type="number" min="0" step="1" id="craftSalesQty_${idx}" value="${qtyVal}" style="width:96px;padding:6px 8px;border-radius:6px;border:1px solid var(--t-border-strong);background:var(--t-surface2);color:var(--t-text-inv);font-weight:700;font-size:13px;">
+        <input type="number" min="0" step="1" id="craftSalesQty_${idx}" class="craft-sales-qty-input" value="${qtyVal}">
       </div>
       <div style="font-size:11px;color:var(--t-label);margin-top:4px;text-align:right;">소계 · 기본 <span id="craftSalesSubBase_${idx}">0G</span> · 전문가 <span id="craftSalesSubAdj_${idx}" style="color:#8fd5ff;">0G</span></div>
     </div>`;
