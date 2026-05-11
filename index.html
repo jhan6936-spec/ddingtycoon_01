@@ -41,7 +41,7 @@
       --t-text-bright: #eee;
       --t-text-dd: #ddd;
       --t-text-inv: #ffffff;
-      --t-expert-title: #f1f1f1;
+      --t-expert-title: var(--t-expert-title);
       --t-stamina-banner: #f2f2f2;
       --t-title-muted: #e5e5e5;
       --t-factory-strong: #e6e6e6;
@@ -92,7 +92,7 @@
       --t-hero-kicker-text: #8fc9f7;
       --t-viewer-arrow-bg: rgba(20, 20, 20, 0.65);
       --t-viewer-arrow-hover-bg: rgba(30, 30, 30, 0.75);
-      --t-rod-visual: linear-gradient(120deg, var(--t-mini-tab-bg), #242424);
+      --t-rod-visual: linear-gradient(120deg, #1b1b1b, #242424);
       --t-rod-border: #2f2f2f;
     }
 
@@ -1299,7 +1299,7 @@
     .expert-name {
       font-size: 14px;
       font-weight: 800;
-      color: #f1f1f1;
+      color: var(--t-expert-title);
       margin-bottom: 6px;
     }
     .expert-desc {
