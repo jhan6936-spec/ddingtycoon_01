@@ -3579,7 +3579,7 @@ async function logoutFromProfileModal() {
   await authSignOut();
 }
 
-function updateAuthUI_DEPRECATED_REMOVE_DUP() {
+function setAuthConfigHint(visible, message) {
   const hint = document.getElementById('authConfigHint');
   const btn = document.getElementById('btnDiscordLogin');
   if (hint) {
