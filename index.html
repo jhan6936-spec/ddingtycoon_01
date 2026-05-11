@@ -6779,7 +6779,7 @@ function loadQaPosts() {
 
 function setQaCategoryFilter(cat) {
   qaCategoryFilter = cat || 'all';
-  document.querySelectorAll('[data-qa-cat]').forEach((btn) => {
+  document.querySelectorAll('#qa-channel [data-qa-cat]').forEach((btn) => {
     btn.classList.toggle('active', btn.getAttribute('data-qa-cat') === qaCategoryFilter);
   });
   renderQaMessages();
