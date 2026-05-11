@@ -41,7 +41,7 @@
       --t-text-bright: #eee;
       --t-text-dd: #ddd;
       --t-text-inv: #ffffff;
-      --t-expert-title: var(--t-expert-title);
+      --t-expert-title: #f1f1f1;
       --t-stamina-banner: #f2f2f2;
       --t-title-muted: #e5e5e5;
       --t-factory-strong: #e6e6e6;
@@ -3064,7 +3064,7 @@ function renderRecipes() {
     title.style.gridColumn = '1 / -1';
     title.style.fontSize = '15px';
     title.style.fontWeight = '900';
-    title.style.color = '#e5e5e5';
+    title.style.color = 'var(--t-title-muted)';
     title.style.margin = '8px 0 2px';
     title.textContent = g.title;
     container.appendChild(title);
@@ -3078,7 +3078,7 @@ function renderRecipes() {
     materialsTitle.style.gridColumn = '1 / -1';
     materialsTitle.style.fontSize = '15px';
     materialsTitle.style.fontWeight = '900';
-    materialsTitle.style.color = '#e5e5e5';
+    materialsTitle.style.color = 'var(--t-title-muted)';
     materialsTitle.style.margin = '20px 0 2px';
     materialsTitle.textContent = '연금품 재료';
     container.appendChild(materialsTitle);
@@ -3552,7 +3552,7 @@ function renderTriFinalPlan(title, orderedNames, counts) {
     </div>`;
   }).join('');
   return `<div style="margin-bottom:14px;">
-    <div style="font-size:13px;font-weight:800;color:#e5e5e5;margin-bottom:8px;">${title}</div>
+    <div style="font-size:13px;font-weight:800;color:var(--t-title-muted);margin-bottom:8px;">${title}</div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">${cells}</div>
   </div>`;
 }
@@ -3711,7 +3711,7 @@ function renderSageRod() {
     }).join('');
     return `
       <div style="padding:10px;border:1px solid var(--t-border);border-radius:8px;background:var(--t-surface3);">
-        <div style="font-size:12px;color:#e5e5e5;margin-bottom:4px;">${meta.label}</div>
+        <div style="font-size:12px;color:var(--t-title-muted);margin-bottom:4px;">${meta.label}</div>
         <div style="font-size:11px;color:#9da7b3;margin-bottom:8px;">${meta.desc}</div>
         <select onchange="changeSageEngravingLevel('${key}', this.value)" style="width:100%;background:var(--t-input-dark);color:#d9e7f5;border:1px solid var(--t-border-2);border-radius:6px;padding:7px 8px;font-size:12px;">
           ${opts}
@@ -3851,7 +3851,7 @@ function renderStaminaPlan() {
 
   result.innerHTML = `
     <div style="font-size:13px; color:#9eb2c8; margin-bottom:8px; text-align:center;">입력 ${staminaRaw} → 채집에 사용 <strong style="color:#cde7ff;">${stamina}</strong> (15 단위)</div>
-    <div style="font-size:14px; font-weight:900; color:#f2f2f2; margin-bottom:10px; padding:12px; background:var(--t-surface1); border-radius:8px; text-align:center;">⚡ 총 채집 가능: ${gathers}회 (스태미나 15 소모 기준)</div>
+    <div style="font-size:14px; font-weight:900; color:var(--t-stamina-banner); margin-bottom:10px; padding:12px; background:var(--t-surface1); border-radius:8px; text-align:center;">⚡ 총 채집 가능: ${gathers}회 (스태미나 15 소모 기준)</div>
     <div style="font-size:12px; color:#9eb2c8; margin-bottom:10px; text-align:center;">세이지 드롭 ${effectiveDrops.toFixed(2)}개/회 (심해채집꾼+각인 반영), 조개 등장 ${shellChanceTotal.toFixed(1)}%, 어획력 ${fishingPowerTotal}, 3성 확률 ${star3Chance.toFixed(1)}%</div>
     <div style="font-size:11px; color:#7f99b6; margin-bottom:10px; text-align:center;">각인 기대값: 물고기 +${expectedExtraFish.toFixed(2)}회분, 정령고래 깨진 조개껍데기 +${expectedWhaleBrokenShell.toFixed(2)}개 (룰렛 포함 기대 어패는 드롭/회에 반영)</div>
     <div style="background:var(--t-surface-muted); border:1px solid var(--t-border); border-radius:10px; overflow:hidden;">
@@ -3972,7 +3972,7 @@ function renderCraftPricePanel(effects) {
   const headerRow = document.createElement('div');
   headerRow.style.cssText = 'display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;flex-wrap:wrap;gap:8px;';
   headerRow.innerHTML = `
-    <div style="font-size:14px;font-weight:900;color:#e5e5e5;">공예품 가격</div>
+    <div style="font-size:14px;font-weight:900;color:var(--t-title-muted);">공예품 가격</div>
     <div style="font-size:11px;color:#e8945a;font-weight:600;">현재가, 최고가, 최고가 대비 비율을 함께 표시합니다.</div>
   `;
   containerCraftPrice.appendChild(headerRow);
@@ -4305,7 +4305,7 @@ function analyzeEfficiency() {
     const alchemyTitle = document.createElement('div');
     alchemyTitle.style.fontSize = '14px';
     alchemyTitle.style.fontWeight = '900';
-    alchemyTitle.style.color = '#e5e5e5';
+    alchemyTitle.style.color = 'var(--t-title-muted)';
     alchemyTitle.style.marginBottom = '15px';
     alchemyTitle.textContent = '연금품 제작';
     containerAlchemy.appendChild(alchemyTitle);
