@@ -4399,6 +4399,30 @@ function getSupabaseClient() {
 }
 
 /** 서버에서 최신 사용자 클레임 반영 (Discord 프로필 등) */
+function isTradeBoardAdmin() {
+  return cachedProfileRole === 'admin';
+}
+
+async function refreshProfileRole(sb) {
+  cachedProfileRole = null;
+  if (!sb) return;
+  try {
+    const { data: sessWrap } = await sb.auth.getSession();
+    const uid = sessWrap?.session?.user?.id;
+    if (!uid) return;
+    const { data, error } = await sb.from('profiles').select('role').eq('id', uid).maybeSingle();
+    if (error) {
+      console.warn('[profiles] 역할 조회 실패:', error.message);
+      cachedProfileRole = 'user';
+      return;
+    }
+    cachedProfileRole = data && data.role === 'admin' ? 'admin' : 'user';
+  } catch (e) {
+    console.warn('[profiles] 역할 조회 예외:', e);
+    cachedProfileRole = 'user';
+  }
+}
+
 async function fetchAuthUserForUI(sb) {
   const { data, error } = await sb.auth.getUser();
   if (error) {
@@ -4453,6 +4477,8 @@ function extractDiscordProfile(user) {
 
 let cachedAuthUserForProfile = null;
 let currentAuthUserId = null;
+/** Supabase public.profiles.role 동기화: null | 'user' | 'admin' */
+let cachedProfileRole = null;
 /** 로그아웃 후 늦게 끝나는 fetchAuthUserForUI가 로그인 UI를 덮어쓰지 않게 함 */
 let authUiNonce = 0;
 const USER_PROFILE_STORAGE_PREFIX = 'ddingty_user_profile:';
@@ -5183,6 +5209,7 @@ function toggleTradeThreadMoreMenu(ev) {
 
 function canModifyTradePost(post) {
   if (!post) return false;
+  if (isTradeBoardAdmin()) return true;
   const gid = getOrCreateTradeGuestId();
   if (currentAuthUserId && post.userId && String(post.userId) === String(currentAuthUserId)) return true;
   if (!post.userId && post.authorGuestKey && post.authorGuestKey === gid) return true;
@@ -5642,6 +5669,7 @@ function updateAuthUI(user) {
   const avatarImg = document.getElementById('authAvatarImg');
   cachedAuthUserForProfile = user || null;
   currentAuthUserId = user && user.id ? user.id : null;
+  if (!user) cachedProfileRole = null;
   if (user) {
     if (bar) bar.hidden = true;
     if (trigger) trigger.hidden = false;
