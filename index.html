@@ -716,18 +716,18 @@
     .eff-alchemy-pane-head {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
       gap: 12px;
       margin: 8px 0 18px;
+    }
+    .eff-alchemy-pane-title-wrap {
+      flex: 1;
+      min-width: 0;
+      text-align: center;
     }
     .eff-alchemy-pane-title {
       font-size: 32px;
       font-weight: 900;
       color: #fff;
-      text-align: center;
-      flex: 1 1 auto;
-      min-width: 0;
     }
     .toggle-wrap {
       display: inline-flex;
@@ -1704,7 +1704,12 @@
         </div>
       </div>
       <div id="effAlchemyPane" class="mini-pane">
-        <div style="font-size:32px; font-weight:900; color:#fff; text-align:center; margin:8px 0 18px;">연금품 계산</div>
+        <div class="eff-alchemy-pane-head">
+          <div class="eff-alchemy-pane-title-wrap">
+            <div class="eff-alchemy-pane-title">연금품 계산</div>
+          </div>
+          <button type="button" class="btn alchemy-screenshot-exclude" id="alchemyScreenshotBtn" onclick="downloadAlchemyPaneScreenshot()">사진으로 다운</button>
+        </div>
         <div id="efficiencyContainerAlchemy">
           <div class="no-result">연금품 계산 결과가 여기에 표시됩니다</div>
         </div>
