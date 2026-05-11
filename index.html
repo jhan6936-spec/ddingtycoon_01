@@ -2033,6 +2033,39 @@ const STORAGE_KEY_EXPERTS = 'thingta_experts_v1';
 const STORAGE_KEY_SAGE_ROD = 'thingta_sage_rod_v1';
 const STORAGE_KEY_SAGE_ENGRAVINGS = 'thingta_sage_engraving_v1';
 const STORAGE_KEY_STAMINA = 'thingta_stamina_v1';
+const STORAGE_KEY_THEME = 'thingta_theme_v1';
+
+function getStoredTheme() {
+  try {
+    const v = localStorage.getItem(STORAGE_KEY_THEME);
+    return v === 'light' || v === 'dark' ? v : 'dark';
+  } catch (_) {
+    return 'dark';
+  }
+}
+
+function applyTheme(theme) {
+  const t = theme === 'light' ? 'light' : 'dark';
+  document.documentElement.classList.toggle('theme-light', t === 'light');
+  try {
+    localStorage.setItem(STORAGE_KEY_THEME, t);
+  } catch (_) {}
+  const btn = document.getElementById('themeToggleBtn');
+  if (btn) {
+    const isLight = t === 'light';
+    btn.textContent = isLight ? '다크 모드' : '라이트 모드';
+    btn.setAttribute('aria-pressed', isLight ? 'true' : 'false');
+    btn.title = isLight ? '다크 모드로 전환' : '라이트 모드로 전환';
+  }
+}
+
+function toggleTheme() {
+  applyTheme(document.documentElement.classList.contains('theme-light') ? 'dark' : 'light');
+}
+
+function initTheme() {
+  applyTheme(getStoredTheme());
+}
 
 const expertMeta = {
   craftPrice: {
@@ -4427,6 +4460,7 @@ function analyzeEfficiency() {
 
 // ===== 초기 렌더링 =====
 window.addEventListener('DOMContentLoaded', function() {
+  initTheme();
   loadVanillaToggleState();
   loadExpertState();
   loadSageRodState();
