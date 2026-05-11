@@ -3680,19 +3680,35 @@ async function authSignInDiscord() {
   if (data?.url) console.debug('[Supabase Auth] OAuth 리다이렉트 URL 발급됨');
 }
 
+/** 브라우저에 남은 Supabase 세션 스토리지 제거 (signOut 실패·폴백용) */
+function clearSupabaseAuthStorage() {
+  try {
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith('sb-') && key.endsWith('-auth-token')) {
+        localStorage.removeItem(key);
+      }
+    });
+  } catch (_) {}
+}
+
 async function authSignOut() {
   closeProfileSettingsModal();
   try {
     const sb = getSupabaseClient();
     if (!sb) {
+      clearSupabaseAuthStorage();
       updateAuthUI(null);
       return;
     }
-    const { error } = await sb.auth.signOut();
-    if (error) console.error('[Supabase Auth] signOut 실패:', error.message, error);
+    const { error } = await sb.auth.signOut({ scope: 'global' });
+    if (error) {
+      console.error('[Supabase Auth] signOut 실패:', error.message, error);
+      clearSupabaseAuthStorage();
+    }
     updateAuthUI(null);
   } catch (e) {
     console.error('[Supabase Auth] signOut 예외:', e);
+    clearSupabaseAuthStorage();
     updateAuthUI(null);
   }
 }
