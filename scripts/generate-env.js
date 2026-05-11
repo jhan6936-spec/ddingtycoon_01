@@ -6,9 +6,12 @@ const fs = require('fs');
 const path = require('path');
 
 try {
-  require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+  const dotenv = require('dotenv');
+  dotenv.config({ path: path.join(__dirname, '..', '.env') });
 } catch (e) {
-  console.warn('[generate-env] dotenv optional load skipped:', e && e.message);
+  if (e.code !== 'MODULE_NOT_FOUND') {
+    console.warn('[generate-env] dotenv:', e.message);
+  }
 }
 
 const url = process.env.SUPABASE_URL || '';

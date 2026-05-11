@@ -3439,43 +3439,84 @@ function setAuthConfigHint(visible, message) {
 }
 
 async function initSupabaseAuth() {
-  const sb = getSupabaseClient();
-  if (!sb) {
-    setAuthConfigHint(true, 'Supabase URL·Anon 키가 없습니다. supabase-config.js 또는 Vercel 환경변수(SUPABASE_URL, SUPABASE_ANON_KEY)를 설정한 뒤 npm run build 하세요.');
+  try {
+    const sb = getSupabaseClient();
+    if (!sb) {
+      setAuthConfigHint(true, 'Supabase URL·Anon 키가 없습니다. supabase-config.js 또는 Vercel 환경변수를 확인하세요.');
+      updateAuthUI(null);
+      return;
+    }
+    setAuthConfigHint(false);
+
+    sb.auth.onAuthStateChange(async (event, session) => {
+      try {
+        console.debug('[Supabase Auth] onAuthStateChange:', event);
+        if (!session) {
+          updateAuthUI(null);
+          return;
+        }
+        const user = await fetchAuthUserForUI(sb);
+        updateAuthUI(user);
+      } catch (e) {
+        console.error('[Supabase Auth] onAuthStateChange 처리 오류:', e);
+        updateAuthUI(session?.user ?? null);
+      }
+    });
+
+    const { data: sessWrap, error: sessErr } = await sb.auth.getSession();
+    if (sessErr) {
+      console.error('[Supabase Auth] getSession 실패:', sessErr.message, sessErr);
+      updateAuthUI(null);
+      return;
+    }
+    if (sessWrap.session) {
+      const user = await fetchAuthUserForUI(sb);
+      updateAuthUI(user);
+    } else {
+      updateAuthUI(null);
+    }
+  } catch (e) {
+    console.error('[Supabase Auth] initSupabaseAuth 예외:', e);
     updateAuthUI(null);
-    return;
   }
-  setAuthConfigHint(false);
-
-  sb.auth.onAuthStateChange((_event, session) => {
-    updateAuthUI(session && session.user ? session.user : null);
-  });
-
-  const { data: { session } } = await sb.auth.getSession();
-  updateAuthUI(session && session.user ? session.user : null);
 }
 
 async function authSignInDiscord() {
   const sb = getSupabaseClient();
   if (!sb) {
-    alert('Supabase가 설정되지 않았습니다.');
+    console.error('[Supabase Auth] 로그인 불가: 클라이언트 미생성');
+    alert('Supabase 설정을 확인할 수 없습니다. 콘솔 로그를 확인하세요.');
     return;
   }
   const redirectTo = `${window.location.origin}${window.location.pathname}`;
-  const { error } = await sb.auth.signInWithOAuth({
+  const { data, error } = await sb.auth.signInWithOAuth({
     provider: 'discord',
     options: {
       redirectTo,
       scopes: 'identify email'
     }
   });
-  if (error) console.error(error);
+  if (error) {
+    console.error('[Supabase Auth] signInWithOAuth 실패:', error.message, error);
+    return;
+  }
+  if (data?.url) console.debug('[Supabase Auth] OAuth 리다이렉트 URL 발급됨');
 }
 
 async function authSignOut() {
-  const sb = getSupabaseClient();
-  if (sb) await sb.auth.signOut();
-  updateAuthUI(null);
+  try {
+    const sb = getSupabaseClient();
+    if (!sb) {
+      updateAuthUI(null);
+      return;
+    }
+    const { error } = await sb.auth.signOut();
+    if (error) console.error('[Supabase Auth] signOut 실패:', error.message, error);
+    updateAuthUI(null);
+  } catch (e) {
+    console.error('[Supabase Auth] signOut 예외:', e);
+    updateAuthUI(null);
+  }
 }
 
 // ===== 해양전문가 가이드 이미지 슬라이더 =====
