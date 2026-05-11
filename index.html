@@ -3004,7 +3004,7 @@
     <div id="trade-hub" class="content-section">
       <div class="header">
         <h1>거래소</h1>
-        <p class="header-subtitle">구매 · 판매 · 교환 · 알바(구인) — 글·이미지·댓글은 모두 이 브라우저에만 저장됩니다</p>
+        <p class="header-subtitle">구매 · 판매 · 교환 · 알바(구인) — 글은 Supabase로 동기화되어 다른 사람도 볼 수 있습니다(표 설정 필요)</p>
       </div>
       <div class="trade-hub-wrap" id="tradeHubWrap">
         <div class="trade-hub-main">
@@ -3046,8 +3046,29 @@
         </div>
         <aside class="trade-thread-panel" id="tradeThreadPanel" hidden aria-hidden="true">
           <div class="trade-thread-panel-head">
-            <button type="button" class="trade-thread-close" onclick="closeTradeThreadPanel()" aria-label="스레드 닫기">✕</button>
-            <h2 class="trade-thread-panel-title" id="tradeThreadTitle">글 제목</h2>
+            <div class="trade-thread-head-row">
+              <h2 class="trade-thread-panel-title" id="tradeThreadTitle">글 제목</h2>
+              <div class="trade-thread-head-actions">
+                <div class="trade-thread-more-wrap">
+                  <button type="button" class="trade-thread-more" id="tradeThreadMoreBtn" onclick="toggleTradeThreadMoreMenu(event)" aria-expanded="false" aria-haspopup="true" title="더 보기">⋮</button>
+                  <div class="trade-thread-more-menu" id="tradeThreadMoreMenu" hidden role="menu">
+                    <button type="button" role="menuitem" onclick="tradeThreadEditPost()">포스트 수정</button>
+                    <button type="button" role="menuitem" class="trade-more-danger" onclick="tradeThreadDeletePost()">포스트 삭제</button>
+                  </div>
+                </div>
+                <button type="button" class="trade-thread-close" onclick="closeTradeThreadPanel()" aria-label="스레드 닫기">✕</button>
+              </div>
+            </div>
+            <div id="tradeThreadEditPanel" class="trade-thread-edit-panel" hidden>
+              <label class="trade-edit-label" for="tradeEditTitle">제목</label>
+              <input type="text" id="tradeEditTitle" class="trade-title-input" maxlength="200" autocomplete="off">
+              <label class="trade-edit-label" for="tradeEditBody">본문</label>
+              <textarea id="tradeEditBody" class="trade-body-input" rows="6" maxlength="2000"></textarea>
+              <div class="trade-thread-edit-actions">
+                <button type="button" class="trade-edit-cancel" onclick="cancelTradeThreadEdit()">취소</button>
+                <button type="button" class="trade-send-btn" onclick="saveTradeThreadEdit()">저장</button>
+              </div>
+            </div>
           </div>
           <div class="trade-thread-scroll" id="tradeThreadScroll">
             <div id="tradeThreadRootBlock"></div>
