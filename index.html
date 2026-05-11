@@ -19,7 +19,7 @@
       --t-surface3: #171717;
       --t-surface-15: #151515;
       --t-surface-muted: #1f1f1f;
-      --t-surface2: var(--t-surface2);
+      --t-surface2: #252525;
       --t-stamina-grid: #262626;
       --t-plan-bg: #121212;
       --t-rev-bg: #0f1419;
@@ -79,7 +79,7 @@
       --t-scroll-track: #0f0f0f;
       --t-scroll-thumb: #333;
       --t-scroll-thumb-hover: #444;
-      --t-ingredient-count-bg: var(--t-border);
+      --t-ingredient-count-bg: #2a2a2a;
       --t-media-bg: #0f0f0f;
       --t-credit-plaque-bg-1: #1e2429;
       --t-credit-plaque-bg-2: #171a1d;
@@ -436,7 +436,7 @@
     }
     .recipe-card {
       background: var(--t-surface1);
-      border: 1px solid #2a2a2a;
+      border: 1px solid var(--t-border);
       border-radius: 8px;
       overflow: hidden;
       transition: all 0.3s ease;
@@ -450,7 +450,7 @@
     .recipe-card-header {
       padding: 15px;
       background: var(--t-surface2);
-      border-bottom: 1px solid #2a2a2a;
+      border-bottom: 1px solid var(--t-border);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -502,7 +502,7 @@
       flex: 1;
     }
     .ingredient-count {
-      background: #2a2a2a;
+      background: var(--t-border);
       padding: 2px 8px;
       border-radius: 3px;
       font-size: 12px;
@@ -544,7 +544,7 @@
     .warehouse-section {
       overflow: visible;
       background: rgba(26, 26, 26, 0.5);
-      border: 1px solid #2a2a2a;
+      border: 1px solid var(--t-border);
       border-radius: 10px;
       padding: 14px;
       box-shadow: 0 6px 18px rgba(0,0,0,0.2);
@@ -571,7 +571,7 @@
       position: relative;
       overflow: visible;
       background: var(--t-surface1);
-      border: 1px solid #2a2a2a;
+      border: 1px solid var(--t-border);
       padding: 15px;
       border-radius: 6px;
     }
@@ -820,14 +820,14 @@
     }
     .media-card {
       background: var(--t-surface1);
-      border: 1px solid #2a2a2a;
+      border: 1px solid var(--t-border);
       border-radius: 10px;
       overflow: hidden;
     }
     .media-card-title {
       padding: 10px 12px;
       background: var(--t-surface2);
-      border-bottom: 1px solid #2a2a2a;
+      border-bottom: 1px solid var(--t-border);
       font-size: 12px;
       font-weight: 800;
       color: #eee;
@@ -848,7 +848,7 @@
     .factory-video-wrap {
       margin-top: 18px;
       background: var(--t-surface1);
-      border: 1px solid #2a2a2a;
+      border: 1px solid var(--t-border);
       border-radius: 10px;
       overflow: hidden;
       max-width: 980px;
@@ -858,7 +858,7 @@
     .factory-video-title {
       padding: 10px 12px;
       background: var(--t-surface2);
-      border-bottom: 1px solid #2a2a2a;
+      border-bottom: 1px solid var(--t-border);
       font-size: 12px;
       font-weight: 900;
       color: #fff;
@@ -875,7 +875,7 @@
       margin-top: 14px;
       padding: 10px 12px;
       background: var(--t-factory-note);
-      border: 1px solid #2a2a2a;
+      border: 1px solid var(--t-border);
       border-radius: 10px;
       color: #aaa;
       font-size: 12px;
@@ -920,7 +920,7 @@
       width: min(1100px, 100%);
       max-height: min(86vh, 920px);
       background: #0f0f0f;
-      border: 1px solid #2a2a2a;
+      border: 1px solid var(--t-border);
       border-radius: 12px;
       overflow: hidden;
       position: relative;
@@ -935,7 +935,7 @@
       gap: 10px;
       padding: 10px 12px;
       background: var(--t-surface-deep);
-      border-bottom: 1px solid #2a2a2a;
+      border-bottom: 1px solid var(--t-border);
     }
     .viewer-title {
       font-size: 12px;
@@ -1006,7 +1006,7 @@
     }
     .viewer-counter {
       padding: 10px 12px;
-      border-top: 1px solid #2a2a2a;
+      border-top: 1px solid var(--t-border);
       background: #0f0f0f;
       color: #bbb;
       font-size: 12px;
@@ -1022,7 +1022,7 @@
     .calc-popup {
       width: 280px;
       background: var(--t-surface-deep);
-      border: 1px solid #2a2a2a;
+      border: 1px solid var(--t-border);
       border-radius: 10px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
       overflow: hidden;
@@ -1039,7 +1039,7 @@
     .calc-header {
       padding: 10px 12px;
       background: var(--t-surface1);
-      border-bottom: 1px solid #2a2a2a;
+      border-bottom: 1px solid var(--t-border);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -1093,7 +1093,7 @@
     }
     .calc-display {
       background: #0f0f0f;
-      border: 1px solid #2a2a2a;
+      border: 1px solid var(--t-border);
       border-radius: 10px;
       padding: 10px 10px;
       margin-bottom: 10px;
@@ -1121,7 +1121,7 @@
     .key {
       padding: 10px 0;
       border-radius: 10px;
-      border: 1px solid #2a2a2a;
+      border: 1px solid var(--t-border);
       background: var(--t-surface1);
       color: #eee;
       cursor: pointer;
@@ -1198,7 +1198,7 @@
     /* 효율 분석 섹션 */
     .efficiency-card {
       background: var(--t-surface1);
-      border: 1px solid #2a2a2a;
+      border: 1px solid var(--t-border);
       border-radius: 8px;
       padding: 15px;
       margin-bottom: 15px;
@@ -1292,7 +1292,7 @@
     }
     .expert-card {
       background: var(--t-surface1);
-      border: 1px solid #2a2a2a;
+      border: 1px solid var(--t-border);
       border-radius: 10px;
       padding: 14px;
     }
@@ -1331,7 +1331,7 @@
     }
     .panel-card {
       background: var(--t-surface1);
-      border: 1px solid #2a2a2a;
+      border: 1px solid var(--t-border);
       border-radius: 10px;
       padding: 14px;
       margin-bottom: 14px;
@@ -1543,8 +1543,8 @@
         -45deg,
         #222,
         #222 6px,
-        #2a2a2a 6px,
-        #2a2a2a 12px
+        var(--t-border) 6px,
+        var(--t-border) 12px
       );
       opacity: 0.7;
     }
@@ -3546,7 +3546,7 @@ function renderTriFinalPlan(title, orderedNames, counts) {
   const cells = orderedNames.map((name) => {
     const n = counts[name] || 0;
     const imgH = buildImageTag(name, '', 'height:22px;vertical-align:middle;margin-right:6px;');
-    return `<div style="background:var(--t-surface-deep);border:1px solid #2a2a2a;border-radius:8px;padding:10px 8px;text-align:center;min-height:72px;display:flex;flex-direction:column;justify-content:center;">
+    return `<div style="background:var(--t-surface-deep);border:1px solid var(--t-border);border-radius:8px;padding:10px 8px;text-align:center;min-height:72px;display:flex;flex-direction:column;justify-content:center;">
       <div style="font-size:11px;color:#9eb2c8;line-height:1.25;word-break:keep-all;">${imgH}${name}</div>
       <div style="font-size:17px;font-weight:900;color:#8fd5ff;margin-top:6px;">${n}개</div>
     </div>`;
@@ -3710,7 +3710,7 @@ function renderSageRod() {
       return `<option value="${idx}" ${selected}>Lv.${idx} (${value}${suffix})</option>`;
     }).join('');
     return `
-      <div style="padding:10px;border:1px solid #2a2a2a;border-radius:8px;background:var(--t-surface3);">
+      <div style="padding:10px;border:1px solid var(--t-border);border-radius:8px;background:var(--t-surface3);">
         <div style="font-size:12px;color:#e5e5e5;margin-bottom:4px;">${meta.label}</div>
         <div style="font-size:11px;color:#9da7b3;margin-bottom:8px;">${meta.desc}</div>
         <select onchange="changeSageEngravingLevel('${key}', this.value)" style="width:100%;background:var(--t-input-dark);color:#d9e7f5;border:1px solid #2f2f2f;border-radius:6px;padding:7px 8px;font-size:12px;">
@@ -3841,7 +3841,7 @@ function renderStaminaPlan() {
     const localGathers = Math.floor(useStamina / STAMINA_PER_GATHER);
     const imgHTML = buildImageTag(name, name, 'height:24px; vertical-align:middle; margin-right:6px;');
     return `
-      <div style="display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:10px; align-items:center; padding:12px 10px; border-top:1px solid #2a2a2a;">
+      <div style="display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:10px; align-items:center; padding:12px 10px; border-top:1px solid var(--t-border);">
         <div style="font-weight:900; color:#fff;">${imgHTML}${name}</div>
         <div style="font-weight:900; color:#66a7ff;">${useStamina}</div>
         <div style="font-weight:900; color:#fff;">${localGathers}회</div>
@@ -3854,7 +3854,7 @@ function renderStaminaPlan() {
     <div style="font-size:14px; font-weight:900; color:#f2f2f2; margin-bottom:10px; padding:12px; background:var(--t-surface1); border-radius:8px; text-align:center;">⚡ 총 채집 가능: ${gathers}회 (스태미나 15 소모 기준)</div>
     <div style="font-size:12px; color:#9eb2c8; margin-bottom:10px; text-align:center;">세이지 드롭 ${effectiveDrops.toFixed(2)}개/회 (심해채집꾼+각인 반영), 조개 등장 ${shellChanceTotal.toFixed(1)}%, 어획력 ${fishingPowerTotal}, 3성 확률 ${star3Chance.toFixed(1)}%</div>
     <div style="font-size:11px; color:#7f99b6; margin-bottom:10px; text-align:center;">각인 기대값: 물고기 +${expectedExtraFish.toFixed(2)}회분, 정령고래 깨진 조개껍데기 +${expectedWhaleBrokenShell.toFixed(2)}개 (룰렛 포함 기대 어패는 드롭/회에 반영)</div>
-    <div style="background:var(--t-surface-muted); border:1px solid #2a2a2a; border-radius:10px; overflow:hidden;">
+    <div style="background:var(--t-surface-muted); border:1px solid var(--t-border); border-radius:10px; overflow:hidden;">
       <div style="display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:10px; padding:10px; background:var(--t-stamina-grid); color:#9ea7b3; font-size:12px; font-weight:900;">
         <div>품목 이름</div><div>스태미나</div><div>채집 횟수</div>
       </div>
@@ -4005,7 +4005,7 @@ function renderCraftPricePanel(effects) {
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
         <div class="expert-name" style="margin-bottom:0;">${titleHTML}</div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:8px 10px;background:var(--t-surface-15);border:1px solid #2a2a2a;border-radius:8px;margin-bottom:10px;">
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:8px 10px;background:var(--t-surface-15);border:1px solid var(--t-border);border-radius:8px;margin-bottom:10px;">
         <div>
           <div style="font-size:10px;color:#8a8a8a;">현재 가격</div>
           <div style="font-size:14px;font-weight:900;color:#8fd5ff;">${currentPrice.toLocaleString()}G</div>
@@ -4025,7 +4025,7 @@ function renderCraftPricePanel(effects) {
         <div style="font-size:11px;color:#9d9d9d;">전문가 적용 판매가</div>
         <div style="font-size:11px;color:${hasCraftBoost ? '#8fd5ff' : '#777'};text-align:right;">${boostedRecipePrice.toLocaleString()}G${hasCraftBoost ? ` ( +${effects.craftPriceBoost}% )` : ''}</div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:2px 12px;padding-top:8px;border-top:1px solid #2a2a2a;">
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:2px 12px;padding-top:8px;border-top:1px solid var(--t-border);">
         ${ingredientsHTML}
       </div>
     `;
@@ -4150,7 +4150,7 @@ function analyzeEfficiency() {
         <div class="efficiency-title">${imageHTML}${result.name}</div>
         <div class="efficiency-badge">#${index + 1}</div>
       </div>
-      <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #2a2a2a;">
+      <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--t-border);">
         <div class="info-item" style="margin-bottom: 8px;">
           <div class="info-label">제작 가능 수량</div>
           <div class="info-value" style="font-size: 18px;">${result.maxCount}개</div>
@@ -4160,7 +4160,7 @@ function analyzeEfficiency() {
           <div class="info-value" style="font-size: 16px;">${result.totalPrice.toLocaleString()}G</div>
         </div>
       </div>
-      ${requiredList ? `<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #2a2a2a;">
+      ${requiredList ? `<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--t-border);">
         <div style="font-size: 12px; font-weight: 700; color: #bbb; margin-bottom: 8px;">📋 필요 연금재료:</div>
         ${requiredList}
       </div>` : ''}
@@ -4338,7 +4338,7 @@ function analyzeEfficiency() {
           <div class="efficiency-title">${imageHTML}${name}</div>
           <div class="efficiency-badge">#${i + 1}</div>
         </div>
-        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #2a2a2a;">
+        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--t-border);">
           <div class="info-item" style="margin-bottom: 8px;">
             <div class="info-label">제작 수량</div>
             <div class="info-value" style="font-size: 18px;">${count}개</div>
@@ -4358,7 +4358,7 @@ function analyzeEfficiency() {
             </div>
           </div>
         </div>
-        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #2a2a2a;">
+        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--t-border);">
           <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">필요 재료</div>
           ${subMatsHTML}
         </div>
