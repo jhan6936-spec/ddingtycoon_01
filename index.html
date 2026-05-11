@@ -3227,7 +3227,6 @@ function renderWarehouse() {
   });
 
   updateVanillaInputState();
-  applyWarehouseSetDisplayMode();
 }
 
 // ===== 창고 세트(64) 표시 모드 =====
@@ -3902,6 +3901,8 @@ function updateVanillaInputState() {
     input.disabled = !isVanillaCalcOn;
     input.placeholder = isVanillaCalcOn ? '수량 입력' : '무한';
   });
+
+  applyWarehouseSetDisplayMode();
 }
 
 // ===== 재료 수량 가져오기 (요리 가능 최대량 계산) =====
