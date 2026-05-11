@@ -4430,6 +4430,7 @@ async function refreshProfileRole(sb) {
   }
 }
 
+/** 서버에서 최신 사용자 클레임 반영 (Discord 프로필 등) */
 async function fetchAuthUserForUI(sb) {
   const { data, error } = await sb.auth.getUser();
   if (error) {
