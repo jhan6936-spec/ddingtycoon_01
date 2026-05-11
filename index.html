@@ -2458,6 +2458,43 @@
       <p class="marine-guide-credit">이 정보는 디코 닉 x_x님과해드림 율님의 정보를 기반으로 사용 & 제작되었습니다 .</p>
     </div>
 
+    <!-- 거래소 -->
+    <div id="trade-hub" class="content-section">
+      <div class="header">
+        <h1>거래소</h1>
+        <p class="header-subtitle">구매 · 판매 · 교환 · 알바(구인) — 디스코드 채널처럼 글을 남길 수 있습니다 (이 브라우저에만 저장됩니다)</p>
+      </div>
+      <div class="trade-hub-wrap">
+        <div class="trade-category-tabs" role="tablist" aria-label="거래 카테고리">
+          <button type="button" class="trade-tab active" data-trade-cat="all" onclick="setTradeCategoryFilter('all')">전체</button>
+          <button type="button" class="trade-tab" data-trade-cat="buy" onclick="setTradeCategoryFilter('buy')">구매</button>
+          <button type="button" class="trade-tab" data-trade-cat="sell" onclick="setTradeCategoryFilter('sell')">판매</button>
+          <button type="button" class="trade-tab" data-trade-cat="exchange" onclick="setTradeCategoryFilter('exchange')">교환</button>
+          <button type="button" class="trade-tab" data-trade-cat="job" onclick="setTradeCategoryFilter('job')">알바(구인)</button>
+        </div>
+        <div class="trade-channel" id="tradeMessageList"></div>
+        <div class="trade-composer">
+          <div class="trade-composer-inner">
+            <div class="trade-composer-avatar" id="tradeComposerAvatar" aria-hidden="true">?</div>
+            <div class="trade-composer-fields">
+              <label class="profile-field-label" for="tradePostCategory" style="margin:0;color:#949ba4;font-size:12px;">카테고리</label>
+              <select id="tradePostCategory" class="trade-cat-select" aria-label="글 카테고리">
+                <option value="buy">구매</option>
+                <option value="sell">판매</option>
+                <option value="exchange">교환</option>
+                <option value="job">알바(구인)</option>
+              </select>
+              <label class="profile-field-label" for="tradePostBody" style="margin:0;color:#949ba4;font-size:12px;">메시지</label>
+              <textarea id="tradePostBody" class="trade-input" placeholder="#거래소 에 메시지 보내기" rows="4" maxlength="2000"></textarea>
+              <div class="trade-composer-actions">
+                <button type="button" class="trade-send-btn" id="tradeSendBtn" onclick="submitTradePost()">게시</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- 공장 제작법 섹션 -->
     <div id="factory" class="content-section">
       <div class="header">
