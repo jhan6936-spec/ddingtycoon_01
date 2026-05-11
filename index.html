@@ -3321,9 +3321,13 @@ function getSupabaseClient() {
   if (supabaseAuthClient) return supabaseAuthClient;
   const cfg = window.__SUPABASE_CONFIG__;
   if (!cfg || !cfg.url || !cfg.anonKey) return null;
-  const createClient = window.supabase && typeof window.supabase.createClient === 'function'
-    ? window.supabase.createClient
-    : null;
+  const mod = window.supabase;
+  const createClient =
+    mod && typeof mod.createClient === 'function'
+      ? mod.createClient
+      : mod && mod.default && typeof mod.default.createClient === 'function'
+        ? mod.default.createClient
+        : null;
   if (!createClient) return null;
   supabaseAuthClient = createClient(cfg.url, cfg.anonKey, {
     auth: {
@@ -3349,7 +3353,7 @@ function extractDiscordProfile(user) {
     meta.custom_claims?.username ||
     user.email ||
     'Discord 사용자';
-  let avatarUrl = meta.avatar_url || meta.picture || meta.avatar_url || '';
+  let avatarUrl = meta.avatar_url || meta.picture || '';
 
   const identities = user.identities || [];
   const discordId = identities.find((i) => i.provider === 'discord');
@@ -3511,6 +3515,7 @@ function initMarineGuideCarousel() {
   });
   track.setAttribute('data-built', '1');
   applyMarineGuideSlide();
+  requestAnimationFrame(() => applyMarineGuideSlide());
   let resizeTimer;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
