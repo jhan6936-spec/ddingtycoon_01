@@ -3678,6 +3678,77 @@ function formatAlchemyMaterialLinesHTML(matObj) {
     .join('');
 }
 
+function partitionShellfishByStar(shellObj) {
+  const t1 = {};
+  const t2 = {};
+  const t3 = {};
+  Object.entries(shellObj).forEach(([name, c]) => {
+    if (!c || c <= 0) return;
+    const s = String(name);
+    if (/★★★/.test(s)) t3[name] = c;
+    else if (/★★/.test(s)) t2[name] = c;
+    else if (/★/.test(s)) t1[name] = c;
+    else t1[name] = c;
+  });
+  return { t1, t2, t3 };
+}
+
+function renderShellfishTiersHTML(shellObj) {
+  const { t1, t2, t3 } = partitionShellfishByStar(shellObj);
+  const cols = [
+    { label: '1성 어패류', obj: t1 },
+    { label: '2성 어패류', obj: t2 },
+    { label: '3성 어패류', obj: t3 },
+  ].filter((c) => Object.keys(c.obj).length > 0);
+  const n = cols.length;
+  if (n === 0) return '<div style="font-size:12px;color:#778899;">해당 없음</div>';
+  const templateCols = `repeat(${n}, minmax(0, 1fr))`;
+  const cells = cols
+    .map(
+      (c) => `
+    <div class="alchemy-shell-col">
+      <div class="alchemy-shell-col-title">${c.label}</div>
+      ${formatAlchemyMaterialLinesHTML(c.obj)}
+    </div>`
+    )
+    .join('');
+  return `<div class="alchemy-shell-tier-grid" style="display:grid;grid-template-columns:${templateCols};gap:12px;align-items:start;">${cells}</div>`;
+}
+
+function partitionVanillaByWarehouseCategory(vanillaObj) {
+  const coralSea = {};
+  const leaves = {};
+  const other = {};
+  Object.entries(vanillaObj).forEach(([name, c]) => {
+    if (!c || c <= 0) return;
+    if (/산호|켈프|해초/.test(name)) coralSea[name] = c;
+    else if (/잎$/.test(name)) leaves[name] = c;
+    else other[name] = c;
+  });
+  return { coralSea, leaves, other };
+}
+
+function renderVanillaWarehouseCategoriesHTML(vanillaObj) {
+  const { coralSea, leaves, other } = partitionVanillaByWarehouseCategory(vanillaObj);
+  const blocks = [
+    { title: '산호 · 해양', obj: coralSea },
+    { title: '나무 잎', obj: leaves },
+    { title: '기타 바닐라', obj: other },
+  ].filter((b) => Object.keys(b.obj).length > 0);
+  if (!blocks.length) return '<div style="font-size:12px;color:#778899;">해당 없음</div>';
+  const n = blocks.length;
+  const templateCols = n === 1 ? '1fr' : `repeat(${Math.min(n, 3)}, minmax(0, 1fr))`;
+  return `<div class="alchemy-vanilla-grid" style="display:grid;grid-template-columns:${templateCols};gap:12px;align-items:start;">${blocks
+    .map(
+      (b) => `
+    <div class="alchemy-vanilla-col">
+      <div class="alchemy-vanilla-col-title">${b.title}</div>
+      ${formatAlchemyMaterialLinesHTML(b.obj)}
+    </div>`
+    )
+    .join('')}</div>`;
+}
+
 function deductFinalRecipe(recipe, inv, options = {}) {
   for (const inp of recipe.inputs || []) {
     deductCraftTree(inp.name, inp.count, inv, options);
@@ -4537,12 +4608,12 @@ function analyzeEfficiency() {
       <div style="font-size:13px;font-weight:900;color:#e8f4ff;margin-bottom:6px;">추천 제작 기준 필요 재료 합계</div>
       <div style="font-size:11px;color:#8899aa;line-height:1.5;margin-bottom:12px;">바닐라 무한 계산을 켠 경우에도, 레시피상 필요한 개수는 아래와 같습니다.</div>
       <div class="alchemy-mat-section">
-        <h4>어패류 (굴·소라·문어·미역·성게 계열)</h4>
-        ${formatAlchemyMaterialLinesHTML(shell)}
+        <h4>어패류</h4>
+        ${renderShellfishTiersHTML(shell)}
       </div>
       <div class="alchemy-mat-section">
-        <h4>바닐라 및 기타 재료</h4>
-        ${formatAlchemyMaterialLinesHTML(vanilla)}
+        <h4>바닐라 재료</h4>
+        ${renderVanillaWarehouseCategoriesHTML(vanilla)}
       </div>
     `;
     containerAlchemy.appendChild(summaryBox);
@@ -4559,6 +4630,61 @@ function analyzeEfficiency() {
   }
   
   renderStaminaPlan();
+}
+
+async function downloadAlchemyPaneScreenshot() {
+  const pane = document.getElementById('effAlchemyPane');
+  if (!pane) return;
+  if (typeof html2canvas !== 'function') {
+    alert('이미지 생성 라이브러리를 불러오지 못했습니다. 인터넷 연결 후 다시 시도해 주세요.');
+    return;
+  }
+  const btn = document.getElementById('alchemyScreenshotBtn');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = '생성 중…';
+  }
+  try {
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    const canvas = await html2canvas(pane, {
+      scale: Math.min(2, window.devicePixelRatio || 2),
+      backgroundColor: '#0f0f0f',
+      useCORS: true,
+      allowTaint: true,
+      logging: false,
+      ignoreElements: (node) => !!(node.classList && node.classList.contains('alchemy-screenshot-exclude')),
+      scrollX: 0,
+      scrollY: -window.scrollY,
+      windowWidth: document.documentElement.offsetWidth,
+      windowHeight: document.documentElement.offsetHeight,
+    });
+    await new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          resolve();
+          return;
+        }
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `띵타해_연금품계산_${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.png`;
+        a.rel = 'noopener';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        resolve();
+      }, 'image/png');
+    });
+  } catch (e) {
+    console.error(e);
+    alert('이미지를 만들지 못했습니다. 잠시 후 다시 시도해 주세요.');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = '사진으로 다운';
+    }
+  }
 }
 
 // ===== 초기 렌더링 =====
