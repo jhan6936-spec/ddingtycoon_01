@@ -5208,6 +5208,7 @@ function submitTradeReply() {
   if (i === -1) return;
   const author = getTradeAuthorForPost();
   const uid = cachedAuthUserForProfile && cachedAuthUserForProfile.id ? cachedAuthUserForProfile.id : null;
+  const authorGuestKey = uid ? null : getOrCreateTradeGuestId();
   const comment = normalizeTradeComment({
     id: `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`,
     authorName: author.name,
@@ -5216,11 +5217,12 @@ function submitTradeReply() {
     body,
     ts: Date.now(),
     userId: uid,
+    authorGuestKey,
     attachments: imgs
   });
   const cur = posts[i];
   const nextComments = (cur.comments || []).concat(comment);
-  posts[i] = normalizeTradePost({ ...cur, comments: nextComments });
+  posts[i] = normalizeTradePost({ ...cur, comments: nextComments, updatedAt: Date.now() });
   saveTradePosts(posts);
   if (ta) ta.value = '';
   tradeReplyPendingAttachments = [];
