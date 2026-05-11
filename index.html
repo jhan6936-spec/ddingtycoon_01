@@ -4497,6 +4497,53 @@ let selectedTradePostId = null;
 let tradeComposePendingAttachments = [];
 let tradeReplyPendingAttachments = [];
 const TRADE_MAX_IMAGES_PER_POST = 6;
+const TRADE_GUEST_KEY_STORAGE = 'ddingty_trade_guest_id';
+const TRADE_REMOTE_TABLE = 'trade_posts';
+let tradePostsCache = null;
+let tradeRemoteSyncTimer = null;
+
+function getOrCreateTradeGuestId() {
+  try {
+    let id = localStorage.getItem(TRADE_GUEST_KEY_STORAGE);
+    if (!id) {
+      id = `g_${Date.now()}_${Math.random().toString(36).slice(2, 12)}`;
+      localStorage.setItem(TRADE_GUEST_KEY_STORAGE, id);
+    }
+    return id;
+  } catch (_) {
+    return `g_sess_${Date.now()}`;
+  }
+}
+
+function getTradeUserKey() {
+  if (currentAuthUserId) return `u:${currentAuthUserId}`;
+  return `g:${getOrCreateTradeGuestId()}`;
+}
+
+function normalizeReactionsByUser(o) {
+  const out = {};
+  if (!o || typeof o !== 'object') return out;
+  Object.keys(o).forEach((k) => {
+    const v = o[k];
+    if (typeof v === 'string' && TRADE_REACTION_KEYS.includes(v)) out[k] = v;
+  });
+  return out;
+}
+
+function deriveReactionCountsFromUsers(reactionsByUser) {
+  const tally = normalizeReactionMap(null);
+  if (!reactionsByUser || typeof reactionsByUser !== 'object') return tally;
+  Object.values(reactionsByUser).forEach((emojiKey) => {
+    if (TRADE_REACTION_KEYS.includes(emojiKey)) tally[emojiKey]++;
+  });
+  return tally;
+}
+
+function deriveReactionCountsFromPost(p) {
+  const ru = normalizeReactionsByUser(p.reactionsByUser);
+  if (Object.keys(ru).length > 0) return deriveReactionCountsFromUsers(ru);
+  return normalizeReactionMap(p.reactions);
+}
 
 function normalizeReactionMap(r) {
   const out = {};
