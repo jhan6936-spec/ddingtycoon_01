@@ -16,17 +16,17 @@
       --t-surface-deep: #141414;
       --t-modal-bg: #131313;
       --t-surface1: #1a1a1a;
-      --t-surface3: #171717;
-      --t-surface-15: #151515;
-      --t-surface-muted: #1f1f1f;
+      --t-surface3: var(--t-surface3);
+      --t-surface-15: var(--t-surface-15);
+      --t-surface-muted: var(--t-surface-muted);
       --t-surface2: #252525;
       --t-stamina-grid: #262626;
-      --t-plan-bg: #121212;
-      --t-rev-bg: #0f1419;
-      --t-time-bg: #10161d;
+      --t-plan-bg: var(--t-plan-bg);
+      --t-rev-bg: var(--t-rev-bg);
+      --t-time-bg: var(--t-time-bg);
       --t-input-dark: #101010;
       --t-mini-tab-bg: #1b1b1b;
-      --t-factory-note: #161616;
+      --t-factory-note: var(--t-factory-note);
       --t-expert-btn-bg: #202020;
       --t-toggle-off: #353535;
       --t-border: #2a2a2a;
@@ -874,7 +874,7 @@
     .factory-credit {
       margin-top: 14px;
       padding: 10px 12px;
-      background: #161616;
+      background: var(--t-factory-note);
       border: 1px solid #2a2a2a;
       border-radius: 10px;
       color: #aaa;
@@ -3710,7 +3710,7 @@ function renderSageRod() {
       return `<option value="${idx}" ${selected}>Lv.${idx} (${value}${suffix})</option>`;
     }).join('');
     return `
-      <div style="padding:10px;border:1px solid #2a2a2a;border-radius:8px;background:#171717;">
+      <div style="padding:10px;border:1px solid #2a2a2a;border-radius:8px;background:var(--t-surface3);">
         <div style="font-size:12px;color:#e5e5e5;margin-bottom:4px;">${meta.label}</div>
         <div style="font-size:11px;color:#9da7b3;margin-bottom:8px;">${meta.desc}</div>
         <select onchange="changeSageEngravingLevel('${key}', this.value)" style="width:100%;background:#101010;color:#d9e7f5;border:1px solid #2f2f2f;border-radius:6px;padding:7px 8px;font-size:12px;">
@@ -3854,7 +3854,7 @@ function renderStaminaPlan() {
     <div style="font-size:14px; font-weight:900; color:#f2f2f2; margin-bottom:10px; padding:12px; background:#1a1a1a; border-radius:8px; text-align:center;">⚡ 총 채집 가능: ${gathers}회 (스태미나 15 소모 기준)</div>
     <div style="font-size:12px; color:#9eb2c8; margin-bottom:10px; text-align:center;">세이지 드롭 ${effectiveDrops.toFixed(2)}개/회 (심해채집꾼+각인 반영), 조개 등장 ${shellChanceTotal.toFixed(1)}%, 어획력 ${fishingPowerTotal}, 3성 확률 ${star3Chance.toFixed(1)}%</div>
     <div style="font-size:11px; color:#7f99b6; margin-bottom:10px; text-align:center;">각인 기대값: 물고기 +${expectedExtraFish.toFixed(2)}회분, 정령고래 깨진 조개껍데기 +${expectedWhaleBrokenShell.toFixed(2)}개 (룰렛 포함 기대 어패는 드롭/회에 반영)</div>
-    <div style="background:#1f1f1f; border:1px solid #2a2a2a; border-radius:10px; overflow:hidden;">
+    <div style="background:var(--t-surface-muted); border:1px solid #2a2a2a; border-radius:10px; overflow:hidden;">
       <div style="display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:10px; padding:10px; background:#262626; color:#9ea7b3; font-size:12px; font-weight:900;">
         <div>품목 이름</div><div>스태미나</div><div>채집 횟수</div>
       </div>
@@ -4005,7 +4005,7 @@ function renderCraftPricePanel(effects) {
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
         <div class="expert-name" style="margin-bottom:0;">${titleHTML}</div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:8px 10px;background:#151515;border:1px solid #2a2a2a;border-radius:8px;margin-bottom:10px;">
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:8px 10px;background:var(--t-surface-15);border:1px solid #2a2a2a;border-radius:8px;margin-bottom:10px;">
         <div>
           <div style="font-size:10px;color:#8a8a8a;">현재 가격</div>
           <div style="font-size:14px;font-weight:900;color:#8fd5ff;">${currentPrice.toLocaleString()}G</div>
@@ -4267,7 +4267,7 @@ function analyzeEfficiency() {
   const planWrap = document.createElement('div');
   planWrap.style.marginBottom = '18px';
   planWrap.style.padding = '14px';
-  planWrap.style.background = '#121212';
+  planWrap.style.background = 'var(--t-plan-bg)';
   planWrap.style.border = '1px solid #2a3140';
   planWrap.style.borderRadius = '12px';
   planWrap.innerHTML = `
@@ -4286,7 +4286,7 @@ function analyzeEfficiency() {
   const revBox = document.createElement('div');
   revBox.style.marginBottom = '18px';
   revBox.style.padding = '12px 14px';
-  revBox.style.background = '#0f1419';
+  revBox.style.background = 'var(--t-rev-bg)';
   revBox.style.border = '1px solid #2a3a4d';
   revBox.style.borderRadius = '10px';
   revBox.innerHTML = `
@@ -4369,7 +4369,7 @@ function analyzeEfficiency() {
     const timeSummary = document.createElement('div');
     timeSummary.style.margin = '8px 0 16px 0';
     timeSummary.style.padding = '10px 12px';
-    timeSummary.style.background = '#10161d';
+    timeSummary.style.background = 'var(--t-time-bg)';
     timeSummary.style.border = '1px solid #2a3a4d';
     timeSummary.style.borderRadius = '10px';
     timeSummary.innerHTML = `
