@@ -1558,14 +1558,17 @@
             <h1>재료 창고</h1>
             <p class="header-subtitle">보유한 재료의 수량을 기입하세요</p>
           </div>
-          <div class="header-actions">
+          <div class="header-actions warehouse-header-actions">
             <button class="btn danger" type="button" onclick="resetAllWarehouse()">전체 초기화</button>
-            <div class="toggle-wrap">
-              <span>바닐라 재료 계산</span>
-              <label class="toggle-switch" title="켜짐: 바닐라 재료 수량 반영 / 꺼짐: 바닐라 재료 무한대">
-                <input id="vanillaCalcToggle" type="checkbox" checked>
-                <span class="toggle-slider"></span>
-              </label>
+            <div class="warehouse-toggle-column">
+              <div class="toggle-wrap">
+                <span>바닐라 재료 계산</span>
+                <label class="toggle-switch" title="켜짐: 바닐라 재료 수량 반영 / 꺼짐: 바닐라 재료 무한대">
+                  <input id="vanillaCalcToggle" type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <button class="btn" type="button" id="warehouseSetDisplayToggle" onclick="toggleWarehouseSetDisplayMode()">갯수/세트 변환</button>
             </div>
           </div>
         </div>
