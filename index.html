@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>띵타해 | 해양 작업 계산기</title>
+  <script src="supabase-config.js"></script>
   <style>
     * {
       margin: 0;
@@ -2262,7 +2263,6 @@
   </div>
 </div>
 
-<script src="supabase-config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
@@ -3319,9 +3319,9 @@ let supabaseAuthClient = null;
 
 function getSupabaseClient() {
   if (supabaseAuthClient) return supabaseAuthClient;
-  const cfg = window.__SUPABASE_CONFIG__;
+  const cfg = window.SUPABASE_CONFIG;
   if (!cfg || !cfg.url || !cfg.anonKey) {
-    console.error('[Supabase Auth] __SUPABASE_CONFIG__ 에 url / anonKey 가 없습니다.');
+    console.error('[Supabase Auth] window.SUPABASE_CONFIG 에 url / anonKey 가 없습니다.');
     return null;
   }
   const mod = window.supabase;
