@@ -13,9 +13,9 @@
     :root {
       color-scheme: dark;
       --t-deep0: #0f0f0f;
-      --t-surface-deep: var(--t-surface-deep);
+      --t-surface-deep: #141414;
       --t-modal-bg: #131313;
-      --t-surface1: #1a1a1a;
+      --t-surface1: var(--t-surface1);
       --t-surface3: #171717;
       --t-surface-15: #151515;
       --t-surface-muted: #1f1f1f;
@@ -410,7 +410,7 @@
     .search-box input {
       width: 100%;
       padding: 10px 15px;
-      background: #1a1a1a;
+      background: var(--t-surface1);
       color: #fff;
       border: 1px solid var(--t-border-strong);
       border-radius: 6px;
@@ -421,7 +421,7 @@
     }
     .filter-select {
       padding: 10px 15px;
-      background: #1a1a1a;
+      background: var(--t-surface1);
       color: #fff;
       border: 1px solid var(--t-border-strong);
       border-radius: 6px;
@@ -435,7 +435,7 @@
       gap: 20px;
     }
     .recipe-card {
-      background: #1a1a1a;
+      background: var(--t-surface1);
       border: 1px solid #2a2a2a;
       border-radius: 8px;
       overflow: hidden;
@@ -570,7 +570,7 @@
     .warehouse-item {
       position: relative;
       overflow: visible;
-      background: #1a1a1a;
+      background: var(--t-surface1);
       border: 1px solid #2a2a2a;
       padding: 15px;
       border-radius: 6px;
@@ -773,7 +773,7 @@
       padding: 8px 12px;
       border-radius: 6px;
       border: 1px solid var(--t-border-strong);
-      background: #1a1a1a;
+      background: var(--t-surface1);
       color: #ddd;
       cursor: pointer;
       font-size: 12px;
@@ -802,7 +802,7 @@
       padding: 8px 12px;
       border-radius: 8px;
       border: 1px solid var(--t-border-strong);
-      background: #1a1a1a;
+      background: var(--t-surface1);
       color: #bbb;
       font-size: 12px;
       font-weight: 800;
@@ -819,7 +819,7 @@
       gap: 12px;
     }
     .media-card {
-      background: #1a1a1a;
+      background: var(--t-surface1);
       border: 1px solid #2a2a2a;
       border-radius: 10px;
       overflow: hidden;
@@ -847,7 +847,7 @@
     }
     .factory-video-wrap {
       margin-top: 18px;
-      background: #1a1a1a;
+      background: var(--t-surface1);
       border: 1px solid #2a2a2a;
       border-radius: 10px;
       overflow: hidden;
@@ -1038,7 +1038,7 @@
     }
     .calc-header {
       padding: 10px 12px;
-      background: #1a1a1a;
+      background: var(--t-surface1);
       border-bottom: 1px solid #2a2a2a;
       display: flex;
       justify-content: space-between;
@@ -1080,7 +1080,7 @@
       padding: 8px 10px;
       border-radius: 8px;
       border: 1px solid var(--t-border-strong);
-      background: #1a1a1a;
+      background: var(--t-surface1);
       color: #bbb;
       font-size: 12px;
       font-weight: 700;
@@ -1122,7 +1122,7 @@
       padding: 10px 0;
       border-radius: 10px;
       border: 1px solid #2a2a2a;
-      background: #1a1a1a;
+      background: var(--t-surface1);
       color: #eee;
       cursor: pointer;
       font-size: 14px;
@@ -1155,7 +1155,7 @@
       padding: 10px 0;
       border-radius: 10px;
       border: 1px solid var(--t-border-strong);
-      background: #1a1a1a;
+      background: var(--t-surface1);
       color: #eee;
       cursor: pointer;
       font-size: 12px;
@@ -1197,7 +1197,7 @@
     }
     /* 효율 분석 섹션 */
     .efficiency-card {
-      background: #1a1a1a;
+      background: var(--t-surface1);
       border: 1px solid #2a2a2a;
       border-radius: 8px;
       padding: 15px;
@@ -1255,7 +1255,7 @@
       text-align: center;
       color: #666;
       padding: 40px;
-      background: #1a1a1a;
+      background: var(--t-surface1);
       border-radius: 8px;
     }
     /* 카테고리 필터 버튼 */
@@ -1267,7 +1267,7 @@
     }
     .category-btn {
       padding: 8px 16px;
-      background: #1a1a1a;
+      background: var(--t-surface1);
       color: #bbb;
       border: 1px solid var(--t-border-strong);
       border-radius: 6px;
@@ -1291,7 +1291,7 @@
       gap: 14px;
     }
     .expert-card {
-      background: #1a1a1a;
+      background: var(--t-surface1);
       border: 1px solid #2a2a2a;
       border-radius: 10px;
       padding: 14px;
@@ -1330,7 +1330,7 @@
       font-weight: 900;
     }
     .panel-card {
-      background: #1a1a1a;
+      background: var(--t-surface1);
       border: 1px solid #2a2a2a;
       border-radius: 10px;
       padding: 14px;
@@ -3851,7 +3851,7 @@ function renderStaminaPlan() {
 
   result.innerHTML = `
     <div style="font-size:13px; color:#9eb2c8; margin-bottom:8px; text-align:center;">입력 ${staminaRaw} → 채집에 사용 <strong style="color:#cde7ff;">${stamina}</strong> (15 단위)</div>
-    <div style="font-size:14px; font-weight:900; color:#f2f2f2; margin-bottom:10px; padding:12px; background:#1a1a1a; border-radius:8px; text-align:center;">⚡ 총 채집 가능: ${gathers}회 (스태미나 15 소모 기준)</div>
+    <div style="font-size:14px; font-weight:900; color:#f2f2f2; margin-bottom:10px; padding:12px; background:var(--t-surface1); border-radius:8px; text-align:center;">⚡ 총 채집 가능: ${gathers}회 (스태미나 15 소모 기준)</div>
     <div style="font-size:12px; color:#9eb2c8; margin-bottom:10px; text-align:center;">세이지 드롭 ${effectiveDrops.toFixed(2)}개/회 (심해채집꾼+각인 반영), 조개 등장 ${shellChanceTotal.toFixed(1)}%, 어획력 ${fishingPowerTotal}, 3성 확률 ${star3Chance.toFixed(1)}%</div>
     <div style="font-size:11px; color:#7f99b6; margin-bottom:10px; text-align:center;">각인 기대값: 물고기 +${expectedExtraFish.toFixed(2)}회분, 정령고래 깨진 조개껍데기 +${expectedWhaleBrokenShell.toFixed(2)}개 (룰렛 포함 기대 어패는 드롭/회에 반영)</div>
     <div style="background:var(--t-surface-muted); border:1px solid #2a2a2a; border-radius:10px; overflow:hidden;">
