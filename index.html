@@ -3270,31 +3270,31 @@ function renderRecipes() {
     g.items.forEach((r) => container.appendChild(renderCard(r)));
   });
 
-  // 연금품 재료 섹션 (정수, 핵, 에센스, 결정, 엘릭서, 영약)
-  const alchemyMaterials = alchemyRecipes.filter(r => /(정수|핵|에센스|결정|엘릭서|영약)\s+★/.test(r.name));
-  if (alchemyMaterials.length > 0) {
-    const materialsTitle = document.createElement('div');
-    materialsTitle.style.gridColumn = '1 / -1';
-    materialsTitle.style.fontSize = '15px';
-    materialsTitle.style.fontWeight = '900';
-    materialsTitle.style.color = '#e5e5e5';
-    materialsTitle.style.margin = '20px 0 2px';
-    materialsTitle.textContent = '연금품 재료';
-    container.appendChild(materialsTitle);
-    
-    // 연금품 재료 그리드 생성 (3x2)
-    const materialsGrid = document.createElement('div');
-    materialsGrid.style.gridColumn = '1 / -1';
-    materialsGrid.style.display = 'grid';
-    materialsGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
-    materialsGrid.style.gap = '15px';
-    
-    alchemyMaterials.forEach(recipe => {
-      const card = renderCard(recipe);
-      materialsGrid.appendChild(card);
-    });
-    
-    container.appendChild(materialsGrid);
+  // 기타 연금품: materials에 정의된 연금 단계 아이템(제작법 있음), 혼합 최종 산물 아래
+  let miscAlchemyPairs = Object.entries(data.materials).filter(([name, rec]) =>
+    rec.inputs && rec.inputs.length > 0 && isMaterialsTabAlchemyChainItem(name)
+  );
+  if (currentSearch) {
+    const q = currentSearch.toLowerCase();
+    miscAlchemyPairs = miscAlchemyPairs.filter(([name]) => name.toLowerCase().includes(q));
+  }
+  miscAlchemyPairs.sort((a, b) => a[0].localeCompare(b[0], 'ko'));
+  const miscAlchemyRecipes = miscAlchemyPairs.map(([name, rec]) => ({
+    name,
+    inputs: rec.inputs,
+    price: rec.price
+  }));
+
+  if (miscAlchemyRecipes.length > 0) {
+    const miscTitle = document.createElement('div');
+    miscTitle.style.gridColumn = '1 / -1';
+    miscTitle.style.fontSize = '15px';
+    miscTitle.style.fontWeight = '900';
+    miscTitle.style.color = '#e5e5e5';
+    miscTitle.style.margin = '20px 0 2px';
+    miscTitle.textContent = '기타 연금품';
+    container.appendChild(miscTitle);
+    miscAlchemyRecipes.forEach((r) => container.appendChild(renderCard(r)));
   }
 
   if (container.children.length === 0) {
