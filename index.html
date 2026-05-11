@@ -2301,13 +2301,7 @@ function ensureCalcPopup() {
   });
 }
 
-let calcLayoutRaf = 0;
-
-function positionCalcPopupNearInput() {
-  const popup = document.getElementById('calcPopup');
-  const inputEl = calcState.targetInput;
-  if (!popup || !inputEl || popup.style.display === 'none') return;
-
+function positionCalcPopupViewport(inputEl, popup) {
   const rect = inputEl.getBoundingClientRect();
   const margin = 10;
   const popupW = 280;
@@ -2327,56 +2321,52 @@ function positionCalcPopupNearInput() {
   popup.style.top = `${Math.round(top)}px`;
 }
 
-function scheduleCalcPopupPosition() {
-  if (!calcState.isOpen) return;
-  if (calcLayoutRaf) cancelAnimationFrame(calcLayoutRaf);
-  calcLayoutRaf = requestAnimationFrame(() => {
-    calcLayoutRaf = 0;
-    positionCalcPopupNearInput();
-  });
-}
+function positionCalcPopupAnchored(host, inputEl, popup) {
+  const margin = 8;
+  const hostRect = host.getBoundingClientRect();
+  const inputRect = inputEl.getBoundingClientRect();
+  const pw = popup.offsetWidth || 280;
+  const ph = popup.offsetHeight || 400;
 
-function getCalcScrollRoots(inputEl) {
-  const roots = new Set();
-  let el = inputEl;
-  while (el && el !== document.documentElement) {
-    const st = window.getComputedStyle(el);
-    const oy = st.overflowY;
-    const ox = st.overflowX;
-    const scrollableY = /(auto|scroll|overlay)/.test(oy) && el.scrollHeight > el.clientHeight + 1;
-    const scrollableX = /(auto|scroll|overlay)/.test(ox) && el.scrollWidth > el.clientWidth + 1;
-    if (scrollableY || scrollableX) roots.add(el);
-    el = el.parentElement;
+  let left = inputRect.right - hostRect.left + margin;
+  let top = inputRect.top - hostRect.top;
+
+  if (hostRect.left + left + pw > window.innerWidth - margin) {
+    left = inputRect.left - hostRect.left - pw - margin;
   }
-  return Array.from(roots);
+  if (left < margin) left = margin;
+
+  const vSpaceBelow = window.innerHeight - inputRect.bottom;
+  if (vSpaceBelow < 80 && inputRect.top - hostRect.top > ph * 0.35) {
+    top = Math.max(margin, inputRect.bottom - hostRect.top - ph - margin);
+  }
+
+  popup.style.left = `${Math.round(left)}px`;
+  popup.style.top = `${Math.round(top)}px`;
 }
 
-function bindCalcPopupLayoutWatchers(inputEl) {
-  unbindCalcPopupLayoutWatchers();
-  if (!inputEl) return;
-  const handler = () => scheduleCalcPopupPosition();
-  calcState._calcLayoutHandler = handler;
-  calcState._calcScrollRoots = getCalcScrollRoots(inputEl);
+function bindCalcPopupResizeOnly(handler) {
+  unbindCalcPopupResizeOnly();
+  if (!handler) return;
+  calcState._calcResizeHandler = handler;
   window.addEventListener('resize', handler);
-  calcState._calcScrollRoots.forEach((root) => {
-    root.addEventListener('scroll', handler, { passive: true });
-  });
 }
 
-function unbindCalcPopupLayoutWatchers() {
-  const handler = calcState._calcLayoutHandler;
-  if (handler) {
-    window.removeEventListener('resize', handler);
-    (calcState._calcScrollRoots || []).forEach((root) => {
-      root.removeEventListener('scroll', handler);
-    });
-  }
-  calcState._calcLayoutHandler = null;
-  calcState._calcScrollRoots = null;
-  if (calcLayoutRaf) {
-    cancelAnimationFrame(calcLayoutRaf);
-    calcLayoutRaf = 0;
-  }
+function unbindCalcPopupResizeOnly() {
+  const h = calcState._calcResizeHandler;
+  if (h) window.removeEventListener('resize', h);
+  calcState._calcResizeHandler = null;
+}
+
+function parkCalcPopupOnBody() {
+  const popup = document.getElementById('calcPopup');
+  if (!popup) return;
+  unbindCalcPopupResizeOnly();
+  popup.classList.remove('calc-popup--anchored');
+  popup.classList.add('calc-popup--fixed');
+  popup.style.left = '';
+  popup.style.top = '';
+  document.body.appendChild(popup);
 }
 
 function openCalculatorForInput(inputEl) {
@@ -2389,23 +2379,36 @@ function openCalculatorForInput(inputEl) {
   calcState.targetInput = inputEl;
   calcState.materialName = inputEl.getAttribute('data-material') || '수량 입력';
 
-  // 새 입력(사용자가 계산/입력하는 용도)
   calcState.countExpr = '';
   calcState.setExpr = '';
   calcState.remExpr = '';
   calcState.activePart = calcState.mode === 'count' ? 'count' : 'set';
   syncCalcDisplay();
 
-  popup.style.display = 'block';
-  positionCalcPopupNearInput();
-  bindCalcPopupLayoutWatchers(inputEl);
+  const host = inputEl.closest('.warehouse-item');
+  if (host) {
+    popup.classList.remove('calc-popup--fixed');
+    popup.classList.add('calc-popup--anchored');
+    host.appendChild(popup);
+    popup.style.display = 'block';
+    const layout = () => positionCalcPopupAnchored(host, inputEl, popup);
+    requestAnimationFrame(() => {
+      layout();
+      requestAnimationFrame(layout);
+    });
+    bindCalcPopupResizeOnly(layout);
+  } else {
+    parkCalcPopupOnBody();
+    popup.style.display = 'block';
+    positionCalcPopupViewport(inputEl, popup);
+    bindCalcPopupResizeOnly(() => positionCalcPopupViewport(inputEl, popup));
+  }
 
   const titleEl = document.getElementById('calcTitle');
   if (titleEl) titleEl.textContent = calcState.materialName;
 }
 
 function closeCalculator() {
-  unbindCalcPopupLayoutWatchers();
   calcState.isOpen = false;
   calcState.targetInput = null;
   calcState.materialName = '';
@@ -2414,7 +2417,10 @@ function closeCalculator() {
   calcState.remExpr = '';
   calcState.activePart = 'count';
   const popup = document.getElementById('calcPopup');
-  if (popup) popup.style.display = 'none';
+  if (popup) {
+    popup.style.display = 'none';
+    parkCalcPopupOnBody();
+  }
 }
 
 function handleCalcKey(key) {
@@ -2925,6 +2931,7 @@ function renderRecipes() {
 
 // ===== 창고 렌더링 =====
 function renderWarehouse() {
+  closeCalculator();
   const container = document.getElementById('warehouseContainer');
   container.innerHTML = '';
   const savedInventory = loadWarehouseInventory();
