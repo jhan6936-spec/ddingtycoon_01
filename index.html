@@ -840,17 +840,27 @@
       color: #eee;
     }
 
-    /* 계산기 팝업 */
+    /* 계산기 팝업 (창고: 카드 안 absolute / 기타: 화면 fixed) */
     .calc-popup {
-      position: fixed;
       width: 280px;
       background: #141414;
       border: 1px solid #2a2a2a;
       border-radius: 10px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
-      z-index: 9999;
       overflow: hidden;
       display: none;
+    }
+    .calc-popup.calc-popup--fixed {
+      position: fixed;
+      z-index: 9999;
+    }
+    .calc-popup.calc-popup--anchored {
+      position: absolute;
+      z-index: 40;
+    }
+    .warehouse-item {
+      position: relative;
+      overflow: visible;
     }
     .calc-header {
       padding: 10px 12px;
@@ -1241,7 +1251,9 @@
     .patch-modal-card {
       width: min(760px, 100%);
       max-height: 80vh;
-      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
       background: #131313;
       border: 1px solid #2e2e2e;
       border-radius: 12px;
