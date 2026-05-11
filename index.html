@@ -2485,7 +2485,8 @@ function ensureCalcPopup() {
     }
     if (e.key === 'Enter') {
       e.preventDefault();
-      commitCalcValue(calcState.commitMode === 'add' ? 'add' : 'apply');
+      const ok = commitCalcValue(calcState.commitMode === 'add' ? 'add' : 'apply');
+      if (ok) closeCalculator();
       return;
     }
 
@@ -2800,13 +2801,14 @@ function convertCalcMode(nextMode) {
 }
 
 function commitCalcValue(action) {
-  if (!calcState.targetInput) return;
+  if (!calcState.targetInput) return false;
+
   const inputEl = calcState.targetInput;
 
   let current = parseInt(inputEl.getAttribute('data-warehouse-count'), 10);
   if (!Number.isFinite(current)) current = parseInt(inputEl.value, 10) || 0;
   const computed = getCalcResultValue();
-  if (computed === null) return;
+  if (computed === null) return false;
 
   if (action === 'apply') {
     inputEl.setAttribute('data-warehouse-count', String(computed));
@@ -2837,6 +2839,7 @@ function commitCalcValue(action) {
 
   saveWarehouseInventory();
   analyzeEfficiency();
+  return true;
 }
 
 function resetAllWarehouse() {
@@ -3722,22 +3725,38 @@ function renderShellfishTiersHTML(shellObj) {
   return `<div class="alchemy-shell-tier-grid" style="display:grid;grid-template-columns:${templateCols};gap:12px;align-items:start;">${cells}</div>`;
 }
 
+/** 연금 합계 표에서 창고 카테고리와 별도 분류 */
+const ALCHEMY_SUMMARY_MINERAL_NAMES = new Set(['다이아몬드', '금 주괴', '청금석 블록', '레드스톤 블록', '철 주괴']);
+const ALCHEMY_SUMMARY_VANILLA_FISH_NAMES = new Set(['깐 새우', '금붕어 회', '농어 회', '도미 회', '청어 회']);
+
 function partitionVanillaByWarehouseCategory(vanillaObj) {
+  const minerals = {};
+  const vanillaFish = {};
   const coralSea = {};
   const leaves = {};
   const other = {};
   Object.entries(vanillaObj).forEach(([name, c]) => {
     if (!c || c <= 0) return;
+    if (ALCHEMY_SUMMARY_MINERAL_NAMES.has(name)) {
+      minerals[name] = c;
+      return;
+    }
+    if (ALCHEMY_SUMMARY_VANILLA_FISH_NAMES.has(name)) {
+      vanillaFish[name] = c;
+      return;
+    }
     if (/산호|켈프|해초/.test(name)) coralSea[name] = c;
     else if (/잎$/.test(name)) leaves[name] = c;
     else other[name] = c;
   });
-  return { coralSea, leaves, other };
+  return { minerals, vanillaFish, coralSea, leaves, other };
 }
 
 function renderVanillaWarehouseCategoriesHTML(vanillaObj) {
-  const { coralSea, leaves, other } = partitionVanillaByWarehouseCategory(vanillaObj);
+  const { minerals, vanillaFish, coralSea, leaves, other } = partitionVanillaByWarehouseCategory(vanillaObj);
   const blocks = [
+    { title: '광물', obj: minerals },
+    { title: '바닐라 어류', obj: vanillaFish },
     { title: '산호 · 해양', obj: coralSea },
     { title: '나무 잎', obj: leaves },
     { title: '기타 바닐라', obj: other },
