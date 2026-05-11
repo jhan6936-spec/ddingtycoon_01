@@ -1892,14 +1892,22 @@ function handleImageFallback(imgEl) {
   imgEl.style.display = 'none';
 }
 
+function encodeAssetPath(path) {
+  return String(path || '')
+    .split('/')
+    .map((seg) => encodeURIComponent(seg))
+    .join('/');
+}
+
 function buildImageTag(name, alt = '', style = '', className = '') {
   const candidates = getImagePathCandidates(name);
   if (!candidates.length) return '';
   const safeAlt = String(alt || name || '').replace(/"/g, '&quot;');
-  const safeCandidates = candidates.map(c => c.replace(/"/g, '&quot;')).join('|');
+  const safeCandidates = candidates.map((c) => encodeAssetPath(c).replace(/"/g, '&quot;')).join('|');
   const cls = className ? ` class="${className}"` : '';
   const styleAttr = style ? ` style="${style}"` : '';
-  return `<img src="${candidates[0]}" alt="${safeAlt}"${cls} data-img-candidates="${safeCandidates}" data-img-fallback-index="0"${styleAttr} onerror="handleImageFallback(this)">`;
+  const src0 = encodeAssetPath(candidates[0]);
+  return `<img src="${src0}" alt="${safeAlt}"${cls} data-img-candidates="${safeCandidates}" data-img-fallback-index="0"${styleAttr} onerror="handleImageFallback(this)">`;
 }
 
 const PATCH_NOTES_HTML = `
@@ -3524,12 +3532,12 @@ function renderCraftPricePanel(effects) {
   const craftItemsByName = new Map(data.recipes.filter(r => r.group === 'craft').map(r => [r.name, r]));
   const craftItems = craftItemOrder.map(name => craftItemsByName.get(name)).filter(Boolean);
   const currentPriceMap = {
-    '조개껍데기 브로치': 13242,
-    '푸른 향수병': 67539,
-    '자개 손거울': 247856,
-    '분홍 헤어핀': 202153,
-    '자개 부채': 111868,
-    '흑진주 시계': 989947
+    '조개껍데기 브로치': 9118,
+    '푸른 향수병': 111564,
+    '자개 손거울': 87844,
+    '분홍 헤어핀': 202723,
+    '자개 부채': 608813,
+    '흑진주 시계': 189458
   };
   const maxPriceMap = {
     '조개껍데기 브로치': 50000,
