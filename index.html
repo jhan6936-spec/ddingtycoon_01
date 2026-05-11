@@ -105,20 +105,66 @@
       padding-left: 10px;
       border-left: 2px solid #333;
     }
-    .marine-guide-gallery {
+    .marine-guide-carousel {
       display: flex;
-      flex-direction: column;
-      gap: 18px;
+      align-items: center;
+      gap: 14px;
       max-width: 920px;
       margin-bottom: 28px;
     }
-    .marine-guide-gallery img {
-      width: 100%;
-      height: auto;
-      display: block;
+    .marine-guide-slide-wrap {
+      flex: 1;
+      min-width: 0;
+      position: relative;
       border-radius: 12px;
       border: 1px solid #333;
       background: #141414;
+      overflow: hidden;
+    }
+    .marine-guide-slide-wrap img {
+      width: 100%;
+      height: auto;
+      display: block;
+      vertical-align: top;
+    }
+    .marine-guide-counter {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(15, 15, 15, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 12px;
+      color: #ccc;
+      pointer-events: none;
+    }
+    .marine-guide-nav {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid #444;
+      background: #252525;
+      color: #e8e8e8;
+      font-size: 26px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+    .marine-guide-nav:hover {
+      background: #333;
+      border-color: #4a8fd9;
+      color: #fff;
+    }
+    .marine-guide-nav:focus-visible {
+      outline: 2px solid #4a8fd9;
+      outline-offset: 2px;
     }
     .marine-guide-block {
       background: #1a1a1a;
@@ -1929,22 +1975,13 @@
         <p class="header-subtitle">뉴비를 위한 해양 전문가 안내</p>
       </div>
 
-      <div class="marine-guide-gallery" aria-label="해양전문가 가이드 이미지">
-        <img src="marine-guide/01.png" alt="해양전문가 가이드 표지" loading="lazy">
-        <img src="marine-guide/02.png" alt="해양 전문가란?" loading="lazy">
-        <img src="marine-guide/03.png" alt="연금과 공예 안내" loading="lazy">
-        <img src="marine-guide/04.png" alt="준비물" loading="lazy">
-        <img src="marine-guide/05.png" alt="어패류와 진주" loading="lazy">
-        <img src="marine-guide/06.png" alt="해양 팁" loading="lazy">
-        <img src="marine-guide/07.png" alt="재료 팁" loading="lazy">
-        <img src="marine-guide/08.png" alt="하루 일과" loading="lazy">
-        <img src="marine-guide/09.png" alt="전문가 스킬" loading="lazy">
-        <img src="marine-guide/10.png" alt="전문가 스킬 설명" loading="lazy">
-        <img src="marine-guide/11.png" alt="스킬 정착 구간" loading="lazy">
-        <img src="marine-guide/12.png" alt="스킬 주차 구간 (판매가)" loading="lazy">
-        <img src="marine-guide/13.png" alt="조개 무한리필 스킬 주차" loading="lazy">
-        <img src="marine-guide/14.png" alt="스킬 주차 구간 (제작 시간·슬롯)" loading="lazy">
-        <img src="marine-guide/15.png" alt="전문가 팁" loading="lazy">
+      <div class="marine-guide-carousel" aria-roledescription="carousel" aria-label="해양전문가 가이드 이미지">
+        <button type="button" class="marine-guide-nav" id="marineGuidePrev" onclick="marineGuideStep(-1)" aria-label="이전 이미지">‹</button>
+        <div class="marine-guide-slide-wrap">
+          <img id="marineGuideSlideImg" src="marine-guide/01.png" alt="해양전문가 가이드 표지">
+          <div class="marine-guide-counter" id="marineGuideSlideCounter" aria-live="polite">1 / 15</div>
+        </div>
+        <button type="button" class="marine-guide-nav" id="marineGuideNext" onclick="marineGuideStep(1)" aria-label="다음 이미지">›</button>
       </div>
 
       <div class="marine-guide-block">
