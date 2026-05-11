@@ -61,7 +61,7 @@
       --t-soft-gray-2: #b8b8b8;
       --t-accent-muted: #b9dcff;
       --t-accent-pale: #cfe7ff;
-      --t-accent-pale-2: var(--t-accent-pale-2);
+      --t-accent-pale-2: #cde7ff;
       --t-accent-mid: #9acfff;
       --t-caption: #7f99b6;
       --t-modal-body: #d7d7d7;
@@ -3853,7 +3853,7 @@ function renderStaminaPlan() {
     <div style="font-size:13px; color:var(--t-text-slate); margin-bottom:8px; text-align:center;">입력 ${staminaRaw} → 채집에 사용 <strong style="color:var(--t-accent-pale-2);">${stamina}</strong> (15 단위)</div>
     <div style="font-size:14px; font-weight:900; color:var(--t-stamina-banner); margin-bottom:10px; padding:12px; background:var(--t-surface1); border-radius:8px; text-align:center;">⚡ 총 채집 가능: ${gathers}회 (스태미나 15 소모 기준)</div>
     <div style="font-size:12px; color:var(--t-text-slate); margin-bottom:10px; text-align:center;">세이지 드롭 ${effectiveDrops.toFixed(2)}개/회 (심해채집꾼+각인 반영), 조개 등장 ${shellChanceTotal.toFixed(1)}%, 어획력 ${fishingPowerTotal}, 3성 확률 ${star3Chance.toFixed(1)}%</div>
-    <div style="font-size:11px; color:#7f99b6; margin-bottom:10px; text-align:center;">각인 기대값: 물고기 +${expectedExtraFish.toFixed(2)}회분, 정령고래 깨진 조개껍데기 +${expectedWhaleBrokenShell.toFixed(2)}개 (룰렛 포함 기대 어패는 드롭/회에 반영)</div>
+    <div style="font-size:11px; color:var(--t-caption); margin-bottom:10px; text-align:center;">각인 기대값: 물고기 +${expectedExtraFish.toFixed(2)}회분, 정령고래 깨진 조개껍데기 +${expectedWhaleBrokenShell.toFixed(2)}개 (룰렛 포함 기대 어패는 드롭/회에 반영)</div>
     <div style="background:var(--t-surface-muted); border:1px solid var(--t-border); border-radius:10px; overflow:hidden;">
       <div style="display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:10px; padding:10px; background:var(--t-stamina-grid); color:var(--t-text-slate-2); font-size:12px; font-weight:900;">
         <div>품목 이름</div><div>스태미나</div><div>채집 횟수</div>
@@ -4347,14 +4347,14 @@ function analyzeEfficiency() {
             <div class="info-label">제작 시간</div>
             <div style="display:flex;flex-direction:column;gap:2px;text-align:right;">
               <div style="font-size:12px;color:var(--t-soft-gray);"><strong style="color:var(--t-text-inv)fff;">${formatDuration(perItemChainSec)}</strong></div>
-              <div style="font-size:12px;color:#9acfff;"><strong style="color:#8fd5ff;">${formatDuration(totalChainSec)}</strong></div>
+              <div style="font-size:12px;color:var(--t-accent-mid);"><strong style="color:#8fd5ff;">${formatDuration(totalChainSec)}</strong></div>
             </div>
           </div>
           <div class="info-item">
             <div class="info-label">총 획득 수익</div>
             <div style="display:flex;flex-direction:column;gap:2px;text-align:right;">
               <div style="font-size:12px;color:var(--t-soft-gray);">기본가: <strong style="color:var(--t-text-inv)fff;">${totalBasePrice.toLocaleString()}G</strong></div>
-              <div style="font-size:12px;color:#9acfff;">전문가 포함가: <strong style="color:#8fd5ff;">${totalAdjustedPrice.toLocaleString()}G</strong></div>
+              <div style="font-size:12px;color:var(--t-accent-mid);">전문가 포함가: <strong style="color:#8fd5ff;">${totalAdjustedPrice.toLocaleString()}G</strong></div>
             </div>
           </div>
         </div>
