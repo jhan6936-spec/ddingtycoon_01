@@ -1895,7 +1895,10 @@ function handleImageFallback(imgEl) {
 function encodeAssetPath(path) {
   return String(path || '')
     .split('/')
-    .map((seg) => encodeURIComponent(seg))
+    .map((seg) => {
+      if (seg === '.' || seg === '..') return seg;
+      return encodeURIComponent(seg);
+    })
     .join('/');
 }
 
