@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>로그인 처리 중</title>
+  <script src="/supabase-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+</head>
+<body style="margin:0;background:#0f0f0f;color:#888;font-family:sans-serif;display:flex;min-height:100vh;align-items:center;justify-content:center;">
+  <p id="msg">로그인 확인 중…</p>
+  <script>
+(function () {
+  var HOME = 'https://ddingtycoon-01.vercel.app/';
+  var cfg = window.SUPABASE_CONFIG;
+  var mod = window.supabase;
+  var createClient = mod && mod.createClient ? mod.createClient : (mod && mod.default && mod.default.createClient);
+  function fail() {
+    var el = document.getElementById('msg');
+    if (el) el.textContent = '설정 오류 — 메인으로 이동합니다';
+    setTimeout(function () { window.location.replace(HOME); }, 800);
+  }
+  if (!cfg || !cfg.url || !cfg.anonKey || !createClient) return fail();
+  var sb = createClient(cfg.url, cfg.anonKey, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      flowType: 'pkce',
+      storage: window.localStorage
+    }
+  });
+  sb.auth.getSession().then(function () {
+    window.location.replace(HOME);
+  }).catch(function (e) {
+    console.error('[auth/callback]', e);
+    window.location.replace(HOME);
+  });
+})();
+  </script>
+</body>
+</html>

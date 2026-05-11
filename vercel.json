@@ -1,4 +1,8 @@
 {
   "buildCommand": "npm run build",
-  "outputDirectory": "."
+  "outputDirectory": ".",
+  "rewrites": [
+    { "source": "/callback", "destination": "/auth/callback" },
+    { "source": "/callback/", "destination": "/auth/callback" }
+  ]
 }
