@@ -6277,8 +6277,8 @@ function tradeToggleReaction(postId, reactionKey) {
 }
 
 function openTradeProfileModal(postId) {
-  const posts = loadTradePosts();
-  const p = posts.find((x) => x.id === postId);
+  let p = loadTradePosts().find((x) => x.id === postId);
+  if (!p) p = loadQaPosts().find((x) => x.id === postId);
   if (!p) return;
   const modal = document.getElementById('tradeProfileModal');
   const av = document.getElementById('tradeProfileAvatar');
