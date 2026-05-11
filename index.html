@@ -3421,18 +3421,8 @@ function renderWarehouse() {
     // 공예품 관련 바닐라 재료 패턴
     return /진주|재활용품|거미줄|양동이|유리판|대나무|꽃잎|막대기|자수정|흑요석|시계|조개껍데기/.test(name);
   };
-  const vanillaSortRank = (name) => {
-    if (/산호/.test(name)) return 0;
-    if (/나무 잎$/.test(name)) return 1;
-    return 2;
-  };
   const other = pick(all, n => !assigned.has(n) && !isCraftOnlyMaterial(n) && !isCraftRelatedVanilla(n))
-    .sort((a, b) => {
-      const ra = vanillaSortRank(a);
-      const rb = vanillaSortRank(b);
-      if (ra !== rb) return ra - rb;
-      return a.localeCompare(b, 'ko');
-    });
+    .sort((a, b) => a.localeCompare(b, 'ko'));
 
   function createSection(title, items, subtitle = '', options = {}) {
     if (!items || items.length === 0) return;
@@ -3510,13 +3500,13 @@ function renderWarehouse() {
   vanillaContainer.className = 'warehouse-vanilla-container';
   container.appendChild(vanillaContainer);
 
-  const vanillaCoralSea = other.filter((n) => /산호|켈프|해초/.test(n));
-  const vanillaLeaves = other.filter((n) => /잎$/.test(n));
-  const vanillaOther = other.filter((n) => !vanillaCoralSea.includes(n) && !vanillaLeaves.includes(n));
+  const vb = partitionVanillaNamesForWarehouse(other);
 
-  if (vanillaCoralSea.length > 0) createSection('산호 · 해양', vanillaCoralSea, '', { isVanillaSection: true, appendTo: vanillaContainer, vanillaDense: true });
-  if (vanillaLeaves.length > 0) createSection('나무 잎', vanillaLeaves, '', { isVanillaSection: true, appendTo: vanillaContainer, vanillaDense: true });
-  if (vanillaOther.length > 0) createSection('기타 바닐라', vanillaOther, '', { isVanillaSection: true, appendTo: vanillaContainer, vanillaDense: true });
+  if (vb.minerals.length > 0) createSection('광물', vb.minerals, '', { isVanillaSection: true, appendTo: vanillaContainer, vanillaDense: true });
+  if (vb.vanillaFish.length > 0) createSection('바닐라 어류', vb.vanillaFish, '', { isVanillaSection: true, appendTo: vanillaContainer, vanillaDense: true });
+  if (vb.coralSea.length > 0) createSection('산호 · 해양', vb.coralSea, '', { isVanillaSection: true, appendTo: vanillaContainer, vanillaDense: true });
+  if (vb.leaves.length > 0) createSection('나무 잎', vb.leaves, '', { isVanillaSection: true, appendTo: vanillaContainer, vanillaDense: true });
+  if (vb.other.length > 0) createSection('기타 바닐라', vb.other, '', { isVanillaSection: true, appendTo: vanillaContainer, vanillaDense: true });
   
   // 입력 필드에 이벤트 리스너 추가
   const inputs = document.querySelectorAll('#warehouseContainer input[data-material]');
@@ -3966,33 +3956,6 @@ function renderShellfishTiersHTML(shellObj, qtyMode) {
     )
     .join('');
   return `<div class="alchemy-shell-tier-grid" style="display:grid;grid-template-columns:${templateCols};gap:12px;align-items:start;">${cells}</div>`;
-}
-
-/** 연금 합계 표에서 창고 카테고리와 별도 분류 */
-const ALCHEMY_SUMMARY_MINERAL_NAMES = new Set(['다이아몬드', '금 주괴', '청금석 블록', '레드스톤 블록', '철 주괴']);
-const ALCHEMY_SUMMARY_VANILLA_FISH_NAMES = new Set(['깐 새우', '금붕어 회', '농어 회', '도미 회', '청어 회']);
-
-function partitionVanillaByWarehouseCategory(vanillaObj) {
-  const minerals = {};
-  const vanillaFish = {};
-  const coralSea = {};
-  const leaves = {};
-  const other = {};
-  Object.entries(vanillaObj).forEach(([name, c]) => {
-    if (!c || c <= 0) return;
-    if (ALCHEMY_SUMMARY_MINERAL_NAMES.has(name)) {
-      minerals[name] = c;
-      return;
-    }
-    if (ALCHEMY_SUMMARY_VANILLA_FISH_NAMES.has(name)) {
-      vanillaFish[name] = c;
-      return;
-    }
-    if (/산호|켈프|해초/.test(name)) coralSea[name] = c;
-    else if (/잎$/.test(name)) leaves[name] = c;
-    else other[name] = c;
-  });
-  return { minerals, vanillaFish, coralSea, leaves, other };
 }
 
 function renderVanillaWarehouseCategoriesHTML(vanillaObj, qtyMode) {
