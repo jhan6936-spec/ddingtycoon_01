@@ -3699,25 +3699,36 @@ function clearSupabaseAuthStorage() {
 async function authSignOut() {
   authUiNonce++;
   closeProfileSettingsModal();
-  try {
-    const sb = getSupabaseClient();
-    if (sb) {
+
+  const sb = getSupabaseClient();
+  if (sb) {
+    const runSignOut = async () => {
       const { error: errLocal } = await sb.auth.signOut({ scope: 'local' });
       if (errLocal) {
         console.warn('[Supabase Auth] signOut(local):', errLocal.message);
-        const { error: errFallback } = await sb.auth.signOut();
-        if (errFallback) console.error('[Supabase Auth] signOut 실패:', errFallback.message, errFallback);
+        const { error: err2 } = await sb.auth.signOut();
+        if (err2) console.warn('[Supabase Auth] signOut:', err2.message);
+      }
+    };
+    try {
+      await Promise.race([
+        runSignOut(),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(Object.assign(new Error('timeout'), { code: 'SIGNOUT_TIMEOUT' })), 2800)
+        )
+      ]);
+    } catch (e) {
+      if (e && e.code !== 'SIGNOUT_TIMEOUT' && e.message !== 'timeout') {
+        console.warn('[Supabase Auth] signOut 경고:', e.message || e);
       }
     }
-  } catch (e) {
-    console.error('[Supabase Auth] signOut 예외:', e);
-  } finally {
-    clearSupabaseAuthStorage();
-    try {
-      supabaseAuthClient = null;
-    } catch (_) {}
-    window.location.replace(window.location.origin + '/');
   }
+
+  clearSupabaseAuthStorage();
+  try {
+    supabaseAuthClient = null;
+  } catch (_) {}
+  window.location.replace(window.location.origin + '/?logout=' + Date.now());
 }
 
 // ===== 해양전문가 가이드 이미지 슬라이더 =====
