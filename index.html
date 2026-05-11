@@ -9409,8 +9409,6 @@ window.addEventListener('DOMContentLoaded', function() {
       renderTradeMessages();
       updateTradeComposerAvatar();
     });
-    const sbTr0 = getSupabaseClient();
-    if (sbTr0) refreshTradeRestriction(sbTr0).then(() => updateTradeRestrictionUI());
     document.addEventListener('click', closeTradeThreadMoreMenu);
     document.addEventListener('click', closeQaThreadMoreMenu);
     document.addEventListener('click', (ev) => {
