@@ -885,7 +885,7 @@
       margin-right: auto;
     }
     .factory-credit strong {
-      color: #e6e6e6;
+      color: var(--t-factory-strong);
     }
 
     @media (max-width: 980px) {
@@ -1457,7 +1457,7 @@
       font-weight: 600;
     }
     .patch-modal-body {
-      color: #d7d7d7;
+      color: var(--t-modal-body);
       line-height: 1.65;
       font-size: 14px;
       overflow-y: auto;
@@ -4271,7 +4271,7 @@ function analyzeEfficiency() {
   planWrap.style.border = '1px solid #2a3140';
   planWrap.style.borderRadius = '12px';
   planWrap.innerHTML = `
-    <div style="font-size:14px;font-weight:900;color:#e8f4ff;margin-bottom:10px;">제작 추천</div>
+    <div style="font-size:14px;font-weight:900;color:var(--t-title-blue);margin-bottom:10px;">제작 추천</div>
     ${renderTriFinalPlan('1성', FINAL_GROUP1, plan1)}
     ${renderTriFinalPlan('2성', FINAL_GROUP2, plan2)}
     ${renderTriFinalPlan('3성', FINAL_GROUP3, plan3)}
