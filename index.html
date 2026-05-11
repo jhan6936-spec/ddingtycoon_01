@@ -5868,6 +5868,10 @@ function closeTradeThreadPanel() {
 }
 
 function submitTradeReply() {
+  if (isCurrentTradeActivityBlocked()) {
+    alert(tradeRestrictionMessage());
+    return;
+  }
   if (!selectedTradePostId) return;
   const ta = document.getElementById('tradeReplyBody');
   const body = ta ? ta.value.trim() : '';
@@ -6018,6 +6022,10 @@ function setTradeCategoryFilter(cat) {
 }
 
 function submitTradePost() {
+  if (isCurrentTradeActivityBlocked()) {
+    alert(tradeRestrictionMessage());
+    return;
+  }
   const titleIn = document.getElementById('tradePostTitle');
   const ta = document.getElementById('tradePostBody');
   const sel = document.getElementById('tradePostCategory');
@@ -6066,6 +6074,10 @@ function submitTradePost() {
 }
 
 function tradeToggleReaction(postId, reactionKey) {
+  if (isCurrentTradeActivityBlocked()) {
+    alert(tradeRestrictionMessage());
+    return;
+  }
   if (!postId) return;
   const k = TRADE_REACTION_KEYS.includes(reactionKey) ? reactionKey : 'thumb';
   const posts = loadTradePosts();
