@@ -6653,12 +6653,8 @@ document.addEventListener('keydown', (e) => {
 // ===== 질문채널 (거래소와 유사 레이아웃 · 로컬 저장) =====
 const QA_STORAGE_KEY = 'ddingty_qa_posts_v1';
 const QA_CAT_META = {
-  general: { label: '일반', badge: '일반', cls: 'qa-general' },
-  game: { label: '게임', badge: '게임', cls: 'qa-game' },
-  calc: { label: '계산기', badge: '계산기', cls: 'qa-calc' },
-  marine: { label: '해양', badge: '해양', cls: 'qa-marine' }
+  question: { label: '질문', badge: '질문', cls: 'qa-question' }
 };
-let qaCategoryFilter = 'all';
 let qaSortOrder = 'new';
 let selectedQaPostId = null;
 let qaComposePendingAttachments = [];
@@ -6669,7 +6665,7 @@ function normalizeQaPost(p) {
     const now = Date.now();
     return {
       id: `${now}_${Math.random().toString(36).slice(2, 10)}`,
-      category: 'general',
+      category: 'question',
       title: '제목 없음',
       authorName: '알 수 없음',
       avatarUrl: '',
@@ -6685,7 +6681,7 @@ function normalizeQaPost(p) {
       comments: []
     };
   }
-  const category = QA_CAT_META[p.category] ? p.category : 'general';
+  const category = 'question';
   const body = typeof p.body === 'string' ? p.body : '';
   let title = typeof p.title === 'string' ? p.title.trim() : '';
   if (!title) {
