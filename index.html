@@ -3408,6 +3408,74 @@ function formatWarehouseStackCount(total) {
   return `${sets}세트 ${rem}개`;
 }
 
+function formatAlchemySummaryBoxSetPiece(total) {
+  const n = Math.max(0, Math.floor(Number(total) || 0));
+  if (n === 0) return '0개';
+  const perBox = ALCHEMY_BOX_SETS * SET_SIZE;
+  const boxes = Math.floor(n / perBox);
+  let r = n % perBox;
+  const sets = Math.floor(r / SET_SIZE);
+  const rem = r % SET_SIZE;
+  const parts = [];
+  if (boxes > 0) parts.push(`${boxes}상자`);
+  if (sets > 0) parts.push(`${sets}세트`);
+  if (rem > 0) parts.push(`${rem}개`);
+  return parts.length ? parts.join(' ') : '0개';
+}
+
+function formatAlchemySummaryQty(count, mode) {
+  const m = mode === 'boxSetPiece' ? 'boxSetPiece' : 'setPiece';
+  if (m === 'boxSetPiece') return formatAlchemySummaryBoxSetPiece(count);
+  return formatWarehouseStackCount(count);
+}
+
+function loadAlchemySummaryQtyMode() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_ALCHEMY_SUMMARY_QTY);
+    if (raw === 'boxSetPiece' || raw === 'setPiece') alchemySummaryQtyMode = raw;
+  } catch (_) {}
+}
+
+function syncAlchemySummaryQtyButtons() {
+  document.querySelectorAll('[data-alchemy-qty-mode]').forEach((btn) => {
+    const m = btn.getAttribute('data-alchemy-qty-mode');
+    const on = m === alchemySummaryQtyMode;
+    btn.classList.toggle('active', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+}
+
+function setAlchemySummaryQtyMode(mode) {
+  if (mode !== 'setPiece' && mode !== 'boxSetPiece') return;
+  alchemySummaryQtyMode = mode;
+  try {
+    localStorage.setItem(STORAGE_KEY_ALCHEMY_SUMMARY_QTY, mode);
+  } catch (_) {}
+  refreshAlchemySummaryBody();
+  syncAlchemySummaryQtyButtons();
+}
+
+function refreshAlchemySummaryBody() {
+  const body = document.getElementById('alchemyMaterialSummaryBody');
+  if (!body || !lastAlchemySummaryData) return;
+  const { shell, vanilla } = lastAlchemySummaryData;
+  body.innerHTML = buildAlchemySummaryMaterialSectionsHTML(shell, vanilla, alchemySummaryQtyMode);
+}
+
+function buildAlchemySummaryMaterialSectionsHTML(shell, vanilla, qtyMode) {
+  const m = qtyMode != null ? qtyMode : alchemySummaryQtyMode;
+  return `
+    <div class="alchemy-mat-section">
+      <h4>어패류</h4>
+      ${renderShellfishTiersHTML(shell, m)}
+    </div>
+    <div class="alchemy-mat-section">
+      <h4>바닐라 재료</h4>
+      ${renderVanillaWarehouseCategoriesHTML(vanilla, m)}
+    </div>
+  `;
+}
+
 function syncWarehouseInputRawAttribute(input) {
   if (!input || warehouseSetViewEnabled()) return;
   const raw = Math.max(0, parseInt(input.value, 10) || 0);
@@ -3683,7 +3751,8 @@ function splitShellfishVanillaTotals(rawTotals) {
   return { shell, vanilla };
 }
 
-function formatAlchemyMaterialLinesHTML(matObj) {
+function formatAlchemyMaterialLinesHTML(matObj, qtyMode) {
+  const mode = qtyMode != null ? qtyMode : alchemySummaryQtyMode;
   const entries = Object.entries(matObj).filter(([, c]) => c > 0).sort((a, b) => a[0].localeCompare(b[0], 'ko'));
   if (!entries.length) {
     return '<div style="font-size:12px;color:#778899;">해당 없음</div>';
@@ -3691,7 +3760,8 @@ function formatAlchemyMaterialLinesHTML(matObj) {
   return entries
     .map(([name, c]) => {
       const img = buildImageTag(name, '', 'height:18px;vertical-align:middle;margin-right:6px;');
-      return `<div class="alchemy-mat-line">${img}<span>${name}</span><strong>${c.toLocaleString()}개</strong></div>`;
+      const qtyLabel = formatAlchemySummaryQty(c, mode);
+      return `<div class="alchemy-mat-line">${img}<span>${name}</span><strong>${qtyLabel}</strong></div>`;
     })
     .join('');
 }
