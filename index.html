@@ -4961,9 +4961,10 @@ function updateTradeRestrictionUI() {
   if (sendQaReply) sendQaReply.disabled = !!blocked;
   if (qaMain) qaMain.disabled = !!blocked;
   if (qaReplyTa) qaReplyTa.disabled = !!blocked;
-  document.querySelectorAll('.trade-reaction-btn, .trade-thread-react-btn').forEach((el) => {
+  document.querySelectorAll('.trade-forum-react-trigger, .trade-thread-react-trigger').forEach((el) => {
     el.style.pointerEvents = blocked ? 'none' : '';
     el.style.opacity = blocked ? '0.45' : '';
+    el.disabled = !!blocked;
   });
   document
     .querySelectorAll(
@@ -5685,7 +5686,7 @@ function ensureTradeThreadPanelBindings() {
   if (!panel || panel.__tradeReactBound) return;
   panel.__tradeReactBound = true;
   panel.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-trade-thread-react]');
+    const btn = e.target.closest('[data-trade-thread-react-trigger]');
     if (!btn || !selectedTradePostId) return;
     e.preventDefault();
     e.stopPropagation();
@@ -5713,16 +5714,15 @@ function buildTradeThreadRootHtml(post) {
           )
           .join('')}</div>`
       : '';
-  const counts = deriveReactionCountsFromPost(post);
+  const reactTotal = tradeTotalReactionCountFromPost(post);
   const ru = normalizeReactionsByUser(post.reactionsByUser);
   const myKey = getTradeUserKey();
   const mine = ru[myKey];
-  const reactBtns = TRADE_REACTION_KEYS.map((k) => {
-    const em = TRADE_REACTION_META[k].emoji;
-    const cnt = counts[k] || 0;
-    const active = mine === k ? ' trade-thread-react-active' : '';
-    return `<button type="button" class="trade-thread-react-btn${active}" data-trade-thread-react="${k}">${em} ${cnt}</button>`;
-  }).join('');
+  const activeCls = mine ? ' trade-thread-react-active' : '';
+  const reactCountHtml =
+    reactTotal > 0
+      ? `<span class="trade-thread-react-count">${escapeHtmlTrade(`반응 ${reactTotal}`)}</span>`
+      : '';
   return `<div class="trade-msg-row">
     <div class="trade-msg-avatar">${avatarInner}</div>
     <div class="trade-msg-main">
