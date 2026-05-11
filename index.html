@@ -5995,8 +5995,11 @@ function switchSection(sectionId, clickedEl) {
   } else if (sectionId === 'factory') {
     renderFactorySeaweedMedia();
   } else if (sectionId === 'trade-hub') {
-    renderTradeMessages();
-    updateTradeComposerAvatar();
+    tradePostsCache = null;
+    refreshTradeBoardFromRemote().then(() => {
+      renderTradeMessages();
+      updateTradeComposerAvatar();
+    });
   }
 }
 
@@ -7975,8 +7978,10 @@ window.addEventListener('DOMContentLoaded', function() {
     renderFactorySeaweedMedia();
     loadStaminaInputState();
     initMarineGuideCarousel();
-    renderTradeMessages();
-    updateTradeComposerAvatar();
+    refreshTradeBoardFromRemote().then(() => {
+      renderTradeMessages();
+      updateTradeComposerAvatar();
+    });
     const staminaInput = document.getElementById('staminaInput');
     if (staminaInput) {
       staminaInput.addEventListener('input', renderStaminaPlan);
