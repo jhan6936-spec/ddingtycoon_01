@@ -527,6 +527,15 @@
       font-size: 15px;
       color: #eb459f;
     }
+    .trade-author-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: #5865f2;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
     .trade-forum-rel {
       font-size: 12px;
       color: #949ba4;
@@ -3991,6 +4000,54 @@ const TRADE_CAT_META = {
   job: { label: '알바', badge: '알바', cls: 'job' }
 };
 let tradeCategoryFilter = 'all';
+let tradeSortOrder = 'new';
+
+function normalizeTradePost(p) {
+  if (!p || typeof p !== 'object') {
+    return {
+      id: `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`,
+      category: 'buy',
+      title: '제목 없음',
+      authorName: '알 수 없음',
+      avatarUrl: '',
+      authorInitial: '?',
+      body: '',
+      ts: Date.now(),
+      userId: null,
+      reactions: { thumb: 0 }
+    };
+  }
+  const category = TRADE_CAT_META[p.category] ? p.category : 'buy';
+  const body = typeof p.body === 'string' ? p.body : '';
+  let title = typeof p.title === 'string' ? p.title.trim() : '';
+  if (!title) {
+    const line = body.trim().split(/\r?\n/)[0] || '';
+    title = line ? (line.length > 80 ? `${line.slice(0, 80)}…` : line) : '제목 없음';
+  }
+  let reactions = p.reactions;
+  if (!reactions || typeof reactions !== 'object') reactions = { thumb: 0 };
+  const thumb = typeof reactions.thumb === 'number' && Number.isFinite(reactions.thumb) ? reactions.thumb : 0;
+  const authorName = typeof p.authorName === 'string' && p.authorName.trim() ? p.authorName.trim() : '알 수 없음';
+  const authorInitial =
+    typeof p.authorInitial === 'string' && p.authorInitial
+      ? p.authorInitial.charAt(0).toUpperCase()
+      : authorName.charAt(0).toUpperCase() || '?';
+  let userId = p.userId;
+  if (userId !== null && userId !== undefined && typeof userId !== 'string') userId = String(userId);
+  if (userId === '') userId = null;
+  return {
+    id: typeof p.id === 'string' && p.id ? p.id : `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`,
+    category,
+    title,
+    authorName,
+    avatarUrl: typeof p.avatarUrl === 'string' ? p.avatarUrl : '',
+    authorInitial,
+    body,
+    ts: typeof p.ts === 'number' && Number.isFinite(p.ts) ? p.ts : Date.now(),
+    userId,
+    reactions: { thumb: Math.max(0, thumb) }
+  };
+}
 
 function escapeHtmlTrade(s) {
   if (s == null || s === '') return '';
