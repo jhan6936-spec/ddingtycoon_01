@@ -3196,6 +3196,24 @@ function isMaterialsTabAlchemyChainItem(name) {
   return /(정수|핵|에센스|결정|엘릭서|영약)\s+★/.test(name);
 }
 
+/** 기타 연금품(materials) → 정수·핵·에센스·결정·엘릭서·영약 */
+function partitionMiscAlchemyRecipes(recipes) {
+  const sortKo = (a, b) => a.name.localeCompare(b.name, 'ko');
+  const tiers = [
+    { title: '정수', items: recipes.filter((r) => /정수\s+★$/.test(r.name)).sort(sortKo) },
+    { title: '핵', items: recipes.filter((r) => /핵\s+★$/.test(r.name)).sort(sortKo) },
+    { title: '에센스', items: recipes.filter((r) => /에센스\s+★★$/.test(r.name)).sort(sortKo) },
+    { title: '결정', items: recipes.filter((r) => /결정\s+★★$/.test(r.name)).sort(sortKo) },
+    { title: '엘릭서', items: recipes.filter((r) => /엘릭서\s+★★★$/.test(r.name)).sort(sortKo) },
+    { title: '영약', items: recipes.filter((r) => /영약\s+★★★$/.test(r.name)).sort(sortKo) }
+  ];
+  const used = new Set();
+  tiers.forEach((t) => t.items.forEach((r) => used.add(r.name)));
+  const other = recipes.filter((r) => !used.has(r.name)).sort(sortKo);
+  if (other.length) tiers.push({ title: '기타', items: other });
+  return tiers;
+}
+
 // ===== 레시피 카드 렌더링 =====
 function renderRecipes() {
   const container = document.getElementById('recipesContainer');
@@ -3278,7 +3296,6 @@ function renderRecipes() {
     const q = currentSearch.toLowerCase();
     miscAlchemyPairs = miscAlchemyPairs.filter(([name]) => name.toLowerCase().includes(q));
   }
-  miscAlchemyPairs.sort((a, b) => a[0].localeCompare(b[0], 'ko'));
   const miscAlchemyRecipes = miscAlchemyPairs.map(([name, rec]) => ({
     name,
     inputs: rec.inputs,
@@ -3294,7 +3311,20 @@ function renderRecipes() {
     miscTitle.style.margin = '20px 0 2px';
     miscTitle.textContent = '기타 연금품';
     container.appendChild(miscTitle);
-    miscAlchemyRecipes.forEach((r) => container.appendChild(renderCard(r)));
+
+    const miscTiers = partitionMiscAlchemyRecipes(miscAlchemyRecipes);
+    miscTiers.forEach((tier) => {
+      if (!tier.items.length) return;
+      const sub = document.createElement('div');
+      sub.style.gridColumn = '1 / -1';
+      sub.style.fontSize = '14px';
+      sub.style.fontWeight = '700';
+      sub.style.color = '#c8c8c8';
+      sub.style.margin = '12px 0 2px';
+      sub.textContent = tier.title;
+      container.appendChild(sub);
+      tier.items.forEach((r) => container.appendChild(renderCard(r)));
+    });
   }
 
   if (container.children.length === 0) {
