@@ -718,16 +718,80 @@
       display: flex;
     }
     .trade-thread-panel-head {
-      padding: 12px 44px 12px 14px;
+      padding: 12px 14px;
       border-bottom: 1px solid #16171f;
       background: #08080c;
-      position: relative;
       flex-shrink: 0;
     }
-    .trade-thread-close {
+    .trade-thread-head-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .trade-thread-head-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .trade-thread-more-wrap {
+      position: relative;
+    }
+    .trade-thread-more {
+      width: 32px;
+      height: 32px;
+      border: 1px solid #2a2b36;
+      border-radius: 8px;
+      background: #121218;
+      color: #c8cdd6;
+      cursor: pointer;
+      font-size: 17px;
+      line-height: 1;
+      padding: 0;
+      letter-spacing: -3px;
+    }
+    .trade-thread-more:hover {
+      box-shadow: 0 0 16px rgba(88, 101, 242, 0.45);
+      color: #fff;
+    }
+    .trade-thread-more-menu {
       position: absolute;
-      top: 10px;
-      right: 10px;
+      top: 100%;
+      right: 0;
+      margin-top: 6px;
+      min-width: 168px;
+      background: #14151c;
+      border: 1px solid #2a2b36;
+      border-radius: 8px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
+      z-index: 30;
+      padding: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .trade-thread-more-menu[hidden] {
+      display: none !important;
+    }
+    .trade-thread-more-menu button {
+      border: none;
+      background: transparent;
+      color: #e8ecf4;
+      text-align: left;
+      padding: 10px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .trade-thread-more-menu button:hover {
+      background: rgba(88, 101, 242, 0.22);
+    }
+    .trade-more-danger {
+      color: #ff8c8c !important;
+    }
+    .trade-thread-close {
       width: 32px;
       height: 32px;
       border: 1px solid #2a2b36;
@@ -737,6 +801,7 @@
       cursor: pointer;
       font-size: 16px;
       line-height: 1;
+      flex-shrink: 0;
     }
     .trade-thread-close:hover {
       box-shadow: 0 0 16px rgba(88, 101, 242, 0.45);
@@ -744,6 +809,8 @@
     }
     .trade-thread-panel-title {
       margin: 0;
+      flex: 1;
+      min-width: 0;
       font-size: 17px;
       font-weight: 800;
       color: #f4f6fb;
@@ -751,6 +818,33 @@
       text-shadow:
         0 0 16px rgba(88, 101, 242, 0.45),
         0 0 28px rgba(235, 69, 159, 0.22);
+    }
+    .trade-thread-edit-panel {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid #1e1f28;
+    }
+    .trade-edit-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: #8f96a3;
+      margin-bottom: 6px;
+    }
+    .trade-thread-edit-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .trade-edit-cancel {
+      padding: 9px 16px;
+      border-radius: 8px;
+      border: 1px solid #3a3d4a;
+      background: #121218;
+      color: #dce0ea;
+      font-weight: 600;
+      cursor: pointer;
     }
     .trade-thread-scroll {
       flex: 1;
