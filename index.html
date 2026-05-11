@@ -15,11 +15,11 @@
       --t-deep0: #0f0f0f;
       --t-surface-deep: #141414;
       --t-modal-bg: #131313;
-      --t-surface1: var(--t-surface1);
+      --t-surface1: #1a1a1a;
       --t-surface3: #171717;
       --t-surface-15: #151515;
       --t-surface-muted: #1f1f1f;
-      --t-surface2: #252525;
+      --t-surface2: var(--t-surface2);
       --t-stamina-grid: #262626;
       --t-plan-bg: #121212;
       --t-rev-bg: #0f1419;
@@ -92,7 +92,7 @@
       --t-hero-kicker-text: #8fc9f7;
       --t-viewer-arrow-bg: rgba(20, 20, 20, 0.65);
       --t-viewer-arrow-hover-bg: rgba(30, 30, 30, 0.75);
-      --t-rod-visual: linear-gradient(120deg, #1b1b1b, #242424);
+      --t-rod-visual: linear-gradient(120deg, var(--t-mini-tab-bg), #242424);
       --t-rod-border: #2f2f2f;
     }
 
@@ -449,7 +449,7 @@
     }
     .recipe-card-header {
       padding: 15px;
-      background: #252525;
+      background: var(--t-surface2);
       border-bottom: 1px solid #2a2a2a;
       display: flex;
       justify-content: space-between;
@@ -587,7 +587,7 @@
     .warehouse-item input {
       width: 100%;
       padding: 8px;
-      background: #252525;
+      background: var(--t-surface2);
       color: #4a8fd9;
       border: 1px solid var(--t-border-strong);
       border-radius: 4px;
@@ -782,7 +782,7 @@
       user-select: none;
     }
     .btn:hover {
-      background: #252525;
+      background: var(--t-surface2);
       border-color: #4a8fd9;
       color: #fff;
     }
@@ -826,7 +826,7 @@
     }
     .media-card-title {
       padding: 10px 12px;
-      background: #252525;
+      background: var(--t-surface2);
       border-bottom: 1px solid #2a2a2a;
       font-size: 12px;
       font-weight: 800;
@@ -857,7 +857,7 @@
     }
     .factory-video-title {
       padding: 10px 12px;
-      background: #252525;
+      background: var(--t-surface2);
       border-bottom: 1px solid #2a2a2a;
       font-size: 12px;
       font-weight: 900;
@@ -1136,7 +1136,7 @@
     }
     .key.op {
       color: #fff;
-      background: #252525;
+      background: var(--t-surface2);
     }
     .key.alt {
       color: #ddd;
@@ -1235,7 +1235,7 @@
       margin-top: 8px;
     }
     .info-item {
-      background: #252525;
+      background: var(--t-surface2);
       padding: 8px;
       border-radius: 4px;
       color: #bbb;
@@ -1278,7 +1278,7 @@
     }
     .category-btn:hover {
       border-color: #555;
-      background: #252525;
+      background: var(--t-surface2);
     }
     .category-btn.active {
       background: #4a8fd9;
@@ -1346,7 +1346,7 @@
     .stamina-row input {
       width: 180px;
       padding: 8px 10px;
-      background: #252525;
+      background: var(--t-surface2);
       border: 1px solid var(--t-border-strong);
       border-radius: 6px;
       color: #fff;
@@ -1358,7 +1358,7 @@
       height: 110px;
       border-radius: 12px;
       border: 1px solid #2f2f2f;
-      background: linear-gradient(120deg, #1b1b1b, #242424);
+      background: linear-gradient(120deg, var(--t-mini-tab-bg), #242424);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1375,7 +1375,7 @@
       padding: 7px 11px;
       border: 1px solid var(--t-border-strong);
       border-radius: 7px;
-      background: #1b1b1b;
+      background: var(--t-mini-tab-bg);
       color: #bbb;
       cursor: pointer;
       font-size: 12px;
