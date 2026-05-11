@@ -4673,10 +4673,9 @@ let tradeRestrictionState = { active: false, indefinite: false, until: null };
 
 /** 이모지 피커 (작성·반응 공통) */
 let tradeEmojiPopoverCtx = null;
-const TRADE_COMPOSER_EMOJI_CHARS =
-  '😀😃😄😁😅😂🤣🙂😉😊😍🥰😘😋😎🤔😢😭😤😡🙏👍👎👏💯🔥✨🎉❤️🧡💛💚💙💜🖤🤍🤎💔⭐✅❌❓❗🎵🎮🏠📌📎'.split(
-    ''
-  );
+const TRADE_COMPOSER_EMOJI_CHARS = Array.from(
+  '😀😃😄😁😅😂🤣🙂😉😊😍🥰😘😋😎🤔😢😭😤😡🙏👍👎👏💯🔥✨🎉❤️🧡💛💚💙💜🖤🤍🤎💔⭐✅❌❓❗🎵🎮🏠📌📎'
+);
 
 function tradeInsertEmojiAtCursor(textareaOrId, emojiChar) {
   const ta =
@@ -4759,11 +4758,21 @@ function openTradeEmojiPopover(anchorEl, mode, ctx) {
 }
 
 function tradeComposeEmojiClick(ev) {
+  if (ev && ev.stopPropagation) ev.stopPropagation();
+  if (isCurrentTradeActivityBlocked()) {
+    alert(tradeRestrictionMessage());
+    return;
+  }
   const a = ev && ev.currentTarget;
   openTradeEmojiPopover(a, 'insert', { textareaId: 'tradePostBody' });
 }
 
 function tradeReplyEmojiClick(ev) {
+  if (ev && ev.stopPropagation) ev.stopPropagation();
+  if (isCurrentTradeActivityBlocked()) {
+    alert(tradeRestrictionMessage());
+    return;
+  }
   openTradeEmojiPopover(ev.currentTarget, 'insert', { textareaId: 'tradeReplyBody' });
 }
 
@@ -4839,6 +4848,13 @@ function updateTradeRestrictionUI() {
     el.style.pointerEvents = blocked ? 'none' : '';
     el.style.opacity = blocked ? '0.45' : '';
   });
+  document
+    .querySelectorAll('#trade-hub .trade-forum-compose button.trade-icon-btn, #trade-hub .trade-thread-composer button.trade-icon-btn')
+    .forEach((el) => {
+      el.disabled = !!blocked;
+      el.style.opacity = blocked ? '0.45' : '';
+      el.style.pointerEvents = blocked ? 'none' : '';
+    });
 }
 
 function updateTradeThreadAdminBar() {
@@ -8529,9 +8545,6 @@ window.addEventListener('DOMContentLoaded', function() {
       const pop = document.getElementById('tradeEmojiPopover');
       if (!pop || pop.hidden) return;
       if (ev.target.closest('#tradeEmojiPopover')) return;
-      if (ev.target.closest('.trade-icon-btn') && ev.target.closest('#trade-hub')) return;
-      if (ev.target.closest('.trade-reaction-btn')) return;
-      if (ev.target.closest('[data-trade-thread-react]')) return;
       closeTradeEmojiPopover();
     });
     const staminaInput = document.getElementById('staminaInput');
