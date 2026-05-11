@@ -1112,6 +1112,11 @@
     .trade-title-input {
       font-size: clamp(14px, 3.8vw, 16px);
     }
+    @media (max-width: 420px) {
+      .trade-emoji-grid {
+        grid-template-columns: repeat(6, 1fr);
+      }
+    }
     @media (max-width: 960px) {
       .trade-hub-wrap {
         flex-direction: column;
