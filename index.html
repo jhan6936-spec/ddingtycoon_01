@@ -2664,18 +2664,26 @@ function commitCalcValue(action) {
   if (!calcState.targetInput) return;
   const inputEl = calcState.targetInput;
 
-  const current = parseInt(inputEl.value) || 0;
+  let current = parseInt(inputEl.getAttribute('data-warehouse-count'), 10);
+  if (!Number.isFinite(current)) current = parseInt(inputEl.value, 10) || 0;
   const computed = getCalcResultValue();
   if (computed === null) return;
 
   if (action === 'apply') {
-    inputEl.value = String(computed);
     inputEl.setAttribute('data-warehouse-count', String(computed));
     if (warehouseSetViewEnabled()) {
       inputEl.value = formatWarehouseStackCount(computed);
+    } else {
+      inputEl.value = String(computed);
     }
   } else if (action === 'add') {
-    inputEl.value = String(Math.max(0, current + computed));
+    const next = Math.max(0, current + computed);
+    inputEl.setAttribute('data-warehouse-count', String(next));
+    if (warehouseSetViewEnabled()) {
+      inputEl.value = formatWarehouseStackCount(next);
+    } else {
+      inputEl.value = String(next);
+    }
   } else if (action === 'reset') {
     inputEl.value = '0';
     calcState.countExpr = '';
