@@ -4654,10 +4654,6 @@ async function downloadAlchemyPaneScreenshot() {
       allowTaint: true,
       logging: false,
       ignoreElements: (node) => !!(node.classList && node.classList.contains('alchemy-screenshot-exclude')),
-      scrollX: 0,
-      scrollY: -window.scrollY,
-      windowWidth: document.documentElement.offsetWidth,
-      windowHeight: document.documentElement.offsetHeight,
     });
     await new Promise((resolve) => {
       canvas.toBlob((blob) => {
@@ -4721,6 +4717,5 @@ window.addEventListener('DOMContentLoaded', function() {
   analyzeEfficiency();
 });
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </body>
 </html>
