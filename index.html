@@ -52,10 +52,10 @@
       --t-text-slate-2: #9ea7b3;
       --t-text-slate-3: #9da7b3;
       --t-label: #9d9d9d;
-      --t-text-muted: var(--t-text-muted);
+      --t-text-muted: #888;
       --t-label-2: #8a8a8a;
       --t-text-faint: #666;
-      --t-nav-dim: #999;
+      --t-nav-dim: var(--t-nav-dim);
       --t-text-disabled: #777;
       --t-soft-gray: #b7b7b7;
       --t-soft-gray-2: #b8b8b8;
@@ -417,7 +417,7 @@
       font-size: 14px;
     }
     .search-box input::placeholder {
-      color: #666;
+      color: var(--t-text-faint);
     }
     .filter-select {
       padding: 10px 15px;
@@ -599,7 +599,7 @@
     }
     .warehouse-section.vanilla-disabled .warehouse-item input {
       cursor: not-allowed;
-      color: #999;
+      color: var(--t-nav-dim);
       background: var(--t-expert-btn-bg);
       border-color: #2d2d2d;
     }
@@ -1253,7 +1253,7 @@
     }
     .no-result {
       text-align: center;
-      color: #666;
+      color: var(--t-text-faint);
       padding: 40px;
       background: var(--t-surface1);
       border-radius: 8px;
@@ -3038,7 +3038,7 @@ function renderRecipes() {
         </div>
       `).join('');
     } else {
-      ingredientsHTML = '<div style="color: #666; font-size: 12px;">기본 재료 없음</div>';
+      ingredientsHTML = '<div style="color: var(--t-text-faint); font-size: 12px;">기본 재료 없음</div>';
     }
     
     card.innerHTML = `
@@ -3099,7 +3099,7 @@ function renderRecipes() {
   }
 
   if (container.children.length === 0) {
-    container.innerHTML = '<p style="grid-column: 1/-1; color: #666; text-align: center; padding: 40px;">검색 결과가 없습니다</p>';
+    container.innerHTML = '<p style="grid-column: 1/-1; color: var(--t-text-faint); text-align: center; padding: 40px;">검색 결과가 없습니다</p>';
   }
 }
 
@@ -4007,15 +4007,15 @@ function renderCraftPricePanel(effects) {
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:8px 10px;background:var(--t-surface-15);border:1px solid var(--t-border);border-radius:8px;margin-bottom:10px;">
         <div>
-          <div style="font-size:10px;color:#8a8a8a;">현재 가격</div>
+          <div style="font-size:10px;color:var(--t-label-2);">현재 가격</div>
           <div style="font-size:14px;font-weight:900;color:#8fd5ff;">${currentPrice.toLocaleString()}G</div>
         </div>
         <div>
-          <div style="font-size:10px;color:#8a8a8a;">최고가</div>
+          <div style="font-size:10px;color:var(--t-label-2);">최고가</div>
           <div style="font-size:14px;font-weight:900;color:#f6c15a;">${maxPrice.toLocaleString()}G</div>
         </div>
         <div>
-          <div style="font-size:10px;color:#8a8a8a;">최고가 대비</div>
+          <div style="font-size:10px;color:var(--t-label-2);">최고가 대비</div>
           <div style="font-size:14px;font-weight:900;color:${ratioColor};">${ratio.toFixed(1)}%</div>
         </div>
       </div>
