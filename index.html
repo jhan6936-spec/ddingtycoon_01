@@ -4398,11 +4398,18 @@ function getSupabaseClient() {
   return supabaseAuthClient;
 }
 
-/** 서버에서 최신 사용자 클레임 반영 (Discord 프로필 등) */
+let cachedAuthUserForProfile = null;
+let currentAuthUserId = null;
+/** Supabase public.profiles.role 동기화: null | 'user' | 'admin' */
+let cachedProfileRole = null;
+/** 로그아웃 후 늦게 끝나는 fetchAuthUserForUI가 로그인 UI를 덮어쓰지 않게 함 */
+let authUiNonce = 0;
+
 function isTradeBoardAdmin() {
   return cachedProfileRole === 'admin';
 }
 
+/** 서버에서 public.profiles 역할을 불러와 거래소 관리자 UI에 반영합니다. */
 async function refreshProfileRole(sb) {
   cachedProfileRole = null;
   if (!sb) return;
@@ -4475,12 +4482,6 @@ function extractDiscordProfile(user) {
   return { name, avatarUrl };
 }
 
-let cachedAuthUserForProfile = null;
-let currentAuthUserId = null;
-/** Supabase public.profiles.role 동기화: null | 'user' | 'admin' */
-let cachedProfileRole = null;
-/** 로그아웃 후 늦게 끝나는 fetchAuthUserForUI가 로그인 UI를 덮어쓰지 않게 함 */
-let authUiNonce = 0;
 const USER_PROFILE_STORAGE_PREFIX = 'ddingty_user_profile:';
 
 function userProfileStorageKey(userId) {
