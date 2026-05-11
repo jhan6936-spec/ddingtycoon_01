@@ -4752,7 +4752,9 @@ function openTradeEmojiPopover(anchorEl, mode, ctx) {
         ev.preventDefault();
         const pk = tradeEmojiPopoverCtx.postId;
         const rk = b.getAttribute('data-react-key');
-        if (pk && rk) tradeToggleReaction(pk, rk);
+        const reactFn =
+          typeof tradeEmojiPopoverCtx.onReact === 'function' ? tradeEmojiPopoverCtx.onReact : tradeToggleReaction;
+        if (pk && rk) reactFn(pk, rk);
         closeTradeEmojiPopover();
       };
     }
