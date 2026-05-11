@@ -275,32 +275,36 @@
       flex-wrap: wrap;
       gap: 8px;
       padding: 12px 14px;
-      background: #2b2d31;
-      border-bottom: 1px solid #1e1f22;
+      background: #0a0a10;
+      border-bottom: 1px solid #16171f;
     }
     .trade-tab {
       padding: 8px 14px;
       border-radius: 6px;
       border: none;
-      background: #313338;
-      color: #b5bac1;
+      background: #121218;
+      color: #9ea3ad;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.15s ease, color 0.15s ease;
+      transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
     }
     .trade-tab:hover {
-      background: #3f4248;
-      color: #f2f3f5;
+      background: #1a1b24;
+      color: #eef0f4;
+      box-shadow: 0 0 14px rgba(88, 101, 242, 0.22);
     }
     .trade-tab.active {
-      background: #5865f2;
+      background: linear-gradient(135deg, #4e5dff 0%, #5865f2 100%);
       color: #fff;
+      box-shadow:
+        0 0 18px rgba(88, 101, 242, 0.55),
+        0 0 28px rgba(88, 101, 242, 0.25);
     }
     .trade-forum-compose {
       padding: 14px 16px 16px;
-      background: #2b2d31;
-      border-bottom: 1px solid #1e1f22;
+      background: #08080c;
+      border-bottom: 1px solid #16171f;
     }
     .trade-forum-compose-top {
       display: flex;
@@ -313,12 +317,13 @@
       min-width: 0;
       padding: 11px 13px;
       border-radius: 8px;
-      border: none;
-      background: #383a40;
-      color: #f2f3f5;
+      border: 1px solid #252632;
+      background: #0f1016;
+      color: #f6f7fb;
       font-size: 16px;
       font-weight: 600;
       font-family: inherit;
+      text-shadow: 0 0 16px rgba(255, 255, 255, 0.08);
     }
     .trade-title-input::placeholder {
       color: #6d747f;
@@ -326,16 +331,19 @@
     }
     .trade-title-input:focus {
       outline: none;
-      box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.45);
+      border-color: rgba(88, 101, 242, 0.65);
+      box-shadow:
+        0 0 0 2px rgba(88, 101, 242, 0.35),
+        0 0 22px rgba(88, 101, 242, 0.25);
     }
     .trade-body-input {
       width: 100%;
       box-sizing: border-box;
       padding: 12px 14px;
       border-radius: 8px;
-      border: none;
-      background: #383a40;
-      color: #dcddde;
+      border: 1px solid #252632;
+      background: #0f1016;
+      color: #e5e7eb;
       font-size: 15px;
       font-family: inherit;
       line-height: 1.45;
