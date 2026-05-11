@@ -1,0 +1,8 @@
+{
+  "name": "ddingtycoon-marine-calculator",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/generate-env.js",
+    "env:generate": "node scripts/generate-env.js"
+  }
+}
