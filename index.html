@@ -5109,8 +5109,10 @@ function buildTradeCommentRowHtml(c) {
   const avatarInner = c.avatarUrl
     ? `<img src="${escapeHtmlTrade(c.avatarUrl)}" alt="">`
     : `<span>${initial}</span>`;
+  const guestId = getOrCreateTradeGuestId();
   const isSelf =
-    c.userId && currentAuthUserId && String(c.userId) === String(currentAuthUserId);
+    (c.userId && currentAuthUserId && String(c.userId) === String(currentAuthUserId)) ||
+    (!c.userId && c.authorGuestKey && c.authorGuestKey === guestId);
   const authorTag = isSelf ? '<span class="trade-author-tag">작성자</span>' : '';
   const imgs =
     c.attachments && c.attachments.length
