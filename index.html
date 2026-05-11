@@ -344,11 +344,11 @@
       border: 1px solid #252632;
       background: #0f1016;
       color: #e5e7eb;
-      font-size: 15px;
+      font-size: clamp(13px, 3.4vw, 15px);
       font-family: inherit;
       line-height: 1.45;
       resize: vertical;
-      min-height: 120px;
+      min-height: clamp(72px, 22vw, 140px);
     }
     .trade-body-input::placeholder {
       color: #6d747f;
@@ -1102,10 +1102,6 @@
     }
     .trade-emoji-grid button:hover {
       background: rgba(88, 101, 242, 0.25);
-    }
-    .trade-body-input {
-      min-height: clamp(72px, 22vw, 140px);
-      font-size: clamp(13px, 3.4vw, 15px);
     }
     .trade-forum-compose {
       padding: clamp(10px, 2.8vw, 16px) clamp(12px, 3vw, 16px) clamp(12px, 3vw, 16px);
