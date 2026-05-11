@@ -4792,6 +4792,15 @@ function tradeOpenReactionEmoji(anchorEl, postId) {
   openTradeEmojiPopover(anchorEl, 'react', { postId });
 }
 
+function qaOpenReactionEmoji(anchorEl, postId) {
+  if (!anchorEl || !postId) return;
+  if (isCurrentTradeActivityBlocked()) {
+    alert(tradeRestrictionMessage());
+    return;
+  }
+  openTradeEmojiPopover(anchorEl, 'react', { postId, onReact: qaToggleReaction });
+}
+
 async function refreshTradeRestriction(sb) {
   tradeRestrictionState = { active: false, indefinite: false, until: null };
   if (!sb) return;
