@@ -4322,13 +4322,6 @@ function analyzeEfficiency() {
     });
   }
 
-  const inventoryForRequired = { ...inventory };
-  if (!isVanillaCalcOn) {
-    infiniteVanillaMaterials.forEach(name => {
-      inventoryForRequired[name] = Number.MAX_SAFE_INTEGER;
-    });
-  }
-
   const results = [];
   
   const craftNoPromote = { skipShellfishTierConvert: true };
