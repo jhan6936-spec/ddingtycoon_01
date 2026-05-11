@@ -745,7 +745,7 @@
       position: absolute;
       inset: 0;
       border-radius: 999px;
-      background: #353535;
+      background: var(--t-toggle-off);
       border: 1px solid #4a4a4a;
       transition: all 0.2s ease;
       cursor: pointer;
@@ -1429,7 +1429,7 @@
       flex-direction: column;
       overflow: hidden;
       background: var(--t-modal-bg);
-      border: 1px solid #2e2e2e;
+      border: 1px solid var(--t-modal-border);
       border-radius: 12px;
       box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
       padding: 18px;
@@ -4287,7 +4287,7 @@ function analyzeEfficiency() {
   revBox.style.marginBottom = '18px';
   revBox.style.padding = '12px 14px';
   revBox.style.background = 'var(--t-rev-bg)';
-  revBox.style.border = '1px solid #2a3a4d';
+  revBox.style.border = '1px solid var(--t-border-blue)';
   revBox.style.borderRadius = '10px';
   revBox.innerHTML = `
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;font-size:13px;color:#ddd;align-items:center;">
@@ -4370,7 +4370,7 @@ function analyzeEfficiency() {
     timeSummary.style.margin = '8px 0 16px 0';
     timeSummary.style.padding = '10px 12px';
     timeSummary.style.background = 'var(--t-time-bg)';
-    timeSummary.style.border = '1px solid #2a3a4d';
+    timeSummary.style.border = '1px solid var(--t-border-blue)';
     timeSummary.style.borderRadius = '10px';
     timeSummary.innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
