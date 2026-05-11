@@ -1286,6 +1286,101 @@
       color: #d7d7d7;
       line-height: 1.65;
       font-size: 14px;
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+      padding-right: 4px;
+    }
+    .patch-notes-lead {
+      color: #9a9a9a;
+      font-size: 13px;
+      margin: 10px 0 0;
+    }
+    .main-credits-footer {
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(74, 143, 217, 0.2);
+      text-align: center;
+    }
+    .main-credits-trigger {
+      background: none;
+      border: none;
+      color: #9eb8d8;
+      font-size: 14px;
+      font-family: inherit;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      font-weight: 500;
+    }
+    .main-credits-trigger:hover {
+      color: #c5dff7;
+    }
+    .credits-empty {
+      color: #888;
+      font-size: 14px;
+      text-align: center;
+      padding: 24px 8px;
+    }
+    .credits-empty code {
+      font-size: 12px;
+      color: #6a8aaf;
+    }
+    .credits-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+      gap: 18px;
+      padding: 4px 0 8px;
+    }
+    .credit-plaque {
+      margin: 0;
+      padding: 12px 12px 14px;
+      background: linear-gradient(180deg, #1e2429 0%, #171a1d 100%);
+      border: 1px solid #2f3a44;
+      border-radius: 10px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .credit-plaque-photo {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      background: #0b0e11;
+      border: 1px solid #2a323a;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .credit-plaque-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .credit-photo-ph {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: repeating-linear-gradient(
+        -45deg,
+        #222,
+        #222 6px,
+        #2a2a2a 6px,
+        #2a2a2a 12px
+      );
+      opacity: 0.7;
+    }
+    .credit-plaque-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #e6eef5;
+      text-align: center;
+      letter-spacing: 0.02em;
+      line-height: 1.35;
     }
     .patch-modal-body h3 {
       color: #eaf6ff;
@@ -1354,6 +1449,9 @@
             재료 창고에서 바닐라 재료 계산 토글을 사용하여 바닐라 재료의 영향을 조절할 수 있습니다.<br>
             개인설정에서 당신의 캐릭터 정보를 입력하면 더 정확한 효율 분석이 가능합니다.
           </p>
+        </div>
+        <div class="main-credits-footer">
+          <button type="button" class="main-credits-trigger" onclick="openCreditsModal()">[띵타해]를 만드는 데 도움을 주신 분들</button>
         </div>
       </div>
     </div>
@@ -1503,12 +1601,22 @@
 </div>
 
 <div id="patchNotesModal" class="patch-modal" onclick="closePatchNotesOnBackdrop(event)">
-  <div class="patch-modal-card">
+  <div class="patch-modal-card" onclick="event.stopPropagation()">
     <div class="patch-modal-header">
       <div class="patch-modal-title">패치노트</div>
       <button class="patch-close-btn" type="button" onclick="closePatchNotes()">닫기</button>
     </div>
     <div id="patchNotesBody" class="patch-modal-body"></div>
+  </div>
+</div>
+
+<div id="creditsModal" class="patch-modal" onclick="closeCreditsModalOnBackdrop(event)">
+  <div class="patch-modal-card" onclick="event.stopPropagation()">
+    <div class="patch-modal-header">
+      <div class="patch-modal-title">[띵타해]를 만드는 데 도움을 주신 분들</div>
+      <button class="patch-close-btn" type="button" onclick="closeCreditsModal()">닫기</button>
+    </div>
+    <div id="creditsModalBody" class="patch-modal-body"></div>
   </div>
 </div>
 
