@@ -5775,6 +5775,12 @@ async function refreshAuthUIFromSession(sb, session) {
     if (n !== authUiNonce) return;
     updateAuthUI(session.user ?? null);
   }
+  if (n !== authUiNonce) return;
+  await refreshProfileRole(sb);
+  if (n !== authUiNonce) return;
+  try {
+    updateTradeThreadMoreMenuVisibility();
+  } catch (_) {}
 }
 
 async function initSupabaseAuth() {
