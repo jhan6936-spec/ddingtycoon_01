@@ -3236,7 +3236,7 @@
             <div id="tradeComposeAttachPreview" class="trade-attach-preview-strip" aria-live="polite"></div>
             <input type="file" id="tradeComposeFileInput" accept="image/*" multiple hidden onchange="onTradeComposeFilesSelected(event)">
             <div class="trade-forum-compose-bottom">
-              <button type="button" class="trade-icon-btn" aria-label="이모지" onclick="tradeComposeEmojiClick()">🙂</button>
+              <button type="button" class="trade-icon-btn" aria-label="이모지" onclick="tradeComposeEmojiClick(event)">🙂</button>
               <div class="trade-compose-spacer"></div>
               <select id="tradePostCategory" class="trade-cat-select-inline" aria-label="글 카테고리">
                 <option value="buy">구매</option>
@@ -6027,6 +6027,7 @@ function renderTradeMessages() {
       c.classList.toggle('trade-card-active', c.getAttribute('data-post-id') === selectedTradePostId);
     });
   }
+  updateTradeRestrictionUI();
 }
 
 function setTradeCategoryFilter(cat) {
