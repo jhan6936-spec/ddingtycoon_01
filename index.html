@@ -2030,6 +2030,12 @@ const STORAGE_KEY_SAGE_ROD = 'thingta_sage_rod_v1';
 const STORAGE_KEY_SAGE_ENGRAVINGS = 'thingta_sage_engraving_v1';
 const STORAGE_KEY_STAMINA = 'thingta_stamina_v1';
 const STORAGE_KEY_WAREHOUSE_SET_VIEW = 'thingta_warehouse_set_view_v1';
+const STORAGE_KEY_ALCHEMY_SUMMARY_QTY = 'thingta_alchemy_summary_qty_mode_v1';
+
+/** 연금 합계 패널 마지막 데이터 (토글 시 재렌더) */
+let lastAlchemySummaryData = null;
+/** 'setPiece' | 'boxSetPiece' — 세트/개 vs 상자/세트/개 */
+let alchemySummaryQtyMode = 'setPiece';
 
 let craftSalesCalcPanelOpen = false;
 const craftSalesInputState = {};
@@ -2334,6 +2340,8 @@ function withAlchemyImage(text, style = '') {
 
 // ===== 창고 계산기(팝업) 상태 =====
 const SET_SIZE = 64;
+/** 연금 합계: 1상자 = 54세트 = 54×64개 */
+const ALCHEMY_BOX_SETS = 54;
 const calcState = {
   isOpen: false,
   targetInput: null,
