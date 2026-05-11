@@ -4614,17 +4614,21 @@ function normalizeTradeComment(c) {
 
 function normalizeTradePost(p) {
   if (!p || typeof p !== 'object') {
+    const now = Date.now();
     return {
-      id: `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`,
+      id: `${now}_${Math.random().toString(36).slice(2, 10)}`,
       category: 'buy',
       title: '제목 없음',
       authorName: '알 수 없음',
       avatarUrl: '',
       authorInitial: '?',
       body: '',
-      ts: Date.now(),
+      ts: now,
+      updatedAt: now,
       userId: null,
+      authorGuestKey: null,
       reactions: normalizeReactionMap(null),
+      reactionsByUser: {},
       attachments: [],
       comments: [],
       pinned: false
@@ -4646,6 +4650,11 @@ function normalizeTradePost(p) {
   let userId = p.userId;
   if (userId !== null && userId !== undefined && typeof userId !== 'string') userId = String(userId);
   if (userId === '') userId = null;
+  let authorGuestKey = p.authorGuestKey;
+  if (authorGuestKey !== null && authorGuestKey !== undefined && typeof authorGuestKey !== 'string') {
+    authorGuestKey = String(authorGuestKey);
+  }
+  if (authorGuestKey === '') authorGuestKey = null;
   let attachments = [];
   if (Array.isArray(p.attachments)) {
     attachments = p.attachments
@@ -4657,6 +4666,14 @@ function normalizeTradePost(p) {
   if (Array.isArray(p.comments)) {
     comments = p.comments.map(normalizeTradeComment);
   }
+  const reactionsByUser = normalizeReactionsByUser(p.reactionsByUser);
+  const reactions = deriveReactionCountsFromPost({
+    reactionsByUser,
+    reactions: p.reactions
+  });
+  const ts = typeof p.ts === 'number' && Number.isFinite(p.ts) ? p.ts : Date.now();
+  const updatedAt =
+    typeof p.updatedAt === 'number' && Number.isFinite(p.updatedAt) ? p.updatedAt : ts;
   return {
     id: typeof p.id === 'string' && p.id ? p.id : `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`,
     category,
@@ -4665,9 +4682,12 @@ function normalizeTradePost(p) {
     avatarUrl: typeof p.avatarUrl === 'string' ? p.avatarUrl : '',
     authorInitial,
     body,
-    ts: typeof p.ts === 'number' && Number.isFinite(p.ts) ? p.ts : Date.now(),
+    ts,
+    updatedAt,
     userId,
-    reactions: normalizeReactionMap(p.reactions),
+    authorGuestKey,
+    reactions,
+    reactionsByUser,
     attachments,
     comments,
     pinned: !!p.pinned
