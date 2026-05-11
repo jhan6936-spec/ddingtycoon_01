@@ -647,7 +647,276 @@
     }
     .trade-forum-stat-muted {
       font-size: 13px;
-      color: #949ba4;
+      color: #7a8294;
+    }
+    .trade-forum-card-thumb {
+      flex-shrink: 0;
+      width: 72px;
+      height: 72px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #14151c;
+      border: 1px solid #252632;
+      align-self: center;
+      box-shadow: 0 0 18px rgba(88, 101, 242, 0.18);
+    }
+    .trade-forum-card-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .trade-forum-card-thumb.trade-thumb-empty {
+      display: none;
+    }
+    .trade-attach-preview-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .trade-attach-chip {
+      position: relative;
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #2a2b36;
+      box-shadow: 0 0 12px rgba(88, 101, 242, 0.12);
+    }
+    .trade-attach-chip img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .trade-attach-chip button {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 22px;
+      height: 22px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.72);
+      color: #fff;
+      font-size: 14px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .trade-thread-panel {
+      width: min(420px, 46vw);
+      flex-shrink: 0;
+      background: #020203;
+      border-left: 1px solid #16171f;
+      display: none;
+      flex-direction: column;
+      max-height: min(68vh, 720px);
+      box-shadow: -12px 0 44px rgba(0, 0, 0, 0.55);
+    }
+    .trade-hub-wrap.trade-split-open .trade-thread-panel {
+      display: flex;
+    }
+    .trade-thread-panel-head {
+      padding: 12px 44px 12px 14px;
+      border-bottom: 1px solid #16171f;
+      background: #08080c;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .trade-thread-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 32px;
+      height: 32px;
+      border: 1px solid #2a2b36;
+      border-radius: 8px;
+      background: #121218;
+      color: #c8cdd6;
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+    }
+    .trade-thread-close:hover {
+      box-shadow: 0 0 16px rgba(88, 101, 242, 0.45);
+      color: #fff;
+    }
+    .trade-thread-panel-title {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 800;
+      color: #f4f6fb;
+      line-height: 1.35;
+      text-shadow:
+        0 0 16px rgba(88, 101, 242, 0.45),
+        0 0 28px rgba(235, 69, 159, 0.22);
+    }
+    .trade-thread-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 14px;
+      min-height: 0;
+      background: #050508;
+    }
+    .trade-thread-root-body {
+      font-size: 15px;
+      line-height: 1.5;
+      color: #d7dce6;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin-bottom: 12px;
+      text-shadow: 0 0 12px rgba(255, 255, 255, 0.06);
+    }
+    .trade-thread-images {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .trade-thread-images img {
+      max-width: 100%;
+      border-radius: 10px;
+      border: 1px solid #252632;
+      box-shadow: 0 0 28px rgba(88, 101, 242, 0.14);
+    }
+    .trade-thread-reactions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #16171f;
+    }
+    .trade-thread-react-btn {
+      border: 1px solid #2a2b36;
+      background: #111218;
+      color: #e8ecf4;
+      padding: 5px 11px;
+      border-radius: 14px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: box-shadow 0.12s ease;
+    }
+    .trade-thread-react-btn:hover {
+      box-shadow: 0 0 16px rgba(88, 101, 242, 0.45);
+    }
+    .trade-date-sep {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 18px 0 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #6d7585;
+    }
+    .trade-date-sep::before,
+    .trade-date-sep::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #2a2d38, transparent);
+    }
+    .trade-msg-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .trade-msg-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: #5865f2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #fff;
+      font-size: 14px;
+    }
+    .trade-msg-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .trade-msg-main {
+      min-width: 0;
+      flex: 1;
+    }
+    .trade-msg-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .trade-msg-author {
+      font-weight: 600;
+      font-size: 14px;
+      color: #ff6bcd;
+      text-shadow: 0 0 10px rgba(255, 107, 205, 0.45);
+    }
+    .trade-msg-time {
+      font-size: 11px;
+      color: #7a8294;
+    }
+    .trade-msg-body {
+      font-size: 14px;
+      color: #c8ced9;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .trade-msg-images {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .trade-msg-images img {
+      max-width: 100%;
+      border-radius: 8px;
+      border: 1px solid #252632;
+    }
+    .trade-thread-composer {
+      padding: 12px 14px 14px;
+      border-top: 1px solid #16171f;
+      background: #08080c;
+      flex-shrink: 0;
+    }
+    .trade-thread-compose-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+    .trade-thread-compose-row .trade-body-input {
+      min-height: 72px;
+      flex: 1;
+    }
+    .trade-thread-send-row {
+      display: flex;
+      justify-content: flex-end;
+    }
+    @media (max-width: 960px) {
+      .trade-hub-wrap {
+        flex-direction: column;
+        min-height: 0;
+      }
+      .trade-hub-main {
+        border-right: none;
+      }
+      .trade-thread-panel {
+        position: fixed;
+        inset: 0;
+        z-index: 10040;
+        width: 100%;
+        max-height: none;
+        border-left: none;
+      }
     }
     /* 거래소 글쓴이 프로필 (디스코드 유사) */
     .trade-profile-modal {
