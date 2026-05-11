@@ -3219,7 +3219,7 @@
     <div id="trade-hub" class="content-section">
       <div class="header">
         <h1>거래소</h1>
-        <p class="header-subtitle">구매 · 판매 · 교환 · 알바(구인)</p>
+        <p class="header-subtitle">구매 · 판매 · 교환 · 알바</p>
       </div>
       <div class="trade-hub-wrap" id="tradeHubWrap">
         <div class="trade-hub-main">
@@ -4671,6 +4671,354 @@ const TRADE_GUEST_KEY_STORAGE = 'ddingty_trade_guest_id';
 const TRADE_REMOTE_TABLE = 'trade_posts';
 let tradePostsCache = null;
 let tradeRemoteSyncTimer = null;
+
+/** Supabase trade_me_restriction_status 결과 캐시 */
+let tradeRestrictionState = { active: false, indefinite: false, until: null };
+
+/** 이모지 피커 (작성·반응 공통) */
+let tradeEmojiPopoverCtx = null;
+const TRADE_COMPOSER_EMOJI_CHARS =
+  '😀😃😄😁😅😂🤣🙂😉😊😍🥰😘😋😎🤔😢😭😤😡🙏👍👎👏💯🔥✨🎉❤️🧡💛💚💙💜🖤🤍🤎💔⭐✅❌❓❗🎵🎮🏠📌📎'.split(
+    ''
+  );
+
+function tradeInsertEmojiAtCursor(textareaOrId, emojiChar) {
+  const ta =
+    typeof textareaOrId === 'string' ? document.getElementById(textareaOrId) : textareaOrId;
+  if (!ta || ta.tagName !== 'TEXTAREA') return;
+  const start = ta.selectionStart ?? ta.value.length;
+  const end = ta.selectionEnd ?? start;
+  const v = ta.value;
+  ta.value = `${v.slice(0, start)}${emojiChar}${v.slice(end)}`;
+  const pos = start + emojiChar.length;
+  try {
+    ta.selectionStart = ta.selectionEnd = pos;
+  } catch (_) {}
+  ta.focus();
+}
+
+function positionTradeEmojiPopover(anchorEl) {
+  const pop = document.getElementById('tradeEmojiPopover');
+  if (!pop || !anchorEl) return;
+  const r = anchorEl.getBoundingClientRect();
+  const pw = pop.offsetWidth || 280;
+  const ph = pop.offsetHeight || 200;
+  let left = r.left;
+  let top = r.bottom + 6;
+  if (left + pw > window.innerWidth - 8) left = Math.max(8, window.innerWidth - pw - 8);
+  if (top + ph > window.innerHeight - 8) top = Math.max(8, r.top - ph - 6);
+  pop.style.left = `${left}px`;
+  pop.style.top = `${top}px`;
+}
+
+function closeTradeEmojiPopover() {
+  const pop = document.getElementById('tradeEmojiPopover');
+  if (pop) pop.hidden = true;
+  tradeEmojiPopoverCtx = null;
+}
+
+function openTradeEmojiPopover(anchorEl, mode, ctx) {
+  const pop = document.getElementById('tradeEmojiPopover');
+  if (!pop || !anchorEl) return;
+  tradeEmojiPopoverCtx = { mode, ...(ctx || {}) };
+  if (mode === 'insert') {
+    pop.innerHTML = `<div class="trade-emoji-popover-title">이모지 삽입</div><div class="trade-emoji-grid" id="tradeEmojiGrid"></div>`;
+    const grid = pop.querySelector('#tradeEmojiGrid');
+    if (grid) {
+      grid.innerHTML = TRADE_COMPOSER_EMOJI_CHARS.map(
+        (ch) =>
+          `<button type="button" title="${ch}" aria-label="${ch}">${ch}</button>`
+      ).join('');
+      grid.onclick = (ev) => {
+        const b = ev.target.closest('button');
+        if (!b || !tradeEmojiPopoverCtx || tradeEmojiPopoverCtx.mode !== 'insert') return;
+        ev.preventDefault();
+        const tid = tradeEmojiPopoverCtx.textareaId;
+        tradeInsertEmojiAtCursor(tid, b.textContent.trim());
+        closeTradeEmojiPopover();
+      };
+    }
+  } else if (mode === 'react') {
+    pop.innerHTML = `<div class="trade-emoji-popover-title">반응 선택</div><div class="trade-emoji-grid" id="tradeEmojiGrid"></div>`;
+    const grid = pop.querySelector('#tradeEmojiGrid');
+    if (grid) {
+      grid.innerHTML = TRADE_REACTION_KEYS.map((k) => {
+        const em = TRADE_REACTION_META[k].emoji;
+        return `<button type="button" data-react-key="${k}" title="${em}" aria-label="${em}">${em}</button>`;
+      }).join('');
+      grid.onclick = (ev) => {
+        const b = ev.target.closest('button[data-react-key]');
+        if (!b || !tradeEmojiPopoverCtx || tradeEmojiPopoverCtx.mode !== 'react') return;
+        ev.preventDefault();
+        const pk = tradeEmojiPopoverCtx.postId;
+        const rk = b.getAttribute('data-react-key');
+        if (pk && rk) tradeToggleReaction(pk, rk);
+        closeTradeEmojiPopover();
+      };
+    }
+  }
+  pop.hidden = false;
+  positionTradeEmojiPopover(anchorEl);
+  requestAnimationFrame(() => positionTradeEmojiPopover(anchorEl));
+}
+
+function tradeComposeEmojiClick(ev) {
+  const a = ev && ev.currentTarget;
+  openTradeEmojiPopover(a, 'insert', { textareaId: 'tradePostBody' });
+}
+
+function tradeReplyEmojiClick(ev) {
+  openTradeEmojiPopover(ev.currentTarget, 'insert', { textareaId: 'tradeReplyBody' });
+}
+
+function tradeOpenReactionEmoji(anchorEl, postId) {
+  if (!anchorEl || !postId) return;
+  if (isCurrentTradeActivityBlocked()) {
+    alert(tradeRestrictionMessage());
+    return;
+  }
+  openTradeEmojiPopover(anchorEl, 'react', { postId });
+}
+
+async function refreshTradeRestriction(sb) {
+  tradeRestrictionState = { active: false, indefinite: false, until: null };
+  if (!sb) return;
+  try {
+    const gid = getOrCreateTradeGuestId();
+    const { data, error } = await sb.rpc('trade_me_restriction_status', {
+      p_guest_key: currentAuthUserId ? null : gid
+    });
+    if (error) {
+      console.warn('[trade restriction]', error.message);
+      return;
+    }
+    const o = data || {};
+    tradeRestrictionState = {
+      active: !!o.active,
+      indefinite: !!o.indefinite,
+      until: o.until || null
+    };
+  } catch (e) {
+    console.warn('[trade restriction]', e);
+  }
+}
+
+function isCurrentTradeActivityBlocked() {
+  return !!(tradeRestrictionState && tradeRestrictionState.active);
+}
+
+function tradeRestrictionMessage() {
+  if (!tradeRestrictionState.active) return '';
+  if (tradeRestrictionState.indefinite) return '관리자에 의해 게시·댓글·반응이 제한된 상태입니다. 해제되면 다시 이용할 수 있습니다.';
+  if (tradeRestrictionState.until) {
+    try {
+      const d = new Date(tradeRestrictionState.until);
+      return `관리자에 의해 일시 제한 중입니다. (${d.toLocaleString('ko-KR', { dateStyle: 'medium', timeStyle: 'short' })}까지)`;
+    } catch (_) {}
+  }
+  return '관리자에 의해 일시 제한 중입니다.';
+}
+
+function updateTradeRestrictionUI() {
+  const ban = document.getElementById('tradeRestrictionBanner');
+  if (ban) {
+    if (tradeRestrictionState.active) {
+      ban.hidden = false;
+      ban.textContent = tradeRestrictionMessage();
+    } else {
+      ban.hidden = true;
+      ban.textContent = '';
+    }
+  }
+  const blocked = tradeRestrictionState.active;
+  const sendMain = document.getElementById('tradeSendBtn');
+  const sendReply = document.getElementById('tradeReplySendBtn');
+  const taMain = document.getElementById('tradePostBody');
+  const taReply = document.getElementById('tradeReplyBody');
+  if (sendMain) sendMain.disabled = !!blocked;
+  if (sendReply) sendReply.disabled = !!blocked;
+  if (taMain) taMain.disabled = !!blocked;
+  if (taReply) taReply.disabled = !!blocked;
+  document.querySelectorAll('.trade-reaction-btn, .trade-thread-react-btn').forEach((el) => {
+    el.style.pointerEvents = blocked ? 'none' : '';
+    el.style.opacity = blocked ? '0.45' : '';
+  });
+}
+
+function updateTradeThreadAdminBar() {
+  const bar = document.getElementById('tradeThreadAdminBar');
+  const lab = document.getElementById('tradeAdminTargetLabel');
+  if (!bar || !lab) return;
+  if (!isTradeBoardAdmin() || !selectedTradePostId) {
+    bar.hidden = true;
+    return;
+  }
+  const post = loadTradePosts().find((x) => x.id === selectedTradePostId);
+  if (!post) {
+    bar.hidden = true;
+    return;
+  }
+  bar.hidden = false;
+  if (post.userId) {
+    lab.textContent = `작성자(로그인): ${String(post.userId)}`;
+  } else if (post.authorGuestKey) {
+    lab.textContent = `작성자(게스트): ${String(post.authorGuestKey)}`;
+  } else {
+    lab.textContent = '작성자 식별 불가';
+  }
+}
+
+async function tradeAdminApplyTimed() {
+  if (!isTradeBoardAdmin()) return;
+  const post = loadTradePosts().find((x) => x.id === selectedTradePostId);
+  if (!post) return;
+  const inp = document.getElementById('tradeAdminHoursInput');
+  const h = inp && inp.value ? parseFloat(inp.value) : NaN;
+  if (!Number.isFinite(h) || h <= 0) {
+    alert('제한 시간(시간)을 올바르게 입력해 주세요.');
+    return;
+  }
+  const sb = getSupabaseClient();
+  if (!sb) {
+    alert('Supabase 연결을 확인할 수 없습니다.');
+    return;
+  }
+  const {
+    data: { user }
+  } = await sb.auth.getUser();
+  const adminId = user && user.id ? user.id : null;
+  if (!adminId) {
+    alert('관리자 세션이 필요합니다.');
+    return;
+  }
+  const untilIso = new Date(Date.now() + h * 3600000).toISOString();
+  try {
+    if (post.userId) {
+      const { error } = await sb.from('trade_user_restrictions').upsert(
+        {
+          user_id: post.userId,
+          indefinite: false,
+          suspended_until: untilIso,
+          created_by: adminId,
+          updated_at: new Date().toISOString()
+        },
+        { onConflict: 'user_id' }
+      );
+      if (error) throw error;
+    } else if (post.authorGuestKey) {
+      const { error } = await sb.from('trade_guest_restrictions').upsert(
+        {
+          guest_key: post.authorGuestKey,
+          indefinite: false,
+          suspended_until: untilIso,
+          created_by: adminId,
+          updated_at: new Date().toISOString()
+        },
+        { onConflict: 'guest_key' }
+      );
+      if (error) throw error;
+    } else {
+      alert('로그인·게스트 작성자만 제재할 수 있습니다.');
+      return;
+    }
+    alert('시간 제한 제재를 적용했습니다.');
+    if (post.userId && currentAuthUserId && String(post.userId) === String(currentAuthUserId)) {
+      await refreshTradeRestriction(sb);
+      updateTradeRestrictionUI();
+    }
+  } catch (e) {
+    console.error(e);
+    alert(e.message || '적용에 실패했습니다. Supabase에 trade 제재 테이블·정책을 적용했는지 확인하세요.');
+  }
+}
+
+async function tradeAdminApplyManual() {
+  if (!isTradeBoardAdmin()) return;
+  const post = loadTradePosts().find((x) => x.id === selectedTradePostId);
+  if (!post) return;
+  const sb = getSupabaseClient();
+  if (!sb) {
+    alert('Supabase 연결을 확인할 수 없습니다.');
+    return;
+  }
+  const {
+    data: { user }
+  } = await sb.auth.getUser();
+  const adminId = user && user.id ? user.id : null;
+  if (!adminId) {
+    alert('관리자 세션이 필요합니다.');
+    return;
+  }
+  try {
+    if (post.userId) {
+      const { error } = await sb.from('trade_user_restrictions').upsert(
+        {
+          user_id: post.userId,
+          indefinite: true,
+          suspended_until: null,
+          created_by: adminId,
+          updated_at: new Date().toISOString()
+        },
+        { onConflict: 'user_id' }
+      );
+      if (error) throw error;
+    } else if (post.authorGuestKey) {
+      const { error } = await sb.from('trade_guest_restrictions').upsert(
+        {
+          guest_key: post.authorGuestKey,
+          indefinite: true,
+          suspended_until: null,
+          created_by: adminId,
+          updated_at: new Date().toISOString()
+        },
+        { onConflict: 'guest_key' }
+      );
+      if (error) throw error;
+    } else {
+      alert('로그인·게스트 작성자만 제재할 수 있습니다.');
+      return;
+    }
+    alert('수동 정지를 적용했습니다.');
+    if (post.userId && currentAuthUserId && String(post.userId) === String(currentAuthUserId)) {
+      await refreshTradeRestriction(sb);
+      updateTradeRestrictionUI();
+    }
+  } catch (e) {
+    console.error(e);
+    alert(e.message || '적용에 실패했습니다.');
+  }
+}
+
+async function tradeAdminReleaseAuthor() {
+  if (!isTradeBoardAdmin()) return;
+  const post = loadTradePosts().find((x) => x.id === selectedTradePostId);
+  if (!post) return;
+  const sb = getSupabaseClient();
+  if (!sb) {
+    alert('Supabase 연결을 확인할 수 없습니다.');
+    return;
+  }
+  try {
+    if (post.userId) {
+      const { error } = await sb.from('trade_user_restrictions').delete().eq('user_id', post.userId);
+      if (error) throw error;
+    } else if (post.authorGuestKey) {
+      const { error } = await sb.from('trade_guest_restrictions').delete().eq('guest_key', post.authorGuestKey);
+      if (error) throw error;
+    } else {
+      alert('대상이 없습니다.');
+      return;
+    }
+    alert('제재를 해제했습니다.');
+    if (post.userId && currentAuthUserId && String(post.userId) === String(currentAuthUserId)) {
+      await refreshTradeRestriction(sb);
+      updateTradeRestrictionUI();
+    }
+  } catch (e) {
+    console.error(e);
+    alert(e.message || '해제에 실패했습니다.');
+  }
+}
 
 function getOrCreateTradeGuestId() {
   try {
