@@ -47,11 +47,11 @@
       --t-factory-strong: #e6e6e6;
       --t-title-blue: #e8f4ff;
       --t-text-soft: #bbb;
-      --t-expert-desc: var(--t-expert-desc);
+      --t-expert-desc: #9f9f9f;
       --t-text-slate: #9eb2c8;
       --t-text-slate-2: #9ea7b3;
       --t-text-slate-3: #9da7b3;
-      --t-label: #9d9d9d;
+      --t-label: var(--t-label);
       --t-text-muted: #888;
       --t-label-2: #8a8a8a;
       --t-text-faint: #666;
@@ -3547,7 +3547,7 @@ function renderTriFinalPlan(title, orderedNames, counts) {
     const n = counts[name] || 0;
     const imgH = buildImageTag(name, '', 'height:22px;vertical-align:middle;margin-right:6px;');
     return `<div style="background:var(--t-surface-deep);border:1px solid var(--t-border);border-radius:8px;padding:10px 8px;text-align:center;min-height:72px;display:flex;flex-direction:column;justify-content:center;">
-      <div style="font-size:11px;color:#9eb2c8;line-height:1.25;word-break:keep-all;">${imgH}${name}</div>
+      <div style="font-size:11px;color:var(--t-text-slate);line-height:1.25;word-break:keep-all;">${imgH}${name}</div>
       <div style="font-size:17px;font-weight:900;color:#8fd5ff;margin-top:6px;">${n}개</div>
     </div>`;
   }).join('');
@@ -3712,7 +3712,7 @@ function renderSageRod() {
     return `
       <div style="padding:10px;border:1px solid var(--t-border);border-radius:8px;background:var(--t-surface3);">
         <div style="font-size:12px;color:var(--t-title-muted);margin-bottom:4px;">${meta.label}</div>
-        <div style="font-size:11px;color:#9da7b3;margin-bottom:8px;">${meta.desc}</div>
+        <div style="font-size:11px;color:var(--t-text-slate-3);margin-bottom:8px;">${meta.desc}</div>
         <select onchange="changeSageEngravingLevel('${key}', this.value)" style="width:100%;background:var(--t-input-dark);color:var(--t-select-fg);border:1px solid var(--t-border-2);border-radius:6px;padding:7px 8px;font-size:12px;">
           ${opts}
         </select>
@@ -3850,12 +3850,12 @@ function renderStaminaPlan() {
   });
 
   result.innerHTML = `
-    <div style="font-size:13px; color:#9eb2c8; margin-bottom:8px; text-align:center;">입력 ${staminaRaw} → 채집에 사용 <strong style="color:#cde7ff;">${stamina}</strong> (15 단위)</div>
+    <div style="font-size:13px; color:var(--t-text-slate); margin-bottom:8px; text-align:center;">입력 ${staminaRaw} → 채집에 사용 <strong style="color:#cde7ff;">${stamina}</strong> (15 단위)</div>
     <div style="font-size:14px; font-weight:900; color:var(--t-stamina-banner); margin-bottom:10px; padding:12px; background:var(--t-surface1); border-radius:8px; text-align:center;">⚡ 총 채집 가능: ${gathers}회 (스태미나 15 소모 기준)</div>
-    <div style="font-size:12px; color:#9eb2c8; margin-bottom:10px; text-align:center;">세이지 드롭 ${effectiveDrops.toFixed(2)}개/회 (심해채집꾼+각인 반영), 조개 등장 ${shellChanceTotal.toFixed(1)}%, 어획력 ${fishingPowerTotal}, 3성 확률 ${star3Chance.toFixed(1)}%</div>
+    <div style="font-size:12px; color:var(--t-text-slate); margin-bottom:10px; text-align:center;">세이지 드롭 ${effectiveDrops.toFixed(2)}개/회 (심해채집꾼+각인 반영), 조개 등장 ${shellChanceTotal.toFixed(1)}%, 어획력 ${fishingPowerTotal}, 3성 확률 ${star3Chance.toFixed(1)}%</div>
     <div style="font-size:11px; color:#7f99b6; margin-bottom:10px; text-align:center;">각인 기대값: 물고기 +${expectedExtraFish.toFixed(2)}회분, 정령고래 깨진 조개껍데기 +${expectedWhaleBrokenShell.toFixed(2)}개 (룰렛 포함 기대 어패는 드롭/회에 반영)</div>
     <div style="background:var(--t-surface-muted); border:1px solid var(--t-border); border-radius:10px; overflow:hidden;">
-      <div style="display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:10px; padding:10px; background:var(--t-stamina-grid); color:#9ea7b3; font-size:12px; font-weight:900;">
+      <div style="display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:10px; padding:10px; background:var(--t-stamina-grid); color:var(--t-text-slate-2); font-size:12px; font-weight:900;">
         <div>품목 이름</div><div>스태미나</div><div>채집 횟수</div>
       </div>
       ${rows.join('')}
@@ -4020,9 +4020,9 @@ function renderCraftPricePanel(effects) {
         </div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:0 2px 10px;">
-        <div style="font-size:11px;color:#9d9d9d;">기본 제작 판매가</div>
+        <div style="font-size:11px;color:var(--t-label);">기본 제작 판매가</div>
         <div style="font-size:11px;color:#ddd;text-align:right;">${recipePrice.toLocaleString()}G</div>
-        <div style="font-size:11px;color:#9d9d9d;">전문가 적용 판매가</div>
+        <div style="font-size:11px;color:var(--t-label);">전문가 적용 판매가</div>
         <div style="font-size:11px;color:${hasCraftBoost ? '#8fd5ff' : '#777'};text-align:right;">${boostedRecipePrice.toLocaleString()}G${hasCraftBoost ? ` ( +${effects.craftPriceBoost}% )` : ''}</div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:2px 12px;padding-top:8px;border-top:1px solid var(--t-border);">
@@ -4374,7 +4374,7 @@ function analyzeEfficiency() {
     timeSummary.style.borderRadius = '10px';
     timeSummary.innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
-        <div style="font-size:12px;color:#9eb2c8;">연금품 제작 총 소요 시간</div>
+        <div style="font-size:12px;color:var(--t-text-slate);">연금품 제작 총 소요 시간</div>
         <div style="font-size:14px;font-weight:800;color:#8fd5ff;">${formatDuration(totalAlchemyTimeSec)}</div>
       </div>
     `;
