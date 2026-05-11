@@ -1783,7 +1783,7 @@
             <strong>주요 기능:</strong>
           </p>
           <ul style="color: #bbb; margin-left: 20px; margin-top: 10px; line-height: 1.8; font-size: 14px;">
-            <li><strong>제작 & 조합법</strong> - 전체 레시피를 확인하고 필요한 재료를 파악합니다</li>
+            <li><strong>제작 및 조합법</strong> - 전체 레시피를 확인하고 필요한 재료를 파악합니다</li>
             <li><strong>재료 창고</strong> - 보유한 재료 수량을 입력하여 제작 가능성을 분석합니다</li>
             <li><strong>효율 분석</strong> - 스태미나, 연금품, 공예품 가격 효율을 계산합니다</li>
             <li><strong>개인설정</strong> - 전문가 스킬과 세이지 낚싯대 레벨을 설정합니다</li>
@@ -1808,10 +1808,10 @@
       </div>
     </div>
 
-    <!-- 제작 & 조합법 섹션 -->
+    <!-- 제작 및 조합법 섹션 -->
     <div id="craft" class="content-section">
       <div class="header">
-        <h1>제작 & 조합법</h1>
+        <h1>제작 및 조합법</h1>
         <p class="header-subtitle">해양 아이템들을 제작하는 방법을 확인하세요</p>
       </div>
 
@@ -4435,10 +4435,8 @@ function showEfficiencySub(subKey) {
 }
 
 function openEfficiencySub(subKey, el) {
-  switchSection('efficiency');
   showEfficiencySub(subKey);
-  document.querySelectorAll('#efficiencySubNav .sub-item').forEach(i => i.classList.remove('active'));
-  if (el) el.classList.add('active');
+  switchSection('efficiency');
 }
 
 function renderStaminaPlan() {
