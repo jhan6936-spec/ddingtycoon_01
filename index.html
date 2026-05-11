@@ -2390,7 +2390,7 @@ function ensureCalcPopup() {
       </div>
 
       <div class="calc-commit-modes" id="calcCommitModes">
-        <div class="calc-commit-hint">엔터 시 동작 (버튼 없이 입력 확정)</div>
+        <div class="calc-commit-hint">엔터로 확정 (선택한 모드대로 적용·추가)</div>
         <div class="calc-commit-btns">
           <button type="button" class="mode-btn active" data-commit="apply">적용모드</button>
           <button type="button" class="mode-btn" data-commit="add">추가모드</button>
@@ -2398,8 +2398,6 @@ function ensureCalcPopup() {
       </div>
 
       <div class="calc-actions">
-        <button class="action-btn primary" type="button" id="calcApplyBtn">적용</button>
-        <button class="action-btn secondary" type="button" id="calcAddBtn">추가</button>
         <button class="action-btn danger" type="button" id="calcResetBtn">초기화</button>
       </div>
     </div>
@@ -2446,9 +2444,7 @@ function ensureCalcPopup() {
     handleCalcKey(key);
   });
 
-  // 액션
-  popup.querySelector('#calcApplyBtn').addEventListener('click', () => commitCalcValue('apply'));
-  popup.querySelector('#calcAddBtn').addEventListener('click', () => commitCalcValue('add'));
+  // 초기화만 (적용·추가는 적용모드/추가모드 + 엔터)
   popup.querySelector('#calcResetBtn').addEventListener('click', () => commitCalcValue('reset'));
 
   popup.querySelectorAll('#calcCommitModes [data-commit]').forEach((btn) => {
