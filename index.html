@@ -83,6 +83,80 @@
       text-transform: uppercase;
       letter-spacing: 1px;
     }
+    .sidebar-group-label {
+      padding: 14px 20px 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    #calculatorSubNav.calc-sub {
+      display: block;
+      margin-top: 0;
+      margin-bottom: 8px;
+      padding-left: 6px;
+      margin-left: 14px;
+      border-left: 2px solid #2a2a2a;
+    }
+    #efficiencySubNav.nested-eff {
+      margin-left: 28px;
+      margin-bottom: 10px;
+      padding-left: 10px;
+      border-left: 2px solid #333;
+    }
+    .marine-guide-gallery {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      max-width: 920px;
+      margin-bottom: 28px;
+    }
+    .marine-guide-gallery img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 12px;
+      border: 1px solid #333;
+      background: #141414;
+    }
+    .marine-guide-block {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 22px 24px;
+      line-height: 1.7;
+      color: #ccc;
+      max-width: 920px;
+    }
+    .marine-guide-block h2 {
+      color: #4a8fd9;
+      font-size: 18px;
+      margin-bottom: 14px;
+      font-weight: 600;
+    }
+    .marine-guide-block ul {
+      margin: 8px 0 0 20px;
+      padding: 0;
+    }
+    .marine-guide-block li {
+      margin-bottom: 8px;
+    }
+    .marine-guide-block .marine-guide-note {
+      margin-top: 14px;
+      color: #aaa;
+      font-size: 14px;
+    }
+    .marine-guide-credit {
+      margin-top: 28px;
+      max-width: 920px;
+      padding-top: 18px;
+      border-top: 1px solid #333;
+      font-size: 13px;
+      color: #888;
+      text-align: center;
+      line-height: 1.6;
+    }
     .nav-item {
       padding: 10px 20px;
       cursor: pointer;
@@ -1664,17 +1738,24 @@
   <!-- 사이드바 네비게이션 -->
   <div class="sidebar">
     <div class="sidebar-title">메뉴</div>
-    <div class="nav-item active" onclick="switchSection('main')">메인</div>
-    <div class="nav-item" onclick="switchSection('craft')">제작 & 조합법</div>
-    <div class="nav-item" onclick="switchSection('warehouse')">재료 창고</div>
-    <div class="nav-item" onclick="switchSection('efficiency')">효율 분석</div>
-    <div id="efficiencySubNav" class="sub-nav">
+    <div class="nav-item active" data-nav-section="main" onclick="switchSection('main', this)">메인</div>
+
+    <div class="sidebar-group-label">계산기</div>
+    <div id="calculatorSubNav" class="sub-nav calc-sub">
+      <div class="sub-item" data-calc-section="craft" onclick="switchSection('craft', this)">제작 및 조합법</div>
+      <div class="sub-item" data-calc-section="warehouse" onclick="switchSection('warehouse', this)">재료 창고</div>
+      <div class="sub-item" data-calc-section="efficiency" onclick="switchSection('efficiency', this)">효율 분석</div>
+      <div class="sub-item" data-calc-section="settings" onclick="switchSection('settings', this)">개인설정</div>
+    </div>
+
+    <div id="efficiencySubNav" class="sub-nav nested-eff">
       <div class="sub-item" onclick="openEfficiencySub('stamina', this)">스태미나 계산</div>
       <div class="sub-item" onclick="openEfficiencySub('alchemy', this)">연금품 계산</div>
       <div class="sub-item" onclick="openEfficiencySub('craftPrice', this)">공예품 가격</div>
     </div>
-    <div class="nav-item" onclick="switchSection('settings')">개인설정</div>
-    <div class="nav-item" onclick="switchSection('factory')">공장 제작법</div>
+
+    <div class="nav-item" data-nav-section="marine-guide" onclick="switchSection('marine-guide', this)">해양전문가 가이드</div>
+    <div class="nav-item" data-nav-section="factory" onclick="switchSection('factory', this)">공장 제작법</div>
   </div>
 
   <!-- 메인 컨텐츠 -->
