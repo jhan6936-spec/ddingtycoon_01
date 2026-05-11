@@ -5880,6 +5880,7 @@ function closeTradeThreadPanel() {
     panel.setAttribute('aria-hidden', 'true');
   }
   document.querySelectorAll('.trade-forum-card').forEach((c) => c.classList.remove('trade-card-active'));
+  updateTradeThreadAdminBar();
 }
 
 function submitTradeReply() {
