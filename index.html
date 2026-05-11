@@ -4560,6 +4560,65 @@ function formatRelativeTradeTime(ts) {
   return formatTradeTimestamp(t);
 }
 
+function tradeCompressImageToDataUrl(file, maxW = 1280, quality = 0.82) {
+  return new Promise((resolve, reject) => {
+    if (!file || !file.type.startsWith('image/')) {
+      reject(new Error('not image'));
+      return;
+    }
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      try {
+        URL.revokeObjectURL(url);
+        let w = img.width;
+        let h = img.height;
+        if (w > maxW) {
+          h = Math.round((h * maxW) / w);
+          w = maxW;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        let dataUrl = '';
+        try {
+          dataUrl = canvas.toDataURL('image/jpeg', quality);
+        } catch (_) {
+          dataUrl = canvas.toDataURL('image/png');
+        }
+        resolve(dataUrl);
+      } catch (e) {
+        reject(e);
+      }
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('load'));
+    };
+    img.src = url;
+  });
+}
+
+function tradeTotalReactionCount(reactions) {
+  const r = normalizeReactionMap(reactions);
+  return TRADE_REACTION_KEYS.reduce((acc, k) => acc + (r[k] || 0), 0);
+}
+
+function tradeCommentDayKey(ts) {
+  const d = new Date(ts);
+  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+}
+
+function tradeCommentDayLabel(ts) {
+  try {
+    return new Date(ts).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+  } catch (_) {
+    return '';
+  }
+}
+
 function getTradeAuthorForPost() {
   const u = cachedAuthUserForProfile;
   if (!u || !u.id) {
