@@ -2300,11 +2300,40 @@ const PATCH_NOTES_HTML = `
   </ul>
 `;
 
-/** 이름·사진(상대 경로 또는 URL). 예: { name: '닉네임', photo: '배경/contributor.png' } */
+/** 이름·사진(상대 경로 또는 URL). subtitle 선택 */
 const CREDIT_CONTRIBUTORS = [
+  { name: '박총총', subtitle: 'parkchongchong', photo: 'credits/parkchongchong.png' },
+  { name: '세링', subtitle: 'Ring_o_o', photo: 'credits/ring_o_o.png' },
+  { name: '율', subtitle: '', photo: 'credits/yul.png' },
+  { name: '혜진', subtitle: '사진 · 이후 추가 예정', photo: '' },
 ];
 
-function escapeHtml(s) {
+function buildCreditTilesHTML() {
+  if (!CREDIT_CONTRIBUTORS.length) {
+    return '<p class="credits-empty">아직 등록된 분이 없습니다. 코드 안의 <code>CREDIT_CONTRIBUTORS</code> 배열에 항목을 추가하면 표시됩니다.</p>';
+  }
+  return CREDIT_CONTRIBUTORS.map((c) => {
+    const name = escapeHtml(c.name || '');
+    const subRaw = String(c.subtitle || '').trim();
+    const sub = subRaw ? `<div class="credit-plaque-sub">${escapeHtml(subRaw)}</div>` : '';
+    const src = creditPhotoSrc(c.photo);
+    const imgBlock = src
+      ? `<img src="${src.replace(/"/g, '&quot;')}" alt="${name}" loading="lazy">`
+      : '<div class="credit-photo-ph" aria-hidden="true"></div>';
+    return `<figure class="credit-plaque"><div class="credit-plaque-photo">${imgBlock}</div><figcaption class="credit-plaque-caption"><div class="credit-plaque-name">${name}</div>${sub}</figcaption></figure>`;
+  }).join('');
+}
+
+function renderMainCreditsInline() {
+  const el = document.getElementById('mainCreditsInline');
+  if (!el) return;
+  const inner = buildCreditTilesHTML();
+  if (inner.startsWith('<p class="credits-empty"')) {
+    el.innerHTML = inner;
+    return;
+  }
+  el.innerHTML = `<div class="credits-gallery credits-gallery--main">${inner}</div>`;
+}
   return String(s ?? '')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
