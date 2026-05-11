@@ -2068,7 +2068,7 @@ function renderCreditsModalBody() {
   const body = document.getElementById('creditsModalBody');
   if (!body) return;
   if (!CREDIT_CONTRIBUTORS.length) {
-    body.innerHTML = '<p class="credits-empty">아직 등록된 분이 없습니다. 스크립트 상단의 <code>CREDIT_CONTRIBUTORS</code> 배열에 <code>{ name: \'이름\', photo: \'이미지경로\' }</code> 형식으로 추가하면 이곳에 미술관 작품처럼 표시됩니다.</p>';
+    body.innerHTML = '<p class="credits-empty">아직 등록된 분이 없습니다. 코드 안의 <code>CREDIT_CONTRIBUTORS</code> 배열에 <code>{ name: \'이름\', photo: \'이미지경로\' }</code> 형식으로 추가하면 이곳에 미술관 작품처럼 표시됩니다.</p>';
     return;
   }
   const tiles = CREDIT_CONTRIBUTORS.map((c) => {
