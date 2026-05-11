@@ -5673,6 +5673,7 @@ function renderTradeThreadPanel() {
   comEl.innerHTML = buildTradeCommentsHtml(post);
   if (sc) sc.scrollTop = sc.scrollHeight;
   updateTradeThreadMoreMenuVisibility();
+  updateTradeThreadAdminBar();
 }
 
 function closeTradeThreadMoreMenu() {
@@ -5847,6 +5848,7 @@ function openTradeThreadPanel(postId) {
     c.classList.toggle('trade-card-active', c.getAttribute('data-post-id') === postId);
   });
   updateTradeThreadMoreMenuVisibility();
+  updateTradeThreadAdminBar();
 }
 
 function closeTradeThreadPanel() {
@@ -6542,6 +6544,8 @@ function switchSection(sectionId, clickedEl) {
       renderTradeMessages();
       updateTradeComposerAvatar();
     });
+    const sbTr = getSupabaseClient();
+    if (sbTr) refreshTradeRestriction(sbTr).then(() => updateTradeRestrictionUI());
   }
 }
 
@@ -8525,6 +8529,15 @@ window.addEventListener('DOMContentLoaded', function() {
       updateTradeComposerAvatar();
     });
     document.addEventListener('click', closeTradeThreadMoreMenu);
+    document.addEventListener('click', (ev) => {
+      const pop = document.getElementById('tradeEmojiPopover');
+      if (!pop || pop.hidden) return;
+      if (ev.target.closest('#tradeEmojiPopover')) return;
+      if (ev.target.closest('.trade-icon-btn') && ev.target.closest('#trade-hub')) return;
+      if (ev.target.closest('.trade-reaction-btn')) return;
+      if (ev.target.closest('[data-trade-thread-react]')) return;
+      closeTradeEmojiPopover();
+    });
     const staminaInput = document.getElementById('staminaInput');
     if (staminaInput) {
       staminaInput.addEventListener('input', renderStaminaPlan);
