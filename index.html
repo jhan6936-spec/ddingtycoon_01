@@ -1527,11 +1527,42 @@
       font-size: 13px;
       margin: 10px 0 0;
     }
-    .main-credits-footer {
-      margin-top: 32px;
-      padding-top: 20px;
-      border-top: 1px solid rgba(74, 143, 217, 0.2);
+    .main-credits-block {
+      margin-top: 36px;
+      padding: 24px 20px;
+      border-radius: 12px;
+      background: rgba(74, 143, 217, 0.06);
+      border: 1px solid rgba(74, 143, 217, 0.2);
+    }
+    .main-credits-block-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #eaf6ff;
+      margin: 0 0 8px 0;
+      letter-spacing: -0.02em;
+    }
+    .main-credits-block-lead {
+      font-size: 13px;
+      color: #9eb8d8;
+      line-height: 1.5;
+      margin: 0 0 18px 0;
+    }
+    .main-credits-inline {
+      margin-bottom: 16px;
+    }
+    .credits-gallery--main {
+      margin-top: 4px;
+    }
+    .credit-plaque-caption {
+      width: 100%;
       text-align: center;
+    }
+    .credit-plaque-sub {
+      font-size: 12px;
+      font-weight: 500;
+      color: #9eb8d8;
+      margin-top: 6px;
+      line-height: 1.35;
     }
     .main-credits-trigger {
       background: none;
@@ -1681,8 +1712,13 @@
             개인설정에서 당신의 캐릭터 정보를 입력하면 더 정확한 효율 분석이 가능합니다.
           </p>
         </div>
-        <div class="main-credits-footer">
-          <button type="button" class="main-credits-trigger" onclick="openCreditsModal()">[띵타해]를 만드는 데 도움을 주신 분들</button>
+        <div class="main-credits-block">
+          <h2 class="main-credits-block-title">띵타해를 만드는 데 도움을 주신 분들</h2>
+          <p class="main-credits-block-lead">고마운 분들을 소개합니다. 사진은 앞서부터 박총총, 세링, 율, 혜진 님 순입니다.</p>
+          <div id="mainCreditsInline" class="main-credits-inline"></div>
+          <div class="main-credits-footer">
+            <button type="button" class="main-credits-trigger" onclick="openCreditsModal()">크게 보기</button>
+          </div>
         </div>
       </div>
     </div>
