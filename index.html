@@ -5368,17 +5368,22 @@ function submitTradePost() {
   if (!TRADE_CAT_META[category]) return;
   const author = getTradeAuthorForPost();
   const uid = cachedAuthUserForProfile && cachedAuthUserForProfile.id ? cachedAuthUserForProfile.id : null;
+  const authorGuestKey = uid ? null : getOrCreateTradeGuestId();
+  const now = Date.now();
   const post = normalizeTradePost({
-    id: `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`,
+    id: `${now}_${Math.random().toString(36).slice(2, 10)}`,
     category,
     title,
     authorName: author.name,
     avatarUrl: author.avatarUrl || '',
     authorInitial: author.initial,
     body,
-    ts: Date.now(),
+    ts: now,
+    updatedAt: now,
     userId: uid,
+    authorGuestKey,
     reactions: normalizeReactionMap(null),
+    reactionsByUser: {},
     attachments: attachSnap,
     comments: []
   });
