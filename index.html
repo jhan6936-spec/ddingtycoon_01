@@ -6946,7 +6946,7 @@ function renderQaMessages() {
   }
   list.innerHTML = posts
     .map((p) => {
-      const meta = QA_CAT_META[p.category] || QA_CAT_META.general;
+      const meta = QA_CAT_META.question;
       const initial = escapeHtmlTrade((p.authorInitial || (p.authorName || '?').charAt(0)).toUpperCase());
       const avatarInner = p.avatarUrl
         ? `<img src="${escapeHtmlTrade(p.avatarUrl)}" alt="">`
@@ -7028,7 +7028,6 @@ function submitQaPost() {
   }
   const titleIn = document.getElementById('qaPostTitle');
   const ta = document.getElementById('qaPostBody');
-  const sel = document.getElementById('qaPostCategory');
   const body = ta ? ta.value.trim() : '';
   const attachSnap = qaComposePendingAttachments.map(normalizeTradeAttachment).filter(Boolean);
   if (!body && !attachSnap.length) {
@@ -7040,7 +7039,7 @@ function submitQaPost() {
     const line = body.split(/\r?\n/)[0] || '';
     title = line ? (line.length > 80 ? `${line.slice(0, 80)}…` : line) : attachSnap.length ? '(이미지)' : '제목 없음';
   }
-  const category = sel && sel.value && QA_CAT_META[sel.value] ? sel.value : 'general';
+  const category = 'question';
   const author = getTradeAuthorForPost();
   const uid = cachedAuthUserForProfile && cachedAuthUserForProfile.id ? cachedAuthUserForProfile.id : null;
   const authorGuestKey = uid ? null : getOrCreateTradeGuestId();
@@ -7102,7 +7101,7 @@ function qaToggleReaction(postId, reactionKey) {
 }
 
 function buildQaThreadRootHtml(post) {
-  const meta = QA_CAT_META[post.category] || QA_CAT_META.general;
+  const meta = QA_CAT_META.question;
   const initial = escapeHtmlTrade((post.authorInitial || (post.authorName || '?').charAt(0)).toUpperCase());
   const avatarInner = post.avatarUrl
     ? `<img src="${escapeHtmlTrade(post.avatarUrl)}" alt="">`
