@@ -6086,8 +6086,6 @@ function renderTradeMessages() {
       const rawBody = (p.body || '').trim();
       const previewText = rawBody.length > 220 ? `${rawBody.slice(0, 220)}…` : rawBody;
       const previewHtml = escapeHtmlTrade(previewText).replace(/\n/g, '<br>');
-      const rmap = deriveReactionCountsFromPost(p);
-      const thumbs = rmap.thumb || 0;
       const reactTotal = tradeTotalReactionCountFromPost(p);
       const pid = escapeHtmlTrade(p.id);
       const comCount = Array.isArray(p.comments) ? p.comments.length : 0;
@@ -6115,7 +6113,7 @@ function renderTradeMessages() {
           </div>
           <div class="trade-forum-preview">${previewHtml}</div>
           <div class="trade-forum-footer">
-            <button type="button" class="trade-reaction-btn" data-trade-react="${pid}" data-react-key="thumb" aria-label="좋아요">👍 ${thumbs}</button>
+            <button type="button" class="trade-forum-react-trigger trade-icon-btn" data-trade-react="${pid}" aria-label="반응 추가">🙂</button>
             <span class="trade-forum-stat-muted">✨ 반응 ${reactTotal}</span>
             <span class="trade-forum-stat-muted">💬 댓글 ${comCount}</span>
           </div>
@@ -6132,7 +6130,7 @@ function renderTradeMessages() {
       openTradeProfileModal(av.getAttribute('data-trade-profile'));
       return;
     }
-    const rx = e.target.closest('.trade-reaction-btn[data-trade-react]');
+    const rx = e.target.closest('.trade-forum-react-trigger[data-trade-react]');
     if (rx) {
       e.preventDefault();
       e.stopPropagation();
