@@ -662,6 +662,48 @@
       border: 1px solid #2a3a4d;
       border-radius: 12px;
     }
+    .alchemy-summary-head-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+    .alchemy-summary-title-text {
+      font-size: 13px;
+      font-weight: 900;
+      color: #e8f4ff;
+      flex: 1 1 200px;
+      min-width: 0;
+    }
+    .alchemy-qty-mode-toggles {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+      align-items: center;
+    }
+    .alchemy-qty-mode-btn {
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background: #1a2330;
+      color: #b8c9d9;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .alchemy-qty-mode-btn:hover {
+      border-color: #4a8fd9;
+      color: #e8f4ff;
+    }
+    .alchemy-qty-mode-btn.active {
+      background: #4a8fd9;
+      border-color: #4a8fd9;
+      color: #fff;
+    }
     .alchemy-mat-section {
       margin-top: 12px;
     }
@@ -4711,19 +4753,20 @@ function analyzeEfficiency() {
 
     const summaryBox = document.createElement('div');
     summaryBox.className = 'alchemy-mat-summary';
+    lastAlchemySummaryData = { shell, vanilla };
     summaryBox.innerHTML = `
-      <div style="font-size:13px;font-weight:900;color:#e8f4ff;margin-bottom:6px;">추천 제작 기준 필요 재료 합계</div>
+      <div class="alchemy-summary-head-row">
+        <div class="alchemy-summary-title-text">추천 제작 기준 필요 재료 합계</div>
+        <div class="alchemy-qty-mode-toggles" role="group" aria-label="수량 표시 단위">
+          <button type="button" class="alchemy-qty-mode-btn" data-alchemy-qty-mode="boxSetPiece" onclick="setAlchemySummaryQtyMode('boxSetPiece')">상자/세트/개</button>
+          <button type="button" class="alchemy-qty-mode-btn" data-alchemy-qty-mode="setPiece" onclick="setAlchemySummaryQtyMode('setPiece')">세트/개</button>
+        </div>
+      </div>
       <div style="font-size:11px;color:#8899aa;line-height:1.5;margin-bottom:12px;">바닐라 무한 계산을 켠 경우에도, 레시피상 필요한 개수는 아래와 같습니다.</div>
-      <div class="alchemy-mat-section">
-        <h4>어패류</h4>
-        ${renderShellfishTiersHTML(shell)}
-      </div>
-      <div class="alchemy-mat-section">
-        <h4>바닐라 재료</h4>
-        ${renderVanillaWarehouseCategoriesHTML(vanilla)}
-      </div>
+      <div id="alchemyMaterialSummaryBody">${buildAlchemySummaryMaterialSectionsHTML(shell, vanilla, alchemySummaryQtyMode)}</div>
     `;
     containerAlchemy.appendChild(summaryBox);
+    syncAlchemySummaryQtyButtons();
   }
   
   renderCraftPricePanel(effects);
@@ -4798,6 +4841,7 @@ window.addEventListener('DOMContentLoaded', function() {
   loadSageEngravingState();
   renderRecipes();
   loadWarehouseSetViewState();
+  loadAlchemySummaryQtyMode();
   renderWarehouse();
   renderExperts();
   renderSageRod();
