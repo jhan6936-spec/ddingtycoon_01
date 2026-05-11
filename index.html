@@ -5154,6 +5154,7 @@ function renderTradeThreadPanel() {
   rootEl.innerHTML = buildTradeThreadRootHtml(post);
   comEl.innerHTML = buildTradeCommentsHtml(post);
   if (sc) sc.scrollTop = sc.scrollHeight;
+  updateTradeThreadMoreMenuVisibility();
 }
 
 function openTradeThreadPanel(postId) {
@@ -5176,9 +5177,12 @@ function openTradeThreadPanel(postId) {
   document.querySelectorAll('.trade-forum-card').forEach((c) => {
     c.classList.toggle('trade-card-active', c.getAttribute('data-post-id') === postId);
   });
+  updateTradeThreadMoreMenuVisibility();
 }
 
 function closeTradeThreadPanel() {
+  closeTradeThreadMoreMenu();
+  cancelTradeThreadEdit();
   selectedTradePostId = null;
   tradeReplyPendingAttachments = [];
   renderReplyAttachPreview();
