@@ -3006,40 +3006,65 @@
         <h1>거래소</h1>
         <p class="header-subtitle">구매 · 판매 · 교환 · 알바(구인) — 디스코드 포럼처럼 제목·본문을 올리고, 글 목록은 이 브라우저에만 저장됩니다</p>
       </div>
-      <div class="trade-hub-wrap">
-        <div class="trade-category-tabs" role="tablist" aria-label="거래 카테고리">
-          <button type="button" class="trade-tab active" data-trade-cat="all" onclick="setTradeCategoryFilter('all')">전체</button>
-          <button type="button" class="trade-tab" data-trade-cat="buy" onclick="setTradeCategoryFilter('buy')">구매</button>
-          <button type="button" class="trade-tab" data-trade-cat="sell" onclick="setTradeCategoryFilter('sell')">판매</button>
-          <button type="button" class="trade-tab" data-trade-cat="exchange" onclick="setTradeCategoryFilter('exchange')">교환</button>
-          <button type="button" class="trade-tab" data-trade-cat="job" onclick="setTradeCategoryFilter('job')">알바(구인)</button>
-        </div>
-        <div class="trade-forum-compose">
-          <div class="trade-forum-compose-top">
-            <input type="text" id="tradePostTitle" class="trade-title-input" placeholder="제목" maxlength="200" autocomplete="off">
-            <button type="button" class="trade-icon-btn trade-attach-btn" title="첨부" aria-label="첨부" onclick="tradeComposeAttachClick()">🖼</button>
+      <div class="trade-hub-wrap" id="tradeHubWrap">
+        <div class="trade-hub-main">
+          <div class="trade-category-tabs" role="tablist" aria-label="거래 카테고리">
+            <button type="button" class="trade-tab active" data-trade-cat="all" onclick="setTradeCategoryFilter('all')">전체</button>
+            <button type="button" class="trade-tab" data-trade-cat="buy" onclick="setTradeCategoryFilter('buy')">구매</button>
+            <button type="button" class="trade-tab" data-trade-cat="sell" onclick="setTradeCategoryFilter('sell')">판매</button>
+            <button type="button" class="trade-tab" data-trade-cat="exchange" onclick="setTradeCategoryFilter('exchange')">교환</button>
+            <button type="button" class="trade-tab" data-trade-cat="job" onclick="setTradeCategoryFilter('job')">알바(구인)</button>
           </div>
-          <textarea id="tradePostBody" class="trade-body-input" placeholder="메시지를 입력하세요..." rows="5" maxlength="2000"></textarea>
-          <div class="trade-forum-compose-bottom">
-            <button type="button" class="trade-icon-btn" aria-label="이모지" onclick="tradeComposeEmojiClick()">🙂</button>
-            <div class="trade-compose-spacer"></div>
-            <select id="tradePostCategory" class="trade-cat-select-inline" aria-label="글 카테고리">
-              <option value="buy">구매</option>
-              <option value="sell">판매</option>
-              <option value="exchange">교환</option>
-              <option value="job">알바(구인)</option>
+          <div class="trade-forum-compose">
+            <div class="trade-forum-compose-top">
+              <input type="text" id="tradePostTitle" class="trade-title-input" placeholder="제목" maxlength="200" autocomplete="off">
+              <button type="button" class="trade-icon-btn trade-attach-btn" title="이미지 첨부" aria-label="이미지 첨부" onclick="tradeComposeAttachClick()">🖼</button>
+            </div>
+            <textarea id="tradePostBody" class="trade-body-input" placeholder="메시지를 입력하세요..." rows="5" maxlength="2000"></textarea>
+            <div id="tradeComposeAttachPreview" class="trade-attach-preview-strip" aria-live="polite"></div>
+            <input type="file" id="tradeComposeFileInput" accept="image/*" multiple hidden>
+            <div class="trade-forum-compose-bottom">
+              <button type="button" class="trade-icon-btn" aria-label="이모지" onclick="tradeComposeEmojiClick()">🙂</button>
+              <div class="trade-compose-spacer"></div>
+              <select id="tradePostCategory" class="trade-cat-select-inline" aria-label="글 카테고리">
+                <option value="buy">구매</option>
+                <option value="sell">판매</option>
+                <option value="exchange">교환</option>
+                <option value="job">알바(구인)</option>
+              </select>
+              <button type="button" class="trade-send-btn" id="tradeSendBtn" onclick="submitTradePost()"><span class="trade-send-icon" aria-hidden="true">💬</span> 게시</button>
+            </div>
+          </div>
+          <div class="trade-sort-bar">
+            <span class="trade-sort-label">↑↓ 정렬 및 보기</span>
+            <select id="tradeSortSelect" class="trade-sort-select" aria-label="글 정렬" onchange="setTradeSort(this.value)">
+              <option value="new">최신 글부터</option>
+              <option value="old">오래된 글부터</option>
             </select>
-            <button type="button" class="trade-send-btn" id="tradeSendBtn" onclick="submitTradePost()"><span class="trade-send-icon" aria-hidden="true">💬</span> 게시</button>
           </div>
+          <div class="trade-channel trade-forum-feed" id="tradeMessageList"></div>
         </div>
-        <div class="trade-sort-bar">
-          <span class="trade-sort-label">↑↓ 정렬 및 보기</span>
-          <select id="tradeSortSelect" class="trade-sort-select" aria-label="글 정렬" onchange="setTradeSort(this.value)">
-            <option value="new">최신 글부터</option>
-            <option value="old">오래된 글부터</option>
-          </select>
-        </div>
-        <div class="trade-channel trade-forum-feed" id="tradeMessageList"></div>
+        <aside class="trade-thread-panel" id="tradeThreadPanel" aria-hidden="true">
+          <div class="trade-thread-panel-head">
+            <button type="button" class="trade-thread-close" onclick="closeTradeThreadPanel()" aria-label="스레드 닫기">✕</button>
+            <h2 class="trade-thread-panel-title" id="tradeThreadTitle">글 제목</h2>
+          </div>
+          <div class="trade-thread-scroll" id="tradeThreadScroll">
+            <div id="tradeThreadRootBlock"></div>
+            <div id="tradeThreadComments"></div>
+          </div>
+          <div class="trade-thread-composer">
+            <div id="tradeReplyAttachPreview" class="trade-attach-preview-strip" aria-live="polite"></div>
+            <input type="file" id="tradeReplyFileInput" accept="image/*" multiple hidden>
+            <div class="trade-thread-compose-row">
+              <button type="button" class="trade-icon-btn" title="이미지 첨부" aria-label="이미지 첨부" onclick="tradeReplyAttachClick()">＋</button>
+              <textarea id="tradeReplyBody" class="trade-body-input" placeholder="" rows="3" maxlength="2000"></textarea>
+            </div>
+            <div class="trade-thread-send-row">
+              <button type="button" class="trade-send-btn" id="tradeReplySendBtn" onclick="submitTradeReply()"><span class="trade-send-icon" aria-hidden="true">💬</span> 보내기</button>
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
 
