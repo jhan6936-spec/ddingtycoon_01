@@ -1923,31 +1923,40 @@
     #warehouse .warehouse-toolbar {
       display: flex;
       flex-wrap: wrap;
-      align-items: center;
+      align-items: stretch;
       justify-content: flex-end;
-      gap: 10px 14px;
-      margin-top: 6px;
+      margin-top: 0;
       margin-bottom: 22px;
-      padding: 52px 56px 16px 4px;
+      padding: 38px 52px 18px 4px;
       box-sizing: border-box;
       border-bottom: 1px solid #2a2a2a;
     }
     @media (max-width: 720px) {
       #warehouse .warehouse-toolbar {
-        justify-content: flex-start;
-        padding: 48px 12px 16px 4px;
+        padding: 34px 12px 18px 4px;
       }
     }
-    .warehouse-toggle-column {
+    .warehouse-toolbar-row {
       display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 14px 20px;
+      width: 100%;
+      max-width: 100%;
     }
-    @media (max-width: 720px) {
-      .warehouse-toggle-column {
-        align-items: flex-start;
-      }
+    .warehouse-toolbar-row > .btn.danger {
+      align-self: center;
+    }
+    .warehouse-toolbar-row > .btn:not(.danger) {
+      align-self: center;
+    }
+    .warehouse-vanilla-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      min-height: 28px;
     }
     .warehouse-vanilla-label-block {
       position: relative;
