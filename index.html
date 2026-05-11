@@ -2351,9 +2351,12 @@ function creditPhotoSrc(photo) {
 function renderCreditsModalBody() {
   const body = document.getElementById('creditsModalBody');
   if (!body) return;
-  body.innerHTML = buildCreditTilesHTML();
-  if (!CREDIT_CONTRIBUTORS.length) return;
-  body.innerHTML = `<div class="credits-gallery">${buildCreditTilesHTML().replace(/^<p class="credits-empty"/, '<p class="credits-empty"')}</div>`;
+  const inner = buildCreditTilesHTML();
+  if (inner.startsWith('<p class="credits-empty"')) {
+    body.innerHTML = inner;
+    return;
+  }
+  body.innerHTML = `<div class="credits-gallery">${inner}</div>`;
 }
 
 function openCreditsModal() {
