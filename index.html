@@ -13,8 +13,8 @@
     :root {
       color-scheme: dark;
       --t-deep0: #0f0f0f;
-      --t-surface-deep: #141414;
-      --t-modal-bg: var(--t-modal-bg);
+      --t-surface-deep: var(--t-surface-deep);
+      --t-modal-bg: #131313;
       --t-surface1: #1a1a1a;
       --t-surface3: #171717;
       --t-surface-15: #151515;
@@ -934,7 +934,7 @@
       justify-content: space-between;
       gap: 10px;
       padding: 10px 12px;
-      background: #141414;
+      background: var(--t-surface-deep);
       border-bottom: 1px solid #2a2a2a;
     }
     .viewer-title {
@@ -950,7 +950,7 @@
       height: 32px;
       border-radius: 10px;
       border: 1px solid var(--t-border-strong);
-      background: #141414;
+      background: var(--t-surface-deep);
       color: #bbb;
       cursor: pointer;
       font-weight: 900;
@@ -1021,7 +1021,7 @@
     /* 계산기 팝업 (창고: 카드 안 absolute / 기타: 화면 fixed) */
     .calc-popup {
       width: 280px;
-      background: #141414;
+      background: var(--t-surface-deep);
       border: 1px solid #2a2a2a;
       border-radius: 10px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
@@ -1058,7 +1058,7 @@
       height: 28px;
       border-radius: 8px;
       border: 1px solid var(--t-border-strong);
-      background: #141414;
+      background: var(--t-surface-deep);
       color: #bbb;
       cursor: pointer;
       font-weight: 700;
@@ -3546,7 +3546,7 @@ function renderTriFinalPlan(title, orderedNames, counts) {
   const cells = orderedNames.map((name) => {
     const n = counts[name] || 0;
     const imgH = buildImageTag(name, '', 'height:22px;vertical-align:middle;margin-right:6px;');
-    return `<div style="background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:10px 8px;text-align:center;min-height:72px;display:flex;flex-direction:column;justify-content:center;">
+    return `<div style="background:var(--t-surface-deep);border:1px solid #2a2a2a;border-radius:8px;padding:10px 8px;text-align:center;min-height:72px;display:flex;flex-direction:column;justify-content:center;">
       <div style="font-size:11px;color:#9eb2c8;line-height:1.25;word-break:keep-all;">${imgH}${name}</div>
       <div style="font-size:17px;font-weight:900;color:#8fd5ff;margin-top:6px;">${n}개</div>
     </div>`;
