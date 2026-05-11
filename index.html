@@ -3210,13 +3210,15 @@ function renderWarehouse() {
   if (vanillaOther.length > 0) createSection('기타 바닐라', vanillaOther, '', { isVanillaSection: true, appendTo: vanillaContainer, vanillaDense: true });
   
   // 입력 필드에 이벤트 리스너 추가
-  const inputs = document.querySelectorAll('#warehouseContainer input[type="number"]');
+  const inputs = document.querySelectorAll('#warehouseContainer input[data-material]');
   inputs.forEach(input => {
     input.addEventListener('change', () => {
+      syncWarehouseInputRawAttribute(input);
       saveWarehouseInventory();
       analyzeEfficiency();
     });
     input.addEventListener('input', () => {
+      syncWarehouseInputRawAttribute(input);
       saveWarehouseInventory();
       analyzeEfficiency();
     });
@@ -3225,6 +3227,7 @@ function renderWarehouse() {
   });
 
   updateVanillaInputState();
+  applyWarehouseSetDisplayMode();
 }
 
 // ===== 창고 세트(64) 표시 모드 =====
