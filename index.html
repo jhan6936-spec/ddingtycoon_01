@@ -233,9 +233,6 @@
       line-height: 1.6;
     }
     /* 계정 (Discord / Supabase) */
-    .main-content {
-      position: relative;
-    }
     .site-auth-bar {
       display: flex;
       justify-content: flex-end;
@@ -306,47 +303,101 @@
       text-align: right;
       line-height: 1.45;
     }
-    .auth-user-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 6px 8px 6px 6px;
-      border-radius: 999px;
+    .auth-profile-trigger {
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      z-index: 8000;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border: 2px solid #3d4f63;
+      border-radius: 50%;
       background: #222;
-      border: 1px solid #383838;
-      max-width: min(100%, 320px);
+      cursor: pointer;
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+      transition: border-color 0.2s ease, transform 0.15s ease;
     }
-    .auth-avatar {
-      width: 36px;
-      height: 36px;
+    .auth-profile-trigger:hover {
+      border-color: #4a8fd9;
+      transform: scale(1.03);
+    }
+    .auth-profile-trigger img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .auth-profile-trigger[hidden] {
+      display: none !important;
+    }
+    .profile-settings-preview {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .profile-settings-preview img {
+      width: 72px;
+      height: 72px;
       border-radius: 50%;
       object-fit: cover;
-      background: #333;
       border: 2px solid #444;
-      flex-shrink: 0;
+      vertical-align: middle;
     }
-    .auth-display-name {
+    .profile-field-label {
+      display: block;
+      font-size: 12px;
+      color: #999;
+      margin: 12px 0 6px;
+    }
+    .profile-field-input,
+    .profile-field-textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      background: #1a1a1a;
+      color: #e8e8e8;
       font-size: 14px;
-      font-weight: 600;
-      color: #eaeaea;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      max-width: 160px;
+      font-family: inherit;
     }
-    .auth-logout-btn {
+    .profile-field-textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    .profile-settings-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+      align-items: center;
+    }
+    .profile-save-btn {
+      padding: 9px 16px;
+      border-radius: 8px;
+      border: 1px solid #4a8fd9;
+      background: #2a3f55;
+      color: #d6e9ff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .profile-save-btn:hover {
+      background: #345274;
+    }
+    .profile-logout-btn {
       padding: 8px 14px;
       border-radius: 8px;
-      border: 1px solid #444;
+      border: 1px solid #555;
       background: #2a2a2a;
       color: #ccc;
       font-size: 13px;
       cursor: pointer;
-      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
     }
-    .auth-logout-btn:hover {
+    .profile-logout-btn:hover {
       background: #333;
-      border-color: #5a5a5a;
+      border-color: #666;
       color: #fff;
     }
     @media (max-width: 520px) {
@@ -424,6 +475,7 @@
       flex: 1;
       padding: 30px 40px;
       overflow-y: auto;
+      position: relative;
     }
     .header {
       margin-bottom: 30px;
