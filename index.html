@@ -4509,76 +4509,30 @@ function analyzeEfficiency() {
     alchemyTitle.style.marginBottom = '15px';
     alchemyTitle.textContent = '연금품 제작';
     containerAlchemy.appendChild(alchemyTitle);
-    let totalAlchemyTimeSec = 0;
-    
-    planEntries.forEach(([name, count], i) => {
-      const recipe = data.recipes.find(r => r.name === name);
-      if (!recipe) return;
-      const basePrice = recipe.price || 0;
-      const priceMultiplier = 1 + (effects.alchemyPriceBoost / 100);
-      const adjustedPrice = Math.round((recipe.price || 0) * priceMultiplier);
-      const totalBasePrice = basePrice * count;
-      const totalAdjustedPrice = adjustedPrice * count;
-      const perItemChainSec = totalAlchemyRecipeChainTimeSec(recipe, 1, effects);
-      const totalChainSec = totalAlchemyRecipeChainTimeSec(recipe, count, effects);
-      totalAlchemyTimeSec += totalChainSec;
-      
-      // 바로 아랫단계 필요 재료 계산
-      const subMatsHTML = (recipe.inputs || []).map((inp) => {
-        const totalNeed = inp.count * count;
-        const imgTag = buildImageTag(inp.name, '', 'height:16px;margin-right:4px;vertical-align:middle;');
-        return `<div style="font-size:12px;color:#bbb;padding:3px 0;">${imgTag}${inp.name} <strong style="color:#4a8fd9;">${totalNeed}개</strong></div>`;
-      }).join('');
-      
-      const card = document.createElement('div');
-      card.className = 'efficiency-card';
-      const imageHTML = buildImageTag(name, name, 'height: 24px; margin-right: 6px; vertical-align: middle;');
-      card.innerHTML = `
-        <div class="efficiency-header">
-          <div class="efficiency-title">${imageHTML}${name}</div>
-          <div class="efficiency-badge">#${i + 1}</div>
-        </div>
-        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #2a2a2a;">
-          <div class="info-item" style="margin-bottom: 8px;">
-            <div class="info-label">제작 수량</div>
-            <div class="info-value" style="font-size: 18px;">${count}개</div>
-          </div>
-          <div class="info-item" style="margin-bottom: 8px;">
-            <div class="info-label">제작 시간</div>
-            <div style="display:flex;flex-direction:column;gap:2px;text-align:right;">
-              <div style="font-size:12px;color:#b7b7b7;"><strong style="color:#ffffff;">${formatDuration(perItemChainSec)}</strong></div>
-              <div style="font-size:12px;color:#9acfff;"><strong style="color:#8fd5ff;">${formatDuration(totalChainSec)}</strong></div>
-            </div>
-          </div>
-          <div class="info-item">
-            <div class="info-label">총 획득 수익</div>
-            <div style="display:flex;flex-direction:column;gap:2px;text-align:right;">
-              <div style="font-size:12px;color:#b7b7b7;">기본가: <strong style="color:#ffffff;">${totalBasePrice.toLocaleString()}G</strong></div>
-              <div style="font-size:12px;color:#9acfff;">전문가 포함가: <strong style="color:#8fd5ff;">${totalAdjustedPrice.toLocaleString()}G</strong></div>
-            </div>
-          </div>
-        </div>
-        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #2a2a2a;">
-          <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">필요 재료</div>
-          ${subMatsHTML}
-        </div>
-      `;
-      containerAlchemy.appendChild(card);
-    });
 
-    const timeSummary = document.createElement('div');
-    timeSummary.style.margin = '8px 0 16px 0';
-    timeSummary.style.padding = '10px 12px';
-    timeSummary.style.background = '#10161d';
-    timeSummary.style.border = '1px solid #2a3a4d';
-    timeSummary.style.borderRadius = '10px';
-    timeSummary.innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
-        <div style="font-size:12px;color:#9eb2c8;">연금품 제작 총 소요 시간</div>
-        <div style="font-size:14px;font-weight:800;color:#8fd5ff;">${formatDuration(totalAlchemyTimeSec)}</div>
+    const planOpts = { skipShellfishTierConvert: true };
+    const rawTotals = {};
+    planEntries.forEach(([name, count]) => {
+      const recipe = data.recipes.find(r => r.name === name);
+      if (recipe) accumulateFinalRecipeNeeds(recipe, count, rawTotals, planOpts);
+    });
+    const { shell, vanilla } = splitShellfishVanillaTotals(rawTotals);
+
+    const summaryBox = document.createElement('div');
+    summaryBox.className = 'alchemy-mat-summary';
+    summaryBox.innerHTML = `
+      <div style="font-size:13px;font-weight:900;color:#e8f4ff;margin-bottom:6px;">추천 제작 기준 필요 재료 합계</div>
+      <div style="font-size:11px;color:#8899aa;line-height:1.5;margin-bottom:12px;">바닐라 무한 계산을 켠 경우에도, 레시피상 필요한 개수는 아래와 같습니다.</div>
+      <div class="alchemy-mat-section">
+        <h4>어패류 (굴·소라·문어·미역·성게 계열)</h4>
+        ${formatAlchemyMaterialLinesHTML(shell)}
+      </div>
+      <div class="alchemy-mat-section">
+        <h4>바닐라 및 기타 재료</h4>
+        ${formatAlchemyMaterialLinesHTML(vanilla)}
       </div>
     `;
-    alchemyTitle.insertAdjacentElement('afterend', timeSummary);
+    containerAlchemy.appendChild(summaryBox);
   }
   
   renderCraftPricePanel(effects);
