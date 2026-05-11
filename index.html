@@ -5787,39 +5787,44 @@ async function downloadAlchemyPaneScreenshot() {
 
 // ===== 초기 렌더링 =====
 window.addEventListener('DOMContentLoaded', function() {
-  loadVanillaToggleState();
-  loadExpertState();
-  loadSageRodState();
-  loadSageEngravingState();
-  renderRecipes();
-  renderMainCreditsInline();
-  loadWarehouseSetViewState();
-  loadAlchemySummaryQtyMode();
-  renderWarehouse();
-  renderExperts();
-  renderSageRod();
-  renderFactorySeaweedMedia();
-  loadStaminaInputState();
-  initMarineGuideCarousel();
   initSupabaseAuth();
-  const staminaInput = document.getElementById('staminaInput');
-  if (staminaInput) {
-    staminaInput.addEventListener('input', renderStaminaPlan);
-    staminaInput.addEventListener('blur', saveStaminaInputState);
-    staminaInput.addEventListener('change', saveStaminaInputState);
+
+  try {
+    loadVanillaToggleState();
+    loadExpertState();
+    loadSageRodState();
+    loadSageEngravingState();
+    renderRecipes();
+    renderMainCreditsInline();
+    loadWarehouseSetViewState();
+    loadAlchemySummaryQtyMode();
+    renderWarehouse();
+    renderExperts();
+    renderSageRod();
+    renderFactorySeaweedMedia();
+    loadStaminaInputState();
+    initMarineGuideCarousel();
+    const staminaInput = document.getElementById('staminaInput');
+    if (staminaInput) {
+      staminaInput.addEventListener('input', renderStaminaPlan);
+      staminaInput.addEventListener('blur', saveStaminaInputState);
+      staminaInput.addEventListener('change', saveStaminaInputState);
+    }
+    const vanillaToggle = document.getElementById('vanillaCalcToggle');
+    if (vanillaToggle) {
+      vanillaToggle.addEventListener('change', () => {
+        saveVanillaToggleState();
+        updateVanillaInputState();
+        analyzeEfficiency();
+      });
+    }
+    showSettingsSub(settingsSub);
+    showEfficiencySub(efficiencySub);
+    updateVanillaInputState();
+    analyzeEfficiency();
+  } catch (e) {
+    console.error('[Init] 페이지 초기화 중 오류 (로그인 UI는 이미 초기화됨):', e);
   }
-  const vanillaToggle = document.getElementById('vanillaCalcToggle');
-  if (vanillaToggle) {
-    vanillaToggle.addEventListener('change', () => {
-      saveVanillaToggleState();
-      updateVanillaInputState();
-      analyzeEfficiency();
-    });
-  }
-  showSettingsSub(settingsSub);
-  showEfficiencySub(efficiencySub);
-  updateVanillaInputState();
-  analyzeEfficiency();
 });
 </script>
 </body>
