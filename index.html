@@ -3240,11 +3240,15 @@ function renderRecipes() {
     { title: '혼합 최종 산물', items: alchemyRecipes.filter(r => /희석액/.test(r.name) && !/(정수|핵|에센스|결정|엘릭서|영약)\s+★/.test(r.name)) }
   ];
 
-  const renderCard = (recipe) => {
+  const renderCard = (recipe, opts = {}) => {
     const card = document.createElement('div');
     card.className = 'recipe-card';
     const inputs = recipe.inputs || [];
-    const priceStr = (recipe.price !== undefined && recipe.price !== null) ? `${recipe.price}G` : '—';
+    const hidePrice = !!opts.hidePrice;
+    const priceStr = hidePrice
+      ? ''
+      : ((recipe.price !== undefined && recipe.price !== null) ? `${recipe.price}G` : '—');
+    const priceEl = hidePrice ? '' : `<div class="recipe-card-price">${priceStr}</div>`;
     
     let ingredientsHTML = '';
     if (inputs.length > 0) {
@@ -3261,7 +3265,7 @@ function renderRecipes() {
     card.innerHTML = `
       <div class="recipe-card-header">
         <div class="recipe-card-title">${withAlchemyImage(recipe.name)}</div>
-        <div class="recipe-card-price">${priceStr}</div>
+        ${priceEl}
       </div>
       <div class="recipe-card-body">
         <div class="recipe-section">
@@ -3323,7 +3327,7 @@ function renderRecipes() {
       sub.style.margin = '12px 0 2px';
       sub.textContent = tier.title;
       container.appendChild(sub);
-      tier.items.forEach((r) => container.appendChild(renderCard(r)));
+      tier.items.forEach((r) => container.appendChild(renderCard(r, { hidePrice: true })));
     });
   }
 
