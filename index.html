@@ -4557,6 +4557,7 @@ function analyzeEfficiency() {
   const containerCraftPrice = document.getElementById('efficiencyContainerCraftPrice');
   if (!containerAlchemy) return;
   containerAlchemy.innerHTML = '';
+  lastAlchemySummaryData = null;
   if (containerCraftPrice) containerCraftPrice.innerHTML = '';
 
   const alchemyResults = results.filter(r => r.kind === 'alchemy');
