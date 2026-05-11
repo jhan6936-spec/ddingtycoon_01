@@ -5285,8 +5285,10 @@ function renderTradeMessages() {
       const thumbBlock = firstImg
         ? `<div class="trade-forum-card-thumb"><img src="${firstImg}" alt=""></div>`
         : '';
+      const gid = getOrCreateTradeGuestId();
       const isSelf =
-        p.userId && currentAuthUserId && String(p.userId) === String(currentAuthUserId);
+        (p.userId && currentAuthUserId && String(p.userId) === String(currentAuthUserId)) ||
+        (!p.userId && p.authorGuestKey && p.authorGuestKey === gid);
       const authorTag = isSelf ? '<span class="trade-author-tag" title="현재 기기에서 내 계정으로 작성">작성자</span>' : '';
       return `<article class="trade-forum-card" data-post-id="${pid}">
         <div class="trade-forum-card-inner">
