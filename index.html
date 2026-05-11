@@ -5049,8 +5049,10 @@ function buildTradeThreadRootHtml(post) {
   const avatarInner = post.avatarUrl
     ? `<img src="${escapeHtmlTrade(post.avatarUrl)}" alt="">`
     : `<span>${initial}</span>`;
+  const guestId = getOrCreateTradeGuestId();
   const isSelf =
-    post.userId && currentAuthUserId && String(post.userId) === String(currentAuthUserId);
+    (post.userId && currentAuthUserId && String(post.userId) === String(currentAuthUserId)) ||
+    (!post.userId && post.authorGuestKey && post.authorGuestKey === guestId);
   const authorTag = isSelf ? '<span class="trade-author-tag">작성자</span>' : '';
   const imgs =
     post.attachments && post.attachments.length
@@ -5061,10 +5063,15 @@ function buildTradeThreadRootHtml(post) {
           )
           .join('')}</div>`
       : '';
+  const counts = deriveReactionCountsFromPost(post);
+  const ru = normalizeReactionsByUser(post.reactionsByUser);
+  const myKey = getTradeUserKey();
+  const mine = ru[myKey];
   const reactBtns = TRADE_REACTION_KEYS.map((k) => {
     const em = TRADE_REACTION_META[k].emoji;
-    const cnt = (post.reactions && post.reactions[k]) || 0;
-    return `<button type="button" class="trade-thread-react-btn" data-trade-thread-react="${k}">${em} ${cnt}</button>`;
+    const cnt = counts[k] || 0;
+    const active = mine === k ? ' trade-thread-react-active' : '';
+    return `<button type="button" class="trade-thread-react-btn${active}" data-trade-thread-react="${k}">${em} ${cnt}</button>`;
   }).join('');
   return `<div class="trade-msg-row">
     <div class="trade-msg-avatar">${avatarInner}</div>
