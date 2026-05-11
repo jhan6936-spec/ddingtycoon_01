@@ -51,8 +51,8 @@
       --t-text-slate: #9eb2c8;
       --t-text-slate-2: #9ea7b3;
       --t-text-slate-3: #9da7b3;
-      --t-label: var(--t-label);
-      --t-text-muted: #888;
+      --t-label: #9d9d9d;
+      --t-text-muted: var(--t-text-muted);
       --t-label-2: #8a8a8a;
       --t-text-faint: #666;
       --t-nav-dim: #999;
@@ -480,7 +480,7 @@
     .recipe-section-title {
       font-size: 11px;
       font-weight: 700;
-      color: #888;
+      color: var(--t-text-muted);
       text-transform: uppercase;
       letter-spacing: 0.5px;
       margin-bottom: 8px;
@@ -564,7 +564,7 @@
     }
     .warehouse-section-sub {
       font-size: 11px;
-      color: #888;
+      color: var(--t-text-muted);
       white-space: nowrap;
     }
     .warehouse-item {
@@ -656,7 +656,7 @@
       height: 24px;
     }
     .warehouse-section[data-vanilla-section="1"] .warehouse-item input {
-      color: #888;
+      color: var(--t-text-muted);
       font-size: 12px;
     }
     .warehouse-section[data-vanilla-section="1"] .warehouse-item-name {
@@ -1241,7 +1241,7 @@
       color: var(--t-text-soft);
     }
     .info-label {
-      color: #888;
+      color: var(--t-text-muted);
       font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -1491,7 +1491,7 @@
       color: #c5dff7;
     }
     .credits-empty {
-      color: #888;
+      color: var(--t-text-muted);
       font-size: 14px;
       text-align: center;
       padding: 24px 8px;
@@ -4041,7 +4041,7 @@ function renderCraftPricePanel(effects) {
       emptyCard.innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
           <div class="expert-name" style="margin-bottom:0;">${name}</div>
-          <div style="font-size:12px;color:#888;">데이터 없음</div>
+          <div style="font-size:12px;color:var(--t-text-muted);">데이터 없음</div>
         </div>
       `;
       list.appendChild(emptyCard);
@@ -4359,7 +4359,7 @@ function analyzeEfficiency() {
           </div>
         </div>
         <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--t-border);">
-          <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">필요 재료</div>
+          <div style="font-size:11px;font-weight:700;color:var(--t-text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">필요 재료</div>
           ${subMatsHTML}
         </div>
       `;
