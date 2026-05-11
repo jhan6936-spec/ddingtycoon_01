@@ -3863,12 +3863,13 @@ function renderTradeMessages() {
   list.innerHTML = posts
     .map((p) => {
       const meta = TRADE_CAT_META[p.category] || TRADE_CAT_META.buy;
-      const av = p.avatarUrl
+      const initial = escapeHtmlTrade((p.authorInitial || (p.authorName || '?').charAt(0)).toUpperCase());
+      const avatarInner = p.avatarUrl
         ? `<img src="${escapeHtmlTrade(p.avatarUrl)}" alt="">`
-        : escapeHtmlTrade((p.authorInitial || (p.authorName || '?').charAt(0)).toUpperCase());
+        : `<span>${initial}</span>`;
       const safeBody = escapeHtmlTrade(p.body || '').replace(/\n/g, '<br>');
       return `<div class="trade-message" data-post-id="${escapeHtmlTrade(p.id)}">
-        <div class="trade-message-avatar">${p.avatarUrl ? `<img src="${escapeHtmlTrade(p.avatarUrl)}" alt="">` : `<span>${escapeHtmlTrade((p.authorInitial || (p.authorName || '?').charAt(0)).toUpperCase())}</span>`}</div>
+        <div class="trade-message-avatar">${avatarInner}</div>
         <div class="trade-message-body">
           <div class="trade-message-header">
             <span class="trade-author">${escapeHtmlTrade(p.authorName || '알 수 없음')}</span>
@@ -3946,6 +3947,7 @@ function updateAuthUI(user) {
       avatarImg.alt = '';
     }
   }
+  updateTradeComposerAvatar();
 }
 
 function openProfileSettingsModal() {
@@ -3989,6 +3991,7 @@ function saveProfileSettings() {
   const bio = bioIn ? bioIn.value : '';
   saveStoredUserProfile(currentAuthUserId, displayName, bio);
   closeProfileSettingsModal();
+  updateTradeComposerAvatar();
 }
 
 async function logoutFromProfileModal() {
