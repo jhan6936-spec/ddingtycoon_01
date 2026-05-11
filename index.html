@@ -5701,6 +5701,7 @@ function saveProfileSettings() {
   const displayName = nameIn ? nameIn.value : '';
   const bio = bioIn ? bioIn.value : '';
   saveStoredUserProfile(currentAuthUserId, displayName, bio);
+  applySavedProfileToTradePosts(currentAuthUserId);
   closeProfileSettingsModal();
   updateTradeComposerAvatar();
 }
