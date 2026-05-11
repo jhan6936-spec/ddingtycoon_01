@@ -393,9 +393,9 @@
     .trade-cat-select-inline {
       padding: 8px 12px;
       border-radius: 6px;
-      border: none;
-      background: #1e1f22;
-      color: #dbdee1;
+      border: 1px solid #2a2b36;
+      background: #101118;
+      color: #dce0ea;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
@@ -408,15 +408,23 @@
       padding: 9px 18px;
       border-radius: 6px;
       border: none;
-      background: #5865f2;
+      background: linear-gradient(135deg, #5b6cff 0%, #5865f2 55%, #4752c4 100%);
       color: #fff;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      transition: filter 0.15s ease;
+      transition:
+        filter 0.15s ease,
+        box-shadow 0.15s ease;
+      box-shadow:
+        0 0 18px rgba(88, 101, 242, 0.45),
+        0 2px 8px rgba(0, 0, 0, 0.35);
     }
     .trade-send-btn:hover {
-      filter: brightness(1.08);
+      filter: brightness(1.12);
+      box-shadow:
+        0 0 26px rgba(88, 101, 242, 0.65),
+        0 2px 10px rgba(0, 0, 0, 0.4);
     }
     .trade-send-btn:disabled {
       opacity: 0.45;
@@ -432,20 +440,21 @@
       gap: 12px;
       flex-wrap: wrap;
       padding: 10px 16px;
-      background: #313338;
-      border-bottom: 1px solid #1e1f22;
+      background: #060609;
+      border-bottom: 1px solid #16171f;
     }
     .trade-sort-label {
       font-size: 13px;
       font-weight: 600;
-      color: #b5bac1;
+      color: #8f96a3;
+      text-shadow: 0 0 12px rgba(255, 255, 255, 0.06);
     }
     .trade-sort-select {
       padding: 7px 12px;
       border-radius: 6px;
-      border: 1px solid #3f4248;
-      background: #2b2d31;
-      color: #dbdee1;
+      border: 1px solid #2a2b36;
+      background: #0c0d12;
+      color: #dce0ea;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
@@ -454,13 +463,15 @@
     .trade-sort-select:focus {
       outline: none;
       border-color: #5865f2;
+      box-shadow: 0 0 14px rgba(88, 101, 242, 0.35);
     }
     .trade-channel {
+      flex: 1;
       min-height: 240px;
       max-height: min(52vh, 560px);
       overflow-y: auto;
       padding: 8px 8px 16px;
-      background: #313338;
+      background: #050508;
     }
     .trade-channel::-webkit-scrollbar {
       width: 10px;
@@ -471,9 +482,10 @@
     }
     .trade-empty {
       text-align: center;
-      color: #949ba4;
+      color: #7a8290;
       font-size: 14px;
       padding: 36px 16px;
+      text-shadow: 0 0 18px rgba(255, 255, 255, 0.06);
     }
     .trade-badge {
       font-size: 10px;
