@@ -87,8 +87,9 @@
       padding: 18px 12px 28px 14px;
       min-height: min-content;
     }
-    .sidebar-title {
-      padding: 4px 10px 14px;
+    .sidebar-inner > .sidebar-title {
+      font-weight: 600 !important;
+    }
       margin: 0 0 6px;
       font-size: 11px;
       font-weight: 600;
@@ -3028,27 +3029,34 @@
 <div class="main-layout">
   <!-- 사이드바 네비게이션 -->
   <div class="sidebar">
-    <div class="sidebar-title">메뉴</div>
-    <div class="nav-item active" data-nav-section="main" onclick="switchSection('main', this)">메인</div>
+    <nav class="sidebar-inner" aria-label="사이드 메뉴">
+      <div class="sidebar-title">메뉴</div>
 
-    <div class="sidebar-group-label">계산기</div>
-    <div id="calculatorSubNav" class="sub-nav calc-sub">
-      <div class="sub-item" data-calc-section="craft" onclick="switchSection('craft', this)">제작 및 조합법</div>
-      <div class="sub-item" data-calc-section="warehouse" onclick="switchSection('warehouse', this)">재료 창고</div>
-      <div class="sub-item" data-calc-section="efficiency" onclick="switchSection('efficiency', this)">효율 분석</div>
-      <div class="sub-item" data-calc-section="settings" onclick="switchSection('settings', this)">개인설정</div>
-    </div>
+      <div class="nav-item active" data-nav-section="main" onclick="switchSection('main', this)">메인</div>
 
-    <div id="efficiencySubNav" class="sub-nav nested-eff">
-      <div class="sub-item" onclick="openEfficiencySub('stamina', this)">스태미나 계산</div>
-      <div class="sub-item" onclick="openEfficiencySub('alchemy', this)">연금품 계산</div>
-      <div class="sub-item" onclick="openEfficiencySub('craftPrice', this)">공예품 가격</div>
-    </div>
+      <div class="sidebar-calc-group">
+        <div class="sidebar-group-label">계산기</div>
+        <div id="calculatorSubNav" class="sub-nav calc-sub">
+          <div class="sub-item" data-calc-section="craft" onclick="switchSection('craft', this)">제작 및 조합법</div>
+          <div class="sub-item" data-calc-section="warehouse" onclick="switchSection('warehouse', this)">재료 창고</div>
+          <div class="sub-item" data-calc-section="efficiency" onclick="switchSection('efficiency', this)">효율 분석</div>
+          <div class="sub-item" data-calc-section="settings" onclick="switchSection('settings', this)">개인설정</div>
+        </div>
 
-    <div class="nav-item" data-nav-section="marine-guide" onclick="switchSection('marine-guide', this)">해양전문가 가이드</div>
-    <div class="nav-item" data-nav-section="trade-hub" onclick="switchSection('trade-hub', this)">거래소</div>
-    <div class="nav-item" data-nav-section="qa-channel" onclick="switchSection('qa-channel', this)">질문채널</div>
-    <div class="nav-item" data-nav-section="factory" onclick="switchSection('factory', this)">공장 제작법</div>
+        <div id="efficiencySubNav" class="sub-nav nested-eff">
+          <div class="sub-item" onclick="openEfficiencySub('stamina', this)">스태미나 계산</div>
+          <div class="sub-item" onclick="openEfficiencySub('alchemy', this)">연금품 계산</div>
+          <div class="sub-item" onclick="openEfficiencySub('craftPrice', this)">공예품 가격</div>
+        </div>
+      </div>
+
+      <div class="sidebar-divider" aria-hidden="true"></div>
+
+      <div class="nav-item" data-nav-section="marine-guide" onclick="switchSection('marine-guide', this)">해양전문가 가이드</div>
+      <div class="nav-item" data-nav-section="trade-hub" onclick="switchSection('trade-hub', this)">거래소</div>
+      <div class="nav-item" data-nav-section="qa-channel" onclick="switchSection('qa-channel', this)">질문채널</div>
+      <div class="nav-item" data-nav-section="factory" onclick="switchSection('factory', this)">공장 제작법</div>
+    </nav>
   </div>
 
   <!-- 메인 컨텐츠 -->
