@@ -3150,7 +3150,7 @@
             <div class="trade-thread-head-row">
               <h2 class="trade-thread-panel-title" id="tradeThreadTitle">글 제목</h2>
               <div class="trade-thread-head-actions">
-                <div class="trade-thread-more-wrap">
+                <div class="trade-thread-more-wrap" onclick="event.stopPropagation()">
                   <button type="button" class="trade-thread-more" id="tradeThreadMoreBtn" onclick="toggleTradeThreadMoreMenu(event)" aria-expanded="false" aria-haspopup="true" title="더 보기">⋮</button>
                   <div class="trade-thread-more-menu" id="tradeThreadMoreMenu" hidden role="menu">
                     <button type="button" role="menuitem" onclick="tradeThreadEditPost()">포스트 수정</button>
@@ -7989,6 +7989,7 @@ window.addEventListener('DOMContentLoaded', function() {
       renderTradeMessages();
       updateTradeComposerAvatar();
     });
+    document.addEventListener('click', closeTradeThreadMoreMenu);
     const staminaInput = document.getElementById('staminaInput');
     if (staminaInput) {
       staminaInput.addEventListener('input', renderStaminaPlan);
