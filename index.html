@@ -5157,6 +5157,156 @@ function renderTradeThreadPanel() {
   updateTradeThreadMoreMenuVisibility();
 }
 
+function closeTradeThreadMoreMenu() {
+  const menu = document.getElementById('tradeThreadMoreMenu');
+  const b = document.getElementById('tradeThreadMoreBtn');
+  if (menu) menu.hidden = true;
+  if (b) b.setAttribute('aria-expanded', 'false');
+}
+
+function toggleTradeThreadMoreMenu(ev) {
+  if (ev) ev.stopPropagation();
+  const menu = document.getElementById('tradeThreadMoreMenu');
+  const btn = document.getElementById('tradeThreadMoreBtn');
+  if (!menu || !btn) return;
+  const open = menu.hidden;
+  menu.hidden = !open;
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+
+function canModifyTradePost(post) {
+  if (!post) return false;
+  const gid = getOrCreateTradeGuestId();
+  if (currentAuthUserId && post.userId && String(post.userId) === String(currentAuthUserId)) return true;
+  if (!post.userId && post.authorGuestKey && post.authorGuestKey === gid) return true;
+  return false;
+}
+
+function updateTradeThreadMoreMenuVisibility() {
+  const btn = document.getElementById('tradeThreadMoreBtn');
+  const wrap = document.querySelector('#tradeThreadPanel .trade-thread-more-wrap');
+  if (!btn || !wrap) return;
+  const post = loadTradePosts().find((x) => x.id === selectedTradePostId);
+  const show = !!(post && canModifyTradePost(post));
+  btn.hidden = !show;
+  wrap.style.display = show ? '' : 'none';
+}
+
+function cancelTradeThreadEdit() {
+  const panel = document.getElementById('tradeThreadEditPanel');
+  if (panel) panel.hidden = true;
+}
+
+function tradeThreadEditPost() {
+  closeTradeThreadMoreMenu();
+  const post = loadTradePosts().find((x) => x.id === selectedTradePostId);
+  if (!post || !canModifyTradePost(post)) {
+    alert('이 글을 수정할 권한이 없습니다.');
+    return;
+  }
+  const panel = document.getElementById('tradeThreadEditPanel');
+  const ti = document.getElementById('tradeEditTitle');
+  const tb = document.getElementById('tradeEditBody');
+  if (ti) ti.value = post.title || '';
+  if (tb) tb.value = post.body || '';
+  if (panel) panel.hidden = false;
+}
+
+function saveTradeThreadEdit() {
+  if (!selectedTradePostId) return;
+  const posts = loadTradePosts();
+  const i = posts.findIndex((x) => x.id === selectedTradePostId);
+  if (i === -1) return;
+  const cur = posts[i];
+  if (!canModifyTradePost(cur)) {
+    alert('이 글을 수정할 권한이 없습니다.');
+    return;
+  }
+  const ti = document.getElementById('tradeEditTitle');
+  const tb = document.getElementById('tradeEditBody');
+  let title = ti ? ti.value.trim() : '';
+  const body = tb ? tb.value.trim() : '';
+  if (!body) {
+    alert('본문을 입력해 주세요.');
+    return;
+  }
+  if (!title) {
+    const line = body.split(/\r?\n/)[0] || '';
+    title = line ? (line.length > 80 ? `${line.slice(0, 80)}…` : line) : '제목 없음';
+  }
+  posts[i] = normalizeTradePost({
+    ...cur,
+    title,
+    body,
+    updatedAt: Date.now()
+  });
+  saveTradePosts(posts);
+  cancelTradeThreadEdit();
+  const titleEl = document.getElementById('tradeThreadTitle');
+  if (titleEl) titleEl.textContent = title;
+  const replyTa = document.getElementById('tradeReplyBody');
+  if (replyTa) replyTa.placeholder = `"${title}"에 메시지 보내기`;
+  renderTradeThreadPanel();
+  renderTradeMessages();
+}
+
+function tradeThreadDeletePost() {
+  closeTradeThreadMoreMenu();
+  const post = loadTradePosts().find((x) => x.id === selectedTradePostId);
+  if (!post || !canModifyTradePost(post)) {
+    alert('이 글을 삭제할 권한이 없습니다.');
+    return;
+  }
+  if (!confirm('이 포스트를 삭제할까요? 되돌릴 수 없습니다.')) return;
+  const pid = selectedTradePostId;
+  const next = loadTradePosts().filter((x) => x.id !== pid);
+  saveTradePosts(next);
+  tradeDeleteRemote(pid);
+  closeTradeThreadPanel();
+  renderTradeMessages();
+}
+
+function applySavedProfileToTradePosts(userId) {
+  if (!userId || !cachedAuthUserForProfile) return;
+  const prof = loadStoredUserProfile(userId);
+  const { name, avatarUrl } = extractDiscordProfile(cachedAuthUserForProfile);
+  const displayName = prof.displayName && prof.displayName.trim() ? prof.displayName.trim() : name;
+  const authorName = displayName || '사용자';
+  const initial = (authorName.charAt(0) || '?').toUpperCase();
+  const av = avatarUrl || '';
+  const posts = loadTradePosts();
+  let changed = false;
+  const next = posts.map((p) => {
+    let np = { ...p };
+    if (np.userId && String(np.userId) === String(userId)) {
+      np.authorName = authorName;
+      np.avatarUrl = av;
+      np.authorInitial = initial;
+      changed = true;
+    }
+    if (np.comments && np.comments.length) {
+      np.comments = np.comments.map((c) => {
+        if (c.userId && String(c.userId) === String(userId)) {
+          changed = true;
+          return normalizeTradeComment({
+            ...c,
+            authorName,
+            avatarUrl: av,
+            authorInitial: initial
+          });
+        }
+        return c;
+      });
+    }
+    return normalizeTradePost(np);
+  });
+  if (changed) {
+    saveTradePosts(next);
+    renderTradeMessages();
+    if (selectedTradePostId) renderTradeThreadPanel();
+  }
+}
+
 function openTradeThreadPanel(postId) {
   const posts = loadTradePosts();
   const p = posts.find((x) => x.id === postId);
