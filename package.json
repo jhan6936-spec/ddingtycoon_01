@@ -4,5 +4,8 @@
   "scripts": {
     "build": "node scripts/generate-env.js",
     "env:generate": "node scripts/generate-env.js"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.7"
   }
 }

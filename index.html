@@ -3320,7 +3320,10 @@ let supabaseAuthClient = null;
 function getSupabaseClient() {
   if (supabaseAuthClient) return supabaseAuthClient;
   const cfg = window.__SUPABASE_CONFIG__;
-  if (!cfg || !cfg.url || !cfg.anonKey) return null;
+  if (!cfg || !cfg.url || !cfg.anonKey) {
+    console.error('[Supabase Auth] __SUPABASE_CONFIG__ 에 url / anonKey 가 없습니다.');
+    return null;
+  }
   const mod = window.supabase;
   const createClient =
     mod && typeof mod.createClient === 'function'
@@ -3328,17 +3331,43 @@ function getSupabaseClient() {
       : mod && mod.default && typeof mod.default.createClient === 'function'
         ? mod.default.createClient
         : null;
-  if (!createClient) return null;
-  supabaseAuthClient = createClient(cfg.url, cfg.anonKey, {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true,
-      flowType: 'pkce',
-      storage: window.localStorage
-    }
-  });
+  if (!createClient) {
+    console.error('[Supabase Auth] supabase-js UMD 로드 실패: window.supabase.createClient 없음');
+    return null;
+  }
+  try {
+    supabaseAuthClient = createClient(cfg.url, cfg.anonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        flowType: 'pkce',
+        storage: window.localStorage
+      }
+    });
+  } catch (e) {
+    console.error('[Supabase Auth] createClient 예외:', e);
+    return null;
+  }
   return supabaseAuthClient;
+}
+
+/** 서버에서 최신 사용자 클레임 반영 (Discord 프로필 등) */
+async function fetchAuthUserForUI(sb) {
+  const { data, error } = await sb.auth.getUser();
+  if (error) {
+    console.error('[Supabase Auth] getUser 실패:', error.message, error);
+    const { data: sessData } = await sb.auth.getSession();
+    return sessData.session?.user ?? null;
+  }
+  if (data.user) {
+    console.debug('[Supabase Auth] 사용자 데이터:', {
+      id: data.user.id,
+      email: data.user.email,
+      providers: (data.user.identities || []).map((i) => i.provider)
+    });
+  }
+  return data.user;
 }
 
 function extractDiscordProfile(user) {
