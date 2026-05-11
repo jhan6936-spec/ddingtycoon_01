@@ -3701,22 +3701,22 @@ async function authSignOut() {
   closeProfileSettingsModal();
   try {
     const sb = getSupabaseClient();
-    if (!sb) {
-      clearSupabaseAuthStorage();
-      updateAuthUI(null);
-      return;
-    }
-    const { error: errLocal } = await sb.auth.signOut({ scope: 'local' });
-    if (errLocal) {
-      console.warn('[Supabase Auth] signOut(local):', errLocal.message);
-      const { error: errFallback } = await sb.auth.signOut();
-      if (errFallback) console.error('[Supabase Auth] signOut 실패:', errFallback.message, errFallback);
+    if (sb) {
+      const { error: errLocal } = await sb.auth.signOut({ scope: 'local' });
+      if (errLocal) {
+        console.warn('[Supabase Auth] signOut(local):', errLocal.message);
+        const { error: errFallback } = await sb.auth.signOut();
+        if (errFallback) console.error('[Supabase Auth] signOut 실패:', errFallback.message, errFallback);
+      }
     }
   } catch (e) {
     console.error('[Supabase Auth] signOut 예외:', e);
   } finally {
     clearSupabaseAuthStorage();
-    updateAuthUI(null);
+    try {
+      supabaseAuthClient = null;
+    } catch (_) {}
+    window.location.replace(window.location.origin + '/');
   }
 }
 
