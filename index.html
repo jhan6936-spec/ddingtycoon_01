@@ -3480,6 +3480,8 @@ function extractDiscordProfile(user) {
 
 let cachedAuthUserForProfile = null;
 let currentAuthUserId = null;
+/** 로그아웃 후 늦게 끝나는 fetchAuthUserForUI가 로그인 UI를 덮어쓰지 않게 함 */
+let authUiNonce = 0;
 const USER_PROFILE_STORAGE_PREFIX = 'ddingty_user_profile:';
 
 function userProfileStorageKey(userId) {
@@ -3598,6 +3600,7 @@ function setAuthConfigHint(visible, message) {
 
 /** 세션이 있으면 즉시 session.user로 UI를 반영한 뒤, getUser() 결과로 갱신합니다(비동기 레이스 방지). */
 async function refreshAuthUIFromSession(sb, session) {
+  const n = authUiNonce;
   if (!session) {
     updateAuthUI(null);
     return;
@@ -3607,9 +3610,11 @@ async function refreshAuthUIFromSession(sb, session) {
   }
   try {
     const user = await fetchAuthUserForUI(sb);
+    if (n !== authUiNonce) return;
     updateAuthUI(user || session.user);
   } catch (e) {
     console.error('[Supabase Auth] refreshAuthUIFromSession 오류:', e);
+    if (n !== authUiNonce) return;
     updateAuthUI(session.user ?? null);
   }
 }
@@ -3692,6 +3697,7 @@ function clearSupabaseAuthStorage() {
 }
 
 async function authSignOut() {
+  authUiNonce++;
   closeProfileSettingsModal();
   try {
     const sb = getSupabaseClient();
@@ -3700,14 +3706,15 @@ async function authSignOut() {
       updateAuthUI(null);
       return;
     }
-    const { error } = await sb.auth.signOut({ scope: 'global' });
-    if (error) {
-      console.error('[Supabase Auth] signOut 실패:', error.message, error);
-      clearSupabaseAuthStorage();
+    const { error: errLocal } = await sb.auth.signOut({ scope: 'local' });
+    if (errLocal) {
+      console.warn('[Supabase Auth] signOut(local):', errLocal.message);
+      const { error: errFallback } = await sb.auth.signOut();
+      if (errFallback) console.error('[Supabase Auth] signOut 실패:', errFallback.message, errFallback);
     }
-    updateAuthUI(null);
   } catch (e) {
     console.error('[Supabase Auth] signOut 예외:', e);
+  } finally {
     clearSupabaseAuthStorage();
     updateAuthUI(null);
   }
