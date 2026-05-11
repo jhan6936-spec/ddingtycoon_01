@@ -3966,15 +3966,97 @@ function calculateRequiredMaterials(recipe, count, visited = new Set()) {
   return required;
 }
 
+const CRAFT_PRICE_ITEM_ORDER = ['조개껍데기 브로치', '푸른 향수병', '자개 손거울', '분홍 헤어핀', '자개 부채', '흑진주 시계'];
+
+function toggleCraftSalesCalcPanel() {
+  craftSalesCalcPanelOpen = !craftSalesCalcPanelOpen;
+  const wrap = document.getElementById('craftSalesCalcWrap');
+  if (wrap) wrap.classList.toggle('open', craftSalesCalcPanelOpen);
+  const btn = document.getElementById('craftSalesCalcToggleBtn');
+  if (btn) btn.setAttribute('aria-expanded', craftSalesCalcPanelOpen ? 'true' : 'false');
+}
+
+function updateCraftSalesCalcTotals() {
+  const effects = getExpertEffects();
+  const boost = effects.craftPriceBoost || 0;
+  const craftMap = new Map(data.recipes.filter(r => r.group === 'craft').map(r => [r.name, r]));
+  let totalBase = 0;
+  let totalAdj = 0;
+  CRAFT_PRICE_ITEM_ORDER.forEach((name, idx) => {
+    const inp = document.getElementById(`craftSalesQty_${idx}`);
+    const cnt = Math.max(0, parseInt(inp && inp.value, 10) || 0);
+    craftSalesInputState[name] = cnt;
+    const recipe = craftMap.get(name);
+    const baseUnit = recipe ? (recipe.price || 0) : 0;
+    const adjUnit = Math.round(baseUnit * (1 + boost / 100));
+    const lineBase = baseUnit * cnt;
+    const lineAdj = adjUnit * cnt;
+    totalBase += lineBase;
+    totalAdj += lineAdj;
+    const elSb = document.getElementById(`craftSalesSubBase_${idx}`);
+    const elSj = document.getElementById(`craftSalesSubAdj_${idx}`);
+    if (elSb) elSb.textContent = `${lineBase.toLocaleString()}G`;
+    if (elSj) elSj.textContent = `${lineAdj.toLocaleString()}G`;
+  });
+  const elTB = document.getElementById('craftSalesTotalBase');
+  const elTA = document.getElementById('craftSalesTotalAdj');
+  const elNote = document.getElementById('craftSalesBoostNote');
+  if (elTB) elTB.textContent = `${totalBase.toLocaleString()}G`;
+  if (elTA) elTA.textContent = `${totalAdj.toLocaleString()}G`;
+  if (elNote) elNote.textContent = boost > 0 ? `전문가 공예 판매가 +${boost}% 반영` : '전문가 공예 보너스 없음 (0%)';
+}
+
 function renderCraftPricePanel(effects) {
   const containerCraftPrice = document.getElementById('efficiencyContainerCraftPrice');
   if (!containerCraftPrice) return;
 
   containerCraftPrice.innerHTML = '';
 
-  const craftItemOrder = ['조개껍데기 브로치', '푸른 향수병', '자개 손거울', '분홍 헤어핀', '자개 부채', '흑진주 시계'];
   const craftItemsByName = new Map(data.recipes.filter(r => r.group === 'craft').map(r => [r.name, r]));
-  const craftItems = craftItemOrder.map(name => craftItemsByName.get(name)).filter(Boolean);
+  const craftItems = CRAFT_PRICE_ITEM_ORDER.map(name => craftItemsByName.get(name)).filter(Boolean);
+
+  const salesWrap = document.createElement('div');
+  salesWrap.id = 'craftSalesCalcWrap';
+  salesWrap.className = 'craft-sales-wrap panel-card';
+  if (craftSalesCalcPanelOpen) salesWrap.classList.add('open');
+
+  const salesLines = CRAFT_PRICE_ITEM_ORDER.map((name, idx) => {
+    const imgHTML = buildImageTag(name, name, 'height:20px; margin-right:6px; vertical-align:middle;');
+    const qtyVal = craftSalesInputState[name] != null ? Number(craftSalesInputState[name]) : 0;
+    return `<div style="margin-bottom:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--t-title-muted);">${imgHTML}<span>${name}</span></div>
+        <input type="number" min="0" step="1" id="craftSalesQty_${idx}" value="${qtyVal}" style="width:96px;padding:6px 8px;border-radius:6px;border:1px solid var(--t-border-strong);background:var(--t-surface2);color:var(--t-text-inv);font-weight:700;font-size:13px;">
+      </div>
+      <div style="font-size:11px;color:var(--t-label);margin-top:4px;text-align:right;">소계 · 기본 <span id="craftSalesSubBase_${idx}">0G</span> · 전문가 <span id="craftSalesSubAdj_${idx}" style="color:#8fd5ff;">0G</span></div>
+    </div>`;
+  }).join('');
+
+  salesWrap.innerHTML = `
+    <div style="font-size:13px;font-weight:800;color:var(--t-title-muted);margin-bottom:8px;">보유 개수 → 판매금 계산</div>
+    <div style="font-size:11px;color:var(--t-caption);margin-bottom:14px;line-height:1.45;">각 공예품 보유 개수를 입력하세요. 개인설정의 「조개 좀 사조개」 보너스가 전문가 행에 반영됩니다.</div>
+    ${salesLines}
+    <div class="craft-sales-totals" style="max-width:none;margin-top:6px;">
+      <div id="craftSalesBoostNote" style="font-size:11px;color:var(--t-caption);margin-bottom:8px;"></div>
+      <div class="craft-sales-totals-row"><span>기본 판매가 합계</span><strong id="craftSalesTotalBase">0G</strong></div>
+      <div class="craft-sales-totals-row"><span>전문가 적용 판매가 합계</span><strong id="craftSalesTotalAdj" style="color:#8fd5ff;">0G</strong></div>
+    </div>
+  `;
+  containerCraftPrice.appendChild(salesWrap);
+
+  CRAFT_PRICE_ITEM_ORDER.forEach((_, idx) => {
+    const inp = document.getElementById(`craftSalesQty_${idx}`);
+    if (inp) {
+      inp.addEventListener('input', updateCraftSalesCalcTotals);
+      inp.addEventListener('change', updateCraftSalesCalcTotals);
+    }
+  });
+
+  const toggleBtnCraft = document.getElementById('craftSalesCalcToggleBtn');
+  if (toggleBtnCraft) toggleBtnCraft.setAttribute('aria-expanded', craftSalesCalcPanelOpen ? 'true' : 'false');
+
+  updateCraftSalesCalcTotals();
+
   const currentPriceMap = {
     '조개껍데기 브로치': 9118,
     '푸른 향수병': 111564,
