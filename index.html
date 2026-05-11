@@ -3666,6 +3666,7 @@ async function authSignInDiscord() {
 }
 
 async function authSignOut() {
+  closeProfileSettingsModal();
   try {
     const sb = getSupabaseClient();
     if (!sb) {
