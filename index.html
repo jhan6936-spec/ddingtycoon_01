@@ -4368,50 +4368,8 @@ function analyzeEfficiency() {
   if (!containerAlchemy) return;
   containerAlchemy.innerHTML = '';
   if (containerCraftPrice) containerCraftPrice.innerHTML = '';
-  const renderResultCard = (result, index) => {
-    const card = document.createElement('div');
-    card.className = 'efficiency-card';
-    
-    // 필요한 재료 목록
-    const requiredList = Object.entries(result.requiredMaterials)
-      .filter(([mat]) => mat in data.materials)
-      .filter(([mat]) => /(핵|결정|영약|희석액)/.test(mat))
-      .map(([mat, count]) => {
-        const current = inventoryForRequired[mat] || 0;
-        const status = current >= count ? '✓' : '✗';
-        const imgHTML = buildImageTag(mat, mat, 'height:14px; margin-right:4px; vertical-align:middle;');
-        const label = imgHTML ? `${imgHTML}${mat}` : mat;
-        return `<div style="font-size: 12px; color: #b8b8b8; margin: 6px 0; white-space: nowrap;">${status} ${label} ${count}개</div>`;
-      })
-      .join('');
-    
-    const imageHTML = buildImageTag(result.name, result.name, 'height: 24px; margin-right: 6px; vertical-align: middle;');
-    
-    card.innerHTML = `
-      <div class="efficiency-header">
-        <div class="efficiency-title">${imageHTML}${result.name}</div>
-        <div class="efficiency-badge">#${index + 1}</div>
-      </div>
-      <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #2a2a2a;">
-        <div class="info-item" style="margin-bottom: 8px;">
-          <div class="info-label">제작 가능 수량</div>
-          <div class="info-value" style="font-size: 18px;">${result.maxCount}개</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">총 획득 수익</div>
-          <div class="info-value" style="font-size: 16px;">${result.totalPrice.toLocaleString()}G</div>
-        </div>
-      </div>
-      ${requiredList ? `<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #2a2a2a;">
-        <div style="font-size: 12px; font-weight: 700; color: #bbb; margin-bottom: 8px;">📋 필요 연금재료:</div>
-        ${requiredList}
-      </div>` : ''}
-    `;
-    return card;
-  };
 
   const alchemyResults = results.filter(r => r.kind === 'alchemy');
-  const craftResults = results.filter(r => r.kind === 'craft');
 
   const baseInvForPlan = { ...inventory };
   if (!isVanillaCalcOn) {
