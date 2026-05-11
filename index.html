@@ -1935,6 +1935,9 @@
       #warehouse .warehouse-toolbar {
         padding: 34px 12px 18px 4px;
       }
+      .warehouse-toolbar-row {
+        justify-content: flex-start;
+      }
     }
     .warehouse-toolbar-row {
       display: flex;
@@ -1945,10 +1948,7 @@
       width: 100%;
       max-width: 100%;
     }
-    .warehouse-toolbar-row > .btn.danger {
-      align-self: center;
-    }
-    .warehouse-toolbar-row > .btn:not(.danger) {
+    .warehouse-toolbar-row > .btn {
       align-self: center;
     }
     .warehouse-vanilla-row {
@@ -1957,6 +1957,10 @@
       gap: 12px;
       flex-wrap: wrap;
       min-height: 28px;
+    }
+    .toggle-wrap.warehouse-toggle-inline {
+      align-items: center;
+      gap: 10px;
     }
     .warehouse-vanilla-label-block {
       position: relative;
