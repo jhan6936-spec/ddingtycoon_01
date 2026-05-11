@@ -6185,6 +6185,7 @@ function updateAuthUI(user) {
     }
   }
   updateTradeComposerAvatar();
+  updateTradeRestrictionUI();
 }
 
 function openProfileSettingsModal() {
@@ -6269,6 +6270,9 @@ async function refreshAuthUIFromSession(sb, session) {
   if (n !== authUiNonce) return;
   await refreshProfileRole(sb);
   if (n !== authUiNonce) return;
+  await refreshTradeRestriction(sb);
+  if (n !== authUiNonce) return;
+  updateTradeRestrictionUI();
   try {
     updateTradeThreadMoreMenuVisibility();
   } catch (_) {}
@@ -6293,6 +6297,8 @@ async function initSupabaseAuth() {
         updateAuthUI(session?.user ?? null);
         try {
           await refreshProfileRole(sb);
+          await refreshTradeRestriction(sb);
+          updateTradeRestrictionUI();
           updateTradeThreadMoreMenuVisibility();
         } catch (_) {}
       }
