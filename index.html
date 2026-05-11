@@ -3044,7 +3044,7 @@
           </div>
           <div class="trade-channel trade-forum-feed" id="tradeMessageList"></div>
         </div>
-        <aside class="trade-thread-panel" id="tradeThreadPanel" aria-hidden="true">
+        <aside class="trade-thread-panel" id="tradeThreadPanel" hidden aria-hidden="true">
           <div class="trade-thread-panel-head">
             <button type="button" class="trade-thread-close" onclick="closeTradeThreadPanel()" aria-label="스레드 닫기">✕</button>
             <h2 class="trade-thread-panel-title" id="tradeThreadTitle">글 제목</h2>
@@ -5344,6 +5344,7 @@ async function authSignOut() {
   authUiNonce++;
   closeProfileSettingsModal();
   closeTradeProfileModal();
+  closeTradeThreadPanel();
 
   const sb = getSupabaseClient();
   if (sb) {
