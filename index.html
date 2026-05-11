@@ -7270,6 +7270,7 @@ async function authSignOut() {
   closeProfileSettingsModal();
   closeTradeProfileModal();
   closeTradeThreadPanel();
+  closeQaThreadPanel();
 
   const sb = getSupabaseClient();
   if (sb) {
@@ -9437,6 +9438,7 @@ window.addEventListener('DOMContentLoaded', function() {
     const sbTr0 = getSupabaseClient();
     if (sbTr0) refreshTradeRestriction(sbTr0).then(() => updateTradeRestrictionUI());
     document.addEventListener('click', closeTradeThreadMoreMenu);
+    document.addEventListener('click', closeQaThreadMoreMenu);
     document.addEventListener('click', (ev) => {
       const pop = document.getElementById('tradeEmojiPopover');
       if (!pop || pop.hidden) return;
