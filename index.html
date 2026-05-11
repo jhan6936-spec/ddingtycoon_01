@@ -3473,35 +3473,113 @@ function extractDiscordProfile(user) {
   return { name, avatarUrl };
 }
 
-function updateAuthUI(user) {
-  const guest = document.getElementById('authStateGuest');
-  const logged = document.getElementById('authStateUser');
-  const avatar = document.getElementById('authAvatar');
-  const nameEl = document.getElementById('authDisplayName');
-  if (!guest || !logged) return;
-  if (user) {
-    guest.hidden = true;
-    logged.hidden = false;
-    const { name, avatarUrl } = extractDiscordProfile(user);
-    if (nameEl) nameEl.textContent = name;
-    if (avatar) {
-      if (avatarUrl) {
-        avatar.src = avatarUrl;
-        avatar.alt = name;
-        avatar.hidden = false;
-      } else {
-        avatar.removeAttribute('src');
-        avatar.alt = '';
-        avatar.hidden = true;
-      }
-    }
-  } else {
-    guest.hidden = false;
-    logged.hidden = true;
+let cachedAuthUserForProfile = null;
+let currentAuthUserId = null;
+const USER_PROFILE_STORAGE_PREFIX = 'ddingty_user_profile:';
+
+function userProfileStorageKey(userId) {
+  return USER_PROFILE_STORAGE_PREFIX + userId;
+}
+
+function loadStoredUserProfile(userId) {
+  try {
+    const raw = localStorage.getItem(userProfileStorageKey(userId));
+    if (!raw) return { displayName: '', bio: '' };
+    const o = JSON.parse(raw);
+    return {
+      displayName: typeof o.displayName === 'string' ? o.displayName : '',
+      bio: typeof o.bio === 'string' ? o.bio : ''
+    };
+  } catch (_) {
+    return { displayName: '', bio: '' };
   }
 }
 
-function setAuthConfigHint(visible, message) {
+function saveStoredUserProfile(userId, displayName, bio) {
+  localStorage.setItem(
+    userProfileStorageKey(userId),
+    JSON.stringify({ displayName: displayName.trim(), bio: bio.trim() })
+  );
+}
+
+function updateAuthUI(user) {
+  const bar = document.getElementById('siteAuthBar');
+  const guest = document.getElementById('authStateGuest');
+  const trigger = document.getElementById('authProfileTrigger');
+  const avatarImg = document.getElementById('authAvatarImg');
+  cachedAuthUserForProfile = user || null;
+  currentAuthUserId = user && user.id ? user.id : null;
+  if (!guest || !bar || !trigger || !avatarImg) return;
+  if (user) {
+    bar.hidden = true;
+    trigger.hidden = false;
+    const { name, avatarUrl } = extractDiscordProfile(user);
+    if (avatarUrl) {
+      avatarImg.src = avatarUrl;
+      avatarImg.alt = name;
+      avatarImg.hidden = false;
+    } else {
+      avatarImg.removeAttribute('src');
+      avatarImg.alt = '';
+      avatarImg.hidden = true;
+    }
+  } else {
+    bar.hidden = false;
+    trigger.hidden = true;
+    avatarImg.removeAttribute('src');
+    avatarImg.alt = '';
+  }
+}
+
+function openProfileSettingsModal() {
+  if (!currentAuthUserId || !cachedAuthUserForProfile) return;
+  const modal = document.getElementById('profileSettingsModal');
+  const av = document.getElementById('profileSettingsAvatar');
+  const nameIn = document.getElementById('profileDisplayNameInput');
+  const bioIn = document.getElementById('profileBioInput');
+  const { name, avatarUrl } = extractDiscordProfile(cachedAuthUserForProfile);
+  const saved = loadStoredUserProfile(currentAuthUserId);
+  if (av) {
+    if (avatarUrl) {
+      av.src = avatarUrl;
+      av.alt = name;
+      av.hidden = false;
+    } else {
+      av.removeAttribute('src');
+      av.alt = '';
+      av.hidden = true;
+    }
+  }
+  if (nameIn) nameIn.value = saved.displayName || name || '';
+  if (bioIn) bioIn.value = saved.bio || '';
+  if (modal) modal.classList.add('open');
+}
+
+function closeProfileSettingsModal() {
+  const modal = document.getElementById('profileSettingsModal');
+  if (modal) modal.classList.remove('open');
+}
+
+function closeProfileSettingsOnBackdrop(e) {
+  if (e.target && e.target.id === 'profileSettingsModal') closeProfileSettingsModal();
+}
+
+function saveProfileSettings() {
+  if (!currentAuthUserId) return;
+  const nameIn = document.getElementById('profileDisplayNameInput');
+  const bioIn = document.getElementById('profileBioInput');
+  const displayName = nameIn ? nameIn.value : '';
+  const bio = bioIn ? bioIn.value : '';
+  saveStoredUserProfile(currentAuthUserId, displayName, bio);
+  closeProfileSettingsModal();
+}
+
+async function logoutFromProfileModal() {
+  closeProfileSettingsModal();
+  await authSignOut();
+}
+
+function updateAuthUI_DEPRECATED_REMOVE_DUP() {
   const hint = document.getElementById('authConfigHint');
   const btn = document.getElementById('btnDiscordLogin');
   if (hint) {
