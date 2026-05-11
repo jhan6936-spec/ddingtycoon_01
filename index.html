@@ -3565,33 +3565,6 @@ function getBaseAlchemyTimeSec(name) {
   return 60;
 }
 
-function formatDuration(sec) {
-  const totalSec = Math.max(1, Math.round(sec));
-  const hours = Math.floor(totalSec / 3600);
-  const minutes = Math.floor((totalSec % 3600) / 60);
-  const seconds = totalSec % 60;
-  if (hours > 0) return `${hours}시간 ${minutes}분 ${seconds}초`;
-  if (minutes > 0) return `${minutes}분 ${seconds}초`;
-  return `${seconds}초`;
-}
-
-/** 최종 레시피·중간 연금(data.materials) 체인 전체 제작 시간(초), 전문가 시간 감소 반영 */
-function adjustedAlchemyUnitTimeSec(itemName, effects) {
-  const tr = 1 - (effects.timeReduce || 0) / 100;
-  return Math.max(1, getBaseAlchemyTimeSec(itemName) * tr);
-}
-
-function totalAlchemyRecipeChainTimeSec(recipe, count, effects) {
-  if (!recipe || !count || count <= 0) return 0;
-  let total = count * adjustedAlchemyUnitTimeSec(recipe.name, effects);
-  for (const inp of recipe.inputs || []) {
-    if (inp.name in data.materials) {
-      total += totalAlchemyRecipeChainTimeSec(data.materials[inp.name], inp.count * count, effects);
-    }
-  }
-  return total;
-}
-
 const FINAL_GROUP1 = ['영생의 아쿠티스', '크라켄의 광란체', '리바이던의 깃털'];
 const FINAL_GROUP2 = ['해구 파동의 코어', '침묵의 심해 비약', '청해룡의 날개'];
 const FINAL_GROUP3 = ['아쿠아 펄스 파편', '나우틸러스의 손', '무저의 척추'];
