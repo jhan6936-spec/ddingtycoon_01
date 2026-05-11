@@ -6160,6 +6160,7 @@ function updateAuthUI(user) {
   cachedAuthUserForProfile = user || null;
   currentAuthUserId = user && user.id ? user.id : null;
   if (!user) cachedProfileRole = null;
+  if (!user) tradeRestrictionState = { active: false, indefinite: false, until: null };
   if (user) {
     if (bar) bar.hidden = true;
     if (trigger) trigger.hidden = false;
