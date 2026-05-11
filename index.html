@@ -55,7 +55,7 @@
       --t-text-muted: #888;
       --t-label-2: #8a8a8a;
       --t-text-faint: #666;
-      --t-nav-dim: var(--t-nav-dim);
+      --t-nav-dim: #999;
       --t-text-disabled: #777;
       --t-soft-gray: #b7b7b7;
       --t-soft-gray-2: #b8b8b8;
@@ -4023,7 +4023,7 @@ function renderCraftPricePanel(effects) {
         <div style="font-size:11px;color:var(--t-label);">기본 제작 판매가</div>
         <div style="font-size:11px;color:#ddd;text-align:right;">${recipePrice.toLocaleString()}G</div>
         <div style="font-size:11px;color:var(--t-label);">전문가 적용 판매가</div>
-        <div style="font-size:11px;color:${hasCraftBoost ? '#8fd5ff' : '#777'};text-align:right;">${boostedRecipePrice.toLocaleString()}G${hasCraftBoost ? ` ( +${effects.craftPriceBoost}% )` : ''}</div>
+        <div style="font-size:11px;color:${hasCraftBoost ? '#8fd5ff' : 'var(--t-text-disabled)'};text-align:right;">${boostedRecipePrice.toLocaleString()}G${hasCraftBoost ? ` ( +${effects.craftPriceBoost}% )` : ''}</div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:2px 12px;padding-top:8px;border-top:1px solid var(--t-border);">
         ${ingredientsHTML}
@@ -4346,14 +4346,14 @@ function analyzeEfficiency() {
           <div class="info-item" style="margin-bottom: 8px;">
             <div class="info-label">제작 시간</div>
             <div style="display:flex;flex-direction:column;gap:2px;text-align:right;">
-              <div style="font-size:12px;color:#b7b7b7;"><strong style="color:var(--t-text-inv)fff;">${formatDuration(perItemChainSec)}</strong></div>
+              <div style="font-size:12px;color:var(--t-soft-gray);"><strong style="color:var(--t-text-inv)fff;">${formatDuration(perItemChainSec)}</strong></div>
               <div style="font-size:12px;color:#9acfff;"><strong style="color:#8fd5ff;">${formatDuration(totalChainSec)}</strong></div>
             </div>
           </div>
           <div class="info-item">
             <div class="info-label">총 획득 수익</div>
             <div style="display:flex;flex-direction:column;gap:2px;text-align:right;">
-              <div style="font-size:12px;color:#b7b7b7;">기본가: <strong style="color:var(--t-text-inv)fff;">${totalBasePrice.toLocaleString()}G</strong></div>
+              <div style="font-size:12px;color:var(--t-soft-gray);">기본가: <strong style="color:var(--t-text-inv)fff;">${totalBasePrice.toLocaleString()}G</strong></div>
               <div style="font-size:12px;color:#9acfff;">전문가 포함가: <strong style="color:#8fd5ff;">${totalAdjustedPrice.toLocaleString()}G</strong></div>
             </div>
           </div>
