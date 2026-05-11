@@ -25,6 +25,14 @@
   var createClient = mod && mod.createClient ? mod.createClient : (mod && mod.default && mod.default.createClient);
   if (!cfg || !cfg.url || !cfg.anonKey || !createClient) return fail('SUPABASE_CONFIG 없음');
 
+  var qs = new URLSearchParams(window.location.search);
+  var oauthErr = qs.get('error');
+  var oauthDesc = qs.get('error_description');
+  if (oauthErr) {
+    console.error('[auth/callback] OAuth error:', oauthErr, oauthDesc || '');
+    return fail(String(oauthDesc || oauthErr));
+  }
+
   var sb = createClient(cfg.url, cfg.anonKey, {
     auth: {
       persistSession: true,
@@ -35,17 +43,16 @@
     }
   });
 
-  var href = window.location.href;
-  var hasCode = href.indexOf('code=') !== -1;
+  var code = qs.get('code');
 
   function finish() {
     goHome();
   }
 
-  if (hasCode) {
-    sb.auth.exchangeCodeForSession(href).then(function (res) {
-      if (res.error) {
-        console.error('[auth/callback] exchangeCodeForSession:', res.error.message, res.error);
+  if (code && typeof sb.auth.exchangeCodeForSession === 'function') {
+    sb.auth.exchangeCodeForSession(code).then(function (result) {
+      if (result && result.error) {
+        console.error('[auth/callback] exchangeCodeForSession:', result.error.message, result.error);
         return sb.auth.getSession().then(finish).catch(finish);
       }
       finish();
