@@ -4958,13 +4958,27 @@ function tradeRestrictionMessage() {
 
 function updateTradeRestrictionUI() {
   const ban = document.getElementById('tradeRestrictionBanner');
+  const banQa = document.getElementById('qaRestrictionBanner');
+  const msg =
+    tradeRestrictionState.active && tradeRestrictionMessage()
+      ? tradeRestrictionMessage()
+      : '';
   if (ban) {
     if (tradeRestrictionState.active) {
       ban.hidden = false;
-      ban.textContent = tradeRestrictionMessage();
+      ban.textContent = msg;
     } else {
       ban.hidden = true;
       ban.textContent = '';
+    }
+  }
+  if (banQa) {
+    if (tradeRestrictionState.active) {
+      banQa.hidden = false;
+      banQa.textContent = msg;
+    } else {
+      banQa.hidden = true;
+      banQa.textContent = '';
     }
   }
   const blocked = tradeRestrictionState.active;
@@ -4976,12 +4990,22 @@ function updateTradeRestrictionUI() {
   if (sendReply) sendReply.disabled = !!blocked;
   if (taMain) taMain.disabled = !!blocked;
   if (taReply) taReply.disabled = !!blocked;
+  const sendQa = document.getElementById('qaSendBtn');
+  const sendQaReply = document.getElementById('qaReplySendBtn');
+  const qaMain = document.getElementById('qaPostBody');
+  const qaReplyTa = document.getElementById('qaReplyBody');
+  if (sendQa) sendQa.disabled = !!blocked;
+  if (sendQaReply) sendQaReply.disabled = !!blocked;
+  if (qaMain) qaMain.disabled = !!blocked;
+  if (qaReplyTa) qaReplyTa.disabled = !!blocked;
   document.querySelectorAll('.trade-reaction-btn, .trade-thread-react-btn').forEach((el) => {
     el.style.pointerEvents = blocked ? 'none' : '';
     el.style.opacity = blocked ? '0.45' : '';
   });
   document
-    .querySelectorAll('#trade-hub .trade-forum-compose button.trade-icon-btn, #trade-hub .trade-thread-composer button.trade-icon-btn')
+    .querySelectorAll(
+      '#trade-hub .trade-forum-compose button.trade-icon-btn, #trade-hub .trade-thread-composer button.trade-icon-btn, #qa-channel .trade-forum-compose button.trade-icon-btn, #qa-channel .trade-thread-composer button.trade-icon-btn'
+    )
     .forEach((el) => {
       el.disabled = !!blocked;
       el.style.opacity = blocked ? '0.45' : '';
