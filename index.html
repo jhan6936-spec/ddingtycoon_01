@@ -2701,8 +2701,11 @@ function commitCalcValue(action) {
 }
 
 function resetAllWarehouse() {
-  const inputs = document.querySelectorAll('#warehouseContainer input[type="number"]');
-  inputs.forEach(i => { i.value = '0'; });
+  document.querySelectorAll('#warehouseContainer input[data-material]').forEach((i) => {
+    i.setAttribute('data-warehouse-count', '0');
+    i.value = '0';
+  });
+  applyWarehouseSetDisplayMode();
   saveWarehouseInventory();
   analyzeEfficiency();
   closeCalculator();
@@ -3153,9 +3156,10 @@ function renderWarehouse() {
       const item = document.createElement('div');
       item.className = 'warehouse-item' + (options.vanillaDense ? ' vanilla-item' : '') + (isShellfish ? ' shellfish-compact-item' : '') + (isAlchemy ? ' alchemy-compact-item' : '');
       const imageHTML = buildImageTag(material, material, 'height: 18px; margin-right: 4px; vertical-align: middle;');
+      const cnt = savedInventory[material] ?? 0;
       item.innerHTML = `
         <div class="warehouse-item-name">${imageHTML}${material}</div>
-        <input type="number" min="0" value="${savedInventory[material] ?? 0}" data-material="${material}" ${isVanillaSection ? 'data-vanilla="1"' : ''} placeholder="수량 입력">
+        <input type="number" min="0" value="${cnt}" data-warehouse-count="${cnt}" data-material="${material}" ${isVanillaSection ? 'data-vanilla="1"' : ''} placeholder="수량 입력">
       `;
       grid.appendChild(item);
     });
