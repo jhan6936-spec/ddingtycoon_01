@@ -3489,8 +3489,17 @@ async function authSignInDiscord() {
     return;
   }
   const cfgAuth = window.SUPABASE_CONFIG || {};
-  const redirectTo =
-    cfgAuth.oauthRedirectUrl || 'https://ddingtycoon-01.vercel.app/auth/callback';
+  let redirectTo = cfgAuth.oauthRedirectUrl;
+  if (!redirectTo) {
+    try {
+      const { hostname, origin } = window.location;
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        redirectTo = `${origin}/auth/callback`;
+      }
+    } catch (_) {}
+  }
+  if (!redirectTo) redirectTo = 'https://ddingtycoon-01.vercel.app/auth/callback';
+  console.debug('[Supabase Auth] redirectTo:', redirectTo);
   const { data, error } = await sb.auth.signInWithOAuth({
     provider: 'discord',
     options: {
