@@ -3442,7 +3442,7 @@ async function initSupabaseAuth() {
   try {
     const sb = getSupabaseClient();
     if (!sb) {
-      setAuthConfigHint(true, 'Supabase URL·Anon 키가 없습니다. supabase-config.js 또는 Vercel 환경변수를 확인하세요.');
+      setAuthConfigHint(true, 'window.SUPABASE_CONFIG(url, anonKey)가 없습니다. supabase-config.js를 확인하세요.');
       updateAuthUI(null);
       return;
     }
