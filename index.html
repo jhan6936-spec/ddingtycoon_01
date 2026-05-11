@@ -3314,6 +3314,137 @@ function resetAllWarehouse() {
   closeCalculator();
 }
 
+// ===== Supabase · Discord OAuth =====
+let supabaseAuthClient = null;
+
+function getSupabaseClient() {
+  if (supabaseAuthClient) return supabaseAuthClient;
+  const cfg = window.__SUPABASE_CONFIG__;
+  if (!cfg || !cfg.url || !cfg.anonKey) return null;
+  const createClient = window.supabase && typeof window.supabase.createClient === 'function'
+    ? window.supabase.createClient
+    : null;
+  if (!createClient) return null;
+  supabaseAuthClient = createClient(cfg.url, cfg.anonKey, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      flowType: 'pkce',
+      storage: window.localStorage
+    }
+  });
+  return supabaseAuthClient;
+}
+
+function extractDiscordProfile(user) {
+  if (!user) return { name: '사용자', avatarUrl: '' };
+  const meta = user.user_metadata || {};
+  let name =
+    meta.full_name ||
+    meta.name ||
+    meta.preferred_username ||
+    meta.user_name ||
+    meta.custom_claims?.global_name ||
+    meta.custom_claims?.username ||
+    user.email ||
+    'Discord 사용자';
+  let avatarUrl = meta.avatar_url || meta.picture || meta.avatar_url || '';
+
+  const identities = user.identities || [];
+  const discordId = identities.find((i) => i.provider === 'discord');
+  const idData = discordId && discordId.identity_data ? discordId.identity_data : {};
+  if (idData) {
+    if (idData.full_name) name = idData.full_name;
+    else if (idData.name) name = idData.name;
+    else if (idData.global_name) name = idData.global_name;
+    else if (idData.username) name = idData.username;
+    if (idData.avatar_url) avatarUrl = idData.avatar_url;
+    if (!avatarUrl && idData.avatar && idData.sub) {
+      avatarUrl = `https://cdn.discordapp.com/avatars/${idData.sub}/${idData.avatar}.png?size=64`;
+    }
+  }
+  return { name, avatarUrl };
+}
+
+function updateAuthUI(user) {
+  const guest = document.getElementById('authStateGuest');
+  const logged = document.getElementById('authStateUser');
+  const avatar = document.getElementById('authAvatar');
+  const nameEl = document.getElementById('authDisplayName');
+  if (!guest || !logged) return;
+  if (user) {
+    guest.hidden = true;
+    logged.hidden = false;
+    const { name, avatarUrl } = extractDiscordProfile(user);
+    if (nameEl) nameEl.textContent = name;
+    if (avatar) {
+      if (avatarUrl) {
+        avatar.src = avatarUrl;
+        avatar.alt = name;
+        avatar.hidden = false;
+      } else {
+        avatar.removeAttribute('src');
+        avatar.alt = '';
+        avatar.hidden = true;
+      }
+    }
+  } else {
+    guest.hidden = false;
+    logged.hidden = true;
+  }
+}
+
+function setAuthConfigHint(visible, message) {
+  const hint = document.getElementById('authConfigHint');
+  const btn = document.getElementById('btnDiscordLogin');
+  if (hint) {
+    hint.hidden = !visible;
+    if (message) hint.textContent = message;
+  }
+  if (btn) btn.disabled = visible;
+}
+
+async function initSupabaseAuth() {
+  const sb = getSupabaseClient();
+  if (!sb) {
+    setAuthConfigHint(true, 'Supabase URL·Anon 키가 없습니다. supabase-config.js 또는 Vercel 환경변수(SUPABASE_URL, SUPABASE_ANON_KEY)를 설정한 뒤 npm run build 하세요.');
+    updateAuthUI(null);
+    return;
+  }
+  setAuthConfigHint(false);
+
+  sb.auth.onAuthStateChange((_event, session) => {
+    updateAuthUI(session && session.user ? session.user : null);
+  });
+
+  const { data: { session } } = await sb.auth.getSession();
+  updateAuthUI(session && session.user ? session.user : null);
+}
+
+async function authSignInDiscord() {
+  const sb = getSupabaseClient();
+  if (!sb) {
+    alert('Supabase가 설정되지 않았습니다.');
+    return;
+  }
+  const redirectTo = `${window.location.origin}${window.location.pathname}`;
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'discord',
+    options: {
+      redirectTo,
+      scopes: 'identify email'
+    }
+  });
+  if (error) console.error(error);
+}
+
+async function authSignOut() {
+  const sb = getSupabaseClient();
+  if (sb) await sb.auth.signOut();
+  updateAuthUI(null);
+}
+
 // ===== 해양전문가 가이드 이미지 슬라이더 =====
 const MARINE_GUIDE_SLIDES = [
   { src: 'marine-guide/01.png', alt: '해양전문가 가이드 표지' },
@@ -3335,15 +3466,25 @@ const MARINE_GUIDE_SLIDES = [
 
 let marineGuideSlideIndex = 0;
 
+function syncMarineGuideSlideWidths() {
+  const viewport = document.getElementById('marineGuideViewport');
+  const track = document.getElementById('marineGuideTrack');
+  if (!viewport || !track) return;
+  const w = viewport.offsetWidth;
+  track.querySelectorAll('.marine-guide-slide').forEach((el) => {
+    el.style.flex = `0 0 ${w}px`;
+    el.style.width = `${w}px`;
+  });
+}
+
 function applyMarineGuideSlide() {
-  const img = document.getElementById('marineGuideSlideImg');
+  const viewport = document.getElementById('marineGuideViewport');
+  const track = document.getElementById('marineGuideTrack');
   const counter = document.getElementById('marineGuideSlideCounter');
-  const slide = MARINE_GUIDE_SLIDES[marineGuideSlideIndex];
-  if (!slide) return;
-  if (img) {
-    img.src = slide.src;
-    img.alt = slide.alt;
-  }
+  if (!viewport || !track) return;
+  syncMarineGuideSlideWidths();
+  const w = viewport.offsetWidth || 1;
+  track.style.transform = `translateX(${-marineGuideSlideIndex * w}px)`;
   if (counter) counter.textContent = `${marineGuideSlideIndex + 1} / ${MARINE_GUIDE_SLIDES.length}`;
 }
 
@@ -3351,6 +3492,30 @@ function marineGuideStep(delta) {
   if (!MARINE_GUIDE_SLIDES.length) return;
   marineGuideSlideIndex = (marineGuideSlideIndex + delta + MARINE_GUIDE_SLIDES.length) % MARINE_GUIDE_SLIDES.length;
   applyMarineGuideSlide();
+}
+
+function initMarineGuideCarousel() {
+  const track = document.getElementById('marineGuideTrack');
+  if (!track || track.getAttribute('data-built') === '1') return;
+  track.innerHTML = '';
+  MARINE_GUIDE_SLIDES.forEach((slide) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'marine-guide-slide';
+    const img = document.createElement('img');
+    img.src = slide.src;
+    img.alt = slide.alt;
+    img.loading = 'lazy';
+    img.draggable = false;
+    wrap.appendChild(img);
+    track.appendChild(wrap);
+  });
+  track.setAttribute('data-built', '1');
+  applyMarineGuideSlide();
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => applyMarineGuideSlide(), 100);
+  });
 }
 
 document.addEventListener('keydown', (e) => {
@@ -3387,6 +3552,7 @@ function switchSection(sectionId, clickedEl) {
   } else if (sectionId === 'marine-guide') {
     const nav = document.querySelector('.sidebar .nav-item[data-nav-section="marine-guide"]');
     if (nav) nav.classList.add('active');
+    requestAnimationFrame(() => applyMarineGuideSlide());
   } else if (sectionId === 'factory') {
     const nav = document.querySelector('.sidebar .nav-item[data-nav-section="factory"]');
     if (nav) nav.classList.add('active');
