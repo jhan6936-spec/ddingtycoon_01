@@ -5802,6 +5802,10 @@ async function initSupabaseAuth() {
       } catch (e) {
         console.error('[Supabase Auth] onAuthStateChange 처리 오류:', e);
         updateAuthUI(session?.user ?? null);
+        try {
+          await refreshProfileRole(sb);
+          updateTradeThreadMoreMenuVisibility();
+        } catch (_) {}
       }
     });
 
