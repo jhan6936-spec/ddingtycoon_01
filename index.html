@@ -4426,7 +4426,10 @@ function normalizeTradeComment(c) {
       : authorName.charAt(0).toUpperCase() || '?';
   let attachments = [];
   if (Array.isArray(c.attachments)) {
-    attachments = c.attachments.map(normalizeTradeAttachment).filter(Boolean);
+    attachments = c.attachments
+      .map(normalizeTradeAttachment)
+      .filter(Boolean)
+      .slice(0, TRADE_MAX_IMAGES_PER_POST);
   }
   return {
     id: typeof c.id === 'string' && c.id ? c.id : `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`,
