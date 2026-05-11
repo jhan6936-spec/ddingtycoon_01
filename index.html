@@ -4137,8 +4137,8 @@ function renderCraftPricePanel(effects) {
     list.appendChild(card);
   });
 
-  if (craftItems.length < craftItemOrder.length) {
-    craftItemOrder.forEach((name) => {
+  if (craftItems.length < CRAFT_PRICE_ITEM_ORDER.length) {
+    CRAFT_PRICE_ITEM_ORDER.forEach((name) => {
       if (craftItemsByName.has(name)) return;
       const emptyCard = document.createElement('div');
       emptyCard.className = 'panel-card';
