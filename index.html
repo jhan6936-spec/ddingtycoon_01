@@ -3613,6 +3613,58 @@ function deductCraftTree(name, count, inv, options = {}) {
   }
 }
 
+/** 제작 추천 플랜 기준 하위 재료 소비량 집계(deductCraftTree와 동일 규칙) */
+function accumulateCraftTree(name, count, accum, options = {}) {
+  if (!count || count <= 0) return;
+  const skip = options.skipShellfishTierConvert === true;
+  const recipe = data.materials[name];
+  if (recipe && recipe.inputs && recipe.inputs.length) {
+    if (skip && SHELLFISH_DOWNGRADE_ONE_STAR.has(name)) {
+      accum[name] = (accum[name] || 0) + count;
+      return;
+    }
+    for (const inp of recipe.inputs) {
+      accumulateCraftTree(inp.name, inp.count * count, accum, options);
+    }
+  } else {
+    accum[name] = (accum[name] || 0) + count;
+  }
+}
+
+function accumulateFinalRecipeNeeds(recipe, count, accum, options) {
+  for (const inp of recipe.inputs || []) {
+    accumulateCraftTree(inp.name, inp.count * count, accum, options);
+  }
+}
+
+function isShellfishStockName(name) {
+  return /^(굴|소라|문어|미역|성게)(\s+★+)?$/.test(String(name || '').trim());
+}
+
+function splitShellfishVanillaTotals(rawTotals) {
+  const shell = {};
+  const vanilla = {};
+  Object.entries(rawTotals).forEach(([name, n]) => {
+    if (!n || n <= 0) return;
+    if (isShellfishStockName(name)) shell[name] = n;
+    else vanilla[name] = n;
+  });
+  return { shell, vanilla };
+}
+
+function formatAlchemyMaterialLinesHTML(matObj) {
+  const entries = Object.entries(matObj).filter(([, c]) => c > 0).sort((a, b) => a[0].localeCompare(b[0], 'ko'));
+  if (!entries.length) {
+    return '<div style="font-size:12px;color:#778899;">해당 없음</div>';
+  }
+  return entries
+    .map(([name, c]) => {
+      const img = buildImageTag(name, '', 'height:18px;vertical-align:middle;margin-right:6px;');
+      return `<div class="alchemy-mat-line">${img}<span>${name}</span><strong>${c.toLocaleString()}개</strong></div>`;
+    })
+    .join('');
+}
+
 function deductFinalRecipe(recipe, inv, options = {}) {
   for (const inp of recipe.inputs || []) {
     deductCraftTree(inp.name, inp.count, inv, options);
