@@ -2456,6 +2456,9 @@ function parkCalcPopupOnBody() {
 }
 
 function openCalculatorForInput(inputEl) {
+  if (warehouseSetViewEnabled() && inputEl && inputEl.closest && inputEl.closest('#warehouseContainer')) {
+    return;
+  }
   ensureCalcPopup();
 
   const popup = document.getElementById('calcPopup');
@@ -2667,6 +2670,10 @@ function commitCalcValue(action) {
 
   if (action === 'apply') {
     inputEl.value = String(computed);
+    inputEl.setAttribute('data-warehouse-count', String(computed));
+    if (warehouseSetViewEnabled()) {
+      inputEl.value = formatWarehouseStackCount(computed);
+    }
   } else if (action === 'add') {
     inputEl.value = String(Math.max(0, current + computed));
   } else if (action === 'reset') {
