@@ -3360,12 +3360,6 @@
             <div class="trade-forum-compose-bottom">
               <button type="button" class="trade-icon-btn" aria-label="이모지" onclick="qaComposeEmojiClick(event)">🙂</button>
               <div class="trade-compose-spacer"></div>
-              <select id="qaPostCategory" class="trade-cat-select-inline" aria-label="질문 분류">
-                <option value="general">일반</option>
-                <option value="game">게임</option>
-                <option value="calc">계산기</option>
-                <option value="marine">해양</option>
-              </select>
               <button type="button" class="trade-send-btn" id="qaSendBtn" onclick="submitQaPost()"><span class="trade-send-icon" aria-hidden="true">❓</span> 질문 올리기</button>
             </div>
           </div>
@@ -4644,12 +4638,15 @@ function isTradeBoardAdmin() {
 }
 
 /** 서버에서 public.profiles 역할을 불러와 거래소 관리자 UI에 반영합니다. */
-async function refreshProfileRole(sb) {
+async function refreshProfileRole(sb, uidOpt) {
   cachedProfileRole = null;
   if (!sb) return;
   try {
-    const { data: sessWrap } = await sb.auth.getSession();
-    const uid = sessWrap?.session?.user?.id;
+    let uid = uidOpt;
+    if (uid == null || uid === '') {
+      const { data: sessWrap } = await sb.auth.getSession();
+      uid = sessWrap?.session?.user?.id;
+    }
     if (!uid) return;
     const { data, error } = await sb.from('profiles').select('role').eq('id', uid).maybeSingle();
     if (error) {
@@ -6405,29 +6402,39 @@ function setAuthConfigHint(visible, message) {
   if (btn) btn.disabled = visible;
 }
 
-/** 세션이 있으면 즉시 session.user로 UI를 반영한 뒤, getUser() 결과로 갱신합니다(비동기 레이스 방지). */
+/** 세션이 있으면 즉시 session.user로 UI를 반영한 뒤, getUser()·프로필·제재를 병렬로 가져옵니다. */
 async function refreshAuthUIFromSession(sb, session) {
   const n = authUiNonce;
   if (!session) {
     updateAuthUI(null);
+    await refreshTradeRestriction(sb);
+    if (n !== authUiNonce) return;
+    updateTradeRestrictionUI();
+    try {
+      updateTradeThreadMoreMenuVisibility();
+    } catch (_) {}
     return;
   }
   if (session.user) {
     updateAuthUI(session.user);
   }
+  const uid = session.user?.id ?? null;
   try {
-    const user = await fetchAuthUserForUI(sb);
+    const [user] = await Promise.all([
+      fetchAuthUserForUI(sb),
+      refreshProfileRole(sb, uid),
+      refreshTradeRestriction(sb)
+    ]);
     if (n !== authUiNonce) return;
     updateAuthUI(user || session.user);
   } catch (e) {
     console.error('[Supabase Auth] refreshAuthUIFromSession 오류:', e);
     if (n !== authUiNonce) return;
     updateAuthUI(session.user ?? null);
+    try {
+      await Promise.all([refreshProfileRole(sb, uid), refreshTradeRestriction(sb)]);
+    } catch (_) {}
   }
-  if (n !== authUiNonce) return;
-  await refreshProfileRole(sb);
-  if (n !== authUiNonce) return;
-  await refreshTradeRestriction(sb);
   if (n !== authUiNonce) return;
   updateTradeRestrictionUI();
   try {
@@ -6453,8 +6460,8 @@ async function initSupabaseAuth() {
         console.error('[Supabase Auth] onAuthStateChange 처리 오류:', e);
         updateAuthUI(session?.user ?? null);
         try {
-          await refreshProfileRole(sb);
-          await refreshTradeRestriction(sb);
+          const uid = session?.user?.id ?? null;
+          await Promise.all([refreshProfileRole(sb, uid), refreshTradeRestriction(sb)]);
           updateTradeRestrictionUI();
           updateTradeThreadMoreMenuVisibility();
         } catch (_) {}
