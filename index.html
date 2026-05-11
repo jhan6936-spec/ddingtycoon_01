@@ -3190,6 +3190,12 @@ function searchRecipes() {
   renderRecipes();
 }
 
+/** 제작·조합법: data.materials 중 연금 단계(정수·핵·에센스·결정·엘릭서·영약) 아이템 — 어패류 ★ 승급 제외 */
+function isMaterialsTabAlchemyChainItem(name) {
+  if (/^(굴|소라|문어|미역|성게)\s+★+$/.test(name)) return false;
+  return /(정수|핵|에센스|결정|엘릭서|영약)\s+★/.test(name);
+}
+
 // ===== 레시피 카드 렌더링 =====
 function renderRecipes() {
   const container = document.getElementById('recipesContainer');
@@ -3206,8 +3212,6 @@ function renderRecipes() {
     /(희석액|정수|핵|에센스|결정|엘릭서|영약|비약|코어|아쿠티스|광란체|깃털|날개|파편|나우틸러스|무저)/.test(r.name)
   );
   
-  const craftRecipes = recipesToShow.filter(r => r.group === 'craft');
-  
   const groups = [
     { title: '1성 연금품 (핵)', items: alchemyRecipes.filter(r => /핵\s+★$/.test(r.name)) },
     { title: '1성 최종 산물', items: alchemyRecipes.filter(r => r.group === 'group1') },
@@ -3215,16 +3219,18 @@ function renderRecipes() {
     { title: '2성 최종 산물', items: alchemyRecipes.filter(r => r.group === 'group2') },
     { title: '3성 연금품 (영약)', items: alchemyRecipes.filter(r => /영약\s+★★★$/.test(r.name)) },
     { title: '3성 최종 산물', items: alchemyRecipes.filter(r => r.group === 'group3') },
-    { title: '기타 연금 재료 (희석액)', items: alchemyRecipes.filter(r => /희석액/.test(r.name) && !/(정수|핵|에센스|결정|엘릭서|영약)\s+★/.test(r.name)) }
+    { title: '혼합 최종 산물', items: alchemyRecipes.filter(r => /희석액/.test(r.name) && !/(정수|핵|에센스|결정|엘릭서|영약)\s+★/.test(r.name)) }
   ];
 
   const renderCard = (recipe) => {
     const card = document.createElement('div');
     card.className = 'recipe-card';
+    const inputs = recipe.inputs || [];
+    const priceStr = (recipe.price !== undefined && recipe.price !== null) ? `${recipe.price}G` : '—';
     
     let ingredientsHTML = '';
-    if (recipe.inputs.length > 0) {
-      ingredientsHTML = recipe.inputs.map(input => `
+    if (inputs.length > 0) {
+      ingredientsHTML = inputs.map(input => `
         <div class="ingredient-item">
           <span class="ingredient-name">${withAlchemyImage(input.name)}</span>
           <span class="ingredient-count">${input.count}x</span>
@@ -3237,7 +3243,7 @@ function renderRecipes() {
     card.innerHTML = `
       <div class="recipe-card-header">
         <div class="recipe-card-title">${withAlchemyImage(recipe.name)}</div>
-        <div class="recipe-card-price">${recipe.price}G</div>
+        <div class="recipe-card-price">${priceStr}</div>
       </div>
       <div class="recipe-card-body">
         <div class="recipe-section">
