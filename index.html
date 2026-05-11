@@ -7107,16 +7107,15 @@ function buildQaThreadRootHtml(post) {
           )
           .join('')}</div>`
       : '';
-  const counts = deriveReactionCountsFromPost(post);
+  const reactTotal = tradeTotalReactionCountFromPost(post);
   const ru = normalizeReactionsByUser(post.reactionsByUser);
   const myKey = getTradeUserKey();
   const mine = ru[myKey];
-  const reactBtns = TRADE_REACTION_KEYS.map((key) => {
-    const em = TRADE_REACTION_META[key].emoji;
-    const cnt = counts[key] || 0;
-    const active = mine === key ? ' trade-thread-react-active' : '';
-    return `<button type="button" class="trade-thread-react-btn${active}" data-trade-thread-react="${key}">${em} ${cnt}</button>`;
-  }).join('');
+  const activeCls = mine ? ' trade-thread-react-active' : '';
+  const reactCountHtml =
+    reactTotal > 0
+      ? `<span class="trade-thread-react-count">${escapeHtmlTrade(`반응 ${reactTotal}`)}</span>`
+      : '';
   return `<div class="trade-msg-row">
     <div class="trade-msg-avatar">${avatarInner}</div>
     <div class="trade-msg-main">
@@ -7128,7 +7127,10 @@ function buildQaThreadRootHtml(post) {
       </div>
       <div class="trade-thread-root-body">${escapeHtmlTrade(post.body || '').replace(/\n/g, '<br>')}</div>
       ${imgs}
-      <div class="trade-thread-reactions">${reactBtns}</div>
+      <div class="trade-thread-reactions">
+        <button type="button" class="trade-thread-react-trigger trade-icon-btn${activeCls}" data-trade-thread-react-trigger aria-label="반응 추가">🙂</button>
+        ${reactCountHtml}
+      </div>
     </div>
   </div>`;
 }
@@ -7138,7 +7140,7 @@ function ensureQaThreadPanelBindings() {
   if (!panel || panel.__qaReactBound) return;
   panel.__qaReactBound = true;
   panel.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-trade-thread-react]');
+    const btn = e.target.closest('[data-trade-thread-react-trigger]');
     if (!btn || !selectedQaPostId) return;
     e.preventDefault();
     e.stopPropagation();
