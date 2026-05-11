@@ -3509,30 +3509,32 @@ function saveStoredUserProfile(userId, displayName, bio) {
 
 function updateAuthUI(user) {
   const bar = document.getElementById('siteAuthBar');
-  const guest = document.getElementById('authStateGuest');
   const trigger = document.getElementById('authProfileTrigger');
   const avatarImg = document.getElementById('authAvatarImg');
   cachedAuthUserForProfile = user || null;
   currentAuthUserId = user && user.id ? user.id : null;
-  if (!guest || !bar || !trigger || !avatarImg) return;
   if (user) {
-    bar.hidden = true;
-    trigger.hidden = false;
-    const { name, avatarUrl } = extractDiscordProfile(user);
-    if (avatarUrl) {
-      avatarImg.src = avatarUrl;
-      avatarImg.alt = name;
-      avatarImg.hidden = false;
-    } else {
-      avatarImg.removeAttribute('src');
-      avatarImg.alt = '';
-      avatarImg.hidden = true;
+    if (bar) bar.hidden = true;
+    if (trigger) trigger.hidden = false;
+    if (avatarImg) {
+      const { name, avatarUrl } = extractDiscordProfile(user);
+      if (avatarUrl) {
+        avatarImg.src = avatarUrl;
+        avatarImg.alt = name;
+        avatarImg.hidden = false;
+      } else {
+        avatarImg.removeAttribute('src');
+        avatarImg.alt = '';
+        avatarImg.hidden = true;
+      }
     }
   } else {
-    bar.hidden = false;
-    trigger.hidden = true;
-    avatarImg.removeAttribute('src');
-    avatarImg.alt = '';
+    if (bar) bar.hidden = false;
+    if (trigger) trigger.hidden = true;
+    if (avatarImg) {
+      avatarImg.removeAttribute('src');
+      avatarImg.alt = '';
+    }
   }
 }
 
@@ -3612,7 +3614,7 @@ async function initSupabaseAuth() {
           return;
         }
         const user = await fetchAuthUserForUI(sb);
-        updateAuthUI(user);
+        updateAuthUI(user || session.user);
       } catch (e) {
         console.error('[Supabase Auth] onAuthStateChange 처리 오류:', e);
         updateAuthUI(session?.user ?? null);
@@ -3627,7 +3629,7 @@ async function initSupabaseAuth() {
     }
     if (sessWrap.session) {
       const user = await fetchAuthUserForUI(sb);
-      updateAuthUI(user);
+      updateAuthUI(user || sessWrap.session.user);
     } else {
       updateAuthUI(null);
     }
