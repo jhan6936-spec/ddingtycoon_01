@@ -1419,6 +1419,26 @@
       background: rgba(74, 143, 217, 0.28);
       color: var(--t-text-inv);
     }
+    .theme-toggle-btn {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--t-border-strong);
+      background: var(--t-surface2);
+      color: var(--t-text);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .theme-toggle-btn:hover {
+      border-color: #4a8fd9;
+      color: var(--t-text-inv);
+      background: rgba(74, 143, 217, 0.18);
+    }
+    html.theme-light .theme-toggle-btn:hover {
+      color: #1e40af;
+    }
     .patch-modal {
       position: fixed;
       inset: 0;
@@ -1607,6 +1627,7 @@
             <p class="header-subtitle">해양 현장 작업자를 위한 제작 · 채집 효율 계산 페이지</p>
           </div>
           <div class="header-actions">
+            <button class="theme-toggle-btn" type="button" id="themeToggleBtn" onclick="toggleTheme()" aria-pressed="false" title="화면 테마 전환">라이트 모드</button>
             <button class="patch-note-btn" type="button" onclick="openPatchNotes()">패치노트</button>
           </div>
         </div>
