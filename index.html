@@ -6762,14 +6762,6 @@ function loadQaPosts() {
   return loadQaPostsFromStorage();
 }
 
-function setQaCategoryFilter(cat) {
-  qaCategoryFilter = cat || 'all';
-  document.querySelectorAll('#qa-channel [data-qa-cat]').forEach((btn) => {
-    btn.classList.toggle('active', btn.getAttribute('data-qa-cat') === qaCategoryFilter);
-  });
-  renderQaMessages();
-}
-
 function setQaSort(order) {
   qaSortOrder = order === 'old' ? 'old' : 'new';
   const sel = document.getElementById('qaSortSelect');
@@ -6947,9 +6939,6 @@ function renderQaMessages() {
     const ay = y.ts || 0;
     return qaSortOrder === 'old' ? ax - ay : ay - ax;
   });
-  if (qaCategoryFilter !== 'all') {
-    posts = posts.filter((p) => p.category === qaCategoryFilter);
-  }
   if (!posts.length) {
     list.innerHTML =
       '<div class="trade-empty">아직 질문이 없습니다. 위에서 제목과 내용을 입력해 첫 질문을 올려 보세요.</div>';
