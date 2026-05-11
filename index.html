@@ -3127,6 +3127,57 @@ function resetAllWarehouse() {
   closeCalculator();
 }
 
+// ===== 해양전문가 가이드 이미지 슬라이더 =====
+const MARINE_GUIDE_SLIDES = [
+  { src: 'marine-guide/01.png', alt: '해양전문가 가이드 표지' },
+  { src: 'marine-guide/02.png', alt: '해양 전문가란?' },
+  { src: 'marine-guide/03.png', alt: '연금과 공예 안내' },
+  { src: 'marine-guide/04.png', alt: '준비물' },
+  { src: 'marine-guide/05.png', alt: '어패류와 진주' },
+  { src: 'marine-guide/06.png', alt: '해양 팁' },
+  { src: 'marine-guide/07.png', alt: '재료 팁' },
+  { src: 'marine-guide/08.png', alt: '하루 일과' },
+  { src: 'marine-guide/09.png', alt: '전문가 스킬' },
+  { src: 'marine-guide/10.png', alt: '전문가 스킬 설명' },
+  { src: 'marine-guide/11.png', alt: '스킬 정착 구간' },
+  { src: 'marine-guide/12.png', alt: '스킬 주차 구간 (판매가)' },
+  { src: 'marine-guide/13.png', alt: '조개 무한리필 스킬 주차' },
+  { src: 'marine-guide/14.png', alt: '스킬 주차 구간 (제작 시간·슬롯)' },
+  { src: 'marine-guide/15.png', alt: '전문가 팁' }
+];
+
+let marineGuideSlideIndex = 0;
+
+function applyMarineGuideSlide() {
+  const img = document.getElementById('marineGuideSlideImg');
+  const counter = document.getElementById('marineGuideSlideCounter');
+  const slide = MARINE_GUIDE_SLIDES[marineGuideSlideIndex];
+  if (!slide) return;
+  if (img) {
+    img.src = slide.src;
+    img.alt = slide.alt;
+  }
+  if (counter) counter.textContent = `${marineGuideSlideIndex + 1} / ${MARINE_GUIDE_SLIDES.length}`;
+}
+
+function marineGuideStep(delta) {
+  if (!MARINE_GUIDE_SLIDES.length) return;
+  marineGuideSlideIndex = (marineGuideSlideIndex + delta + MARINE_GUIDE_SLIDES.length) % MARINE_GUIDE_SLIDES.length;
+  applyMarineGuideSlide();
+}
+
+document.addEventListener('keydown', (e) => {
+  const mg = document.getElementById('marine-guide');
+  if (!mg || !mg.classList.contains('active')) return;
+  if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    marineGuideStep(-1);
+  } else if (e.key === 'ArrowRight') {
+    e.preventDefault();
+    marineGuideStep(1);
+  }
+});
+
 // ===== 섹션 전환 =====
 function switchSection(sectionId, clickedEl) {
   saveWarehouseInventory();
