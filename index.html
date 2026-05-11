@@ -697,6 +697,12 @@
     .alchemy-vanilla-grid {
       width: 100%;
     }
+    @media (max-width: 720px) {
+      .alchemy-shell-tier-grid,
+      .alchemy-vanilla-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
     .alchemy-shell-col,
     .alchemy-vanilla-col {
       background: #0d1218;
