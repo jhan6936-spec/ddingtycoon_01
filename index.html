@@ -2124,6 +2124,84 @@ function ensureCalcPopup() {
   });
 }
 
+let calcLayoutRaf = 0;
+
+function positionCalcPopupNearInput() {
+  const popup = document.getElementById('calcPopup');
+  const inputEl = calcState.targetInput;
+  if (!popup || !inputEl || popup.style.display === 'none') return;
+
+  const rect = inputEl.getBoundingClientRect();
+  const margin = 10;
+  const popupW = 280;
+  const popupH = 420;
+
+  let left = rect.right + margin;
+  let top = rect.top;
+
+  if (left + popupW > window.innerWidth - margin) {
+    left = Math.max(margin, rect.left - popupW - margin);
+  }
+  if (top + popupH > window.innerHeight - margin) {
+    top = Math.max(margin, window.innerHeight - popupH - margin);
+  }
+
+  popup.style.left = `${Math.round(left)}px`;
+  popup.style.top = `${Math.round(top)}px`;
+}
+
+function scheduleCalcPopupPosition() {
+  if (!calcState.isOpen) return;
+  if (calcLayoutRaf) cancelAnimationFrame(calcLayoutRaf);
+  calcLayoutRaf = requestAnimationFrame(() => {
+    calcLayoutRaf = 0;
+    positionCalcPopupNearInput();
+  });
+}
+
+function getCalcScrollRoots(inputEl) {
+  const roots = new Set();
+  let el = inputEl;
+  while (el && el !== document.documentElement) {
+    const st = window.getComputedStyle(el);
+    const oy = st.overflowY;
+    const ox = st.overflowX;
+    const scrollableY = /(auto|scroll|overlay)/.test(oy) && el.scrollHeight > el.clientHeight + 1;
+    const scrollableX = /(auto|scroll|overlay)/.test(ox) && el.scrollWidth > el.clientWidth + 1;
+    if (scrollableY || scrollableX) roots.add(el);
+    el = el.parentElement;
+  }
+  return Array.from(roots);
+}
+
+function bindCalcPopupLayoutWatchers(inputEl) {
+  unbindCalcPopupLayoutWatchers();
+  if (!inputEl) return;
+  const handler = () => scheduleCalcPopupPosition();
+  calcState._calcLayoutHandler = handler;
+  calcState._calcScrollRoots = getCalcScrollRoots(inputEl);
+  window.addEventListener('resize', handler);
+  calcState._calcScrollRoots.forEach((root) => {
+    root.addEventListener('scroll', handler, { passive: true });
+  });
+}
+
+function unbindCalcPopupLayoutWatchers() {
+  const handler = calcState._calcLayoutHandler;
+  if (handler) {
+    window.removeEventListener('resize', handler);
+    (calcState._calcScrollRoots || []).forEach((root) => {
+      root.removeEventListener('scroll', handler);
+    });
+  }
+  calcState._calcLayoutHandler = null;
+  calcState._calcScrollRoots = null;
+  if (calcLayoutRaf) {
+    cancelAnimationFrame(calcLayoutRaf);
+    calcLayoutRaf = 0;
+  }
+}
+
 function openCalculatorForInput(inputEl) {
   ensureCalcPopup();
 
@@ -2141,31 +2219,16 @@ function openCalculatorForInput(inputEl) {
   calcState.activePart = calcState.mode === 'count' ? 'count' : 'set';
   syncCalcDisplay();
 
-  // 위치: input 오른쪽, 화면 밖이면 아래/왼쪽으로 보정
-  const rect = inputEl.getBoundingClientRect();
-  const margin = 10;
-  const popupW = 280;
-  const popupH = 420; // 대략값, 보정용
-
-  let left = rect.right + margin;
-  let top = rect.top;
-
-  if (left + popupW > window.innerWidth - margin) {
-    left = Math.max(margin, rect.left - popupW - margin);
-  }
-  if (top + popupH > window.innerHeight - margin) {
-    top = Math.max(margin, window.innerHeight - popupH - margin);
-  }
-
-  popup.style.left = `${Math.round(left)}px`;
-  popup.style.top = `${Math.round(top)}px`;
   popup.style.display = 'block';
+  positionCalcPopupNearInput();
+  bindCalcPopupLayoutWatchers(inputEl);
 
   const titleEl = document.getElementById('calcTitle');
   if (titleEl) titleEl.textContent = calcState.materialName;
 }
 
 function closeCalculator() {
+  unbindCalcPopupLayoutWatchers();
   calcState.isOpen = false;
   calcState.targetInput = null;
   calcState.materialName = '';
