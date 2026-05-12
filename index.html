@@ -3148,7 +3148,7 @@
   <!-- 사이드바 네비게이션 -->
   <div class="sidebar">
     <nav class="sidebar-inner" aria-label="사이드 메뉴">
-      <div class="sidebar-title">메뉴</div>
+    <div class="sidebar-title">메뉴</div>
 
       <div class="nav-item active" data-nav-section="main" onclick="switchSection('main', this)">메인</div>
 
@@ -3162,10 +3162,10 @@
         </div>
 
         <div id="efficiencySubNav" class="sub-nav nested-eff">
-          <div class="sub-item" onclick="openEfficiencySub('stamina', this)">스태미나 계산</div>
-          <div class="sub-item" onclick="openEfficiencySub('alchemy', this)">연금품 계산</div>
-          <div class="sub-item" onclick="openEfficiencySub('craftPrice', this)">공예품 가격</div>
-        </div>
+      <div class="sub-item" onclick="openEfficiencySub('stamina', this)">스태미나 계산</div>
+      <div class="sub-item" onclick="openEfficiencySub('alchemy', this)">연금품 계산</div>
+      <div class="sub-item" onclick="openEfficiencySub('craftPrice', this)">공예품 가격</div>
+    </div>
       </div>
 
       <div class="sidebar-divider" aria-hidden="true"></div>
@@ -3275,7 +3275,7 @@
 
       <div class="warehouse-toolbar">
           <div class="warehouse-toolbar-row">
-          <button class="btn danger" type="button" onclick="resetAllWarehouse()">전체 초기화</button>
+            <button class="btn danger" type="button" onclick="resetAllWarehouse()">전체 초기화</button>
           <div class="toggle-wrap warehouse-toggle-inline">
               <span class="warehouse-vanilla-label-block">
                 <span class="warehouse-vanilla-label-text">바닐라 재료 계산</span>
@@ -3291,12 +3291,12 @@
                   </span>
                 </span>
               </span>
-              <label class="toggle-switch" title="켜짐: 바닐라 재료 수량 반영 / 꺼짐: 바닐라 재료 무한대">
-                <input id="vanillaCalcToggle" type="checkbox" checked>
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-          <button class="btn" type="button" id="warehouseSetDisplayToggle" onclick="toggleWarehouseSetDisplayMode()">갯수/세트 변환</button>
+                <label class="toggle-switch" title="켜짐: 바닐라 재료 수량 반영 / 꺼짐: 바닐라 재료 무한대">
+                  <input id="vanillaCalcToggle" type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <button class="btn" type="button" id="warehouseSetDisplayToggle" onclick="toggleWarehouseSetDisplayMode()">갯수/세트 변환</button>
         </div>
       </div>
 
@@ -7596,7 +7596,7 @@ function switchSection(sectionId, clickedEl) {
     const effSubs = document.querySelectorAll('#efficiencySubNav .sub-item');
     if (ei >= 0 && effSubs[ei]) effSubs[ei].classList.add('active');
   }
-
+  
   if (sectionId === 'craft') {
     renderRecipes();
   } else if (sectionId === 'warehouse') {
@@ -9586,19 +9586,19 @@ window.addEventListener('DOMContentLoaded', function() {
   initSupabaseAuth();
 
   try {
-    loadVanillaToggleState();
-    loadExpertState();
-    loadSageRodState();
-    loadSageEngravingState();
-    renderRecipes();
-    renderMainCreditsInline();
-    loadWarehouseSetViewState();
-    loadAlchemySummaryQtyMode();
-    renderWarehouse();
-    renderExperts();
-    renderSageRod();
-    renderFactorySeaweedMedia();
-    loadStaminaInputState();
+  loadVanillaToggleState();
+  loadExpertState();
+  loadSageRodState();
+  loadSageEngravingState();
+  renderRecipes();
+  renderMainCreditsInline();
+  loadWarehouseSetViewState();
+  loadAlchemySummaryQtyMode();
+  renderWarehouse();
+  renderExperts();
+  renderSageRod();
+  renderFactorySeaweedMedia();
+  loadStaminaInputState();
     initMarineGuideCarousel();
     refreshTradeBoardFromRemote().then(() => {
       renderTradeMessages();
@@ -9612,24 +9612,24 @@ window.addEventListener('DOMContentLoaded', function() {
       if (ev.target.closest('#tradeEmojiPopover')) return;
       closeTradeEmojiPopover();
     });
-    const staminaInput = document.getElementById('staminaInput');
-    if (staminaInput) {
-      staminaInput.addEventListener('input', renderStaminaPlan);
-      staminaInput.addEventListener('blur', saveStaminaInputState);
-      staminaInput.addEventListener('change', saveStaminaInputState);
-    }
-    const vanillaToggle = document.getElementById('vanillaCalcToggle');
-    if (vanillaToggle) {
-      vanillaToggle.addEventListener('change', () => {
-        saveVanillaToggleState();
-        updateVanillaInputState();
-        analyzeEfficiency();
-      });
-    }
-    showSettingsSub(settingsSub);
-    showEfficiencySub(efficiencySub);
-    updateVanillaInputState();
-    analyzeEfficiency();
+  const staminaInput = document.getElementById('staminaInput');
+  if (staminaInput) {
+    staminaInput.addEventListener('input', renderStaminaPlan);
+    staminaInput.addEventListener('blur', saveStaminaInputState);
+    staminaInput.addEventListener('change', saveStaminaInputState);
+  }
+  const vanillaToggle = document.getElementById('vanillaCalcToggle');
+  if (vanillaToggle) {
+    vanillaToggle.addEventListener('change', () => {
+      saveVanillaToggleState();
+      updateVanillaInputState();
+      analyzeEfficiency();
+    });
+  }
+  showSettingsSub(settingsSub);
+  showEfficiencySub(efficiencySub);
+  updateVanillaInputState();
+  analyzeEfficiency();
   } catch (e) {
     console.error('[Init] 페이지 초기화 중 오류 (로그인 UI는 이미 초기화됨):', e);
   }
