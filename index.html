@@ -5065,14 +5065,32 @@ async function hydrateAuthUidFromSessionIfNeeded(sb) {
   }
 }
 
-/** 삭제·수정 직전에 관리자 역할을 서버와 다시 맞춥니다. */
+/** 삭제·수정 직전 역할 동기화: 네트워크 지연 시 UI가 멈추지 않도록 상한 시간을 둡니다. */
+const FORUM_ROLE_SYNC_TIMEOUT_MS = 10000;
+
 async function syncProfileRoleForForumActions() {
   const sb = getSupabaseClient();
   if (!sb) return;
   try {
-    const uid = await hydrateAuthUidFromSessionIfNeeded(sb);
-    await refreshProfileRole(sb, uid);
-  } catch (_) {}
+    await Promise.race([
+      (async () => {
+        const uid = await hydrateAuthUidFromSessionIfNeeded(sb);
+        await refreshProfileRole(sb, uid);
+      })(),
+      new Promise((_, rej) =>
+        setTimeout(() => rej(new Error('forum-role-sync-timeout')), FORUM_ROLE_SYNC_TIMEOUT_MS)
+      )
+    ]);
+  } catch (e) {
+    const msg = e && e.message ? e.message : String(e);
+    if (msg === 'forum-role-sync-timeout') {
+      console.warn(
+        `[profiles] 역할 동기화 ${FORUM_ROLE_SYNC_TIMEOUT_MS}ms 내 완료되지 않음 — 캐시된 역할로 계속합니다.`
+      );
+    } else {
+      console.warn('[profiles] 역할 동기화 실패:', e);
+    }
+  }
 }
 
 /** 서버에서 최신 사용자 클레임 반영 (Discord 프로필 등) */
