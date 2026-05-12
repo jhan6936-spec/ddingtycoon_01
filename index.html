@@ -7176,8 +7176,18 @@ function stopTradeQaBoardPolling() {
 }
 
 function startTradeQaBoardPolling(sectionId) {
-  stopTradeQaBoardPolling();
-  if (sectionId !== 'trade-hub' && sectionId !== 'qa-channel') return;
+  if (boardPollTimer) {
+    clearInterval(boardPollTimer);
+    boardPollTimer = null;
+  }
+  if (boardVisRefreshTimer) {
+    clearTimeout(boardVisRefreshTimer);
+    boardVisRefreshTimer = null;
+  }
+  if (sectionId !== 'trade-hub' && sectionId !== 'qa-channel') {
+    boardPollActiveSection = null;
+    return;
+  }
   boardPollActiveSection = sectionId;
   boardPollTimer = setInterval(tickTradeQaBoardPoll, TRADE_QA_BOARD_POLL_MS);
 }
