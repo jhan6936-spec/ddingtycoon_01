@@ -6532,6 +6532,13 @@ function submitTradePost() {
   const posts = loadTradePosts();
   posts.unshift(post);
   saveTradePosts(posts);
+  tradeUpsertRemote(post).then((res) => {
+    if (res.error) {
+      showForumSyncStatus('trade', `서버 저장 실패: ${formatSupabaseErr(res.error)}`, 'error');
+    } else {
+      showForumSyncStatus('trade', '서버에 저장되었습니다. (Supabase trade_posts)', 'ok');
+    }
+  });
   if (ta) ta.value = '';
   if (titleIn) titleIn.value = '';
   tradeComposePendingAttachments = [];
@@ -7151,15 +7158,36 @@ function scheduleQaRemoteSync() {
 
 async function syncQaPostsToSupabase(posts) {
   const sb = getSupabaseClient();
-  if (!sb || !posts || !posts.length) return;
+  if (!sb) {
+    console.error('[질문채널] 전체 동기화 생략: Supabase 클라이언트 없음');
+    return;
+  }
+  if (!posts || !posts.length) return;
+  let fail = 0;
   for (let i = 0; i < posts.length; i++) {
-    await qaUpsertRemote(posts[i]);
+    const r = await qaUpsertRemote(posts[i]);
+    if (r.error) fail += 1;
+  }
+  if (fail > 0) {
+    console.warn(`[질문채널] 전체 동기화 중 ${fail}/${posts.length}건 실패`);
+    const sec = document.getElementById('qa-channel');
+    if (sec && sec.classList.contains('active')) {
+      showForumSyncStatus(
+        'qa',
+        `서버 동기화 중 ${fail}건 실패했습니다. Network에서 supabase.co 요청을 확인하세요.`,
+        'error'
+      );
+    }
   }
 }
 
 async function qaUpsertRemote(post) {
   const sb = getSupabaseClient();
-  if (!sb) return;
+  if (!sb) {
+    const msg = 'Supabase 클라이언트가 없습니다. supabase-config.js와 스크립트 로드를 확인하세요.';
+    console.error('[질문채널]', msg);
+    return { error: { message: msg } };
+  }
   const row = normalizeQaPost(post);
   const { error } = await sb.from(QA_REMOTE_TABLE).upsert(
     {
@@ -7169,7 +7197,8 @@ async function qaUpsertRemote(post) {
     },
     { onConflict: 'id' }
   );
-  if (error) console.warn('[질문채널] Supabase upsert 실패:', error.message || error);
+  if (error) console.warn('[질문채널] Supabase upsert 실패:', formatSupabaseErr(error), error);
+  return { error };
 }
 
 async function qaDeleteRemote(id) {
@@ -7612,6 +7641,13 @@ function submitQaPost() {
   const posts = loadQaPosts();
   posts.unshift(post);
   saveQaPosts(posts);
+  qaUpsertRemote(post).then((res) => {
+    if (res.error) {
+      showForumSyncStatus('qa', `서버 저장 실패: ${formatSupabaseErr(res.error)}`, 'error');
+    } else {
+      showForumSyncStatus('qa', '서버에 저장되었습니다. (Supabase qa_posts)', 'ok');
+    }
+  });
   if (ta) ta.value = '';
   if (titleIn) titleIn.value = '';
   qaComposePendingAttachments = [];
