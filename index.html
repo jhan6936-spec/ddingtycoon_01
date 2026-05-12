@@ -5020,7 +5020,6 @@ async function refreshProfileRole(sb, uidOpt) {
       uid = sessWrap?.session?.user?.id;
     }
     if (!uid) {
-      cachedProfileRole = null;
       return;
     }
     const { data, error } = await sb.from('profiles').select('role').eq('id', uid).maybeSingle();
@@ -5045,6 +5044,15 @@ async function refreshProfileRole(sb, uidOpt) {
     console.warn('[profiles] 역할 조회 예외:', e);
     cachedProfileRole = 'user';
   }
+}
+
+/** 삭제·수정 직전에 관리자 역할을 서버와 다시 맞춥니다. */
+async function syncProfileRoleForForumActions() {
+  const sb = getSupabaseClient();
+  if (!sb || !currentAuthUserId) return;
+  try {
+    await refreshProfileRole(sb, currentAuthUserId);
+  } catch (_) {}
 }
 
 /** 서버에서 최신 사용자 클레임 반영 (Discord 프로필 등) */
@@ -9282,6 +9290,20 @@ function getExpertEffects() {
   const alchemyPriceBoost = expertMeta.alchemyPrice.values[expertState.alchemyPrice] || 0;
   const timeReduce = expertMeta.timeReduce.values[expertState.timeReduce] || 0;
   return { craftPriceBoost, alchemyPriceBoost, timeReduce };
+}
+
+/** 연금품 판매가(전문가 보너스 적용) — 효율 분석과 동일 판별 */
+function isAlchemySellPricedRecipeName(name) {
+  return /(희석액|정수|핵|에센스|결정|엘릭서|영약|비약|코어|아쿠티스|광란체|깃털|날개|파편|나우틸러스|무저)/.test(String(name || ''));
+}
+
+function getAlchemyBoostedSellPriceGold(recipe) {
+  if (!recipe || recipe.price === undefined || recipe.price === null) return null;
+  if (!isAlchemySellPricedRecipeName(recipe.name)) return null;
+  const base = Number(recipe.price);
+  if (!Number.isFinite(base)) return null;
+  const eff = getExpertEffects();
+  return Math.round(base * (1 + eff.alchemyPriceBoost / 100));
 }
 
 function getBaseAlchemyTimeSec(name) {
