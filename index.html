@@ -8660,9 +8660,25 @@ function renderRecipes() {
     card.className = 'recipe-card';
     const inputs = recipe.inputs || [];
     const hidePrice = !!opts.hidePrice;
-    const priceStr = hidePrice
-      ? ''
-      : ((recipe.price !== undefined && recipe.price !== null) ? `${recipe.price}G` : '—');
+    const eff = getExpertEffects();
+    const boosted = getAlchemyBoostedSellPriceGold(recipe);
+    const baseNum =
+      recipe.price !== undefined && recipe.price !== null ? Number(recipe.price) : NaN;
+    let priceStr = '';
+    if (!hidePrice) {
+      if (Number.isFinite(baseNum)) {
+        if (boosted != null) {
+          priceStr = `${boosted.toLocaleString()}G`;
+          if (eff.alchemyPriceBoost > 0) {
+            priceStr += ` <span style="font-size:11px;color:#8899aa;font-weight:600;">(기본 ${baseNum.toLocaleString()}G)</span>`;
+          }
+        } else {
+          priceStr = `${baseNum.toLocaleString()}G`;
+        }
+      } else {
+        priceStr = '—';
+      }
+    }
     const priceEl = hidePrice ? '' : `<div class="recipe-card-price">${priceStr}</div>`;
     
     let ingredientsHTML = '';
@@ -9283,6 +9299,7 @@ function changeExpertLevel(key, delta) {
   saveExpertState();
   renderExperts();
   analyzeEfficiency();
+  renderRecipes();
 }
 
 function getExpertEffects() {
@@ -9497,12 +9514,22 @@ function greedyCraftFinalCounts(recipeNames, inv) {
 }
 
 function renderTriFinalPlan(title, orderedNames, counts) {
+  const effects = getExpertEffects();
+  const mult = 1 + effects.alchemyPriceBoost / 100;
   const cells = orderedNames.map((name) => {
     const n = counts[name] || 0;
     const imgH = buildImageTag(name, '', 'height:22px;vertical-align:middle;margin-right:6px;');
+    const recipe = data.recipes.find((r) => r.name === name);
+    const unitSell = recipe ? Math.round((recipe.price || 0) * mult) : 0;
+    const totalSell = unitSell * n;
+    const sellLine =
+      n > 0 && unitSell > 0
+        ? `<div style="font-size:11px;color:#9ecb7a;margin-top:5px;line-height:1.35;">전부 판매 시 <strong style="color:#c8f5a8;">${totalSell.toLocaleString()}G</strong></div>`
+        : '';
     return `<div style="background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:10px 8px;text-align:center;min-height:72px;display:flex;flex-direction:column;justify-content:center;">
       <div style="font-size:11px;color:#9eb2c8;line-height:1.25;word-break:keep-all;">${imgH}${name}</div>
       <div style="font-size:17px;font-weight:900;color:#8fd5ff;margin-top:6px;">${n}개</div>
+      ${sellLine}
     </div>`;
   }).join('');
   return `<div style="margin-bottom:14px;">
