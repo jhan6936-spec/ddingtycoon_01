@@ -5611,7 +5611,7 @@ function scheduleTradeRemoteSync() {
   clearTimeout(tradeRemoteSyncTimer);
   tradeRemoteSyncTimer = setTimeout(() => {
     syncTradePostsToSupabase(tradePostsCache || []);
-  }, 450);
+  }, 750);
 }
 
 async function syncTradePostsToSupabase(posts) {
@@ -5695,7 +5695,8 @@ function mergeTradePostsByUpdated(localArr, remoteArr) {
   return Array.from(map.values());
 }
 
-async function refreshTradeBoardFromRemote() {
+async function refreshTradeBoardFromRemote(opts) {
+  const skipPush = !!(opts && opts.skipPush);
   const remote = await tradeFetchRemotePosts();
   const local = loadTradePostsFromStorage();
   if (remote === null) {
@@ -5709,7 +5710,9 @@ async function refreshTradeBoardFromRemote() {
   } catch (e) {
     console.warn('[거래소] 로컬 병합 저장 실패:', e);
   }
-  await syncTradePostsToSupabase(tradePostsCache);
+  if (!skipPush) {
+    await syncTradePostsToSupabase(tradePostsCache);
+  }
 }
 
 function formatTradeTimestamp(ts) {
@@ -7139,7 +7142,8 @@ function mergeQaPostsByUpdated(localArr, remoteArr) {
   return Array.from(map.values());
 }
 
-async function refreshQaBoardFromRemote() {
+async function refreshQaBoardFromRemote(opts) {
+  const skipPush = !!(opts && opts.skipPush);
   const remote = await qaFetchRemotePosts();
   const local = loadQaPostsFromStorage();
   if (remote === null) {
@@ -7153,7 +7157,57 @@ async function refreshQaBoardFromRemote() {
   } catch (e) {
     console.warn('[질문채널] 로컬 병합 저장 실패:', e);
   }
-  await syncQaPostsToSupabase(qaPostsCache);
+  if (!skipPush) {
+    await syncQaPostsToSupabase(qaPostsCache);
+  }
+}
+
+function stopTradeQaBoardPolling() {
+  boardPollActiveSection = null;
+  if (boardPollTimer) {
+    clearInterval(boardPollTimer);
+    boardPollTimer = null;
+  }
+}
+
+function startTradeQaBoardPolling(sectionId) {
+  stopTradeQaBoardPolling();
+  if (sectionId !== 'trade-hub' && sectionId !== 'qa-channel') return;
+  boardPollActiveSection = sectionId;
+  boardPollTimer = setInterval(tickTradeQaBoardPoll, TRADE_QA_BOARD_POLL_MS);
+}
+
+async function tickTradeQaBoardPoll() {
+  if (document.hidden || boardPollRefreshInFlight || !boardPollActiveSection) return;
+  const sid = boardPollActiveSection;
+  const hub = document.getElementById('trade-hub');
+  const qa = document.getElementById('qa-channel');
+  if (sid === 'trade-hub' && hub && hub.classList.contains('active')) {
+    boardPollRefreshInFlight = true;
+    try {
+      await refreshTradeBoardFromRemote({ skipPush: true });
+      renderTradeMessages();
+      updateTradeComposerAvatar();
+      if (selectedTradePostId) renderTradeThreadPanel();
+    } catch (e) {
+      console.warn('[거래소] 자동 갱신:', e);
+    } finally {
+      boardPollRefreshInFlight = false;
+    }
+  } else if (sid === 'qa-channel' && qa && qa.classList.contains('active')) {
+    boardPollRefreshInFlight = true;
+    try {
+      await refreshQaBoardFromRemote({ skipPush: true });
+      renderQaMessages();
+      if (selectedQaPostId) renderQaThreadPanel();
+    } catch (e) {
+      console.warn('[질문채널] 자동 갱신:', e);
+    } finally {
+      boardPollRefreshInFlight = false;
+    }
+  } else {
+    stopTradeQaBoardPolling();
+  }
 }
 
 function setQaSort(order) {
