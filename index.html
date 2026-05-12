@@ -7058,7 +7058,7 @@ function scheduleQaRemoteSync() {
   clearTimeout(qaRemoteSyncTimer);
   qaRemoteSyncTimer = setTimeout(() => {
     syncQaPostsToSupabase(qaPostsCache || []);
-  }, 450);
+  }, 750);
 }
 
 async function syncQaPostsToSupabase(posts) {
@@ -7884,6 +7884,12 @@ function switchSection(sectionId, clickedEl) {
     const sbTr2 = getSupabaseClient();
     if (sbTr2) refreshTradeRestriction(sbTr2).then(() => updateTradeRestrictionUI());
   }
+
+  if (sectionId === 'trade-hub' || sectionId === 'qa-channel') {
+    startTradeQaBoardPolling(sectionId);
+  } else {
+    stopTradeQaBoardPolling();
+  }
 }
 
 function openFactorySub(subKey) {
@@ -7899,6 +7905,8 @@ function openFactorySub(subKey) {
   const efficiencySubNav = document.getElementById('efficiencySubNav');
   if (efficiencySubNav) efficiencySubNav.style.display = 'none';
   document.querySelectorAll('#efficiencySubNav .sub-item').forEach(i => i.classList.remove('active'));
+
+  stopTradeQaBoardPolling();
 
   showFactorySub(subKey);
 }
