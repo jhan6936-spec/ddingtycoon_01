@@ -4974,6 +4974,7 @@ const TRADE_QA_BOARD_POLL_MS = 6000;
 let boardPollTimer = null;
 let boardPollActiveSection = null;
 let boardPollRefreshInFlight = false;
+let boardVisRefreshTimer = null;
 
 /** Supabase trade_me_restriction_status 결과 캐시 */
 let tradeRestrictionState = { active: false, indefinite: false, until: null };
