@@ -6492,20 +6492,30 @@ async function saveTradeThreadEdit() {
 }
 
 async function tradeThreadDeletePost() {
-  closeTradeThreadMoreMenu();
-  await syncProfileRoleForForumActions();
-  const post = loadTradePosts().find((x) => x.id === selectedTradePostId);
-  if (!post || !canModifyTradePost(post)) {
-    alert('이 글을 삭제할 권한이 없습니다.');
-    return;
+  try {
+    closeTradeThreadMoreMenu();
+    await syncProfileRoleForForumActions();
+    const post = loadTradePosts().find((x) => x.id === selectedTradePostId);
+    if (!post || !canModifyTradePost(post)) {
+      alert('이 글을 삭제할 권한이 없습니다.');
+      return;
+    }
+    if (!confirm('이 포스트를 삭제할까요? 되돌릴 수 없습니다.')) return;
+    const pid = selectedTradePostId;
+    const next = loadTradePosts().filter((x) => x.id !== pid);
+    saveTradePosts(next);
+    const remoteErr = await tradeDeleteRemote(pid);
+    closeTradeThreadPanel();
+    renderTradeMessages();
+    if (remoteErr) {
+      alert(
+        '서버에서 이 글을 삭제하지 못했습니다. 새로고침하면 목록에 다시 나타날 수 있습니다.\n\n' + remoteErr
+      );
+    }
+  } catch (e) {
+    console.error('[거래소] 삭제 처리 오류:', e);
+    alert('삭제 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
   }
-  if (!confirm('이 포스트를 삭제할까요? 되돌릴 수 없습니다.')) return;
-  const pid = selectedTradePostId;
-  const next = loadTradePosts().filter((x) => x.id !== pid);
-  saveTradePosts(next);
-  tradeDeleteRemote(pid);
-  closeTradeThreadPanel();
-  renderTradeMessages();
 }
 
 function applySavedProfileToTradePosts(userId) {
@@ -8283,20 +8293,30 @@ async function saveQaThreadEdit() {
 }
 
 async function qaThreadDeletePost() {
-  closeQaThreadMoreMenu();
-  await syncProfileRoleForForumActions();
-  const post = loadQaPosts().find((x) => x.id === selectedQaPostId);
-  if (!post || !canModifyQaPost(post)) {
-    alert('이 글을 삭제할 권한이 없습니다.');
-    return;
+  try {
+    closeQaThreadMoreMenu();
+    await syncProfileRoleForForumActions();
+    const post = loadQaPosts().find((x) => x.id === selectedQaPostId);
+    if (!post || !canModifyQaPost(post)) {
+      alert('이 글을 삭제할 권한이 없습니다.');
+      return;
+    }
+    if (!confirm('이 질문을 삭제할까요? 되돌릴 수 없습니다.')) return;
+    const pid = selectedQaPostId;
+    const next = loadQaPosts().filter((x) => x.id !== pid);
+    saveQaPosts(next);
+    const remoteErr = await qaDeleteRemote(pid);
+    closeQaThreadPanel();
+    renderQaMessages();
+    if (remoteErr) {
+      alert(
+        '서버에서 이 질문을 삭제하지 못했습니다. 새로고침하면 목록에 다시 나타날 수 있습니다.\n\n' + remoteErr
+      );
+    }
+  } catch (e) {
+    console.error('[질문채널] 삭제 처리 오류:', e);
+    alert('삭제 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
   }
-  if (!confirm('이 질문을 삭제할까요? 되돌릴 수 없습니다.')) return;
-  const pid = selectedQaPostId;
-  const next = loadQaPosts().filter((x) => x.id !== pid);
-  saveQaPosts(next);
-  qaDeleteRemote(pid);
-  closeQaThreadPanel();
-  renderQaMessages();
 }
 
 async function openQaThreadPanel(postId) {
