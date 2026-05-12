@@ -5008,7 +5008,6 @@ function isTradeBoardAdmin() {
 
 /** 서버에서 public.profiles 역할을 불러와 거래소 관리자 UI에 반영합니다. */
 async function refreshProfileRole(sb, uidOpt) {
-  cachedProfileRole = null;
   if (!sb) return;
   try {
     let uid = uidOpt;
@@ -5016,18 +5015,44 @@ async function refreshProfileRole(sb, uidOpt) {
       const { data: sessWrap } = await sb.auth.getSession();
       uid = sessWrap?.session?.user?.id;
     }
-    if (!uid) return;
+    if (!uid) {
+      cachedProfileRole = null;
+      return;
+    }
     const { data, error } = await sb.from('profiles').select('role').eq('id', uid).maybeSingle();
     if (error) {
       console.warn('[profiles] 역할 조회 실패:', error.message);
       cachedProfileRole = 'user';
       return;
     }
-    cachedProfileRole = data && data.role === 'admin' ? 'admin' : 'user';
+    if (!data) {
+      console.warn(
+        '[profiles] 역할 행 없음: public.profiles 에 해당 사용자가 있는지 확인하세요.',
+        String(uid).slice(0, 8) + '…'
+      );
+      cachedProfileRole = 'user';
+      return;
+    }
+    const r = String(data.role || '')
+      .trim()
+      .toLowerCase();
+    cachedProfileRole = r === 'admin' ? 'admin' : 'user';
   } catch (e) {
     console.warn('[profiles] 역할 조회 예외:', e);
     cachedProfileRole = 'user';
   }
+}
+
+/** 스레드·관리자 UI가 역할 조회 이후에 맞춰지도록 한 번에 갱신합니다. */
+async function refreshProfileRoleThenUpdateForumAdminUi() {
+  const sb = getSupabaseClient();
+  if (!sb || !currentAuthUserId) return;
+  try {
+    await refreshProfileRole(sb, currentAuthUserId);
+  } catch (_) {}
+  updateTradeThreadMoreMenuVisibility();
+  updateTradeThreadAdminBar();
+  updateQaThreadMoreMenuVisibility();
 }
 
 /** 서버에서 최신 사용자 클레임 반영 (Discord 프로필 등) */
