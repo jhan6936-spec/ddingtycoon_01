@@ -5682,15 +5682,36 @@ function scheduleTradeRemoteSync() {
 
 async function syncTradePostsToSupabase(posts) {
   const sb = getSupabaseClient();
-  if (!sb || !posts || !posts.length) return;
+  if (!sb) {
+    console.error('[거래소] 전체 동기화 생략: Supabase 클라이언트 없음(url/anonKey, supabase.min.js 로드 확인)');
+    return;
+  }
+  if (!posts || !posts.length) return;
+  let fail = 0;
   for (let i = 0; i < posts.length; i++) {
-    await tradeUpsertRemote(posts[i]);
+    const r = await tradeUpsertRemote(posts[i]);
+    if (r.error) fail += 1;
+  }
+  if (fail > 0) {
+    console.warn(`[거래소] 전체 동기화 중 ${fail}/${posts.length}건 실패`);
+    const hub = document.getElementById('trade-hub');
+    if (hub && hub.classList.contains('active')) {
+      showForumSyncStatus(
+        'trade',
+        `서버 동기화 중 ${fail}건 실패했습니다. Network에서 supabase.co 요청 상태를 확인하세요.`,
+        'error'
+      );
+    }
   }
 }
 
 async function tradeUpsertRemote(post) {
   const sb = getSupabaseClient();
-  if (!sb) return;
+  if (!sb) {
+    const msg = 'Supabase 클라이언트가 없습니다. supabase-config.js(url·anonKey)와 supabase.min.js 로드를 확인하세요.';
+    console.error('[거래소]', msg);
+    return { error: { message: msg } };
+  }
   const row = normalizeTradePost(post);
   const { error } = await sb.from(TRADE_REMOTE_TABLE).upsert(
     {
@@ -5700,7 +5721,8 @@ async function tradeUpsertRemote(post) {
     },
     { onConflict: 'id' }
   );
-  if (error) console.warn('[거래소] Supabase upsert 실패:', error.message || error);
+  if (error) console.warn('[거래소] Supabase upsert 실패:', formatSupabaseErr(error), error);
+  return { error };
 }
 
 async function tradeDeleteRemote(id) {
