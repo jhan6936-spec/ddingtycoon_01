@@ -5051,12 +5051,27 @@ async function refreshProfileRole(sb, uidOpt) {
   }
 }
 
+/** getSession()으로 메모리의 currentAuthUserId를 보충합니다(로그인 직후 타이밍 이슈 완화). */
+async function hydrateAuthUidFromSessionIfNeeded(sb) {
+  if (currentAuthUserId) return currentAuthUserId;
+  if (!sb) return null;
+  try {
+    const { data: sessWrap } = await sb.auth.getSession();
+    const uid = sessWrap?.session?.user?.id || null;
+    if (uid) currentAuthUserId = uid;
+    return currentAuthUserId;
+  } catch (_) {
+    return null;
+  }
+}
+
 /** 삭제·수정 직전에 관리자 역할을 서버와 다시 맞춥니다. */
 async function syncProfileRoleForForumActions() {
   const sb = getSupabaseClient();
-  if (!sb || !currentAuthUserId) return;
+  if (!sb) return;
   try {
-    await refreshProfileRole(sb, currentAuthUserId);
+    const uid = await hydrateAuthUidFromSessionIfNeeded(sb);
+    await refreshProfileRole(sb, uid);
   } catch (_) {}
 }
 
