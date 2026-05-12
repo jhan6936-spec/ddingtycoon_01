@@ -6409,8 +6409,9 @@ async function tradeThreadEditPost() {
   if (panel) panel.hidden = false;
 }
 
-function saveTradeThreadEdit() {
+async function saveTradeThreadEdit() {
   if (!selectedTradePostId) return;
+  await syncProfileRoleForForumActions();
   const posts = loadTradePosts();
   const i = posts.findIndex((x) => x.id === selectedTradePostId);
   if (i === -1) return;
@@ -6447,8 +6448,9 @@ function saveTradeThreadEdit() {
   renderTradeMessages();
 }
 
-function tradeThreadDeletePost() {
+async function tradeThreadDeletePost() {
   closeTradeThreadMoreMenu();
+  await syncProfileRoleForForumActions();
   const post = loadTradePosts().find((x) => x.id === selectedTradePostId);
   if (!post || !canModifyTradePost(post)) {
     alert('이 글을 삭제할 권한이 없습니다.');
@@ -8176,8 +8178,9 @@ function cancelQaThreadEdit() {
   if (panel) panel.hidden = true;
 }
 
-function qaThreadEditPost() {
+async function qaThreadEditPost() {
   closeQaThreadMoreMenu();
+  await syncProfileRoleForForumActions();
   const post = loadQaPosts().find((x) => x.id === selectedQaPostId);
   if (!post || !canModifyQaPost(post)) {
     alert('이 글을 수정할 권한이 없습니다.');
@@ -8191,8 +8194,9 @@ function qaThreadEditPost() {
   if (panel) panel.hidden = false;
 }
 
-function saveQaThreadEdit() {
+async function saveQaThreadEdit() {
   if (!selectedQaPostId) return;
+  await syncProfileRoleForForumActions();
   const posts = loadQaPosts();
   const i = posts.findIndex((x) => x.id === selectedQaPostId);
   if (i === -1) return;
