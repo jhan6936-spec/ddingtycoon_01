@@ -4145,12 +4145,21 @@ function buildImageTag(name, alt = '', style = '', className = '') {
   return `<img src="${src0}" alt="${safeAlt}"${cls} data-img-candidates="${safeCandidates}" data-img-fallback-index="0"${styleAttr} decoding="async" loading="lazy" onerror="handleImageFallback(this)">`;
 }
 
-const APP_VERSION = '1.0.1';
+const APP_VERSION = '1.0.2';
 
 const PATCH_NOTES_HTML = `
   <h3>[띵타해] 프로토타입</h3>
   <p><strong>버전:</strong> v${APP_VERSION}</p>
   <p class="patch-notes-lead">이야기해서 반영한 내용만 여기에 정리하고, 바뀔 때마다 버전 숫자를 올립니다. 항목이 많아지면 이 창 안을 스크롤하면 됩니다.</p>
+  <h3>v1.0.2</h3>
+  <ul>
+    <li>재료 창고 상단 도구줄을 정리했습니다. 바닐라 재료 안내·토글은 한 줄에, 전체 초기화·갯수/세트 변환 버튼은 그 아래 가로로 두었습니다.</li>
+    <li>해양전문가 가이드 이미지 캐러셀을 불러올 때 끊김이 덜 느껴지도록, 첫 장을 먼저 띄운 뒤 나머지 슬라이드를 프레임을 나눠 붙이고, 이미지 디코딩·리사이즈 처리 방식을 조정했습니다.</li>
+    <li>사이드바에서 「효율 분석」을 누르면 바로 아래에 하위 메뉴가 나오도록 바꿨습니다. 순서는 연금품 계산 → 공예품 계산 → 스태미나 계산입니다.</li>
+    <li>거래소·질문채널에서 다른 사람이 쓴 글도 보이도록 Supabase 연동을 손봤습니다. 거래소는 전체 글 조회용 RPC를 쓰고, 질문채널은 <code>qa_posts</code> 테이블과 동기화합니다. (대시보드에서 제공하는 SQL을 한 번 실행해야 합니다.)</li>
+    <li>거래소·질문채널에 짧은 주기의 자동 새로고침을 넣었습니다. 다른 탭으로 가면 갱신을 멈추고, 주기 갱신 때는 서버에 글 전체를 다시 올리지 않아 부담을 줄였습니다.</li>
+    <li>첫 화면이 조금 가벼워지도록 메인 크레딧 갤러리·공장 이미지 그리드·효율 분석 일부를 여유 있을 때 그리도록 미뤘고, 재료·크레딧 이미지에 지연 로딩·비동기 디코딩을 적용했습니다. 게시판 목록에는 그리기 범위를 줄이는 CSS를 더했습니다.</li>
+  </ul>
   <h3>v1.0.1</h3>
   <ul>
     <li>재료 창고 수량 계산기를 재료 카드 안에 두어, 스크롤할 때 화면에 붙어 따라오지 않도록 했습니다.</li>
