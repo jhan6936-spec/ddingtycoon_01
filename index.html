@@ -6543,9 +6543,10 @@ async function openTradeThreadPanel(postId) {
   const t = p.title || '글';
   if (tb) tb.placeholder = `"${t}"에 메시지 보내기`;
   const sb = getSupabaseClient();
-  if (sb && currentAuthUserId) {
+  if (sb) {
     try {
-      await refreshProfileRole(sb, currentAuthUserId);
+      const uid = await hydrateAuthUidFromSessionIfNeeded(sb);
+      await refreshProfileRole(sb, uid);
     } catch (_) {}
   }
   renderTradeThreadPanel();
@@ -8287,9 +8288,10 @@ async function openQaThreadPanel(postId) {
   const t = p.title || '질문';
   if (tb) tb.placeholder = `"${t}"에 답변 남기기`;
   const sb = getSupabaseClient();
-  if (sb && currentAuthUserId) {
+  if (sb) {
     try {
-      await refreshProfileRole(sb, currentAuthUserId);
+      const uid = await hydrateAuthUidFromSessionIfNeeded(sb);
+      await refreshProfileRole(sb, uid);
     } catch (_) {}
   }
   renderQaThreadPanel();
