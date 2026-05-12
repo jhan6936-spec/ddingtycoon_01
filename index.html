@@ -9855,6 +9855,22 @@ async function downloadAlchemyPaneScreenshot() {
 }
 
 // ===== 초기 렌더링 =====
+function runWhenIdle(fn, timeoutMs) {
+  const run = () => {
+    try {
+      fn();
+    } catch (e) {
+      console.warn('[Idle]', e);
+    }
+  };
+  const t = timeoutMs != null ? timeoutMs : 1800;
+  if (typeof requestIdleCallback === 'function') {
+    requestIdleCallback(run, { timeout: t });
+  } else {
+    setTimeout(run, 1);
+  }
+}
+
 window.addEventListener('DOMContentLoaded', function() {
   initSupabaseAuth();
 
@@ -9864,13 +9880,13 @@ window.addEventListener('DOMContentLoaded', function() {
   loadSageRodState();
   loadSageEngravingState();
   renderRecipes();
-  renderMainCreditsInline();
+  runWhenIdle(() => renderMainCreditsInline());
   loadWarehouseSetViewState();
   loadAlchemySummaryQtyMode();
   renderWarehouse();
   renderExperts();
   renderSageRod();
-  renderFactorySeaweedMedia();
+  runWhenIdle(() => renderFactorySeaweedMedia());
   loadStaminaInputState();
     initMarineGuideCarousel();
     refreshTradeBoardFromRemote().then(() => {
@@ -9887,6 +9903,14 @@ window.addEventListener('DOMContentLoaded', function() {
       if (!pop || pop.hidden) return;
       if (ev.target.closest('#tradeEmojiPopover')) return;
       closeTradeEmojiPopover();
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden || !boardPollActiveSection) return;
+      if (boardVisRefreshTimer) clearTimeout(boardVisRefreshTimer);
+      boardVisRefreshTimer = setTimeout(() => {
+        boardVisRefreshTimer = null;
+        tickTradeQaBoardPoll();
+      }, 320);
     });
   const staminaInput = document.getElementById('staminaInput');
   if (staminaInput) {
