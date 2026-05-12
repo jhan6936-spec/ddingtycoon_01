@@ -6393,8 +6393,9 @@ function cancelTradeThreadEdit() {
   if (panel) panel.hidden = true;
 }
 
-function tradeThreadEditPost() {
+async function tradeThreadEditPost() {
   closeTradeThreadMoreMenu();
+  await syncProfileRoleForForumActions();
   const post = loadTradePosts().find((x) => x.id === selectedTradePostId);
   if (!post || !canModifyTradePost(post)) {
     alert('이 글을 수정할 권한이 없습니다.');
@@ -8758,7 +8759,7 @@ function renderRecipes() {
       sub.style.margin = '12px 0 2px';
       sub.textContent = tier.title;
       container.appendChild(sub);
-      tier.items.forEach((r) => container.appendChild(renderCard(r, { hidePrice: true })));
+      tier.items.forEach((r) => container.appendChild(renderCard(r)));
     });
   }
 
