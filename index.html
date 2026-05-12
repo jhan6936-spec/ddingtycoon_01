@@ -172,6 +172,7 @@
     .marine-guide-slide {
       flex-shrink: 0;
       box-sizing: border-box;
+      contain: layout paint;
     }
     .marine-guide-slide img {
       width: 100%;
@@ -180,6 +181,7 @@
       vertical-align: top;
       user-select: none;
       pointer-events: none;
+      decoding: async;
     }
     .marine-guide-counter {
       position: absolute;
@@ -3178,15 +3180,16 @@
         <div id="calculatorSubNav" class="sub-nav calc-sub">
           <div class="sub-item" data-calc-section="craft" onclick="switchSection('craft', this)">제작 및 조합법</div>
           <div class="sub-item" data-calc-section="warehouse" onclick="switchSection('warehouse', this)">재료 창고</div>
-          <div class="sub-item" data-calc-section="efficiency" onclick="switchSection('efficiency', this)">효율 분석</div>
+          <div class="sidebar-efficiency-group">
+            <div class="sub-item" data-calc-section="efficiency" onclick="switchSection('efficiency', this)">효율 분석</div>
+            <div id="efficiencySubNav" class="sub-nav nested-eff" style="display: none;">
+              <div class="sub-item" onclick="openEfficiencySub('alchemy', this)">연금품 계산</div>
+              <div class="sub-item" onclick="openEfficiencySub('craftPrice', this)">공예품 계산</div>
+              <div class="sub-item" onclick="openEfficiencySub('stamina', this)">스태미나 계산</div>
+            </div>
+          </div>
           <div class="sub-item" data-calc-section="settings" onclick="switchSection('settings', this)">개인설정</div>
         </div>
-
-        <div id="efficiencySubNav" class="sub-nav nested-eff">
-      <div class="sub-item" onclick="openEfficiencySub('stamina', this)">스태미나 계산</div>
-      <div class="sub-item" onclick="openEfficiencySub('alchemy', this)">연금품 계산</div>
-      <div class="sub-item" onclick="openEfficiencySub('craftPrice', this)">공예품 가격</div>
-    </div>
       </div>
 
       <div class="sidebar-divider" aria-hidden="true"></div>
@@ -6819,7 +6822,11 @@ function setupMarineGuideResizeObserver() {
   viewport.__marineGuideRo = true;
   if (typeof ResizeObserver === 'undefined') return;
   const ro = new ResizeObserver(() => {
-    applyMarineGuideSlide();
+    if (viewport.__marineGuideRoRaf) cancelAnimationFrame(viewport.__marineGuideRoRaf);
+    viewport.__marineGuideRoRaf = requestAnimationFrame(() => {
+      viewport.__marineGuideRoRaf = 0;
+      applyMarineGuideSlide();
+    });
   });
   ro.observe(viewport);
 }
@@ -6828,30 +6835,54 @@ function initMarineGuideCarousel() {
   const track = document.getElementById('marineGuideTrack');
   if (!track || track.getAttribute('data-built') === '1') return;
   track.innerHTML = '';
-  MARINE_GUIDE_SLIDES.forEach((slide, idx) => {
+  track.__mgBuildGen = (track.__mgBuildGen | 0) + 1;
+  const buildGen = track.__mgBuildGen;
+
+  function appendMarineSlide(slide, idx) {
     const wrap = document.createElement('div');
     wrap.className = 'marine-guide-slide';
     const img = document.createElement('img');
     img.src = slide.src;
     img.alt = slide.alt;
     img.loading = idx === 0 ? 'eager' : 'lazy';
-    if (idx === 0) {
-      img.setAttribute('fetchpriority', 'high');
-      img.decoding = 'sync';
-    }
+    img.decoding = 'async';
+    if (idx === 0) img.setAttribute('fetchpriority', 'high');
     img.draggable = false;
     wrap.appendChild(img);
     track.appendChild(wrap);
-  });
-  track.setAttribute('data-built', '1');
-  setupMarineGuideResizeObserver();
+  }
+
+  appendMarineSlide(MARINE_GUIDE_SLIDES[0], 0);
   applyMarineGuideSlide();
-  requestAnimationFrame(() => applyMarineGuideSlide());
-  let resizeTimer;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => applyMarineGuideSlide(), 100);
-  });
+
+  let idx = 1;
+  const MG_APPEND_BUDGET_MS = 6;
+  function appendRest() {
+    if (track.__mgBuildGen !== buildGen) return;
+    const t0 = performance.now();
+    while (idx < MARINE_GUIDE_SLIDES.length && performance.now() - t0 < MG_APPEND_BUDGET_MS) {
+      appendMarineSlide(MARINE_GUIDE_SLIDES[idx], idx);
+      idx += 1;
+    }
+    applyMarineGuideSlide();
+    if (idx < MARINE_GUIDE_SLIDES.length) {
+      requestAnimationFrame(appendRest);
+      return;
+    }
+    track.setAttribute('data-built', '1');
+    setupMarineGuideResizeObserver();
+    applyMarineGuideSlide();
+    requestAnimationFrame(() => applyMarineGuideSlide());
+    if (!track.__marineGuideWinResize) {
+      track.__marineGuideWinResize = true;
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => applyMarineGuideSlide(), 100);
+      });
+    }
+  }
+  requestAnimationFrame(appendRest);
 }
 
 document.addEventListener('keydown', (e) => {
@@ -7616,7 +7647,7 @@ function switchSection(sectionId, clickedEl) {
   if (efficiencySubNav) efficiencySubNav.style.display = (sectionId === 'efficiency') ? 'block' : 'none';
   document.querySelectorAll('#efficiencySubNav .sub-item').forEach(i => i.classList.remove('active'));
   if (sectionId === 'efficiency') {
-    const effOrder = ['stamina', 'alchemy', 'craftPrice'];
+    const effOrder = ['alchemy', 'craftPrice', 'stamina'];
     const ei = effOrder.indexOf(efficiencySub);
     const effSubs = document.querySelectorAll('#efficiencySubNav .sub-item');
     if (ei >= 0 && effSubs[ei]) effSubs[ei].classList.add('active');
