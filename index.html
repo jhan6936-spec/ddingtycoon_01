@@ -3678,7 +3678,32 @@
         <div class="trade-hub-main">
           <div id="qaRestrictionBanner" class="trade-restriction-banner" hidden role="status"></div>
           <div id="qaSyncStatus" class="forum-sync-status" hidden role="status"></div>
-          <div class="trade-forum-compose">
+          <div class="forum-board-topbar">
+            <div class="forum-board-search-wrap" role="search" onclick="focusQaBoardSearch(event)">
+              <span class="forum-board-search-icon" aria-hidden="true">🔍</span>
+              <input
+                type="search"
+                id="qaBoardSearch"
+                class="forum-board-search-input"
+                placeholder="포스트 검색 또는 생성..."
+                maxlength="120"
+                autocomplete="off"
+                onclick="event.stopPropagation()"
+                oninput="onQaBoardSearchInput(event)"
+              />
+            </div>
+            <button
+              type="button"
+              class="forum-board-newpost-btn"
+              id="qaNewPostBtn"
+              onclick="toggleQaComposeExpand()"
+              aria-expanded="false"
+              aria-controls="qaComposeExpand"
+            >
+              <span class="forum-board-new-icon" aria-hidden="true">💬</span> 새 게시물
+            </button>
+          </div>
+          <div id="qaComposeExpand" class="trade-forum-compose trade-forum-compose-panel" hidden>
             <div class="trade-forum-compose-top">
               <input type="text" id="qaPostTitle" class="trade-title-input" placeholder="질문 제목" maxlength="200" autocomplete="off">
               <button type="button" class="trade-icon-btn trade-attach-btn" title="이미지 첨부" aria-label="이미지 첨부" onclick="qaComposeAttachClick()">🖼</button>
