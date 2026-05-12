@@ -8002,6 +8002,8 @@ function submitQaPost() {
   renderQaMessages();
   toggleQaComposeExpand(false);
 }
+
+function qaToggleReaction(postId, reactionKey) {
   if (isCurrentTradeActivityBlocked()) {
     alert(tradeRestrictionMessage());
     return;
