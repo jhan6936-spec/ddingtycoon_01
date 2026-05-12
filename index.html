@@ -7814,7 +7814,7 @@ function switchSection(sectionId, clickedEl) {
     const sbTr = getSupabaseClient();
     if (sbTr) refreshTradeRestriction(sbTr).then(() => updateTradeRestrictionUI());
   } else if (sectionId === 'qa-channel') {
-    qaPostsCache = null;
+    invalidateQaPostsCache();
     refreshQaBoardFromRemote().then(() => {
       renderQaMessages();
     });
