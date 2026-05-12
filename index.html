@@ -564,6 +564,9 @@
     .trade-badge.qa-question {
       background: #4e5058;
     }
+    .trade-forum-feed {
+      content-visibility: auto;
+    }
     .trade-forum-card {
       display: flex;
       gap: 12px;
@@ -576,6 +579,7 @@
         box-shadow 0.12s ease;
       cursor: pointer;
       align-items: stretch;
+      contain: layout style;
     }
     .trade-forum-card:hover {
       background: rgba(88, 101, 242, 0.06);
@@ -4138,7 +4142,7 @@ function buildImageTag(name, alt = '', style = '', className = '') {
   const cls = className ? ` class="${className}"` : '';
   const styleAttr = style ? ` style="${style}"` : '';
   const src0 = encodeAssetPath(candidates[0]);
-  return `<img src="${src0}" alt="${safeAlt}"${cls} data-img-candidates="${safeCandidates}" data-img-fallback-index="0"${styleAttr} onerror="handleImageFallback(this)">`;
+  return `<img src="${src0}" alt="${safeAlt}"${cls} data-img-candidates="${safeCandidates}" data-img-fallback-index="0"${styleAttr} decoding="async" loading="lazy" onerror="handleImageFallback(this)">`;
 }
 
 const APP_VERSION = '1.0.1';
@@ -4965,6 +4969,11 @@ const TRADE_GUEST_KEY_STORAGE = 'ddingty_trade_guest_id';
 const TRADE_REMOTE_TABLE = 'trade_posts';
 let tradePostsCache = null;
 let tradeRemoteSyncTimer = null;
+/** 거래소·질문채널 자동 새로고침(ms). 숨김 탭에서는 tick 생략. */
+const TRADE_QA_BOARD_POLL_MS = 6000;
+let boardPollTimer = null;
+let boardPollActiveSection = null;
+let boardPollRefreshInFlight = false;
 
 /** Supabase trade_me_restriction_status 결과 캐시 */
 let tradeRestrictionState = { active: false, indefinite: false, until: null };
