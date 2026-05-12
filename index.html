@@ -6801,17 +6801,24 @@ function applyMarineGuideSlide() {
   const track = document.getElementById('marineGuideTrack');
   const counter = document.getElementById('marineGuideSlideCounter');
   if (!viewport || !track) return;
+  const slideEls = track.querySelectorAll('.marine-guide-slide');
+  const slideCount = slideEls.length || MARINE_GUIDE_SLIDES.length;
+  if (slideCount > 0 && marineGuideSlideIndex >= slideCount) {
+    marineGuideSlideIndex = slideCount - 1;
+  }
   syncMarineGuideSlideWidths();
   const w = viewport.offsetWidth || 0;
   if (w >= 2) {
     track.style.transform = `translateX(${-marineGuideSlideIndex * w}px)`;
   }
-  if (counter) counter.textContent = `${marineGuideSlideIndex + 1} / ${MARINE_GUIDE_SLIDES.length}`;
+  if (counter) counter.textContent = `${marineGuideSlideIndex + 1} / ${slideCount}`;
 }
 
 function marineGuideStep(delta) {
-  if (!MARINE_GUIDE_SLIDES.length) return;
-  marineGuideSlideIndex = (marineGuideSlideIndex + delta + MARINE_GUIDE_SLIDES.length) % MARINE_GUIDE_SLIDES.length;
+  const track = document.getElementById('marineGuideTrack');
+  const n = track ? track.querySelectorAll('.marine-guide-slide').length : 0;
+  if (!n) return;
+  marineGuideSlideIndex = (marineGuideSlideIndex + delta + n) % n;
   applyMarineGuideSlide();
 }
 
