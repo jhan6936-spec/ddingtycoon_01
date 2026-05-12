@@ -6581,9 +6581,20 @@ function renderTradeMessages() {
   if (tradeCategoryFilter !== 'all') {
     posts = posts.filter((p) => p.category === tradeCategoryFilter);
   }
+  const searchQ = (tradeFeedSearchQuery || '').trim().toLowerCase();
+  if (searchQ) {
+    posts = posts.filter((p) => {
+      const t = (p.title || '').toLowerCase();
+      const b = (p.body || '').toLowerCase();
+      const a = (p.authorName || '').toLowerCase();
+      return t.includes(searchQ) || b.includes(searchQ) || a.includes(searchQ);
+    });
+  }
   if (!posts.length) {
-    list.innerHTML =
-      '<div class="trade-empty">아직 글이 없습니다. 위에서 제목과 본문을 입력해 첫 글을 올려 보세요.</div>';
+    const emptyMsg = searchQ
+      ? '검색과 맞는 글이 없습니다. 다른 단어로 검색해 보세요.'
+      : '아직 글이 없습니다. 오른쪽 「새 게시물」을 눌러 첫 글을 올려 보세요.';
+    list.innerHTML = `<div class="trade-empty">${emptyMsg}</div>`;
     return;
   }
   list.innerHTML = posts
@@ -7837,9 +7848,20 @@ function renderQaMessages() {
     const ay = y.ts || 0;
     return qaSortOrder === 'old' ? ax - ay : ay - ax;
   });
+  const searchQ = (qaFeedSearchQuery || '').trim().toLowerCase();
+  if (searchQ) {
+    posts = posts.filter((p) => {
+      const t = (p.title || '').toLowerCase();
+      const b = (p.body || '').toLowerCase();
+      const a = (p.authorName || '').toLowerCase();
+      return t.includes(searchQ) || b.includes(searchQ) || a.includes(searchQ);
+    });
+  }
   if (!posts.length) {
-    list.innerHTML =
-      '<div class="trade-empty">아직 질문이 없습니다. 위에서 제목과 내용을 입력해 첫 질문을 올려 보세요.</div>';
+    const emptyMsg = searchQ
+      ? '검색과 맞는 질문이 없습니다. 다른 단어로 검색해 보세요.'
+      : '아직 질문이 없습니다. 오른쪽 「새 게시물」을 눌러 첫 질문을 올려 보세요.';
+    list.innerHTML = `<div class="trade-empty">${emptyMsg}</div>`;
     return;
   }
   list.innerHTML = posts
