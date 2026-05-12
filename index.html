@@ -7661,6 +7661,7 @@ function qaThreadDeletePost() {
   const pid = selectedQaPostId;
   const next = loadQaPosts().filter((x) => x.id !== pid);
   saveQaPosts(next);
+  qaDeleteRemote(pid);
   closeQaThreadPanel();
   renderQaMessages();
 }
@@ -7813,7 +7814,10 @@ function switchSection(sectionId, clickedEl) {
     const sbTr = getSupabaseClient();
     if (sbTr) refreshTradeRestriction(sbTr).then(() => updateTradeRestrictionUI());
   } else if (sectionId === 'qa-channel') {
-    renderQaMessages();
+    qaPostsCache = null;
+    refreshQaBoardFromRemote().then(() => {
+      renderQaMessages();
+    });
     const sbTr2 = getSupabaseClient();
     if (sbTr2) refreshTradeRestriction(sbTr2).then(() => updateTradeRestrictionUI());
   }
