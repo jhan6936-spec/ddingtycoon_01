@@ -3621,6 +3621,14 @@
             <div id="tradeThreadAdminBar" class="trade-thread-admin-bar" hidden>
               <div class="trade-thread-admin-bar-inner">
                 <span id="tradeAdminTargetLabel" class="trade-admin-target"></span>
+                <button
+                  type="button"
+                  class="trade-admin-btn trade-admin-btn-danger"
+                  onclick="tradeThreadDeletePost()"
+                  title="작성자와 관계없이 이 포스트를 삭제합니다"
+                >
+                  포스트 삭제
+                </button>
                 <label class="trade-admin-hours-wrap"
                   >시간
                   <input
@@ -3739,6 +3747,19 @@
                   </div>
                 </div>
                 <button type="button" class="trade-thread-close" onclick="closeQaThreadPanel()" aria-label="스레드 닫기">✕</button>
+              </div>
+            </div>
+            <div id="qaThreadAdminBar" class="trade-thread-admin-bar" hidden>
+              <div class="trade-thread-admin-bar-inner">
+                <span id="qaAdminTargetLabel" class="trade-admin-target"></span>
+                <button
+                  type="button"
+                  class="trade-admin-btn trade-admin-btn-danger"
+                  onclick="qaThreadDeletePost()"
+                  title="작성자와 관계없이 이 질문을 삭제합니다"
+                >
+                  질문 삭제 (관리자)
+                </button>
               </div>
             </div>
             <div id="qaThreadEditPanel" class="trade-thread-edit-panel" hidden>
@@ -5020,8 +5041,13 @@ let cachedProfileRole = null;
 /** 로그아웃 후 늦게 끝나는 fetchAuthUserForUI가 로그인 UI를 덮어쓰지 않게 함 */
 let authUiNonce = 0;
 
-function isTradeBoardAdmin() {
+/** 거래소·질문채널 공통: profiles.role === 'admin'일 때 타인 글 삭제·수정·제재 허용 */
+function isForumAdmin() {
   return cachedProfileRole === 'admin';
+}
+
+function isTradeBoardAdmin() {
+  return isForumAdmin();
 }
 
 /** 서버에서 public.profiles 역할을 불러와 거래소·질문채널 관리자 UI에 반영합니다.
