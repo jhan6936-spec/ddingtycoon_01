@@ -6525,6 +6525,7 @@ function openTradeThreadPanel(postId) {
   });
   updateTradeThreadMoreMenuVisibility();
   updateTradeThreadAdminBar();
+  void refreshProfileRoleThenUpdateForumAdminUi();
 }
 
 function closeTradeThreadPanel() {
@@ -8261,6 +8262,7 @@ function openQaThreadPanel(postId) {
     c.classList.toggle('trade-card-active', c.getAttribute('data-qa-post-id') === postId);
   });
   updateQaThreadMoreMenuVisibility();
+  void refreshProfileRoleThenUpdateForumAdminUi();
 }
 
 function closeQaThreadPanel() {
