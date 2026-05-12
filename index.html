@@ -5606,6 +5606,40 @@ function escapeHtmlTrade(s) {
   return d.innerHTML;
 }
 
+function showForumSyncStatus(board, message, kind) {
+  const id = board === 'qa' ? 'qaSyncStatus' : 'tradeSyncStatus';
+  const el = document.getElementById(id);
+  if (!el) return;
+  const msg = message ? String(message) : '';
+  if (!msg) {
+    el.hidden = true;
+    el.textContent = '';
+    el.classList.remove('forum-sync-status--ok', 'forum-sync-status--error');
+    clearTimeout(el._forumSyncHideT);
+    return;
+  }
+  el.textContent = msg;
+  el.hidden = false;
+  el.classList.remove('forum-sync-status--ok', 'forum-sync-status--error');
+  if (kind === 'ok') el.classList.add('forum-sync-status--ok');
+  if (kind === 'error') el.classList.add('forum-sync-status--error');
+  clearTimeout(el._forumSyncHideT);
+  if (kind === 'ok') {
+    el._forumSyncHideT = setTimeout(() => {
+      el.hidden = true;
+      el.textContent = '';
+      el.classList.remove('forum-sync-status--ok');
+    }, 4000);
+  }
+}
+
+function formatSupabaseErr(err) {
+  if (!err) return '';
+  if (typeof err === 'string') return err;
+  const bits = [err.message, err.code, err.details, err.hint].filter(Boolean);
+  return bits.length ? bits.join(' · ') : String(err);
+}
+
 function loadTradePostsFromStorage() {
   try {
     const raw = localStorage.getItem(TRADE_STORAGE_KEY);
