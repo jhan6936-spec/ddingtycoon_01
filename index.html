@@ -352,10 +352,90 @@
         0 0 18px rgba(88, 101, 242, 0.55),
         0 0 28px rgba(88, 101, 242, 0.25);
     }
+    .forum-board-topbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px 14px;
+      background: #08080c;
+      border-bottom: 1px solid #16171f;
+    }
+    .forum-board-search-wrap {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: #14151c;
+      border: 1px solid #252632;
+      cursor: text;
+      transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+    }
+    .forum-board-search-wrap:hover {
+      border-color: #32333f;
+    }
+    .forum-board-search-wrap:focus-within {
+      border-color: rgba(88, 101, 242, 0.55);
+      box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.22);
+    }
+    .forum-board-search-icon {
+      flex-shrink: 0;
+      font-size: 15px;
+      opacity: 0.55;
+      line-height: 1;
+      user-select: none;
+    }
+    .forum-board-search-input {
+      flex: 1;
+      min-width: 0;
+      border: none;
+      background: transparent;
+      color: #e8eaed;
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+    }
+    .forum-board-search-input::placeholder {
+      color: #6d747f;
+    }
+    .forum-board-newpost-btn {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(37, 99, 235, 0.45);
+      transition:
+        filter 0.15s ease,
+        box-shadow 0.15s ease;
+    }
+    .forum-board-newpost-btn:hover {
+      filter: brightness(1.08);
+      box-shadow: 0 2px 14px rgba(59, 130, 246, 0.55);
+    }
+    .forum-board-new-icon {
+      font-size: 15px;
+      line-height: 1;
+      opacity: 0.95;
+    }
     .trade-forum-compose {
       padding: 14px 16px 16px;
       background: #08080c;
       border-bottom: 1px solid #16171f;
+    }
+    .trade-forum-compose-panel {
+      overflow: hidden;
     }
     .trade-forum-compose-top {
       display: flex;
@@ -3469,7 +3549,32 @@
           </div>
           <div id="tradeRestrictionBanner" class="trade-restriction-banner" hidden role="status"></div>
           <div id="tradeSyncStatus" class="forum-sync-status" hidden role="status"></div>
-          <div class="trade-forum-compose">
+          <div class="forum-board-topbar">
+            <div class="forum-board-search-wrap" role="search" onclick="focusTradeBoardSearch(event)">
+              <span class="forum-board-search-icon" aria-hidden="true">🔍</span>
+              <input
+                type="search"
+                id="tradeBoardSearch"
+                class="forum-board-search-input"
+                placeholder="포스트 검색 또는 생성..."
+                maxlength="120"
+                autocomplete="off"
+                onclick="event.stopPropagation()"
+                oninput="onTradeBoardSearchInput(event)"
+              />
+            </div>
+            <button
+              type="button"
+              class="forum-board-newpost-btn"
+              id="tradeNewPostBtn"
+              onclick="toggleTradeComposeExpand()"
+              aria-expanded="false"
+              aria-controls="tradeComposeExpand"
+            >
+              <span class="forum-board-new-icon" aria-hidden="true">💬</span> 새 게시물
+            </button>
+          </div>
+          <div id="tradeComposeExpand" class="trade-forum-compose trade-forum-compose-panel" hidden>
             <div class="trade-forum-compose-top">
               <input type="text" id="tradePostTitle" class="trade-title-input" placeholder="제목" maxlength="200" autocomplete="off">
               <button type="button" class="trade-icon-btn trade-attach-btn" title="이미지 첨부" aria-label="이미지 첨부" onclick="tradeComposeAttachClick()">🖼</button>
