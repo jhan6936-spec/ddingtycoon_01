@@ -20,3 +20,18 @@ create policy "trade_posts_select_all" on public.trade_posts for select using (t
 create policy "trade_posts_insert_all" on public.trade_posts for insert with check (true);
 create policy "trade_posts_update_all" on public.trade_posts for update using (true);
 create policy "trade_posts_delete_all" on public.trade_posts for delete using (true);
+
+-- 직접 SELECT가 RLS·역할 설정으로 막혀도, 클라이언트가 전체 글을 읽을 수 있게 RPC로 조회 (SECURITY DEFINER).
+create or replace function public.trade_fetch_posts()
+returns table (id text, payload jsonb, updated_at timestamptz)
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select t.id, t.payload, t.updated_at
+  from public.trade_posts t
+  order by t.updated_at desc;
+$$;
+
+grant execute on function public.trade_fetch_posts() to anon, authenticated;
