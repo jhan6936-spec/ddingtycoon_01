@@ -1922,34 +1922,48 @@
     }
     #warehouse .warehouse-toolbar {
       display: flex;
-      flex-wrap: wrap;
-      align-items: stretch;
       justify-content: flex-end;
+      align-items: stretch;
       margin-top: 0;
       margin-bottom: 22px;
-      padding: 38px 52px 18px 4px;
+      padding: 38px 52px 18px 0;
       box-sizing: border-box;
       border-bottom: 1px solid #2a2a2a;
     }
     @media (max-width: 720px) {
       #warehouse .warehouse-toolbar {
-        padding: 34px 12px 18px 4px;
+        padding: 34px 12px 18px 0;
       }
-      .warehouse-toolbar-row {
-        justify-content: flex-start;
+      .warehouse-toolbar-stack {
+        align-items: flex-end;
+        max-width: 100%;
       }
     }
-    .warehouse-toolbar-row {
+    .warehouse-toolbar-stack {
       display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 12px;
+      max-width: 100%;
+    }
+    .warehouse-toolbar-row--vanilla {
+      display: flex;
+      justify-content: flex-end;
+      width: 100%;
+    }
+    .warehouse-toolbar-row--vanilla .toggle-wrap.warehouse-toggle-inline {
+      justify-content: flex-end;
+    }
+    .warehouse-toolbar-row--actions {
+      display: flex;
+      flex-direction: row;
       flex-wrap: wrap;
       align-items: center;
       justify-content: flex-end;
-      gap: 14px 20px;
-      width: 100%;
-      max-width: 100%;
+      gap: 12px 16px;
     }
-    .warehouse-toolbar-row > .btn {
-      align-self: center;
+    .warehouse-toolbar-row--actions > .btn {
+      flex: 0 0 auto;
     }
     .toggle-wrap.warehouse-toggle-inline {
       display: inline-flex;
