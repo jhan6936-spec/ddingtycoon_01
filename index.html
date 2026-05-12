@@ -5512,6 +5512,29 @@ function updateTradeThreadAdminBar() {
   }
 }
 
+function updateQaThreadAdminBar() {
+  const bar = document.getElementById('qaThreadAdminBar');
+  const lab = document.getElementById('qaAdminTargetLabel');
+  if (!bar || !lab) return;
+  if (!isForumAdmin() || !selectedQaPostId) {
+    bar.hidden = true;
+    return;
+  }
+  const post = loadQaPosts().find((x) => x.id === selectedQaPostId);
+  if (!post) {
+    bar.hidden = true;
+    return;
+  }
+  bar.hidden = false;
+  if (post.userId) {
+    lab.textContent = `작성자(로그인): ${String(post.userId)}`;
+  } else if (post.authorGuestKey) {
+    lab.textContent = `작성자(게스트): ${String(post.authorGuestKey)}`;
+  } else {
+    lab.textContent = '작성자 식별 불가';
+  }
+}
+
 async function tradeAdminApplyTimed() {
   if (!isTradeBoardAdmin()) return;
   const post = loadTradePosts().find((x) => x.id === selectedTradePostId);
