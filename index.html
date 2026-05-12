@@ -9802,6 +9802,9 @@ window.addEventListener('DOMContentLoaded', function() {
       renderTradeMessages();
       updateTradeComposerAvatar();
     });
+    refreshQaBoardFromRemote().then(() => {
+      renderQaMessages();
+    });
     document.addEventListener('click', closeTradeThreadMoreMenu);
     document.addEventListener('click', closeQaThreadMoreMenu);
     document.addEventListener('click', (ev) => {
