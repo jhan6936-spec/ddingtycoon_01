@@ -5930,11 +5930,16 @@ async function tradeUpsertRemote(post) {
   return { error };
 }
 
+/** @returns {Promise<string|null>} 실패 시 메시지, 성공·스킵(비로그인 등) 시 null */
 async function tradeDeleteRemote(id) {
   const sb = getSupabaseClient();
-  if (!sb || !id) return;
+  if (!sb || !id) return null;
   const { error } = await sb.from(TRADE_REMOTE_TABLE).delete().eq('id', id);
-  if (error) console.warn('[거래소] Supabase 삭제 실패:', error.message || error);
+  if (error) {
+    console.warn('[거래소] Supabase 삭제 실패:', error.message || error);
+    return error.message || String(error);
+  }
+  return null;
 }
 
 /** PostgREST RPC 응답이 배열이 아닐 때(단일 행 등) 보정 */
@@ -7471,11 +7476,16 @@ async function qaUpsertRemote(post) {
   return { error };
 }
 
+/** @returns {Promise<string|null>} 실패 시 메시지, 성공·스킵 시 null */
 async function qaDeleteRemote(id) {
   const sb = getSupabaseClient();
-  if (!sb || !id) return;
+  if (!sb || !id) return null;
   const { error } = await sb.from(QA_REMOTE_TABLE).delete().eq('id', id);
-  if (error) console.warn('[질문채널] Supabase 삭제 실패:', error.message || error);
+  if (error) {
+    console.warn('[질문채널] Supabase 삭제 실패:', error.message || error);
+    return error.message || String(error);
+  }
+  return null;
 }
 
 function mergeQaPostsByUpdated(localArr, remoteArr) {
