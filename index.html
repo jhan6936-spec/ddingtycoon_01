@@ -4181,7 +4181,7 @@ function buildCreditTilesHTML() {
     const sub = subRaw ? `<div class="credit-plaque-sub">${escapeHtml(subRaw)}</div>` : '';
     const src = creditPhotoSrc(c.photo);
     const imgBlock = src
-      ? `<img src="${src.replace(/"/g, '&quot;')}" alt="${name}" loading="lazy">`
+      ? `<img src="${src.replace(/"/g, '&quot;')}" alt="${name}" loading="lazy" decoding="async">`
       : '<div class="credit-photo-ph" aria-hidden="true"></div>';
     return `<figure class="credit-plaque"><div class="credit-plaque-photo">${imgBlock}</div><figcaption class="credit-plaque-caption"><div class="credit-plaque-name">${name}</div>${sub}</figcaption></figure>`;
   }).join('');
@@ -7164,6 +7164,10 @@ async function refreshQaBoardFromRemote(opts) {
 
 function stopTradeQaBoardPolling() {
   boardPollActiveSection = null;
+  if (boardVisRefreshTimer) {
+    clearTimeout(boardVisRefreshTimer);
+    boardVisRefreshTimer = null;
+  }
   if (boardPollTimer) {
     clearInterval(boardPollTimer);
     boardPollTimer = null;
