@@ -4970,7 +4970,7 @@ const TRADE_REMOTE_TABLE = 'trade_posts';
 let tradePostsCache = null;
 let tradeRemoteSyncTimer = null;
 /** 거래소·질문채널 자동 새로고침(ms). 숨김 탭에서는 tick 생략. */
-const TRADE_QA_BOARD_POLL_MS = 6000;
+const TRADE_QA_BOARD_POLL_MS = 5000;
 let boardPollTimer = null;
 let boardPollActiveSection = null;
 let boardPollRefreshInFlight = false;
@@ -9930,7 +9930,7 @@ window.addEventListener('DOMContentLoaded', function() {
   showSettingsSub(settingsSub);
   showEfficiencySub(efficiencySub);
   updateVanillaInputState();
-  analyzeEfficiency();
+  runWhenIdle(() => analyzeEfficiency(), 2400);
   } catch (e) {
     console.error('[Init] 페이지 초기화 중 오류 (로그인 UI는 이미 초기화됨):', e);
   }
