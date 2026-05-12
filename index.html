@@ -5043,18 +5043,6 @@ async function refreshProfileRole(sb, uidOpt) {
   }
 }
 
-/** 스레드·관리자 UI가 역할 조회 이후에 맞춰지도록 한 번에 갱신합니다. */
-async function refreshProfileRoleThenUpdateForumAdminUi() {
-  const sb = getSupabaseClient();
-  if (!sb || !currentAuthUserId) return;
-  try {
-    await refreshProfileRole(sb, currentAuthUserId);
-  } catch (_) {}
-  updateTradeThreadMoreMenuVisibility();
-  updateTradeThreadAdminBar();
-  updateQaThreadMoreMenuVisibility();
-}
-
 /** 서버에서 최신 사용자 클레임 반영 (Discord 프로필 등) */
 async function fetchAuthUserForUI(sb) {
   const { data, error } = await sb.auth.getUser();
