@@ -7093,6 +7093,9 @@ async function refreshAuthUIFromSession(sb, session) {
     updateTradeRestrictionUI();
     try {
       updateTradeThreadMoreMenuVisibility();
+      updateQaThreadMoreMenuVisibility();
+      updateTradeThreadAdminBar();
+      updateQaThreadAdminBar();
     } catch (_) {}
     return;
   }
@@ -7120,6 +7123,9 @@ async function refreshAuthUIFromSession(sb, session) {
   updateTradeRestrictionUI();
   try {
     updateTradeThreadMoreMenuVisibility();
+    updateQaThreadMoreMenuVisibility();
+    updateTradeThreadAdminBar();
+    updateQaThreadAdminBar();
   } catch (_) {}
 }
 
@@ -8278,6 +8284,7 @@ function renderQaThreadPanel() {
   comEl.innerHTML = buildTradeCommentsHtml(post);
   if (sc) sc.scrollTop = sc.scrollHeight;
   updateQaThreadMoreMenuVisibility();
+  updateQaThreadAdminBar();
   updateTradeRestrictionUI();
 }
 
@@ -8441,6 +8448,7 @@ function closeQaThreadPanel() {
   }
   document.querySelectorAll('.trade-forum-card[data-qa-post-id]').forEach((c) => c.classList.remove('trade-card-active'));
   updateQaThreadMoreMenuVisibility();
+  updateQaThreadAdminBar();
 }
 
 function submitQaReply() {
