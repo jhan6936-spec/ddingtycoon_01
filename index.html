@@ -5137,6 +5137,12 @@ let boardPollTimer = null;
 let boardPollActiveSection = null;
 let boardPollRefreshInFlight = false;
 let boardVisRefreshTimer = null;
+/** 거래소·질문채널 목록 검색(상단 바) */
+let tradeFeedSearchQuery = '';
+let qaFeedSearchQuery = '';
+let forumRealtimeChannels = [];
+let forumRtDebounceTrade = null;
+let forumRtDebounceQa = null;
 
 /** Supabase trade_me_restriction_status 결과 캐시 */
 let tradeRestrictionState = { active: false, indefinite: false, until: null };
@@ -7434,6 +7440,7 @@ function stopTradeQaBoardPolling() {
     clearInterval(boardPollTimer);
     boardPollTimer = null;
   }
+  tearDownForumBoardRealtime();
 }
 
 function startTradeQaBoardPolling(sectionId) {
@@ -7447,10 +7454,12 @@ function startTradeQaBoardPolling(sectionId) {
   }
   if (sectionId !== 'trade-hub' && sectionId !== 'qa-channel') {
     boardPollActiveSection = null;
+    tearDownForumBoardRealtime();
     return;
   }
   boardPollActiveSection = sectionId;
   boardPollTimer = setInterval(tickTradeQaBoardPoll, TRADE_QA_BOARD_POLL_MS);
+  setupForumBoardRealtime(sectionId);
 }
 
 async function tickTradeQaBoardPoll() {
