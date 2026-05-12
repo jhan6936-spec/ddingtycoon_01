@@ -6917,8 +6917,11 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// ===== 질문채널 (거래소와 유사 레이아웃 · 로컬 저장) =====
+// ===== 질문채널 (거래소와 유사 레이아웃 · 로컬 + Supabase 동기화) =====
 const QA_STORAGE_KEY = 'ddingty_qa_posts_v1';
+const QA_REMOTE_TABLE = 'qa_posts';
+let qaPostsCache = null;
+let qaRemoteSyncTimer = null;
 const QA_CAT_META = {
   question: { label: '질문', badge: '질문', cls: 'qa-question' }
 };
@@ -7017,16 +7020,131 @@ function loadQaPostsFromStorage() {
   }
 }
 
+function invalidateQaPostsCache() {
+  qaPostsCache = null;
+}
+
 function saveQaPosts(posts) {
+  const next = posts.map(normalizeQaPost);
   try {
-    localStorage.setItem(QA_STORAGE_KEY, JSON.stringify(posts.map(normalizeQaPost)));
+    localStorage.setItem(QA_STORAGE_KEY, JSON.stringify(next));
   } catch (e) {
     console.warn('[질문채널] 저장 실패:', e);
+    return;
   }
+  qaPostsCache = next;
+  scheduleQaRemoteSync();
 }
 
 function loadQaPosts() {
-  return loadQaPostsFromStorage();
+  if (qaPostsCache !== null) return qaPostsCache;
+  qaPostsCache = loadQaPostsFromStorage();
+  return qaPostsCache;
+}
+
+function scheduleQaRemoteSync() {
+  clearTimeout(qaRemoteSyncTimer);
+  qaRemoteSyncTimer = setTimeout(() => {
+    syncQaPostsToSupabase(qaPostsCache || []);
+  }, 450);
+}
+
+async function syncQaPostsToSupabase(posts) {
+  const sb = getSupabaseClient();
+  if (!sb || !posts || !posts.length) return;
+  for (let i = 0; i < posts.length; i++) {
+    await qaUpsertRemote(posts[i]);
+  }
+}
+
+async function qaUpsertRemote(post) {
+  const sb = getSupabaseClient();
+  if (!sb) return;
+  const row = normalizeQaPost(post);
+  const { error } = await sb.from(QA_REMOTE_TABLE).upsert(
+    {
+      id: row.id,
+      payload: row,
+      updated_at: new Date(row.updatedAt || row.ts).toISOString()
+    },
+    { onConflict: 'id' }
+  );
+  if (error) console.warn('[질문채널] Supabase upsert 실패:', error.message || error);
+}
+
+async function qaDeleteRemote(id) {
+  const sb = getSupabaseClient();
+  if (!sb || !id) return;
+  const { error } = await sb.from(QA_REMOTE_TABLE).delete().eq('id', id);
+  if (error) console.warn('[질문채널] Supabase 삭제 실패:', error.message || error);
+}
+
+async function qaFetchRemotePosts() {
+  const sb = getSupabaseClient();
+  if (!sb) return null;
+  const rpcRes = await sb.rpc('qa_fetch_posts');
+  if (!rpcRes.error && rpcRes.data != null) {
+    const rows = Array.isArray(rpcRes.data) ? rpcRes.data : [];
+    return rows.map((row) =>
+      normalizeQaPost({
+        ...(row.payload && typeof row.payload === 'object' ? row.payload : {}),
+        id: row.id,
+        updatedAt: row.updated_at ? new Date(row.updated_at).getTime() : undefined
+      })
+    );
+  }
+  if (rpcRes.error) {
+    console.warn('[질문채널] RPC qa_fetch_posts:', rpcRes.error.message || rpcRes.error);
+  }
+  const { data, error } = await sb.from(QA_REMOTE_TABLE).select('id,payload,updated_at');
+  if (error) {
+    console.warn('[질문채널] Supabase 불러오기 실패:', error.message || error);
+    return null;
+  }
+  return (data || []).map((row) =>
+    normalizeQaPost({
+      ...(row.payload && typeof row.payload === 'object' ? row.payload : {}),
+      id: row.id,
+      updatedAt: row.updated_at ? new Date(row.updated_at).getTime() : undefined
+    })
+  );
+}
+
+function mergeQaPostsByUpdated(localArr, remoteArr) {
+  const map = new Map();
+  remoteArr.forEach((p) => {
+    const cur = normalizeQaPost(p);
+    map.set(cur.id, cur);
+  });
+  localArr.forEach((p) => {
+    const cur = normalizeQaPost(p);
+    const prev = map.get(cur.id);
+    if (!prev) {
+      map.set(cur.id, cur);
+      return;
+    }
+    const pt = prev.updatedAt || prev.ts || 0;
+    const ct = cur.updatedAt || cur.ts || 0;
+    if (ct >= pt) map.set(cur.id, cur);
+  });
+  return Array.from(map.values());
+}
+
+async function refreshQaBoardFromRemote() {
+  const remote = await qaFetchRemotePosts();
+  const local = loadQaPostsFromStorage();
+  if (remote === null) {
+    qaPostsCache = local;
+    return;
+  }
+  const merged = mergeQaPostsByUpdated(local, remote);
+  qaPostsCache = merged.map(normalizeQaPost);
+  try {
+    localStorage.setItem(QA_STORAGE_KEY, JSON.stringify(qaPostsCache));
+  } catch (e) {
+    console.warn('[질문채널] 로컬 병합 저장 실패:', e);
+  }
+  await syncQaPostsToSupabase(qaPostsCache);
 }
 
 function setQaSort(order) {
