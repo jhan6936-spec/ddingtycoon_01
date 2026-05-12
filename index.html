@@ -6491,7 +6491,7 @@ function applySavedProfileToTradePosts(userId) {
   }
 }
 
-function openTradeThreadPanel(postId) {
+async function openTradeThreadPanel(postId) {
   const posts = loadTradePosts();
   const p = posts.find((x) => x.id === postId);
   if (!p) return;
@@ -6507,13 +6507,16 @@ function openTradeThreadPanel(postId) {
   const tb = document.getElementById('tradeReplyBody');
   const t = p.title || '글';
   if (tb) tb.placeholder = `"${t}"에 메시지 보내기`;
+  const sb = getSupabaseClient();
+  if (sb && currentAuthUserId) {
+    try {
+      await refreshProfileRole(sb, currentAuthUserId);
+    } catch (_) {}
+  }
   renderTradeThreadPanel();
   document.querySelectorAll('.trade-forum-card').forEach((c) => {
     c.classList.toggle('trade-card-active', c.getAttribute('data-post-id') === postId);
   });
-  updateTradeThreadMoreMenuVisibility();
-  updateTradeThreadAdminBar();
-  void refreshProfileRoleThenUpdateForumAdminUi();
 }
 
 function closeTradeThreadPanel() {
@@ -8229,7 +8232,7 @@ function qaThreadDeletePost() {
   renderQaMessages();
 }
 
-function openQaThreadPanel(postId) {
+async function openQaThreadPanel(postId) {
   const posts = loadQaPosts();
   const p = posts.find((x) => x.id === postId);
   if (!p) return;
@@ -8245,12 +8248,16 @@ function openQaThreadPanel(postId) {
   const tb = document.getElementById('qaReplyBody');
   const t = p.title || '질문';
   if (tb) tb.placeholder = `"${t}"에 답변 남기기`;
+  const sb = getSupabaseClient();
+  if (sb && currentAuthUserId) {
+    try {
+      await refreshProfileRole(sb, currentAuthUserId);
+    } catch (_) {}
+  }
   renderQaThreadPanel();
   document.querySelectorAll('.trade-forum-card[data-qa-post-id]').forEach((c) => {
     c.classList.toggle('trade-card-active', c.getAttribute('data-qa-post-id') === postId);
   });
-  updateQaThreadMoreMenuVisibility();
-  void refreshProfileRoleThenUpdateForumAdminUi();
 }
 
 function closeQaThreadPanel() {
