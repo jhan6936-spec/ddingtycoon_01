@@ -33,6 +33,7 @@ create trigger on_auth_user_created_profile
   for each row execute function public.handle_new_user_profile();
 
 -- 3) 관리자 여부 (RLS에서 사용). SECURITY DEFINER로 profiles를 읽습니다.
+--    웹 앱(index.html)도 역할 캐시 갱신 시 이 RPC를 우선 호출합니다. 배포되어 있어야 합니다.
 create or replace function public.is_admin()
 returns boolean
 language sql
