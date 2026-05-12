@@ -8233,8 +8233,9 @@ async function saveQaThreadEdit() {
   renderQaMessages();
 }
 
-function qaThreadDeletePost() {
+async function qaThreadDeletePost() {
   closeQaThreadMoreMenu();
+  await syncProfileRoleForForumActions();
   const post = loadQaPosts().find((x) => x.id === selectedQaPostId);
   if (!post || !canModifyQaPost(post)) {
     alert('이 글을 삭제할 권한이 없습니다.');
