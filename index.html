@@ -5020,7 +5020,8 @@ function isTradeBoardAdmin() {
   return cachedProfileRole === 'admin';
 }
 
-/** 서버에서 public.profiles 역할을 불러와 거래소 관리자 UI에 반영합니다. */
+/** 서버에서 public.profiles 역할을 불러와 거래소·질문채널 관리자 UI에 반영합니다.
+ *  우선 SECURITY DEFINER RPC `is_admin`을 사용해 RLS/조회 오류로 admin이 user로 떨어지는 경우를 줄입니다. */
 async function refreshProfileRole(sb, uidOpt) {
   if (!sb) return;
   try {
@@ -5032,10 +5033,19 @@ async function refreshProfileRole(sb, uidOpt) {
     if (!uid) {
       return;
     }
+
+    const rpcRes = await sb.rpc('is_admin');
+    if (!rpcRes.error && typeof rpcRes.data === 'boolean') {
+      cachedProfileRole = rpcRes.data ? 'admin' : 'user';
+      return;
+    }
+    if (rpcRes.error) {
+      console.debug('[profiles] is_admin RPC 실패·미배포 — profiles 조회로 폴백:', rpcRes.error.message || rpcRes.error);
+    }
+
     const { data, error } = await sb.from('profiles').select('role').eq('id', uid).maybeSingle();
     if (error) {
       console.warn('[profiles] 역할 조회 실패:', error.message);
-      cachedProfileRole = 'user';
       return;
     }
     if (!data) {
@@ -5052,7 +5062,6 @@ async function refreshProfileRole(sb, uidOpt) {
     cachedProfileRole = r === 'admin' ? 'admin' : 'user';
   } catch (e) {
     console.warn('[profiles] 역할 조회 예외:', e);
-    cachedProfileRole = 'user';
   }
 }
 
