@@ -5638,6 +5638,20 @@ async function tradeDeleteRemote(id) {
 async function tradeFetchRemotePosts() {
   const sb = getSupabaseClient();
   if (!sb) return null;
+  const rpcRes = await sb.rpc('trade_fetch_posts');
+  if (!rpcRes.error && rpcRes.data != null) {
+    const rows = Array.isArray(rpcRes.data) ? rpcRes.data : [];
+    return rows.map((row) =>
+      normalizeTradePost({
+        ...(row.payload && typeof row.payload === 'object' ? row.payload : {}),
+        id: row.id,
+        updatedAt: row.updated_at ? new Date(row.updated_at).getTime() : undefined
+      })
+    );
+  }
+  if (rpcRes.error) {
+    console.warn('[거래소] RPC trade_fetch_posts:', rpcRes.error.message || rpcRes.error);
+  }
   const { data, error } = await sb.from(TRADE_REMOTE_TABLE).select('id,payload,updated_at');
   if (error) {
     console.warn('[거래소] Supabase 불러오기 실패:', error.message || error);
