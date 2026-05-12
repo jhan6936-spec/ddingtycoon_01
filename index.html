@@ -6456,9 +6456,10 @@ function toggleTradeThreadMoreMenu(ev) {
   btn.setAttribute('aria-expanded', open ? 'true' : 'false');
 }
 
+/** 작성자·게스트 본인 또는 포럼 관리자만 수정·삭제 가능(관리자는 다른 유저 글 포함). */
 function canModifyTradePost(post) {
   if (!post) return false;
-  if (isTradeBoardAdmin()) return true;
+  if (isForumAdmin()) return true;
   const gid = getOrCreateTradeGuestId();
   if (currentAuthUserId && post.userId && String(post.userId) === String(currentAuthUserId)) return true;
   if (!post.userId && post.authorGuestKey && post.authorGuestKey === gid) return true;
@@ -7822,7 +7823,7 @@ function setQaSort(order) {
 
 function canModifyQaPost(post) {
   if (!post) return false;
-  if (isTradeBoardAdmin()) return true;
+  if (isForumAdmin()) return true;
   const gid = getOrCreateTradeGuestId();
   if (currentAuthUserId && post.userId && String(post.userId) === String(currentAuthUserId)) return true;
   if (!post.userId && post.authorGuestKey && post.authorGuestKey === gid) return true;
