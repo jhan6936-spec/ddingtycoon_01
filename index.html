@@ -7151,6 +7151,9 @@ async function initSupabaseAuth() {
           await Promise.all([refreshProfileRole(sb, uid), refreshTradeRestriction(sb)]);
           updateTradeRestrictionUI();
           updateTradeThreadMoreMenuVisibility();
+          updateQaThreadMoreMenuVisibility();
+          updateTradeThreadAdminBar();
+          updateQaThreadAdminBar();
         } catch (_) {}
       }
     });
