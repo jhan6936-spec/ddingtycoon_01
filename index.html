@@ -3288,9 +3288,9 @@
       </div>
 
       <div class="warehouse-toolbar">
-          <div class="warehouse-toolbar-row">
-            <button class="btn danger" type="button" onclick="resetAllWarehouse()">전체 초기화</button>
-          <div class="toggle-wrap warehouse-toggle-inline">
+        <div class="warehouse-toolbar-stack">
+          <div class="warehouse-toolbar-row warehouse-toolbar-row--vanilla">
+            <div class="toggle-wrap warehouse-toggle-inline">
               <span class="warehouse-vanilla-label-block">
                 <span class="warehouse-vanilla-label-text">바닐라 재료 계산</span>
                 <span class="warehouse-info-anchor">
@@ -3305,12 +3305,16 @@
                   </span>
                 </span>
               </span>
-                <label class="toggle-switch" title="켜짐: 바닐라 재료 수량 반영 / 꺼짐: 바닐라 재료 무한대">
-                  <input id="vanillaCalcToggle" type="checkbox" checked>
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
-              <button class="btn" type="button" id="warehouseSetDisplayToggle" onclick="toggleWarehouseSetDisplayMode()">갯수/세트 변환</button>
+              <label class="toggle-switch" title="켜짐: 바닐라 재료 수량 반영 / 꺼짐: 바닐라 재료 무한대">
+                <input id="vanillaCalcToggle" type="checkbox" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+          <div class="warehouse-toolbar-row warehouse-toolbar-row--actions">
+            <button class="btn danger" type="button" onclick="resetAllWarehouse()">전체 초기화</button>
+            <button class="btn" type="button" id="warehouseSetDisplayToggle" onclick="toggleWarehouseSetDisplayMode()">갯수/세트 변환</button>
+          </div>
         </div>
       </div>
 
