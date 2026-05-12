@@ -7495,6 +7495,171 @@ async function tickTradeQaBoardPoll() {
   }
 }
 
+function tearDownForumBoardRealtime() {
+  clearTimeout(forumRtDebounceTrade);
+  clearTimeout(forumRtDebounceQa);
+  forumRtDebounceTrade = null;
+  forumRtDebounceQa = null;
+  const sb = getSupabaseClient();
+  const chans = forumRealtimeChannels.slice();
+  forumRealtimeChannels = [];
+  chans.forEach((ch) => {
+    try {
+      if (sb && ch) sb.removeChannel(ch);
+    } catch (_) {}
+  });
+}
+
+function setupForumBoardRealtime(sectionId) {
+  tearDownForumBoardRealtime();
+  const sb = getSupabaseClient();
+  if (!sb || (sectionId !== 'trade-hub' && sectionId !== 'qa-channel')) return;
+
+  if (sectionId === 'trade-hub') {
+    const ch = sb
+      .channel('forum_rt_trade_posts_v1')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: TRADE_REMOTE_TABLE },
+        () => {
+          scheduleTradeBoardRealtimeRefresh();
+        }
+      )
+      .subscribe((status, err) => {
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          console.warn('[거래소] Realtime:', status, err || '');
+        }
+      });
+    forumRealtimeChannels.push(ch);
+    return;
+  }
+
+  const chQ = sb
+    .channel('forum_rt_qa_posts_v1')
+    .on(
+      'postgres_changes',
+      { event: '*', schema: 'public', table: QA_REMOTE_TABLE },
+      () => {
+        scheduleQaBoardRealtimeRefresh();
+      }
+    )
+    .subscribe((status, err) => {
+      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+        console.warn('[질문채널] Realtime:', status, err || '');
+      }
+    });
+  forumRealtimeChannels.push(chQ);
+}
+
+function scheduleTradeBoardRealtimeRefresh() {
+  clearTimeout(forumRtDebounceTrade);
+  forumRtDebounceTrade = setTimeout(() => {
+    forumRtDebounceTrade = null;
+    void pullTradeBoardFromRemoteForRealtime();
+  }, 320);
+}
+
+function scheduleQaBoardRealtimeRefresh() {
+  clearTimeout(forumRtDebounceQa);
+  forumRtDebounceQa = setTimeout(() => {
+    forumRtDebounceQa = null;
+    void pullQaBoardFromRemoteForRealtime();
+  }, 320);
+}
+
+async function pullTradeBoardFromRemoteForRealtime() {
+  const hub = document.getElementById('trade-hub');
+  if (!hub || !hub.classList.contains('active')) return;
+  if (boardPollRefreshInFlight) return;
+  boardPollRefreshInFlight = true;
+  try {
+    await refreshTradeBoardFromRemote({ skipPush: true });
+    renderTradeMessages();
+    updateTradeComposerAvatar();
+    if (selectedTradePostId) renderTradeThreadPanel();
+  } catch (e) {
+    console.warn('[거래소] 실시간 갱신:', e);
+  } finally {
+    boardPollRefreshInFlight = false;
+  }
+}
+
+async function pullQaBoardFromRemoteForRealtime() {
+  const sec = document.getElementById('qa-channel');
+  if (!sec || !sec.classList.contains('active')) return;
+  if (boardPollRefreshInFlight) return;
+  boardPollRefreshInFlight = true;
+  try {
+    await refreshQaBoardFromRemote({ skipPush: true });
+    renderQaMessages();
+    if (selectedQaPostId) renderQaThreadPanel();
+  } catch (e) {
+    console.warn('[질문채널] 실시간 갱신:', e);
+  } finally {
+    boardPollRefreshInFlight = false;
+  }
+}
+
+function focusTradeBoardSearch() {
+  const inp = document.getElementById('tradeBoardSearch');
+  if (inp) inp.focus();
+}
+
+function focusQaBoardSearch() {
+  const inp = document.getElementById('qaBoardSearch');
+  if (inp) inp.focus();
+}
+
+function onTradeBoardSearchInput(ev) {
+  tradeFeedSearchQuery = (ev && ev.target && ev.target.value) || '';
+  renderTradeMessages();
+}
+
+function onQaBoardSearchInput(ev) {
+  qaFeedSearchQuery = (ev && ev.target && ev.target.value) || '';
+  renderQaMessages();
+}
+
+function toggleTradeComposeExpand(force) {
+  const panel = document.getElementById('tradeComposeExpand');
+  const btn = document.getElementById('tradeNewPostBtn');
+  if (!panel) return;
+  let open;
+  if (force === true) open = true;
+  else if (force === false) open = false;
+  else open = panel.hasAttribute('hidden');
+  if (open) {
+    panel.removeAttribute('hidden');
+    const t = document.getElementById('tradePostTitle');
+    requestAnimationFrame(() => {
+      if (t) t.focus();
+    });
+  } else {
+    panel.setAttribute('hidden', '');
+  }
+  if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+
+function toggleQaComposeExpand(force) {
+  const panel = document.getElementById('qaComposeExpand');
+  const btn = document.getElementById('qaNewPostBtn');
+  if (!panel) return;
+  let open;
+  if (force === true) open = true;
+  else if (force === false) open = false;
+  else open = panel.hasAttribute('hidden');
+  if (open) {
+    panel.removeAttribute('hidden');
+    const t = document.getElementById('qaPostTitle');
+    requestAnimationFrame(() => {
+      if (t) t.focus();
+    });
+  } else {
+    panel.setAttribute('hidden', '');
+  }
+  if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+
 function setQaSort(order) {
   qaSortOrder = order === 'old' ? 'old' : 'new';
   const sel = document.getElementById('qaSortSelect');
