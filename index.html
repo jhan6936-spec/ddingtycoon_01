@@ -6750,10 +6750,16 @@ function unitAlchemyEfficiency(recipe, effects) {
   return adjustedTimeMin > 0 ? adjustedPrice / adjustedTimeMin : 0;
 }
 
-function greedyCraftFinalCounts(recipeNames, inv) {
+function greedyCraftFinalCounts(recipeNames, inv, options = {}) {
+  const includeDiluentCandidate = options.includeDiluentCandidate === true;
   const counts = {};
-  recipeNames.forEach((n) => { counts[n] = 0; });
+  recipeNames.forEach((n) => {
+    counts[n] = 0;
+  });
+  let diluentCount = 0;
   const effects = getExpertEffects();
+  const craftOpts = { skipShellfishTierConvert: true };
+  const dRecipe = includeDiluentCandidate ? data.recipes.find((r) => r.name === '추출된 희석액') : null;
   const guard = 200000;
   let iter = 0;
   while (iter++ < guard) {
@@ -6762,7 +6768,6 @@ function greedyCraftFinalCounts(recipeNames, inv) {
     for (const name of recipeNames) {
       const recipe = data.recipes.find((r) => r.name === name);
       if (!recipe) continue;
-      const craftOpts = { skipShellfishTierConvert: true };
       if (calculateMaxCraft(recipe, inv, {}, craftOpts) < 1) continue;
       const score = unitAlchemyEfficiency(recipe, effects);
       if (score > bestScore) {
@@ -6770,11 +6775,19 @@ function greedyCraftFinalCounts(recipeNames, inv) {
         bestRecipe = recipe;
       }
     }
+    if (dRecipe && calculateMaxCraft(dRecipe, inv, {}, craftOpts) >= 1) {
+      const score = unitAlchemyEfficiency(dRecipe, effects);
+      if (score > bestScore) {
+        bestScore = score;
+        bestRecipe = dRecipe;
+      }
+    }
     if (!bestRecipe) break;
-    deductFinalRecipe(bestRecipe, inv, { skipShellfishTierConvert: true });
-    counts[bestRecipe.name]++;
+    deductFinalRecipe(bestRecipe, inv, craftOpts);
+    if (bestRecipe.name === '추출된 희석액') diluentCount++;
+    else counts[bestRecipe.name]++;
   }
-  return counts;
+  return { counts, diluentCount };
 }
 
 function renderTriFinalPlan(title, orderedNames, counts) {
