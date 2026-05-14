@@ -5290,27 +5290,6 @@ function switchSection(sectionId, clickedEl) {
     showSettingsSub(settingsSub);
   } else if (sectionId === 'factory') {
     renderFactorySeaweedMedia();
-  } else if (sectionId === 'trade-hub') {
-    tradePostsCache = null;
-    refreshTradeBoardFromRemote().then(() => {
-      renderTradeMessages();
-      updateTradeComposerAvatar();
-    });
-    const sbTr = getSupabaseClient();
-    if (sbTr) refreshTradeRestriction(sbTr).then(() => updateTradeRestrictionUI());
-  } else if (sectionId === 'qa-channel') {
-    invalidateQaPostsCache();
-    refreshQaBoardFromRemote().then(() => {
-      renderQaMessages();
-    });
-    const sbTr2 = getSupabaseClient();
-    if (sbTr2) refreshTradeRestriction(sbTr2).then(() => updateTradeRestrictionUI());
-  }
-
-  if (sectionId === 'trade-hub' || sectionId === 'qa-channel') {
-    startTradeQaBoardPolling(sectionId);
-  } else {
-    stopTradeQaBoardPolling();
   }
 }
 
@@ -5327,8 +5306,6 @@ function openFactorySub(subKey) {
   const efficiencySubNav = document.getElementById('efficiencySubNav');
   if (efficiencySubNav) efficiencySubNav.style.display = 'none';
   document.querySelectorAll('#efficiencySubNav .sub-item').forEach(i => i.classList.remove('active'));
-
-  stopTradeQaBoardPolling();
 
   showFactorySub(subKey);
 }
