@@ -2285,9 +2285,27 @@
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
       margin-bottom: 6px;
+    }
+    .alchemy-mat-toolbar-outer {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+    .alchemy-mat-view-row {
+      display: flex;
+      justify-content: flex-end;
+      width: 100%;
+    }
+    .alchemy-mat-qty-row {
+      display: flex;
+      justify-content: flex-end;
+      width: 100%;
     }
     .alchemy-summary-title-text {
       font-size: 13px;
@@ -2324,11 +2342,7 @@
       color: #fff;
     }
     .alchemy-mat-toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 10px;
+      display: contents;
     }
     .alchemy-mat-view-toggles {
       display: flex;
@@ -2362,6 +2376,13 @@
       color: #8899aa;
       margin-bottom: 10px;
       line-height: 1.5;
+    }
+    .alchemy-summary-stage-subtitle {
+      font-size: 12px;
+      font-weight: 800;
+      color: #9eb2c8;
+      margin: 14px 0 8px 0;
+      letter-spacing: 0.02em;
     }
     .alchemy-summary-stage-grid {
       display: grid;
@@ -3976,7 +3997,7 @@ let lastAlchemySummaryData = null;
 /** 'setPiece' | 'boxSetPiece' — 세트/개 vs 상자/세트/개 */
 let alchemySummaryQtyMode = 'setPiece';
 /** 'none' | 'detail' | 'summary' — 재료 합계 패널 표시 방식 */
-let alchemyMatPanelMode = 'none';
+let alchemyMatPanelMode = 'summary';
 
 let craftSalesCalcPanelOpen = false;
 const craftSalesInputState = {};
@@ -6053,7 +6074,8 @@ function loadAlchemySummaryQtyMode() {
 function loadAlchemyMatPanelMode() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY_ALCHEMY_MAT_PANEL);
-    if (raw === 'none' || raw === 'detail' || raw === 'summary') alchemyMatPanelMode = raw;
+    if (raw === 'detail' || raw === 'summary') alchemyMatPanelMode = raw;
+    else if (raw === 'none') alchemyMatPanelMode = 'summary';
   } catch (_) {}
 }
 
@@ -6094,6 +6116,68 @@ function aggregatePlanDirectInputs(planEntries) {
     }
   });
   return out;
+}
+
+/** 간략 보기: 직접 재료 한 단계 펼친 합산(다음 레시피 단계) */
+function aggregateMaterialInputsFromTotals(totals) {
+  const out = {};
+  Object.entries(totals || {}).forEach(([name, c]) => {
+    if (!c || c <= 0) return;
+    const mat = data.materials[name];
+    if (!mat || !mat.inputs || !mat.inputs.length) return;
+    for (const inp of mat.inputs) {
+      out[inp.name] = (out[inp.name] || 0) + inp.count * c;
+    }
+  });
+  return out;
+}
+
+/** 정수·핵·에센스·결정·엘릭서·영약 계열(어패류 ★ 제외) */
+function isAlchemyChainProductName(name) {
+  return isMaterialsTabAlchemyChainItem(name);
+}
+
+function aggregateDirectInputsNextAlchemyTier(directInputs) {
+  const merged = aggregateMaterialInputsFromTotals(directInputs);
+  const filtered = {};
+  Object.entries(merged).forEach(([k, v]) => {
+    if (!v || v <= 0) return;
+    if (isAlchemyChainProductName(k)) filtered[k] = v;
+  });
+  return filtered;
+}
+
+/** 자세히 보기용: 제작 플랜 기준 data.materials 트리에서 필요한 중간 연금 산출 수량 */
+function accumAlchemyMaterialNodes(itemName, qty, out) {
+  const q = Math.max(0, Math.floor(Number(qty) || 0));
+  if (!q) return;
+  const mat = data.materials[itemName];
+  if (mat && mat.inputs && mat.inputs.length) {
+    out[itemName] = (out[itemName] || 0) + q;
+    for (const inp of mat.inputs) {
+      accumAlchemyMaterialNodes(inp.name, inp.count * q, out);
+    }
+  }
+}
+
+function aggregatePlanAlchemyMaterialNodesNeeded(planEntries) {
+  const out = {};
+  (planEntries || []).forEach(([prod, cnt]) => {
+    const c = Math.max(0, Math.floor(Number(cnt) || 0));
+    if (!c) return;
+    const recipe = data.recipes.find((r) => r.name === prod);
+    if (!recipe || !recipe.inputs || !recipe.inputs.length) return;
+    for (const inp of recipe.inputs) {
+      accumAlchemyMaterialNodes(inp.name, inp.count * c, out);
+    }
+  });
+  const filtered = {};
+  Object.entries(out).forEach(([k, v]) => {
+    if (!v || v <= 0) return;
+    if (isShellfishStockName(k)) return;
+    filtered[k] = v;
+  });
+  return filtered;
 }
 
 function getAlchemyOneStepInputs(name) {
@@ -6144,6 +6228,15 @@ function buildAlchemySummaryStageGridHTML(directInputs, qtyMode) {
     .join('')}</div>`;
 }
 
+function buildAlchemySummaryStageViewsHTML(directInputs, qtyMode) {
+  const m = qtyMode != null ? qtyMode : alchemySummaryQtyMode;
+  const directGrid = buildAlchemySummaryStageGridHTML(directInputs, m);
+  const nextAlchemy = aggregateDirectInputsNextAlchemyTier(directInputs);
+  const hasNext = Object.values(nextAlchemy).some((v) => v > 0);
+  if (!hasNext) return directGrid;
+  return `${directGrid}<div class="alchemy-summary-stage-subtitle">바로 아래 연금품 (한 단계 더)</div>${buildAlchemySummaryStageGridHTML(nextAlchemy, m)}`;
+}
+
 function syncAlchemyMatViewButtons() {
   document.querySelectorAll('[data-alchemy-mat-view]').forEach((btn) => {
     const m = btn.getAttribute('data-alchemy-mat-view');
@@ -6156,18 +6249,27 @@ function syncAlchemyMatViewButtons() {
 function applyAlchemyMatPanelVisibility() {
   const dWrap = document.getElementById('alchemyMaterialDetailWrap');
   const sWrap = document.getElementById('alchemyMaterialSummaryWrap');
+  const qtyRow = document.getElementById('alchemyMatQtyRow');
   if (dWrap) dWrap.hidden = alchemyMatPanelMode !== 'detail';
   if (sWrap) sWrap.hidden = alchemyMatPanelMode !== 'summary';
+  if (qtyRow) qtyRow.hidden = alchemyMatPanelMode !== 'detail' && alchemyMatPanelMode !== 'summary';
   syncAlchemyMatViewButtons();
 }
 
 function refreshAlchemyMaterialPanelBodies() {
   if (!lastAlchemySummaryData) return;
-  const { shell, vanilla, directInputs } = lastAlchemySummaryData;
+  const { shell, vanilla, directInputs, alchemyIntermediates } = lastAlchemySummaryData;
   const body = document.getElementById('alchemyMaterialSummaryBody');
   const stage = document.getElementById('alchemyMaterialSummaryStage');
-  if (body) body.innerHTML = buildAlchemySummaryMaterialSectionsHTML(shell, vanilla, alchemySummaryQtyMode);
-  if (stage) stage.innerHTML = buildAlchemySummaryStageGridHTML(directInputs || {}, alchemySummaryQtyMode);
+  if (body) {
+    body.innerHTML = buildAlchemySummaryMaterialSectionsHTML(
+      shell,
+      alchemyIntermediates || {},
+      vanilla,
+      alchemySummaryQtyMode
+    );
+  }
+  if (stage) stage.innerHTML = buildAlchemySummaryStageViewsHTML(directInputs || {}, alchemySummaryQtyMode);
 }
 
 function setAlchemyMaterialPanelMode(mode) {
@@ -6182,12 +6284,21 @@ function refreshAlchemySummaryBody() {
   refreshAlchemyMaterialPanelBodies();
 }
 
-function buildAlchemySummaryMaterialSectionsHTML(shell, vanilla, qtyMode) {
+function buildAlchemySummaryMaterialSectionsHTML(shell, alchemyIntermediates, vanilla, qtyMode) {
   const m = qtyMode != null ? qtyMode : alchemySummaryQtyMode;
+  const alchemyObj = alchemyIntermediates || {};
+  const alchemyLines =
+    Object.keys(alchemyObj).filter((k) => (alchemyObj[k] || 0) > 0).length > 0
+      ? formatAlchemyMaterialLinesHTML(alchemyObj, m)
+      : '<div style="font-size:12px;color:#778899;">해당 없음</div>';
   return `
     <div class="alchemy-mat-section">
       <h4>어패류</h4>
       ${renderShellfishTiersHTML(shell, m)}
+    </div>
+    <div class="alchemy-mat-section">
+      <h4>연금품 (중간 제작)</h4>
+      ${alchemyLines}
     </div>
     <div class="alchemy-mat-section">
       <h4>바닐라 재료</h4>
@@ -6839,8 +6950,17 @@ function showEfficiencySub(subKey) {
 }
 
 function openEfficiencySub(subKey, el) {
+  if (subKey === 'alchemy') {
+    alchemyMatPanelMode = 'summary';
+    saveAlchemyMatPanelMode();
+  }
   showEfficiencySub(subKey);
   switchSection('efficiency');
+  if (subKey === 'alchemy') {
+    applyAlchemyMatPanelVisibility();
+    refreshAlchemyMaterialPanelBodies();
+    syncAlchemySummaryQtyButtons();
+  }
 }
 
 function renderStaminaPlan() {
@@ -7421,21 +7541,28 @@ function analyzeEfficiency() {
     const { shell, vanilla } = splitShellfishVanillaTotals(rawTotals);
 
     const directInputs = aggregatePlanDirectInputs(planEntries);
+    const alchemyIntermediates = aggregatePlanAlchemyMaterialNodesNeeded(planEntries);
     const summaryBox = document.createElement('div');
     summaryBox.className = 'alchemy-mat-summary';
-    lastAlchemySummaryData = { shell, vanilla, directInputs };
+    lastAlchemySummaryData = { shell, vanilla, directInputs, alchemyIntermediates };
     summaryBox.innerHTML = `
       <div class="alchemy-summary-head-row">
         <div class="alchemy-summary-title-text">추천 제작 기준 필요 재료 합계</div>
-        <div class="alchemy-mat-toolbar">
-          <div class="alchemy-mat-view-toggles" role="group" aria-label="재료 표시 방식">
-            <button type="button" class="alchemy-mat-view-btn" data-alchemy-mat-view="detail" onclick="setAlchemyMaterialPanelMode('detail')">자세히보기</button>
-            <button type="button" class="alchemy-mat-view-btn" data-alchemy-mat-view="summary" onclick="setAlchemyMaterialPanelMode('summary')">간략히 보기</button>
+        <div class="alchemy-mat-toolbar-outer">
+          <div class="alchemy-mat-view-row">
+            <div class="alchemy-mat-toolbar" role="presentation">
+              <div class="alchemy-mat-view-toggles" role="group" aria-label="재료 표시 방식">
+                <button type="button" class="alchemy-mat-view-btn" data-alchemy-mat-view="detail" onclick="setAlchemyMaterialPanelMode('detail')">자세히보기</button>
+                <button type="button" class="alchemy-mat-view-btn" data-alchemy-mat-view="summary" onclick="setAlchemyMaterialPanelMode('summary')">간략히 보기</button>
+              </div>
+            </div>
           </div>
-          <div class="alchemy-qty-mode-toggles" role="group" aria-label="수량 표시 단위">
-            <button type="button" class="alchemy-qty-mode-btn" data-alchemy-qty-mode="boxSetPiece" onclick="setAlchemySummaryQtyMode('boxSetPiece')">상자/세트/개</button>
-            <button type="button" class="alchemy-qty-mode-btn" data-alchemy-qty-mode="setPiece" onclick="setAlchemySummaryQtyMode('setPiece')">세트/개</button>
-            <button type="button" class="alchemy-qty-mode-btn" data-alchemy-qty-mode="plainPiece" onclick="setAlchemySummaryQtyMode('plainPiece')">개</button>
+          <div id="alchemyMatQtyRow" class="alchemy-mat-qty-row">
+            <div class="alchemy-qty-mode-toggles" role="group" aria-label="수량 표시 단위">
+              <button type="button" class="alchemy-qty-mode-btn" data-alchemy-qty-mode="boxSetPiece" onclick="setAlchemySummaryQtyMode('boxSetPiece')">상자/세트/개</button>
+              <button type="button" class="alchemy-qty-mode-btn" data-alchemy-qty-mode="setPiece" onclick="setAlchemySummaryQtyMode('setPiece')">세트/개</button>
+              <button type="button" class="alchemy-qty-mode-btn" data-alchemy-qty-mode="plainPiece" onclick="setAlchemySummaryQtyMode('plainPiece')">개</button>
+            </div>
           </div>
         </div>
       </div>
@@ -7444,7 +7571,7 @@ function analyzeEfficiency() {
         <div id="alchemyMaterialSummaryBody"></div>
       </div>
       <div id="alchemyMaterialSummaryWrap" hidden>
-        <div class="alchemy-summary-stage-hint">최종 제작 대상에 들어가는 바로 한 단계 아래 재료입니다. 카드에 마우스를 올리면 그 아래 단계 재료와 수량이 표시됩니다.</div>
+        <div class="alchemy-summary-stage-hint">최종 제작에 바로 들어가는 재료와, 그 아래 단계의 연금품(정수·핵·에센스·결정·엘릭서·영약)을 카드로 보여 줍니다. 카드에 마우스를 올리면 그다음 단계 레시피와 수량이 표시됩니다.</div>
         <div id="alchemyMaterialSummaryStage"></div>
       </div>
     `;
