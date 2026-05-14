@@ -6795,26 +6795,42 @@ function greedyCraftFinalCounts(recipeNames, inv, options = {}) {
   const effects = getExpertEffects();
   const craftOpts = { skipShellfishTierConvert: true };
   const dRecipe = includeDiluentCandidate ? data.recipes.find((r) => r.name === '추출된 희석액') : null;
+
+  const countForRecipe = (recipe) => (recipe.name === '추출된 희석액' ? diluentCount : counts[recipe.name] || 0);
+
   const guard = 200000;
   let iter = 0;
   while (iter++ < guard) {
-    let bestRecipe = null;
-    let bestScore = -1;
+    const craftable = [];
     for (const name of recipeNames) {
       const recipe = data.recipes.find((r) => r.name === name);
       if (!recipe) continue;
       if (calculateMaxCraft(recipe, inv, {}, craftOpts) < 1) continue;
-      const score = unitAlchemyEfficiency(recipe, effects);
-      if (score > bestScore) {
-        bestScore = score;
-        bestRecipe = recipe;
-      }
+      craftable.push(recipe);
     }
     if (dRecipe && calculateMaxCraft(dRecipe, inv, {}, craftOpts) >= 1) {
-      const score = unitAlchemyEfficiency(dRecipe, effects);
-      if (score > bestScore) {
-        bestScore = score;
-        bestRecipe = dRecipe;
+      craftable.push(dRecipe);
+    }
+    if (!craftable.length) break;
+
+    let minC = Infinity;
+    for (const r of craftable) {
+      const c = countForRecipe(r);
+      if (c < minC) minC = c;
+    }
+    const balanced = craftable.filter((r) => countForRecipe(r) === minC);
+
+    let bestRecipe = null;
+    let bestScore = -1;
+    for (const r of balanced) {
+      const s = unitAlchemyEfficiency(r, effects);
+      if (
+        bestRecipe === null ||
+        s > bestScore ||
+        (s === bestScore && r.name.localeCompare(bestRecipe.name, 'ko') < 0)
+      ) {
+        bestScore = s;
+        bestRecipe = r;
       }
     }
     if (!bestRecipe) break;
