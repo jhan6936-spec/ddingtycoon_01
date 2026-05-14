@@ -4031,6 +4031,31 @@
   </div>
 </div>
 
+<div id="alchemyCraftGuideModal" class="patch-modal" onclick="closeAlchemyCraftGuideOnBackdrop(event)">
+  <div class="patch-modal-card alchemy-guide-modal-card" onclick="event.stopPropagation()">
+    <div class="patch-modal-header">
+      <div class="patch-modal-title">연금품 제작 가이드</div>
+      <button class="patch-close-btn" type="button" onclick="closeAlchemyCraftGuide()">닫기</button>
+    </div>
+    <div class="alchemy-guide-toolbar">
+      <label class="alchemy-guide-copies-label" for="alchemyGuideCopiesInput">목표 수량 (개)</label>
+      <input
+        id="alchemyGuideCopiesInput"
+        class="alchemy-guide-copies-input"
+        type="number"
+        min="1"
+        max="9999"
+        step="1"
+        value="1"
+        inputmode="numeric"
+        oninput="renderAlchemyCraftGuideBody()"
+      >
+      <span class="alchemy-guide-toolbar-hint">해양 연금 최종품·희석액마다 재료를 단계별로 펼친 흐름입니다. 효율 분석의 연금 추천은 1·2·3성을 골고루 맞추는 방향과 제작 효율을 함께 고려합니다.</span>
+    </div>
+    <div id="alchemyCraftGuideBody" class="patch-modal-body alchemy-guide-modal-body"></div>
+  </div>
+</div>
+
 <!-- 공장 사진 확대 뷰어 -->
 <div class="viewer-overlay" id="factoryViewer" aria-hidden="true">
   <div class="viewer-dialog" role="dialog" aria-modal="true" aria-label="공장 사진 확대">
