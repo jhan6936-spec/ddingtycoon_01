@@ -2555,6 +2555,103 @@
       font-weight: 900;
       color: #fff;
     }
+    /* 제작 추천: 0성(추출된 희석액) — 패널 하단 전폭 바 */
+    .alchemy-plan-tier-zero {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid #2a3a4d;
+    }
+    .alchemy-plan-tier-zero-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #e5e5e5;
+      margin-bottom: 10px;
+    }
+    .alchemy-plan-tier-zero-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+      width: 100%;
+      min-height: 96px;
+      box-sizing: border-box;
+      background: #131820;
+      border: 1px solid #2f3d52;
+      border-radius: 12px;
+      padding: 16px 22px;
+    }
+    .alchemy-plan-tier-zero-bar.has-count {
+      border-color: #4a7ab8;
+      background: linear-gradient(105deg, #161f2e 0%, #131c28 50%, #121820 100%);
+      box-shadow: inset 0 0 0 1px rgba(74, 143, 217, 0.14);
+    }
+    .alchemy-plan-tier-zero-left {
+      flex: 1 1 240px;
+      min-width: 0;
+      text-align: left;
+    }
+    .alchemy-plan-tier-zero-name-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px 10px;
+    }
+    .alchemy-plan-tier-zero-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: #e8f4ff;
+    }
+    .alchemy-plan-tier-zero-sub {
+      font-size: 11px;
+      color: #7a8fa3;
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+    .alchemy-plan-tier-zero-right {
+      flex: 0 1 auto;
+      text-align: right;
+      min-width: 140px;
+    }
+    .alchemy-plan-tier-zero-qty {
+      font-size: 28px;
+      font-weight: 900;
+      color: #8fd5ff;
+      line-height: 1.1;
+    }
+    .alchemy-plan-tier-zero-qty-unit {
+      font-size: 15px;
+      font-weight: 800;
+      color: #9eb2c8;
+      margin-left: 3px;
+    }
+    .alchemy-plan-zero-sell {
+      font-size: 12px;
+      color: #9ecb7a;
+      margin-top: 8px;
+    }
+    .alchemy-plan-zero-sell strong {
+      color: #c8f5a8;
+    }
+    .alchemy-plan-zero-muted {
+      font-size: 11px;
+      color: #5c6b7d;
+      margin-top: 8px;
+      line-height: 1.45;
+      max-width: 280px;
+      margin-left: auto;
+    }
+    @media (max-width: 520px) {
+      .alchemy-plan-tier-zero-right {
+        text-align: left;
+        width: 100%;
+        min-width: 0;
+      }
+      .alchemy-plan-zero-muted {
+        margin-left: 0;
+        max-width: none;
+      }
+    }
     .toggle-wrap {
       display: inline-flex;
       align-items: center;
