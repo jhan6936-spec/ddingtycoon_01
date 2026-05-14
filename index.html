@@ -7512,63 +7512,33 @@ function analyzeEfficiency() {
 
   function tryTierOrder(order, srcInv) {
     const inv = { ...srcInv };
-    const plans = [{},{},{}];
-    for (const idx of order) {
-      plans[idx] = greedyCraftFinalCounts(tierGroups[idx].names, inv);
-    }
-    // 희석액
+    const plans = [{}, {}, {}];
     let dCount = 0;
-    const dRecipe = data.recipes.find(r => r.name === '추출된 희석액');
-    if (dRecipe) {
-      const opts = { skipShellfishTierConvert: true };
-      while (calculateMaxCraft(dRecipe, inv, {}, opts) >= 1) {
-        deductFinalRecipe(dRecipe, inv, opts);
-        dCount++;
-        if (dCount > 100000) break;
-      }
+    for (const idx of order) {
+      const { counts, diluentCount: dPart } = greedyCraftFinalCounts(tierGroups[idx].names, inv, {
+        includeDiluentCandidate: true,
+      });
+      plans[idx] = counts;
+      dCount += dPart;
     }
-    const gold = [0,1,2].reduce((sum, idx) => sum + sumFinalPlanGold(plans[idx], effects).boosted, 0);
+    const dRecipe = data.recipes.find((r) => r.name === '추출된 희석액');
+    const gold = [0, 1, 2].reduce((sum, idx) => sum + sumFinalPlanGold(plans[idx], effects).boosted, 0);
     const dGold = dRecipe ? Math.round((dRecipe.price || 0) * (1 + effects.alchemyPriceBoost / 100)) * dCount : 0;
     return { plans, diluentCount: dCount, totalGold: gold + dGold };
   }
 
-  // 전역 탐욕법: 모든 최종 산물이 동시에 경쟁
+  // 전역 탐욕법: 모든 최종 산물 + 추출된 희석액이 동시에 단위 효율로 경쟁
   function tryGlobalGreedy(srcInv) {
     const inv = { ...srcInv };
     const allFinals = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3];
-    const counts = {};
-    allFinals.forEach(n => { counts[n] = 0; });
-    const eff = getExpertEffects();
-    let iter = 0;
-    while (iter++ < 200000) {
-      let bestRecipe = null, bestScore = -1;
-      for (const name of allFinals) {
-        const recipe = data.recipes.find(r => r.name === name);
-        if (!recipe) continue;
-        if (calculateMaxCraft(recipe, inv, {}, { skipShellfishTierConvert: true }) < 1) continue;
-        const score = unitAlchemyEfficiency(recipe, eff);
-        if (score > bestScore) { bestScore = score; bestRecipe = recipe; }
-      }
-      if (!bestRecipe) break;
-      deductFinalRecipe(bestRecipe, inv, { skipShellfishTierConvert: true });
-      counts[bestRecipe.name]++;
-    }
-    let dCount = 0;
-    const dRecipe = data.recipes.find(r => r.name === '추출된 희석액');
-    if (dRecipe) {
-      const opts = { skipShellfishTierConvert: true };
-      while (calculateMaxCraft(dRecipe, inv, {}, opts) >= 1) {
-        deductFinalRecipe(dRecipe, inv, opts);
-        dCount++;
-        if (dCount > 100000) break;
-      }
-    }
+    const { counts, diluentCount: dCount } = greedyCraftFinalCounts(allFinals, inv, { includeDiluentCandidate: true });
     const plans = [
-      Object.fromEntries(FINAL_GROUP1.map(n => [n, counts[n] || 0])),
-      Object.fromEntries(FINAL_GROUP2.map(n => [n, counts[n] || 0])),
-      Object.fromEntries(FINAL_GROUP3.map(n => [n, counts[n] || 0]))
+      Object.fromEntries(FINAL_GROUP1.map((n) => [n, counts[n] || 0])),
+      Object.fromEntries(FINAL_GROUP2.map((n) => [n, counts[n] || 0])),
+      Object.fromEntries(FINAL_GROUP3.map((n) => [n, counts[n] || 0])),
     ];
     const gold = plans.reduce((sum, p) => sum + sumFinalPlanGold(p, effects).boosted, 0);
+    const dRecipe = data.recipes.find((r) => r.name === '추출된 희석액');
     const dGold = dRecipe ? Math.round((dRecipe.price || 0) * (1 + effects.alchemyPriceBoost / 100)) * dCount : 0;
     return { plans, diluentCount: dCount, totalGold: gold + dGold };
   }
