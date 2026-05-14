@@ -4997,15 +4997,6 @@ async function initSupabaseAuth() {
       } catch (e) {
         console.error('[Supabase Auth] onAuthStateChange 처리 오류:', e);
         updateAuthUI(session?.user ?? null);
-        try {
-          const uid = session?.user?.id ?? null;
-          await Promise.all([refreshProfileRole(sb, uid), refreshTradeRestriction(sb)]);
-          updateTradeRestrictionUI();
-          updateTradeThreadMoreMenuVisibility();
-          updateQaThreadMoreMenuVisibility();
-          updateTradeThreadAdminBar();
-          updateQaThreadAdminBar();
-        } catch (_) {}
       }
     });
 
@@ -5069,9 +5060,6 @@ function clearSupabaseAuthStorage() {
 async function authSignOut() {
   authUiNonce++;
   closeProfileSettingsModal();
-  closeTradeProfileModal();
-  closeTradeThreadPanel();
-  closeQaThreadPanel();
 
   const sb = getSupabaseClient();
   if (sb) {
