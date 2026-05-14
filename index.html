@@ -5142,7 +5142,7 @@ async function hydrateAuthUidFromSessionIfNeeded(sb) {
 }
 
 /** 삭제·수정 직전 역할 동기화: 네트워크 지연 시 UI가 멈추지 않도록 상한 시간을 둡니다. */
-const FORUM_ROLE_SYNC_TIMEOUT_MS = 10000;
+const FORUM_ROLE_SYNC_TIMEOUT_MS = 3500;
 
 async function syncProfileRoleForForumActions() {
   const sb = getSupabaseClient();
@@ -5933,7 +5933,7 @@ function showForumSyncStatus(board, message, kind) {
       el.hidden = true;
       el.textContent = '';
       el.classList.remove('forum-sync-status--ok');
-    }, 4000);
+    }, 1800);
   }
 }
 
@@ -5981,7 +5981,7 @@ function scheduleTradeRemoteSync() {
   clearTimeout(tradeRemoteSyncTimer);
   tradeRemoteSyncTimer = setTimeout(() => {
     syncTradePostsToSupabase(tradePostsCache || []);
-  }, 750);
+  }, 280);
 }
 
 async function syncTradePostsToSupabase(posts) {
@@ -7547,7 +7547,7 @@ function scheduleQaRemoteSync() {
   clearTimeout(qaRemoteSyncTimer);
   qaRemoteSyncTimer = setTimeout(() => {
     syncQaPostsToSupabase(qaPostsCache || []);
-  }, 750);
+  }, 280);
 }
 
 async function syncQaPostsToSupabase(posts) {
