@@ -4876,8 +4876,6 @@ function updateAuthUI(user) {
   const avatarImg = document.getElementById('authAvatarImg');
   cachedAuthUserForProfile = user || null;
   currentAuthUserId = user && user.id ? user.id : null;
-  if (!user) cachedProfileRole = null;
-  if (!user) tradeRestrictionState = { active: false, indefinite: false, until: null };
   if (user) {
     if (bar) bar.hidden = true;
     if (trigger) trigger.hidden = false;
@@ -4901,8 +4899,6 @@ function updateAuthUI(user) {
       avatarImg.alt = '';
     }
   }
-  updateTradeComposerAvatar();
-  updateTradeRestrictionUI();
 }
 
 function openProfileSettingsModal() {
@@ -4945,10 +4941,7 @@ function saveProfileSettings() {
   const displayName = nameIn ? nameIn.value : '';
   const bio = bioIn ? bioIn.value : '';
   saveStoredUserProfile(currentAuthUserId, displayName, bio);
-  applySavedProfileToTradePosts(currentAuthUserId);
-  applySavedProfileToQaPosts(currentAuthUserId);
   closeProfileSettingsModal();
-  updateTradeComposerAvatar();
 }
 
 async function logoutFromProfileModal() {
@@ -4966,50 +4959,25 @@ function setAuthConfigHint(visible, message) {
   if (btn) btn.disabled = visible;
 }
 
-/** 세션이 있으면 즉시 session.user로 UI를 반영한 뒤, getUser()·프로필·제재를 병렬로 가져옵니다. */
+/** 세션이 있으면 session.user로 UI를 반영한 뒤 getUser()로 최신 클레임을 반영합니다. */
 async function refreshAuthUIFromSession(sb, session) {
   const n = authUiNonce;
   if (!session) {
     updateAuthUI(null);
-    await refreshTradeRestriction(sb);
-    if (n !== authUiNonce) return;
-    updateTradeRestrictionUI();
-    try {
-      updateTradeThreadMoreMenuVisibility();
-      updateQaThreadMoreMenuVisibility();
-      updateTradeThreadAdminBar();
-      updateQaThreadAdminBar();
-    } catch (_) {}
     return;
   }
   if (session.user) {
     updateAuthUI(session.user);
   }
-  const uid = session.user?.id ?? null;
   try {
-    const [user] = await Promise.all([
-      fetchAuthUserForUI(sb),
-      refreshProfileRole(sb, uid),
-      refreshTradeRestriction(sb)
-    ]);
+    const user = await fetchAuthUserForUI(sb);
     if (n !== authUiNonce) return;
     updateAuthUI(user || session.user);
   } catch (e) {
     console.error('[Supabase Auth] refreshAuthUIFromSession 오류:', e);
     if (n !== authUiNonce) return;
     updateAuthUI(session.user ?? null);
-    try {
-      await Promise.all([refreshProfileRole(sb, uid), refreshTradeRestriction(sb)]);
-    } catch (_) {}
   }
-  if (n !== authUiNonce) return;
-  updateTradeRestrictionUI();
-  try {
-    updateTradeThreadMoreMenuVisibility();
-    updateQaThreadMoreMenuVisibility();
-    updateTradeThreadAdminBar();
-    updateQaThreadAdminBar();
-  } catch (_) {}
 }
 
 async function initSupabaseAuth() {
