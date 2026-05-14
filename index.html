@@ -3041,6 +3041,15 @@
       font-size: 42px;
       margin-bottom: 10px;
     }
+    .rod-visual .sage-rod-visual-img {
+      max-height: 100%;
+      max-width: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
     .mini-tabs {
       display: flex;
       gap: 8px;
@@ -3499,7 +3508,7 @@
         <div class="panel-card">
           <div class="expert-name">세이지 낚싯대</div>
           <div class="expert-desc">강화 단계에 따라 어패류 채집 효율이 달라집니다</div>
-          <div class="rod-visual" id="sageRodVisual">🎣</div>
+          <div class="rod-visual" id="sageRodVisual" aria-label="세이지 낚싯대 외형"></div>
           <div class="expert-controls" style="margin-bottom:10px;">
             <button class="expert-btn" type="button" onclick="changeSageRodLevel(-1)">−</button>
             <div class="expert-level" id="sageRodLevel">Lv.1</div>
@@ -9840,7 +9849,7 @@ function renderSageRod() {
   const finalPower = Math.round((sageRodStats.power[sageRodLevel] || 0) * (1 + engraving.fishingPowerBoost / 100));
   const finalShellChance = (sageRodStats.shellChance[sageRodLevel] || 0) + engraving.shellSearchChance;
   lvEl.textContent = `Lv.${sageRodLevel}`;
-  visEl.textContent = sageRodLevel >= 11 ? '🎣✨' : (sageRodLevel >= 6 ? '🎣⭐' : '🎣');
+  visEl.innerHTML = `<img class="sage-rod-visual-img" src="${sageRodVisualSrc(sageRodLevel)}" alt="세이지 낚싯대" loading="lazy" decoding="async">`;
   statEl.innerHTML = `
     <div class="expert-desc">시간 감소율: ${sageRodStats.timeReduce[sageRodLevel]}%</div>
     <div class="expert-desc">조개 등장 확률: ${finalShellChance}% (기본 ${sageRodStats.shellChance[sageRodLevel]}% + 각인 ${engraving.shellSearchChance}%)</div>
