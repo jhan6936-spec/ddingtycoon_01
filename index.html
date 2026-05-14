@@ -3814,7 +3814,6 @@
 
       <div class="alchemy-craft-toolbar">
         <button type="button" class="patch-note-btn" onclick="openEfficiencySub('alchemy', null)">연금품 계산</button>
-        <button type="button" class="patch-note-btn" onclick="openAlchemyCraftGuide()">제작 가이드</button>
       </div>
 
       <div class="search-filter">
@@ -3897,7 +3896,10 @@
           <div class="eff-alchemy-pane-title-wrap">
             <div class="eff-alchemy-pane-title">연금품 계산</div>
           </div>
-          <button type="button" class="btn alchemy-screenshot-exclude" id="alchemyScreenshotBtn" onclick="downloadAlchemyPaneScreenshot()">사진으로 다운</button>
+          <div class="eff-alchemy-pane-actions">
+            <button type="button" class="patch-note-btn alchemy-screenshot-exclude" onclick="openAlchemyCraftGuide()">제작 가이드</button>
+            <button type="button" class="btn alchemy-screenshot-exclude" id="alchemyScreenshotBtn" onclick="downloadAlchemyPaneScreenshot()">사진으로 다운</button>
+          </div>
         </div>
         <div id="efficiencyContainerAlchemy">
           <div class="no-result">연금품 계산 결과가 여기에 표시됩니다</div>
