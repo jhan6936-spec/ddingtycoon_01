@@ -4355,7 +4355,7 @@ const PATCH_NOTES_HTML = `
   </ul>
   <h3>v1.0.7</h3>
   <ul>
-    <li>관리자 여부는 가능하면 Supabase SQL의 <code>public.is_admin()</code> RPC(SECURITY DEFINER)로 먼저 확인하고, 없거나 실패할 때만 <code>profiles</code> 직접 조회로 폴백합니다. <code>profiles</code> 조회만 일시 실패할 때 일반 유저로 덮여 “권한 없음”이 나는 경우를 줄입니다.</li>
+    <li>관리자 여부는 <code>public.profiles</code>의 <code>role</code>을 <strong>먼저</strong> 조회해 반영하고, 행이 없거나 조회 실패 시에만 <code>public.is_admin()</code> RPC로 폴백합니다. (RPC만 먼저 쓰면 <code>false</code> 한 번에 <code>profiles</code>의 <code>admin</code>을 읽지 못해 삭제 권한이 막히는 경우를 줄입니다.)</li>
   </ul>
   <h3>v1.0.6</h3>
   <ul>
