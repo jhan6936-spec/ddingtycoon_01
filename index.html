@@ -7567,25 +7567,32 @@ function analyzeEfficiency() {
     ${renderTriFinalPlan('1성', FINAL_GROUP1, plan1)}
     ${renderTriFinalPlan('2성', FINAL_GROUP2, plan2)}
     ${renderTriFinalPlan('3성', FINAL_GROUP3, plan3)}
+    ${renderDiluentPlanBlock(diluentCount, effects)}
   `;
   containerAlchemy.appendChild(planWrap);
 
   const g1 = sumFinalPlanGold(plan1, effects);
   const g2 = sumFinalPlanGold(plan2, effects);
   const g3 = sumFinalPlanGold(plan3, effects);
-  const totalBase = g1.base + g2.base + g3.base;
-  const totalBoosted = g1.boosted + g2.boosted + g3.boosted;
+  const gD = sumFinalPlanGold({ '추출된 희석액': diluentCount }, effects);
+  const totalBase = g1.base + g2.base + g3.base + gD.base;
+  const totalBoosted = g1.boosted + g2.boosted + g3.boosted + gD.boosted;
   const revBox = document.createElement('div');
   revBox.style.marginBottom = '18px';
   revBox.style.padding = '12px 14px';
   revBox.style.background = '#0f1419';
   revBox.style.border = '1px solid #2a3a4d';
   revBox.style.borderRadius = '10px';
+  const diluentRevNote =
+    diluentCount > 0
+      ? `<div style="font-size:11px;color:#8899aa;margin-top:8px;line-height:1.45;">추출된 희석액 <strong style="color:#b8c9d9;">${diluentCount.toLocaleString()}개</strong>는 최종 9종과 같은 기준(판매가 ÷ 제작 시간)으로 효율을 비교해 제작 순서에 포함했습니다.</div>`
+      : '';
   revBox.innerHTML = `
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;font-size:13px;color:#ddd;align-items:center;">
       <div>기본가 합 <strong style="color:#fff;">${totalBase.toLocaleString()}G</strong></div>
       <div>전문가 적용 합 <strong style="color:#8fd5ff;">${totalBoosted.toLocaleString()}G</strong></div>
     </div>
+    ${diluentRevNote}
   `;
   containerAlchemy.appendChild(revBox);
   
