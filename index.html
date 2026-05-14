@@ -4050,7 +4050,7 @@
         inputmode="numeric"
         oninput="renderAlchemyCraftGuideBody()"
       >
-      <span class="alchemy-guide-toolbar-hint">해양 연금 최종품·희석액마다 재료를 단계별로 펼친 흐름입니다. 효율 분석의 연금 추천은 1·2·3성을 골고루 맞추는 방향과 제작 효율을 함께 고려합니다.</span>
+      <span class="alchemy-guide-toolbar-hint">해양 연금 최종품·희석액마다 재료를 단계별로 펼친 흐름입니다. 효율 분석의 연금 추천은 남은 재료로 만들 수 있는 후보 중 판매가가 높은 쪽을 우선하는 방식입니다.</span>
     </div>
     <div id="alchemyCraftGuideBody" class="patch-modal-body alchemy-guide-modal-body"></div>
   </div>
@@ -8054,9 +8054,12 @@ function analyzeEfficiency() {
   revBox.style.borderRadius = '10px';
   const diluentRevNote =
     diluentCount > 0
-      ? `<div style="font-size:11px;color:#8899aa;margin-top:8px;line-height:1.45;">추출된 희석액 <strong style="color:#b8c9d9;">${diluentCount.toLocaleString()}개</strong>는 최종 9종과 같은 기준(판매가 ÷ 제작 시간)으로 효율을 비교해 제작 순서에 포함했습니다.</div>`
+      ? `<div style="font-size:11px;color:#8899aa;margin-top:6px;line-height:1.45;">추출된 희석액 <strong style="color:#b8c9d9;">${diluentCount.toLocaleString()}개</strong>는 9종 최종과 동일 후보 풀에서, 위와 같은 기준(판매가 우선)으로 제작 순서에 포함된 결과입니다.</div>`
       : '';
   revBox.innerHTML = `
+    <div style="font-size:11px;color:#8899aa;line-height:1.45;margin-bottom:10px;">
+      남은 재료로 만들 수 있는 최종 9종·추출된 희석액 가운데 <strong style="color:#b8c9d9;">1개당 전문가 반영 판매가</strong>가 가장 높은 것을 반복해 고릅니다. 금액이 같으면 <strong style="color:#b8c9d9;">제작 시간 대비 효율</strong>이 높은 쪽을 먼저 씁니다.
+    </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;font-size:13px;color:#ddd;align-items:center;">
       <div>기본가 합 <strong style="color:#fff;">${totalBase.toLocaleString()}G</strong></div>
       <div>전문가 적용 합 <strong style="color:#8fd5ff;">${totalBoosted.toLocaleString()}G</strong></div>
