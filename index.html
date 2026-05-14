@@ -7043,23 +7043,21 @@ function greedyCraftFinalCounts(recipeNames, inv, options = {}) {
     }
     if (!craftable.length) break;
 
-    let minC = Infinity;
-    for (const r of craftable) {
-      const c = countForRecipe(r);
-      if (c < minC) minC = c;
-    }
-    const balanced = craftable.filter((r) => countForRecipe(r) === minC);
-
     let bestRecipe = null;
-    let bestScore = -1;
-    for (const r of balanced) {
+    let bestPrice = -1;
+    let bestEff = -1;
+    for (const r of craftable) {
+      const p = getAlchemyBoostedSellPriceGold(r);
+      const unitGold = p != null && Number.isFinite(p) ? p : 0;
       const s = unitAlchemyEfficiency(r, effects);
       if (
         bestRecipe === null ||
-        s > bestScore ||
-        (s === bestScore && r.name.localeCompare(bestRecipe.name, 'ko') < 0)
+        unitGold > bestPrice ||
+        (unitGold === bestPrice &&
+          (s > bestEff || (s === bestEff && r.name.localeCompare(bestRecipe.name, 'ko') < 0)))
       ) {
-        bestScore = s;
+        bestPrice = unitGold;
+        bestEff = s;
         bestRecipe = r;
       }
     }
@@ -7998,7 +7996,7 @@ function analyzeEfficiency() {
     return { plans, diluentCount: dCount, totalGold: gold + dGold };
   }
 
-  // 전역: 9종+희석액을 제작 개수가 가장 적은 쪽부터 채우며(골고루), 동점일 때 단위 효율이 높은 것 선택
+  // 전역: 9종+희석액 후보 중 남은 재료로 만들 수 있는 것만 두고, 1개당 전문가 반영 판매가가 가장 높은 것을 반복 선택(동액이면 단위 시간 효율·이름)
   function tryGlobalGreedy(srcInv) {
     const inv = { ...srcInv };
     const allFinals = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3];
