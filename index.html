@@ -9858,7 +9858,7 @@ function renderSageRod() {
   const finalPower = Math.round((sageRodStats.power[sageRodLevel] || 0) * (1 + engraving.fishingPowerBoost / 100));
   const finalShellChance = (sageRodStats.shellChance[sageRodLevel] || 0) + engraving.shellSearchChance;
   lvEl.textContent = `${sageRodLevel}강`;
-  visEl.innerHTML = `<img class="sage-rod-visual-img" src="${sageRodVisualSrc(sageRodLevel)}" alt="세이지 낚싯대 (${sageRodLevel}강)" width="64" height="64" loading="lazy" decoding="async">`;
+  visEl.innerHTML = `<img class="sage-rod-visual-img" src="${sageRodVisualSrc(sageRodLevel)}" alt="세이지 낚싯대 (${sageRodLevel}강)" loading="lazy" decoding="async">`;
   statEl.innerHTML = `
     <div class="expert-desc">시간 감소율: ${sageRodStats.timeReduce[sageRodLevel]}%</div>
     <div class="expert-desc">조개 등장 확률: ${finalShellChance}% (기본 ${sageRodStats.shellChance[sageRodLevel]}% + 각인 ${engraving.shellSearchChance}%)</div>
