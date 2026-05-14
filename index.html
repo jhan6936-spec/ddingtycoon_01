@@ -6692,11 +6692,16 @@ async function openTradeThreadPanel(postId) {
   const sb = getSupabaseClient();
   if (sb) {
     try {
-      const uid = await hydrateAuthUidFromSessionIfNeeded(sb);
+      const { data: guWrap } = await sb.auth.getUser();
+      let uid = guWrap && guWrap.user ? guWrap.user.id : null;
+      if (!uid) {
+        uid = await hydrateAuthUidFromSessionIfNeeded(sb);
+      } else {
+        currentAuthUserId = uid;
+      }
       await refreshProfileRole(sb, uid);
     } catch (_) {}
   }
-  renderTradeThreadPanel();
   document.querySelectorAll('.trade-forum-card').forEach((c) => {
     c.classList.toggle('trade-card-active', c.getAttribute('data-post-id') === postId);
   });
