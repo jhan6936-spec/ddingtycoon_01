@@ -1119,7 +1119,7 @@
           <div class="rod-visual" id="sageRodVisual" aria-label="세이지 낚싯대 외형"></div>
           <div class="expert-controls" style="margin-bottom:10px;">
             <button class="expert-btn" type="button" onclick="changeSageRodLevel(-1)">−</button>
-            <div class="expert-level" id="sageRodLevel">Lv.1</div>
+            <div class="expert-level" id="sageRodLevel">0강</div>
             <button class="expert-btn" type="button" onclick="changeSageRodLevel(1)">+</button>
           </div>
           <div id="sageRodStats"></div>
@@ -1417,10 +1417,11 @@ const sageRodStats = {
 };
 const SAGE_ROD_VISUAL_BASE = '../assets/sage-rod/';
 function sageRodVisualSrc(level) {
-  const file = level >= 15 ? 'sage-rod-15.png' : level >= 10 ? 'sage-rod-10-14.png' : level >= 6 ? 'sage-rod-6-9.png' : 'sage-rod-0-5.png';
+  const n = Math.max(0, Math.min(15, level));
+  const file = n >= 15 ? 'sage-rod-15.png' : n >= 10 ? 'sage-rod-10-14.png' : n >= 6 ? 'sage-rod-6-9.png' : 'sage-rod-0-5.png';
   return SAGE_ROD_VISUAL_BASE + file;
 }
-let sageRodLevel = 1;
+let sageRodLevel = 0;
 let efficiencySub = 'stamina';
 let settingsSub = 'experts';
 const SHELLFISH_NAMES = ['굴', '소라', '문어', '미역', '성게'];
@@ -2710,8 +2711,8 @@ function saveSageRodState() {
 
 function loadSageRodState() {
   try {
-    const raw = parseInt(localStorage.getItem(STORAGE_KEY_SAGE_ROD) || '1', 10);
-    if (Number.isFinite(raw)) sageRodLevel = Math.max(1, Math.min(15, raw));
+    const raw = parseInt(localStorage.getItem(STORAGE_KEY_SAGE_ROD) || '0', 10);
+    if (Number.isFinite(raw)) sageRodLevel = Math.max(0, Math.min(15, raw));
   } catch (_) {}
 }
 
@@ -2739,8 +2740,8 @@ function renderSageRod() {
   const statEl = document.getElementById('sageRodStats');
   const visEl = document.getElementById('sageRodVisual');
   if (!lvEl || !statEl || !visEl) return;
-  lvEl.textContent = `Lv.${sageRodLevel}`;
-  visEl.innerHTML = `<img class="sage-rod-visual-img" src="${sageRodVisualSrc(sageRodLevel)}" alt="세이지 낚싯대" loading="lazy" decoding="async">`;
+  lvEl.textContent = `${sageRodLevel}강`;
+  visEl.innerHTML = `<img class="sage-rod-visual-img" src="${sageRodVisualSrc(sageRodLevel)}" alt="세이지 낚싯대 (${sageRodLevel}강)" loading="lazy" decoding="async">`;
   statEl.innerHTML = `
     <div class="expert-desc">시간 감소율: ${sageRodStats.timeReduce[sageRodLevel]}%</div>
     <div class="expert-desc">조개 등장 확률: ${sageRodStats.shellChance[sageRodLevel]}%</div>
@@ -2750,7 +2751,7 @@ function renderSageRod() {
 }
 
 function changeSageRodLevel(delta) {
-  const next = Math.max(1, Math.min(15, sageRodLevel + delta));
+  const next = Math.max(0, Math.min(15, sageRodLevel + delta));
   if (next === sageRodLevel) return;
   sageRodLevel = next;
   saveSageRodState();
