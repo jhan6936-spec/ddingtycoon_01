@@ -2576,14 +2576,29 @@
     }
     .eff-alchemy-pane-head {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
+      justify-content: center;
       gap: 12px;
       margin: 8px 0 18px;
     }
+    @media (min-width: 720px) {
+      .eff-alchemy-pane-head {
+        justify-content: space-between;
+      }
+    }
     .eff-alchemy-pane-title-wrap {
-      flex: 1;
+      flex: 1 1 200px;
       min-width: 0;
       text-align: center;
+    }
+    .eff-alchemy-pane-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-shrink: 0;
     }
     .eff-alchemy-pane-title {
       font-size: 32px;
