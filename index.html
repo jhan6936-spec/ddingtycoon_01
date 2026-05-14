@@ -7420,22 +7420,37 @@ function analyzeEfficiency() {
     });
     const { shell, vanilla } = splitShellfishVanillaTotals(rawTotals);
 
+    const directInputs = aggregatePlanDirectInputs(planEntries);
     const summaryBox = document.createElement('div');
     summaryBox.className = 'alchemy-mat-summary';
-    lastAlchemySummaryData = { shell, vanilla };
+    lastAlchemySummaryData = { shell, vanilla, directInputs };
     summaryBox.innerHTML = `
       <div class="alchemy-summary-head-row">
         <div class="alchemy-summary-title-text">추천 제작 기준 필요 재료 합계</div>
-        <div class="alchemy-qty-mode-toggles" role="group" aria-label="수량 표시 단위">
-          <button type="button" class="alchemy-qty-mode-btn" data-alchemy-qty-mode="boxSetPiece" onclick="setAlchemySummaryQtyMode('boxSetPiece')">상자/세트/개</button>
-          <button type="button" class="alchemy-qty-mode-btn" data-alchemy-qty-mode="setPiece" onclick="setAlchemySummaryQtyMode('setPiece')">세트/개</button>
-          <button type="button" class="alchemy-qty-mode-btn" data-alchemy-qty-mode="plainPiece" onclick="setAlchemySummaryQtyMode('plainPiece')">개</button>
+        <div class="alchemy-mat-toolbar">
+          <div class="alchemy-mat-view-toggles" role="group" aria-label="재료 표시 방식">
+            <button type="button" class="alchemy-mat-view-btn" data-alchemy-mat-view="detail" onclick="setAlchemyMaterialPanelMode('detail')">자세히보기</button>
+            <button type="button" class="alchemy-mat-view-btn" data-alchemy-mat-view="summary" onclick="setAlchemyMaterialPanelMode('summary')">간략히 보기</button>
+          </div>
+          <div class="alchemy-qty-mode-toggles" role="group" aria-label="수량 표시 단위">
+            <button type="button" class="alchemy-qty-mode-btn" data-alchemy-qty-mode="boxSetPiece" onclick="setAlchemySummaryQtyMode('boxSetPiece')">상자/세트/개</button>
+            <button type="button" class="alchemy-qty-mode-btn" data-alchemy-qty-mode="setPiece" onclick="setAlchemySummaryQtyMode('setPiece')">세트/개</button>
+            <button type="button" class="alchemy-qty-mode-btn" data-alchemy-qty-mode="plainPiece" onclick="setAlchemySummaryQtyMode('plainPiece')">개</button>
+          </div>
         </div>
       </div>
       <div style="font-size:11px;color:#8899aa;line-height:1.5;margin-bottom:12px;">바닐라 무한 계산을 켠 경우에도, 레시피상 필요한 개수는 아래와 같습니다.</div>
-      <div id="alchemyMaterialSummaryBody">${buildAlchemySummaryMaterialSectionsHTML(shell, vanilla, alchemySummaryQtyMode)}</div>
+      <div id="alchemyMaterialDetailWrap" hidden>
+        <div id="alchemyMaterialSummaryBody"></div>
+      </div>
+      <div id="alchemyMaterialSummaryWrap" hidden>
+        <div class="alchemy-summary-stage-hint">최종 제작 대상에 들어가는 바로 한 단계 아래 재료입니다. 카드에 마우스를 올리면 그 아래 단계 재료와 수량이 표시됩니다.</div>
+        <div id="alchemyMaterialSummaryStage"></div>
+      </div>
     `;
     containerAlchemy.appendChild(summaryBox);
+    refreshAlchemyMaterialPanelBodies();
+    applyAlchemyMatPanelVisibility();
     syncAlchemySummaryQtyButtons();
   }
   
