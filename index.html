@@ -3030,25 +3030,30 @@
     }
     .rod-visual {
       width: 100%;
-      max-width: 420px;
-      height: 110px;
+      max-width: 480px;
+      min-height: 200px;
+      height: 200px;
       border-radius: 12px;
       border: 1px solid #2f2f2f;
-      background: linear-gradient(120deg, #1b1b1b, #242424);
+      background: linear-gradient(120deg, #0f0f0f, #1a1a1a);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 42px;
       margin-bottom: 10px;
+      overflow: hidden;
     }
     .rod-visual .sage-rod-visual-img {
-      max-height: 100%;
-      max-width: 100%;
+      max-height: 92%;
+      max-width: 92%;
       width: auto;
       height: auto;
       object-fit: contain;
-      image-rendering: pixelated;
+      image-rendering: -webkit-optimize-contrast;
       image-rendering: crisp-edges;
+      image-rendering: pixelated;
+      transform: scale(1.85);
+      transform-origin: center center;
     }
     .mini-tabs {
       display: flex;
@@ -3511,7 +3516,7 @@
           <div class="rod-visual" id="sageRodVisual" aria-label="세이지 낚싯대 외형"></div>
           <div class="expert-controls" style="margin-bottom:10px;">
             <button class="expert-btn" type="button" onclick="changeSageRodLevel(-1)">−</button>
-            <div class="expert-level" id="sageRodLevel">Lv.1</div>
+            <div class="expert-level" id="sageRodLevel">0강</div>
             <button class="expert-btn" type="button" onclick="changeSageRodLevel(1)">+</button>
           </div>
           <div id="sageRodStats"></div>
@@ -4166,13 +4171,14 @@ let expertState = {
 };
 const sageRodStats = {
   timeReduce: [0,6,10,14,18,23,27,31,35,39,44,49,53,56,58,60],
-  shellChance: [0,1,1,2,2,2,3,3,3,5,5,7,7,9,9,15],
-  shellDrop: [0,2,2,3,3,3,4,4,4,5,5,5,6,6,7,10],
-  power: [0,17,20,22,25,30,35,45,50,57,65,78,90,100,110,150]
+  shellChance: [1,1,1,2,2,2,3,3,3,5,5,7,7,9,9,15],
+  shellDrop: [2,2,2,3,3,3,4,4,4,5,5,5,6,6,7,10],
+  power: [15,17,20,22,25,30,35,45,50,57,65,78,90,100,110,150]
 };
 const SAGE_ROD_VISUAL_BASE = 'assets/sage-rod/';
 function sageRodVisualSrc(level) {
-  const file = level >= 15 ? 'sage-rod-15.png' : level >= 10 ? 'sage-rod-10-14.png' : level >= 6 ? 'sage-rod-6-9.png' : 'sage-rod-0-5.png';
+  const n = Math.max(0, Math.min(15, level));
+  const file = n >= 15 ? 'sage-rod-15.png' : n >= 10 ? 'sage-rod-10-14.png' : n >= 6 ? 'sage-rod-6-9.png' : 'sage-rod-0-5.png';
   return SAGE_ROD_VISUAL_BASE + file;
 }
 const sageEngravingMeta = {
@@ -4184,7 +4190,7 @@ const sageEngravingMeta = {
   rayGuide: { label: '가오리 인도', values: [0, 1, 2, 3, 4, 5], unit: '%', desc: '가오리 등장 확률' },
   fisherRoulette: { label: '어부 룰렛', values: [0, 1, 2, 3, 4, 5], unit: '%', desc: '룰렛 등장 확률' }
 };
-let sageRodLevel = 1;
+let sageRodLevel = 0;
 let sageEngravingState = {
   fishLuck: 0,
   fishingPower: 0,
