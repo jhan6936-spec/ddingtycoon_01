@@ -33,11 +33,13 @@
     return fail(String(oauthDesc || oauthErr));
   }
 
+  // detectSessionInUrl 과 exchangeCodeForSession 을 동시에 쓰면 PKCE 가 두 번 교환되어
+  // code_verifier 가 비는 400(validation_failed)이 날 수 있음 → URL 처리는 수동 교환만 사용.
   var sb = createClient(cfg.url, cfg.anonKey, {
     auth: {
       persistSession: true,
       autoRefreshToken: true,
-      detectSessionInUrl: true,
+      detectSessionInUrl: false,
       flowType: 'pkce',
       storage: window.localStorage
     }

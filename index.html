@@ -5051,7 +5051,8 @@ function getSupabaseClient() {
       auth: {
         persistSession: true,
         autoRefreshToken: true,
-        detectSessionInUrl: true,
+        // OAuth code 교환은 /auth/callback 에서만 수행. 여기서 true면 콜백·메인 이중 교환으로 PKCE 깨질 수 있음.
+        detectSessionInUrl: false,
         flowType: 'pkce',
         storage: window.localStorage
       }
