@@ -6331,10 +6331,7 @@ function refreshAlchemySummaryBody() {
 function buildAlchemySummaryMaterialSectionsHTML(shell, alchemyIntermediates, vanilla, qtyMode) {
   const m = qtyMode != null ? qtyMode : alchemySummaryQtyMode;
   const alchemyObj = alchemyIntermediates || {};
-  const alchemyLines =
-    Object.keys(alchemyObj).filter((k) => (alchemyObj[k] || 0) > 0).length > 0
-      ? formatAlchemyMaterialLinesHTML(alchemyObj, m)
-      : '<div style="font-size:12px;color:#778899;">해당 없음</div>';
+  const alchemyLines = renderAlchemyChainCategoryGroupsHTML(alchemyObj, m);
   return `
     <div class="alchemy-mat-section">
       <h4>어패류</h4>
@@ -6654,6 +6651,26 @@ function formatAlchemyMaterialLinesHTML(matObj, qtyMode) {
       return `<div class="alchemy-mat-line">${img}<span>${name}</span><strong>${qtyLabel}</strong></div>`;
     })
     .join('');
+}
+
+/** 자세히 보기 등: 연금 단계별 열로 묶어 표시 */
+function renderAlchemyChainCategoryGroupsHTML(totalsObj, qtyMode) {
+  const qm = qtyMode != null ? qtyMode : alchemySummaryQtyMode;
+  const hasAny = Object.keys(totalsObj || {}).some((k) => (totalsObj[k] || 0) > 0);
+  if (!hasAny) return '<div style="font-size:12px;color:#778899;">해당 없음</div>';
+  const cols = partitionAlchemyChainTotalsByCategory(totalsObj);
+  if (!cols.length) return '<div style="font-size:12px;color:#778899;">해당 없음</div>';
+  const n = cols.length;
+  const templateCols = n === 1 ? '1fr' : `repeat(${Math.min(n, 3)}, minmax(0, 1fr))`;
+  return `<div class="alchemy-vanilla-grid" style="display:grid;grid-template-columns:${templateCols};gap:12px;align-items:start;">${cols
+    .map(
+      (c) => `
+    <div class="alchemy-vanilla-col">
+      <div class="alchemy-vanilla-col-title">${c.title}</div>
+      ${formatAlchemyMaterialLinesHTML(c.obj, qm)}
+    </div>`
+    )
+    .join('')}</div>`;
 }
 
 function partitionShellfishByStar(shellObj) {
