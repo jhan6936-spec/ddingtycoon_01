@@ -3350,6 +3350,206 @@
       font-size: 13px;
       margin: 10px 0 0;
     }
+    .alchemy-craft-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin: 4px 0 18px;
+    }
+    .alchemy-guide-modal-card {
+      width: min(1180px, 96vw) !important;
+      max-width: 100%;
+    }
+    .alchemy-guide-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px 14px;
+      margin-bottom: 12px;
+      padding: 10px 12px;
+      background: rgba(15, 20, 25, 0.85);
+      border: 1px solid rgba(143, 213, 255, 0.22);
+      border-radius: 10px;
+      box-shadow: 0 0 18px rgba(80, 160, 255, 0.12);
+    }
+    .alchemy-guide-copies-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #b8d4f0;
+    }
+    .alchemy-guide-copies-input {
+      width: 88px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(143, 213, 255, 0.35);
+      background: #0f1419;
+      color: #8fd5ff;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .alchemy-guide-toolbar-hint {
+      font-size: 11px;
+      color: #8899aa;
+      line-height: 1.45;
+      flex: 1 1 220px;
+    }
+    .alchemy-guide-modal-body {
+      max-height: min(72vh, 720px);
+    }
+    .alchemy-guide-lead {
+      color: #aab6c4;
+      font-size: 13px;
+      line-height: 1.55;
+      margin: 0 0 10px;
+    }
+    .alchemy-guide-note-balanced {
+      font-size: 11px;
+      color: #7a8a9a;
+      line-height: 1.5;
+      margin: 0 0 18px;
+      padding: 8px 10px;
+      background: rgba(20, 26, 32, 0.6);
+      border-radius: 8px;
+      border: 1px solid #2a3238;
+    }
+    .alchemy-guide-block {
+      margin-bottom: 26px;
+      padding-bottom: 22px;
+      border-bottom: 1px solid #2a2a2a;
+    }
+    .alchemy-guide-block:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+    .alchemy-guide-block-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .alchemy-guide-block-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: #eaf4ff;
+    }
+    .alchemy-guide-block-sub {
+      font-size: 12px;
+      color: #9eb2c8;
+      margin-top: 4px;
+    }
+    .alchemy-guide-missing {
+      color: #c99;
+      font-size: 13px;
+    }
+    .alchemy-guide-flow {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 6px 2px 12px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .alchemy-guide-col {
+      flex: 0 0 auto;
+      min-width: 200px;
+      max-width: 280px;
+      background: #141414;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      padding: 12px 12px 14px;
+    }
+    .alchemy-guide-col--final {
+      min-width: 220px;
+      max-width: 300px;
+      background: #0f1419;
+      border: 1px solid rgba(143, 213, 255, 0.38);
+      box-shadow:
+        0 0 0 1px rgba(143, 213, 255, 0.12),
+        0 0 20px rgba(100, 180, 255, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+    .alchemy-guide-arrow {
+      flex: 0 0 auto;
+      align-self: center;
+      color: #5a6570;
+      font-size: 26px;
+      font-weight: 300;
+      padding: 0 2px;
+      user-select: none;
+    }
+    .alchemy-guide-step-label {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .alchemy-guide-step-label--final {
+      color: #8fd5ff;
+    }
+    .alchemy-guide-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .alchemy-guide-line {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #d5dde6;
+      line-height: 1.35;
+    }
+    .alchemy-guide-line-name {
+      flex: 1 1 auto;
+      min-width: 0;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
+    .alchemy-guide-line-qty {
+      flex: 0 0 auto;
+      font-weight: 800;
+      color: #8fd5ff;
+      font-size: 12px;
+    }
+    .alchemy-guide-empty {
+      color: #667788;
+      font-size: 12px;
+    }
+    .alchemy-guide-final-row {
+      display: flex;
+      align-items: center;
+      font-size: 15px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+    .alchemy-guide-final-qty {
+      font-size: 14px;
+      font-weight: 800;
+      color: #8fd5ff;
+      margin-bottom: 10px;
+    }
+    .alchemy-guide-time {
+      font-size: 11px;
+      color: #8899aa;
+      line-height: 1.45;
+    }
+    .alchemy-guide-time strong {
+      color: #b8d4f0;
+    }
+    .alchemy-guide-sell {
+      margin-top: 10px;
+      font-size: 11px;
+      color: #9ecb7a;
+      line-height: 1.45;
+    }
+    .alchemy-guide-sell strong {
+      color: #c8f5a8;
+    }
     .main-credits-block {
       margin-top: 36px;
       padding: 24px 20px;
@@ -3586,6 +3786,11 @@
       <div class="header">
         <h1>제작 및 조합법</h1>
         <p class="header-subtitle">해양 아이템들을 제작하는 방법을 확인하세요</p>
+      </div>
+
+      <div class="alchemy-craft-toolbar">
+        <button type="button" class="patch-note-btn" onclick="openEfficiencySub('alchemy', null)">연금품 계산</button>
+        <button type="button" class="patch-note-btn" onclick="openAlchemyCraftGuide()">제작 가이드</button>
       </div>
 
       <div class="search-filter">
