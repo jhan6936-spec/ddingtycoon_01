@@ -2384,6 +2384,19 @@
       margin: 14px 0 8px 0;
       letter-spacing: 0.02em;
     }
+    .alchemy-summary-stage-cat-block {
+      margin-bottom: 16px;
+    }
+    .alchemy-summary-stage-cat-block:last-child {
+      margin-bottom: 0;
+    }
+    .alchemy-summary-stage-cat-heading {
+      font-size: 11px;
+      font-weight: 800;
+      color: #8fa4bc;
+      margin: 0 0 8px 0;
+      letter-spacing: 0.03em;
+    }
     .alchemy-summary-stage-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
@@ -5616,6 +5629,29 @@ function searchRecipes() {
 function isMaterialsTabAlchemyChainItem(name) {
   if (/^(굴|소라|문어|미역|성게)\s+★+$/.test(name)) return false;
   return /(정수|핵|에센스|결정|엘릭서|영약)\s+★/.test(name);
+}
+
+/** 연금 단계별 분류(제작·조합법 `partitionMiscAlchemyRecipes`와 동일 규칙·순서) */
+function partitionAlchemyChainTotalsByCategory(totalsObj) {
+  const meta = [
+    { title: '정수', test: (n) => /정수\s+★$/.test(n) },
+    { title: '핵', test: (n) => /핵\s+★$/.test(n) },
+    { title: '에센스', test: (n) => /에센스\s+★★$/.test(n) },
+    { title: '결정', test: (n) => /결정\s+★★$/.test(n) },
+    { title: '엘릭서', test: (n) => /엘릭서\s+★★★$/.test(n) },
+    { title: '영약', test: (n) => /영약\s+★★★$/.test(n) },
+  ];
+  const cols = meta.map((m) => ({ title: m.title, obj: {} }));
+  const other = {};
+  Object.entries(totalsObj || {}).forEach(([name, c]) => {
+    if (!c || c <= 0) return;
+    const i = meta.findIndex((m) => m.test(name));
+    if (i >= 0) cols[i].obj[name] = c;
+    else other[name] = c;
+  });
+  const out = cols.filter((col) => Object.keys(col.obj).length > 0);
+  if (Object.keys(other).length > 0) out.push({ title: '기타', obj: other });
+  return out;
 }
 
 /** 기타 연금품(materials) → 정수·핵·에센스·결정·엘릭서·영약 */
