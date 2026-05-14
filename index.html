@@ -7773,7 +7773,7 @@ function scheduleTradeBoardRealtimeRefresh() {
   forumRtDebounceTrade = setTimeout(() => {
     forumRtDebounceTrade = null;
     void pullTradeBoardFromRemoteForRealtime();
-  }, 320);
+  }, 140);
 }
 
 function scheduleQaBoardRealtimeRefresh() {
@@ -7781,7 +7781,7 @@ function scheduleQaBoardRealtimeRefresh() {
   forumRtDebounceQa = setTimeout(() => {
     forumRtDebounceQa = null;
     void pullQaBoardFromRemoteForRealtime();
-  }, 320);
+  }, 140);
 }
 
 async function pullTradeBoardFromRemoteForRealtime() {
@@ -10654,7 +10654,7 @@ window.addEventListener('DOMContentLoaded', function() {
       boardVisRefreshTimer = setTimeout(() => {
         boardVisRefreshTimer = null;
         tickTradeQaBoardPoll();
-      }, 320);
+      }, 140);
     });
   const staminaInput = document.getElementById('staminaInput');
   if (staminaInput) {
@@ -10673,7 +10673,7 @@ window.addEventListener('DOMContentLoaded', function() {
   showSettingsSub(settingsSub);
   showEfficiencySub(efficiencySub);
   updateVanillaInputState();
-  runWhenIdle(() => analyzeEfficiency(), 2400);
+  runWhenIdle(() => analyzeEfficiency(), 900);
   } catch (e) {
     console.error('[Init] 페이지 초기화 중 오류 (로그인 UI는 이미 초기화됨):', e);
   }
