@@ -6827,11 +6827,11 @@ function renderZeroStarDiluentPlanBlock(diluentCount, effects) {
   const baseTotal = recipe ? (recipe.price || 0) * n : 0;
   const sellLine =
     n > 0 && unitSell > 0
-      ? `<div style="font-size:11px;color:#9ecb7a;margin-top:5px;line-height:1.35;">전부 판매 시 <strong style="color:#c8f5a8;">${totalSell.toLocaleString()}G</strong> <span style="color:#8899aa;font-weight:600;">(전문가 연금 적용)</span></div>`
+      ? `<div style="font-size:11px;color:#9ecb7a;margin-top:5px;line-height:1.35;">전부 판매 시 <strong style="color:#c8f5a8;">${totalSell.toLocaleString()}G</strong></div>`
       : '';
   const baseLine =
     n > 0 && (effects.alchemyPriceBoost || 0) > 0 && recipe
-      ? `<div style="font-size:10px;color:#8899aa;margin-top:4px;line-height:1.35;">기본가 합 <strong style="color:#9da7b3;">${baseTotal.toLocaleString()}G</strong> · +${effects.alchemyPriceBoost}% 반영</div>`
+      ? `<div style="font-size:10px;color:#8899aa;margin-top:4px;line-height:1.35;">기본가 합 <strong style="color:#9da7b3;">${baseTotal.toLocaleString()}G</strong> · 전문가 연금 +${effects.alchemyPriceBoost}% 반영 금액</div>`
       : '';
   const zeroNote =
     n === 0
@@ -6841,7 +6841,6 @@ function renderZeroStarDiluentPlanBlock(diluentCount, effects) {
       <div style="font-size:11px;color:#9eb2c8;line-height:1.25;word-break:keep-all;">${imgH}${name}</div>
       <div style="font-size:17px;font-weight:900;color:#8fd5ff;margin-top:6px;">${n}개</div>
       ${sellLine}
-      ${n > 0 && !(effects.alchemyPriceBoost || 0) ? `<div style="font-size:10px;color:#8899aa;margin-top:4px;">전문가 연금 보너스 없음 (0%)</div>` : ''}
       ${baseLine}
       ${zeroNote}
     </div>`;
