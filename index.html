@@ -5080,8 +5080,8 @@ function isTradeBoardAdmin() {
   return isForumAdmin();
 }
 
-/** 서버에서 public.profiles 역할을 불러와 거래소·질문채널 관리자 UI에 반영합니다.
- *  우선 SECURITY DEFINER RPC `is_admin`을 사용해 RLS/조회 오류로 admin이 user로 떨어지는 경우를 줄입니다. */
+/** 서버에서 public.profiles 역할과 is_admin RPC 를 함께 반영합니다.
+ *  (profiles 만 보면 RPC 가 false 인 경우, 또는 그 반대인 경우를 줄이기 위해 OR 로 판정) */
 async function refreshProfileRole(sb, uidOpt) {
   if (!sb) return;
   try {
@@ -5094,32 +5094,37 @@ async function refreshProfileRole(sb, uidOpt) {
       return;
     }
 
-    // profiles.role 이 대시보드에서 지정한 admin 의 직접 근거. RPC 가 먼저 false 를 주고
-    // 여기까지 못 가면(예: 예전 순서) 클라이언트가 관리자로 인식하지 못하는 문제가 생길 수 있음.
-    const { data: prof, error: profErr } = await sb.from('profiles').select('role').eq('id', uid).maybeSingle();
-    if (!profErr && prof) {
-      const r = String(prof.role || '')
-        .trim()
-        .toLowerCase();
-      cachedProfileRole = r === 'admin' ? 'admin' : 'user';
-      return;
-    }
-    if (profErr) {
-      console.warn('[profiles] 역할 조회 실패:', profErr.message);
-    } else {
+    const [profRes, rpcRes] = await Promise.all([
+      sb.from('profiles').select('role').eq('id', uid).maybeSingle(),
+      sb.rpc('is_admin')
+    ]);
+
+    if (profRes.error) {
+      console.warn('[profiles] 역할 조회 실패:', profRes.error.message);
+    } else if (!profRes.data) {
       console.warn(
         '[profiles] 역할 행 없음: public.profiles 에 해당 사용자가 있는지 확인하세요.',
         String(uid).slice(0, 8) + '…'
       );
     }
 
-    const rpcRes = await sb.rpc('is_admin');
-    if (!rpcRes.error && typeof rpcRes.data === 'boolean') {
-      cachedProfileRole = rpcRes.data ? 'admin' : 'user';
+    const roleFromProfile =
+      profRes.data && profRes.data.role != null && profRes.data.role !== ''
+        ? String(profRes.data.role).trim().toLowerCase()
+        : null;
+    const rpcBool =
+      !rpcRes.error && typeof rpcRes.data === 'boolean' ? rpcRes.data : null;
+    if (rpcRes.error) {
+      console.debug('[profiles] is_admin RPC 실패:', rpcRes.error.message || rpcRes.error);
+    }
+
+    if (roleFromProfile === 'admin' || rpcBool === true) {
+      cachedProfileRole = 'admin';
       return;
     }
-    if (rpcRes.error) {
-      console.debug('[profiles] is_admin RPC 실패·미배포 — profiles 없음·RPC 실패로 user 처리:', rpcRes.error.message || rpcRes.error);
+    if (roleFromProfile === 'user' || rpcBool === false) {
+      cachedProfileRole = 'user';
+      return;
     }
     cachedProfileRole = 'user';
   } catch (e) {
@@ -5150,7 +5155,16 @@ async function syncProfileRoleForForumActions() {
   try {
     await Promise.race([
       (async () => {
-        const uid = await hydrateAuthUidFromSessionIfNeeded(sb);
+        const { data: guWrap, error: guErr } = await sb.auth.getUser();
+        let uid = guWrap && guWrap.user ? guWrap.user.id : null;
+        if (guErr) {
+          console.warn('[profiles] 역할 동기화 getUser:', guErr.message || guErr);
+        }
+        if (!uid) {
+          uid = await hydrateAuthUidFromSessionIfNeeded(sb);
+        } else {
+          currentAuthUserId = uid;
+        }
         await refreshProfileRole(sb, uid);
       })(),
       new Promise((_, rej) =>
