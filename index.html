@@ -3410,7 +3410,7 @@
       flex: 1 1 220px;
     }
     .alchemy-guide-modal-body {
-      max-height: min(72vh, 720px);
+      max-height: min(78vh, 820px);
     }
     .alchemy-guide-lead {
       color: #aab6c4;
@@ -3458,42 +3458,50 @@
       color: #c99;
       font-size: 13px;
     }
-    .alchemy-guide-flow {
+    .alchemy-guide-flow-vertical {
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       align-items: stretch;
-      gap: 6px;
-      overflow-x: auto;
-      padding: 6px 2px 12px;
-      -webkit-overflow-scrolling: touch;
+      gap: 0;
+      width: 100%;
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 4px 0 8px;
+    }
+    .alchemy-guide-step-card {
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .alchemy-guide-step-card--final .alchemy-guide-col--final {
+      margin-top: 0;
+    }
+    .alchemy-guide-arrow-down {
+      flex-shrink: 0;
+      text-align: center;
+      color: #5a6a78;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      padding: 6px 0 10px;
+      user-select: none;
     }
     .alchemy-guide-col {
-      flex: 0 0 auto;
-      min-width: 200px;
-      max-width: 280px;
+      width: 100%;
+      min-width: 0;
+      max-width: none;
+      box-sizing: border-box;
       background: #141414;
       border: 1px solid #2a2a2a;
       border-radius: 10px;
-      padding: 12px 12px 14px;
+      padding: 12px 14px 14px;
     }
     .alchemy-guide-col--final {
-      min-width: 220px;
-      max-width: 300px;
       background: #0f1419;
       border: 1px solid rgba(143, 213, 255, 0.38);
       box-shadow:
         0 0 0 1px rgba(143, 213, 255, 0.12),
         0 0 20px rgba(100, 180, 255, 0.22),
         inset 0 1px 0 rgba(255, 255, 255, 0.04);
-    }
-    .alchemy-guide-arrow {
-      flex: 0 0 auto;
-      align-self: center;
-      color: #5a6570;
-      font-size: 26px;
-      font-weight: 300;
-      padding: 0 2px;
-      user-select: none;
     }
     .alchemy-guide-step-label {
       font-size: 11px;
@@ -3506,9 +3514,10 @@
       color: #8fd5ff;
     }
     .alchemy-guide-lines {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+      gap: 8px 14px;
+      align-items: start;
     }
     .alchemy-guide-line {
       display: flex;
