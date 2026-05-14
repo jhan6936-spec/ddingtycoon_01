@@ -7324,9 +7324,9 @@ function alchemyGuideColInnerHtml(map) {
   if (!entries.length) return '<div class="alchemy-guide-empty">—</div>';
   return `<div class="alchemy-guide-lines">${entries
     .map(([nm, q]) => {
-      const img = buildImageTag(nm, '', 'height:20px;vertical-align:middle;margin-right:8px;');
+      const img = buildImageTag(nm, '', 'width:26px;height:26px;object-fit:contain;display:block;');
       const qdisp = formatWarehouseStackCount(Math.ceil(Number(q) || 0));
-      return `<div class="alchemy-guide-line">${img}<span class="alchemy-guide-line-name">${escapeHtml(nm)}</span><span class="alchemy-guide-line-qty">${escapeHtml(qdisp)}</span></div>`;
+      return `<div class="alchemy-guide-line"><span class="alchemy-guide-line-icon">${img}</span><span class="alchemy-guide-line-name">${escapeHtml(nm)}</span><span class="alchemy-guide-line-qty">${escapeHtml(qdisp)}</span></div>`;
     })
     .join('')}</div>`;
 }
@@ -7334,7 +7334,10 @@ function alchemyGuideColInnerHtml(map) {
 function renderOneAlchemyGuideBlock(finalName, copies) {
   const recipe = data.recipes.find((r) => r.name === finalName);
   if (!recipe || !recipe.inputs || !recipe.inputs.length) {
-    return `<div class="alchemy-guide-block"><div class="alchemy-guide-block-head"><div><div class="alchemy-guide-block-title">${escapeHtml(finalName)}</div></div></div><div class="alchemy-guide-missing">레시피 데이터를 찾을 수 없습니다.</div></div>`;
+    return `<div class="alchemy-guide-product alchemy-guide-product--error">
+      <h3 class="alchemy-guide-product-title">${escapeHtml(finalName)}</h3>
+      <p class="alchemy-guide-missing">레시피 데이터를 찾을 수 없습니다.</p>
+    </div>`;
   }
   const stages = alchemyGuideBuildStages(recipe, copies);
   const rev = [...stages].reverse();
@@ -7345,7 +7348,7 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
   const stepColors = ['#6ec8ff', '#b89cff', '#ff9b9b', '#8fd5ff'];
   const stepParts = [];
   rev.forEach((map, j) => {
-    if (j > 0) stepParts.push('<div class="alchemy-guide-arrow-down" aria-hidden="true">↓</div>');
+    const nMat = Object.entries(map).filter(([, q]) => q > 0).length;
     const label =
       j === 0
         ? 'STEP 1 · 원재료'
@@ -7354,17 +7357,22 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
           : `STEP ${j + 1} · 중간`;
     const c = stepColors[j % stepColors.length];
     stepParts.push(
-      `<div class="alchemy-guide-step-card"><div class="alchemy-guide-col"><div class="alchemy-guide-step-label" style="color:${c}">${label}</div>${alchemyGuideColInnerHtml(map)}</div></div>`
+      `<div class="alchemy-guide-col alchemy-guide-col--step" style="--guide-accent:${c}">
+        <div class="alchemy-guide-step-header">
+          <span class="alchemy-guide-step-label" style="color:${c}">${label}</span>
+          <span class="alchemy-guide-step-count">${nMat}종</span>
+        </div>
+        ${alchemyGuideColInnerHtml(map)}
+      </div>`
     );
   });
-  stepParts.push('<div class="alchemy-guide-arrow-down" aria-hidden="true">↓</div>');
-  const img = buildImageTag(finalName, '', 'height:28px;vertical-align:middle;margin-right:8px;');
+  const img = buildImageTag(finalName, '', 'width:32px;height:32px;object-fit:contain;display:block;');
   const sell = getAlchemyBoostedSellPriceGold(recipe);
   const sellLine =
     sell != null && copies > 0
       ? `<div class="alchemy-guide-sell">예상 판매가 합 (${copies.toLocaleString()}개, 전문가 연금 보너스): <strong>${(sell * copies).toLocaleString()}G</strong></div>`
       : '';
-  stepParts.push(`<div class="alchemy-guide-step-card alchemy-guide-step-card--final"><div class="alchemy-guide-col alchemy-guide-col--final">
+  stepParts.push(`<div class="alchemy-guide-timeline-final-wrap"><div class="alchemy-guide-col alchemy-guide-col--final">
       <div class="alchemy-guide-step-label alchemy-guide-step-label--final">최종 연성</div>
       <div class="alchemy-guide-final-row">${img}<span>${escapeHtml(finalName)}</span></div>
       <div class="alchemy-guide-final-qty">목표 ${formatWarehouseStackCount(copies)}</div>
@@ -7372,16 +7380,16 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
       ${sellLine}
     </div></div>`);
   const stepsVerticalHtml = stepParts.join('');
-  const headImg = buildImageTag(finalName, '', 'height:36px;vertical-align:middle;margin-right:10px;');
-  return `<div class="alchemy-guide-block">
-    <div class="alchemy-guide-block-head">
-      ${headImg}
-      <div>
-        <div class="alchemy-guide-block-title">${escapeHtml(finalName)}</div>
-        <div class="alchemy-guide-block-sub">목표 <strong>${formatWarehouseStackCount(copies)}</strong> · 합산 기본 시간 <strong>${escapeHtml(formatGuideDurationSec(totalSec))}</strong></div>
+  const headImg = buildImageTag(finalName, '', 'width:40px;height:40px;object-fit:contain;display:block;');
+  return `<div class="alchemy-guide-product">
+    <div class="alchemy-guide-product-head">
+      <div class="alchemy-guide-product-icon">${headImg}</div>
+      <div class="alchemy-guide-product-meta">
+        <h3 class="alchemy-guide-product-title">${escapeHtml(finalName)}</h3>
+        <p class="alchemy-guide-product-stats">목표 <strong>${formatWarehouseStackCount(copies)}</strong> · 합산 기본 시간 <strong>${escapeHtml(formatGuideDurationSec(totalSec))}</strong></p>
       </div>
     </div>
-    <div class="alchemy-guide-flow-vertical">${stepsVerticalHtml}</div>
+    <div class="alchemy-guide-timeline">${stepsVerticalHtml}</div>
   </div>`;
 }
 
@@ -7392,7 +7400,9 @@ function renderAlchemyCraftGuideBody() {
   const targets = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'];
   const blocks = targets.map((nm) => renderOneAlchemyGuideBlock(nm, copies)).join('');
   body.innerHTML = `
-    <p class="alchemy-guide-lead">각 블록은 <strong>목표 ${copies.toLocaleString()}개</strong> 제작을 기준으로, 중간 연금 재료를 한 단계씩 위에서 아래로 펼친 수량입니다. 단계마다 재료는 가로로 자동 배열됩니다.</p>
+    <div class="alchemy-guide-lead-box">
+      <p class="alchemy-guide-lead">각 카드는 <strong>목표 ${copies.toLocaleString()}개</strong> 제작 기준으로 중간 연금 재료를 한 단계씩 아래로 펼친 목록입니다. 재료는 아이콘 · 이름 · 수량 순으로 정렬되어 있습니다.</p>
+    </div>
     ${blocks}
   `;
 }
