@@ -6078,15 +6078,108 @@ function setAlchemySummaryQtyMode(mode) {
   try {
     localStorage.setItem(STORAGE_KEY_ALCHEMY_SUMMARY_QTY, mode);
   } catch (_) {}
-  refreshAlchemySummaryBody();
+  refreshAlchemyMaterialPanelBodies();
   syncAlchemySummaryQtyButtons();
 }
 
-function refreshAlchemySummaryBody() {
+function aggregatePlanDirectInputs(planEntries) {
+  const out = {};
+  (planEntries || []).forEach(([name, count]) => {
+    const recipe = data.recipes.find((r) => r.name === name);
+    if (!recipe || !recipe.inputs || !recipe.inputs.length) return;
+    const c = Math.max(0, Math.floor(Number(count) || 0));
+    if (!c) return;
+    for (const inp of recipe.inputs) {
+      out[inp.name] = (out[inp.name] || 0) + inp.count * c;
+    }
+  });
+  return out;
+}
+
+function getAlchemyOneStepInputs(name) {
+  const mat = data.materials[name];
+  if (mat && mat.inputs && mat.inputs.length) return mat.inputs;
+  const rec = data.recipes.find((r) => r.name === name);
+  if (rec && rec.inputs && rec.inputs.length) return rec.inputs;
+  return [];
+}
+
+function formatAlchemyOneStepPopoverHTML(name, displayQty, qtyMode) {
+  const qm = qtyMode != null ? qtyMode : alchemySummaryQtyMode;
+  const q = Math.max(0, Math.floor(Number(displayQty) || 0));
+  const inputs = getAlchemyOneStepInputs(name);
+  if (!inputs.length) {
+    return '<div class="alchemy-summary-popover-empty">바로 아래 단계 레시피가 없습니다</div>';
+  }
+  return inputs
+    .map((inp) => {
+      const need = inp.count * q;
+      const img = buildImageTag(inp.name, '', 'height:18px;vertical-align:middle;margin-right:8px;');
+      const label = formatAlchemySummaryQty(need, qm);
+      return `<div class="alchemy-summary-popover-line">${img}<span>${inp.name}</span><strong>${label}</strong></div>`;
+    })
+    .join('');
+}
+
+function buildAlchemySummaryStageGridHTML(directInputs, qtyMode) {
+  const m = qtyMode != null ? qtyMode : alchemySummaryQtyMode;
+  const entries = Object.entries(directInputs || {})
+    .filter(([, c]) => c > 0)
+    .sort((a, b) => a[0].localeCompare(b[0], 'ko'));
+  if (!entries.length) {
+    return '<div style="font-size:12px;color:#778899;padding:10px 0;">합산된 한 단계 아래 재료가 없습니다.</div>';
+  }
+  return `<div class="alchemy-summary-stage-grid">${entries
+    .map(([nm, cnt]) => {
+      const img = buildImageTag(nm, '', 'height:28px;display:block;margin:0 auto 6px;');
+      const qtyLabel = formatAlchemySummaryQty(cnt, m);
+      const pop = formatAlchemyOneStepPopoverHTML(nm, cnt, m);
+      return `<div class="alchemy-summary-stage-card">
+        <div class="alchemy-summary-stage-icon">${img}</div>
+        <div class="alchemy-summary-stage-name">${nm}</div>
+        <div class="alchemy-summary-stage-qty">${qtyLabel}</div>
+        <div class="alchemy-summary-popover" aria-hidden="true"><div class="alchemy-summary-popover-inner">${pop}</div></div>
+      </div>`;
+    })
+    .join('')}</div>`;
+}
+
+function syncAlchemyMatViewButtons() {
+  document.querySelectorAll('[data-alchemy-mat-view]').forEach((btn) => {
+    const m = btn.getAttribute('data-alchemy-mat-view');
+    const on = m === alchemyMatPanelMode;
+    btn.classList.toggle('active', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+}
+
+function applyAlchemyMatPanelVisibility() {
+  const dWrap = document.getElementById('alchemyMaterialDetailWrap');
+  const sWrap = document.getElementById('alchemyMaterialSummaryWrap');
+  if (dWrap) dWrap.hidden = alchemyMatPanelMode !== 'detail';
+  if (sWrap) sWrap.hidden = alchemyMatPanelMode !== 'summary';
+  syncAlchemyMatViewButtons();
+}
+
+function refreshAlchemyMaterialPanelBodies() {
+  if (!lastAlchemySummaryData) return;
+  const { shell, vanilla, directInputs } = lastAlchemySummaryData;
   const body = document.getElementById('alchemyMaterialSummaryBody');
-  if (!body || !lastAlchemySummaryData) return;
-  const { shell, vanilla } = lastAlchemySummaryData;
-  body.innerHTML = buildAlchemySummaryMaterialSectionsHTML(shell, vanilla, alchemySummaryQtyMode);
+  const stage = document.getElementById('alchemyMaterialSummaryStage');
+  if (body) body.innerHTML = buildAlchemySummaryMaterialSectionsHTML(shell, vanilla, alchemySummaryQtyMode);
+  if (stage) stage.innerHTML = buildAlchemySummaryStageGridHTML(directInputs || {}, alchemySummaryQtyMode);
+}
+
+function setAlchemyMaterialPanelMode(mode) {
+  if (mode !== 'detail' && mode !== 'summary') return;
+  alchemyMatPanelMode = mode;
+  saveAlchemyMatPanelMode();
+  applyAlchemyMatPanelVisibility();
+  refreshAlchemyMaterialPanelBodies();
+}
+
+function refreshAlchemySummaryBody() {
+  refreshAlchemyMaterialPanelBodies();
 }
 
 function buildAlchemySummaryMaterialSectionsHTML(shell, vanilla, qtyMode) {
