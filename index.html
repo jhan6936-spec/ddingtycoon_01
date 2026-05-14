@@ -5314,7 +5314,7 @@ function showFactorySub(subKey) {
   saveWarehouseInventory();
   const sea = document.getElementById('factorySeaweed');
   const tun = document.getElementById('factoryTunicate');
-  const tabs = document.querySelectorAll('.factory-tabs .tab-btn');
+  const tabs = document.querySelectorAll('#factory .factory-tabs .tab-btn');
   tabs.forEach(t => t.classList.remove('active'));
 
   if (subKey === 'tunicate') {
@@ -7325,29 +7325,6 @@ window.addEventListener('DOMContentLoaded', function() {
   runWhenIdle(() => renderFactorySeaweedMedia());
   loadStaminaInputState();
     initMarineGuideCarousel();
-    refreshTradeBoardFromRemote().then(() => {
-      renderTradeMessages();
-      updateTradeComposerAvatar();
-    });
-    refreshQaBoardFromRemote().then(() => {
-      renderQaMessages();
-    });
-    document.addEventListener('click', closeTradeThreadMoreMenu);
-    document.addEventListener('click', closeQaThreadMoreMenu);
-    document.addEventListener('click', (ev) => {
-      const pop = document.getElementById('tradeEmojiPopover');
-      if (!pop || pop.hidden) return;
-      if (ev.target.closest('#tradeEmojiPopover')) return;
-      closeTradeEmojiPopover();
-    });
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden || !boardPollActiveSection) return;
-      if (boardVisRefreshTimer) clearTimeout(boardVisRefreshTimer);
-      boardVisRefreshTimer = setTimeout(() => {
-        boardVisRefreshTimer = null;
-        tickTradeQaBoardPoll();
-      }, 140);
-    });
   const staminaInput = document.getElementById('staminaInput');
   if (staminaInput) {
     staminaInput.addEventListener('input', renderStaminaPlan);
