@@ -7587,7 +7587,7 @@ function analyzeEfficiency() {
     return { plans, diluentCount: dCount, totalGold: gold + dGold };
   }
 
-  // 전역 탐욕법: 모든 최종 산물 + 추출된 희석액이 동시에 단위 효율로 경쟁
+  // 전역: 9종+희석액을 제작 개수가 가장 적은 쪽부터 채우며(골고루), 동점일 때 단위 효율이 높은 것 선택
   function tryGlobalGreedy(srcInv) {
     const inv = { ...srcInv };
     const allFinals = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3];
