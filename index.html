@@ -6912,27 +6912,34 @@ function renderTriFinalPlan(title, orderedNames, counts) {
   </div>`;
 }
 
-/** 추출된 희석액 — 제작 추천 카드(1줄) */
-function renderDiluentPlanBlock(diluentCount, effects) {
+/** 0성: 추출된 희석액 — 제작 추천 패널 맨 아래 전폭 바(항상 표시) */
+function renderZeroStarDiluentPlanBlock(diluentCount, effects) {
   const n = Math.max(0, Math.floor(Number(diluentCount) || 0));
-  if (n <= 0) return '';
+  const has = n > 0;
   const mult = 1 + effects.alchemyPriceBoost / 100;
   const name = '추출된 희석액';
   const recipe = data.recipes.find((r) => r.name === name);
-  const imgH = buildImageTag(name, '', 'height:22px;vertical-align:middle;margin-right:6px;');
+  const imgH = buildImageTag(name, '', 'height:28px;width:28px;object-fit:contain;vertical-align:middle;margin-right:10px;');
   const unitSell = recipe ? Math.round((recipe.price || 0) * mult) : 0;
   const totalSell = unitSell * n;
   const sellLine =
-    unitSell > 0
-      ? `<div style="font-size:11px;color:#9ecb7a;margin-top:5px;line-height:1.35;">전부 판매 시 <strong style="color:#c8f5a8;">${totalSell.toLocaleString()}G</strong></div>`
+    has && unitSell > 0
+      ? `<div class="alchemy-plan-zero-sell">전부 판매 시 <strong>${totalSell.toLocaleString()}G</strong></div>`
       : '';
-  return `<div style="margin-bottom:14px;">
-    <div style="font-size:13px;font-weight:800;color:#e5e5e5;margin-bottom:8px;">혼합 최종 (희석액)</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
-      <div style="grid-column:1 / -1;background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:10px 8px;text-align:center;min-height:72px;display:flex;flex-direction:column;justify-content:center;">
-        <div style="font-size:11px;color:#9eb2c8;line-height:1.25;word-break:keep-all;">${imgH}${name}</div>
-        <div style="font-size:17px;font-weight:900;color:#8fd5ff;margin-top:6px;">${n}개</div>
+  const note = has
+    ? ''
+    : '<div class="alchemy-plan-zero-muted">이번 추천에서는 제작되지 않았습니다. (재료 부족 또는 다른 연금품이 효율상 우선)</div>';
+  return `<div class="alchemy-plan-tier-zero">
+    <div class="alchemy-plan-tier-zero-title">0성</div>
+    <div class="alchemy-plan-tier-zero-bar${has ? ' has-count' : ''}">
+      <div class="alchemy-plan-tier-zero-left">
+        <div class="alchemy-plan-tier-zero-name-row">${imgH}<span class="alchemy-plan-tier-zero-name">${name}</span></div>
+        <div class="alchemy-plan-tier-zero-sub">혼합 최종 산물 · 1·2·3성 중간 재료(핵·결정·영약)로 제작합니다. 위 제작과 동일한 효율 기준으로 순서에 포함됩니다.</div>
+      </div>
+      <div class="alchemy-plan-tier-zero-right">
+        <div class="alchemy-plan-tier-zero-qty">${n}<span class="alchemy-plan-tier-zero-qty-unit">개</span></div>
         ${sellLine}
+        ${note}
       </div>
     </div>
   </div>`;
@@ -7664,7 +7671,7 @@ function analyzeEfficiency() {
     ${renderTriFinalPlan('1성', FINAL_GROUP1, plan1)}
     ${renderTriFinalPlan('2성', FINAL_GROUP2, plan2)}
     ${renderTriFinalPlan('3성', FINAL_GROUP3, plan3)}
-    ${renderDiluentPlanBlock(diluentCount, effects)}
+    ${renderZeroStarDiluentPlanBlock(diluentCount, effects)}
   `;
   containerAlchemy.appendChild(planWrap);
 
