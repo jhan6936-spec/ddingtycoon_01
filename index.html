@@ -9770,8 +9770,8 @@ function saveSageEngravingState() {
 
 function loadSageRodState() {
   try {
-    const raw = parseInt(localStorage.getItem(STORAGE_KEY_SAGE_ROD) || '1', 10);
-    if (Number.isFinite(raw)) sageRodLevel = Math.max(1, Math.min(15, raw));
+    const raw = parseInt(localStorage.getItem(STORAGE_KEY_SAGE_ROD) || '0', 10);
+    if (Number.isFinite(raw)) sageRodLevel = Math.max(0, Math.min(15, raw));
   } catch (_) {}
 }
 
@@ -9859,8 +9859,8 @@ function renderSageRod() {
   const engraving = getSageEngravingEffects();
   const finalPower = Math.round((sageRodStats.power[sageRodLevel] || 0) * (1 + engraving.fishingPowerBoost / 100));
   const finalShellChance = (sageRodStats.shellChance[sageRodLevel] || 0) + engraving.shellSearchChance;
-  lvEl.textContent = `Lv.${sageRodLevel}`;
-  visEl.innerHTML = `<img class="sage-rod-visual-img" src="${sageRodVisualSrc(sageRodLevel)}" alt="세이지 낚싯대" loading="lazy" decoding="async">`;
+  lvEl.textContent = `${sageRodLevel}강`;
+  visEl.innerHTML = `<img class="sage-rod-visual-img" src="${sageRodVisualSrc(sageRodLevel)}" alt="세이지 낚싯대 (${sageRodLevel}강)" width="64" height="64" loading="lazy" decoding="async">`;
   statEl.innerHTML = `
     <div class="expert-desc">시간 감소율: ${sageRodStats.timeReduce[sageRodLevel]}%</div>
     <div class="expert-desc">조개 등장 확률: ${finalShellChance}% (기본 ${sageRodStats.shellChance[sageRodLevel]}% + 각인 ${engraving.shellSearchChance}%)</div>
@@ -9897,7 +9897,7 @@ function renderSageRod() {
 }
 
 function changeSageRodLevel(delta) {
-  const next = Math.max(1, Math.min(15, sageRodLevel + delta));
+  const next = Math.max(0, Math.min(15, sageRodLevel + delta));
   if (next === sageRodLevel) return;
   sageRodLevel = next;
   saveSageRodState();
