@@ -7290,7 +7290,7 @@ function renderAlchemyCraftGuideBody() {
   const targets = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'];
   const blocks = targets.map((nm) => renderOneAlchemyGuideBlock(nm, copies)).join('');
   body.innerHTML = `
-    <p class="alchemy-guide-lead">각 항목은 <strong>목표 ${copies.toLocaleString()}개</strong> 제작 기준으로 <code style="color:#8fd5ff;">data.materials</code>를 한 단계씩 펼친 수량입니다. 가로로 스크롤해 단계를 따라가면 됩니다.</p>
+    <p class="alchemy-guide-lead">각 블록은 <strong>목표 ${copies.toLocaleString()}개</strong> 제작을 기준으로, 중간 연금 재료(제작식)를 한 단계씩 아래로 펼친 수량입니다. 가로로 스크롤해 왼쪽(바닐라·원재료)에서 오른쪽(최종)으로 따라가면 됩니다.</p>
     ${blocks}
   `;
 }
