@@ -6050,6 +6050,19 @@ function loadAlchemySummaryQtyMode() {
   } catch (_) {}
 }
 
+function loadAlchemyMatPanelMode() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_ALCHEMY_MAT_PANEL);
+    if (raw === 'none' || raw === 'detail' || raw === 'summary') alchemyMatPanelMode = raw;
+  } catch (_) {}
+}
+
+function saveAlchemyMatPanelMode() {
+  try {
+    localStorage.setItem(STORAGE_KEY_ALCHEMY_MAT_PANEL, alchemyMatPanelMode);
+  } catch (_) {}
+}
+
 function syncAlchemySummaryQtyButtons() {
   document.querySelectorAll('[data-alchemy-qty-mode]').forEach((btn) => {
     const m = btn.getAttribute('data-alchemy-qty-mode');
