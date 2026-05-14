@@ -3463,9 +3463,9 @@
           <div class="sidebar-efficiency-group">
             <div class="sub-item" data-calc-section="efficiency" onclick="switchSection('efficiency', this)">효율 분석</div>
             <div id="efficiencySubNav" class="sub-nav nested-eff" style="display: none;">
+              <div class="sub-item" onclick="openEfficiencySub('stamina', this)">스태미나 계산</div>
               <div class="sub-item" onclick="openEfficiencySub('alchemy', this)">연금품 계산</div>
               <div class="sub-item" onclick="openEfficiencySub('craftPrice', this)">공예품 계산</div>
-              <div class="sub-item" onclick="openEfficiencySub('stamina', this)">스태미나 계산</div>
             </div>
           </div>
           <div class="sub-item" data-calc-section="settings" onclick="switchSection('settings', this)">개인설정</div>
@@ -5412,7 +5412,7 @@ function switchSection(sectionId, clickedEl) {
   if (efficiencySubNav) efficiencySubNav.style.display = (sectionId === 'efficiency') ? 'block' : 'none';
   document.querySelectorAll('#efficiencySubNav .sub-item').forEach(i => i.classList.remove('active'));
   if (sectionId === 'efficiency') {
-    const effOrder = ['alchemy', 'craftPrice', 'stamina'];
+    const effOrder = ['stamina', 'alchemy', 'craftPrice'];
     const ei = effOrder.indexOf(efficiencySub);
     const effSubs = document.querySelectorAll('#efficiencySubNav .sub-item');
     if (ei >= 0 && effSubs[ei]) effSubs[ei].classList.add('active');
