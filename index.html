@@ -4170,6 +4170,11 @@ const sageRodStats = {
   shellDrop: [0,2,2,3,3,3,4,4,4,5,5,5,6,6,7,10],
   power: [0,17,20,22,25,30,35,45,50,57,65,78,90,100,110,150]
 };
+const SAGE_ROD_VISUAL_BASE = 'assets/sage-rod/';
+function sageRodVisualSrc(level) {
+  const file = level >= 15 ? 'sage-rod-15.png' : level >= 10 ? 'sage-rod-10-14.png' : level >= 6 ? 'sage-rod-6-9.png' : 'sage-rod-0-5.png';
+  return SAGE_ROD_VISUAL_BASE + file;
+}
 const sageEngravingMeta = {
   fishLuck: { label: '물고기 행운', values: [0, 25, 50, 75, 100], unit: '%', desc: '물고기 추가 드롭 확률' },
   fishingPower: { label: '어획 강화', values: [0, 15, 25, 40], unit: '%', desc: '수중 어획력 증가' },
