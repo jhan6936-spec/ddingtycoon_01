@@ -6243,25 +6243,33 @@ function formatAlchemyOneStepPopoverHTML(name, displayQty, qtyMode) {
 
 function buildAlchemySummaryStageGridHTML(directInputs, qtyMode) {
   const m = qtyMode != null ? qtyMode : alchemySummaryQtyMode;
-  const entries = Object.entries(directInputs || {})
-    .filter(([, c]) => c > 0)
-    .sort((a, b) => a[0].localeCompare(b[0], 'ko'));
+  const entries = Object.entries(directInputs || {}).filter(([, c]) => c > 0);
   if (!entries.length) {
     return '<div style="font-size:12px;color:#778899;padding:10px 0;">합산된 한 단계 아래 재료가 없습니다.</div>';
   }
-  return `<div class="alchemy-summary-stage-grid">${entries
-    .map(([nm, cnt]) => {
-      const img = buildImageTag(nm, '', 'height:28px;display:block;margin:0 auto 6px;');
-      const qtyLabel = formatAlchemySummaryQty(cnt, m);
-      const pop = formatAlchemyOneStepPopoverHTML(nm, cnt, m);
-      return `<div class="alchemy-summary-stage-card">
+  const cols = partitionAlchemyChainTotalsByCategory(directInputs);
+  const renderCard = ([nm, cnt]) => {
+    const img = buildImageTag(nm, '', 'height:28px;display:block;margin:0 auto 6px;');
+    const qtyLabel = formatAlchemySummaryQty(cnt, m);
+    const pop = formatAlchemyOneStepPopoverHTML(nm, cnt, m);
+    return `<div class="alchemy-summary-stage-card">
         <div class="alchemy-summary-stage-icon">${img}</div>
         <div class="alchemy-summary-stage-name">${nm}</div>
         <div class="alchemy-summary-stage-qty">${qtyLabel}</div>
         <div class="alchemy-summary-popover" aria-hidden="true"><div class="alchemy-summary-popover-inner">${pop}</div></div>
       </div>`;
+  };
+  return cols
+    .map((col) => {
+      const sorted = Object.entries(col.obj).sort((a, b) => a[0].localeCompare(b[0], 'ko'));
+      if (!sorted.length) return '';
+      return `<div class="alchemy-summary-stage-cat-block">
+        <div class="alchemy-summary-stage-cat-heading">${col.title}</div>
+        <div class="alchemy-summary-stage-grid">${sorted.map(renderCard).join('')}</div>
+      </div>`;
     })
-    .join('')}</div>`;
+    .filter(Boolean)
+    .join('');
 }
 
 function buildAlchemySummaryStageViewsHTML(directInputs, qtyMode) {
