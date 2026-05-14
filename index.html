@@ -3504,10 +3504,9 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.04);
     }
     .alchemy-guide-step-label {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 800;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+      letter-spacing: 0.02em;
       margin-bottom: 10px;
     }
     .alchemy-guide-step-label--final {
@@ -3526,6 +3525,10 @@
       font-size: 12px;
       color: #d5dde6;
       line-height: 1.35;
+      padding: 6px 8px;
+      background: rgba(0, 0, 0, 0.22);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
     }
     .alchemy-guide-line-name {
       flex: 1 1 auto;
@@ -4076,7 +4079,7 @@
         inputmode="numeric"
         oninput="renderAlchemyCraftGuideBody()"
       >
-      <span class="alchemy-guide-toolbar-hint">해양 연금 최종품·희석액마다 재료를 단계별로 펼친 흐름입니다. 효율 분석의 연금 추천은 남은 재료로 만들 수 있는 후보 중 판매가가 높은 쪽을 우선하는 방식입니다.</span>
+      <span class="alchemy-guide-toolbar-hint">최종 9종·희석액마다 재료를 단계별로 펼친 흐름입니다. 단계는 위에서 아래로 읽으면 되고, 효율 분석의 연금 추천은 판매가가 높은 후보를 우선합니다.</span>
     </div>
     <div id="alchemyCraftGuideBody" class="patch-modal-body alchemy-guide-modal-body"></div>
   </div>
