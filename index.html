@@ -7026,8 +7026,6 @@ function greedyCraftFinalCounts(recipeNames, inv, options = {}) {
   const craftOpts = { skipShellfishTierConvert: true };
   const dRecipe = includeDiluentCandidate ? data.recipes.find((r) => r.name === '추출된 희석액') : null;
 
-  const countForRecipe = (recipe) => (recipe.name === '추출된 희석액' ? diluentCount : counts[recipe.name] || 0);
-
   const guard = 200000;
   let iter = 0;
   while (iter++ < guard) {
