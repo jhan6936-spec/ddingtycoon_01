@@ -4147,21 +4147,7 @@
       <div class="patch-modal-title">연금품 제작 가이드</div>
       <button class="patch-close-btn" type="button" onclick="closeAlchemyCraftGuide()">닫기</button>
     </div>
-    <div class="alchemy-guide-toolbar">
-      <label class="alchemy-guide-copies-label" for="alchemyGuideCopiesInput">목표 수량 (개)</label>
-      <input
-        id="alchemyGuideCopiesInput"
-        class="alchemy-guide-copies-input"
-        type="number"
-        min="1"
-        max="9999"
-        step="1"
-        value="1"
-        inputmode="numeric"
-        oninput="renderAlchemyCraftGuideBody()"
-      >
-      <span class="alchemy-guide-toolbar-hint">최종 9종·희석액마다 재료를 단계별로 펼친 흐름입니다. 단계는 위에서 아래로 읽으면 되고, 효율 분석의 연금 추천은 판매가가 높은 후보를 우선합니다.</span>
-    </div>
+    <p class="alchemy-guide-top-note">수량은 위쪽 <strong>제작 추천</strong> 표와 같습니다. 창고·전문가 설정을 바꾼 뒤에는 연금품 계산을 한 번 더 실행하면 반영됩니다.</p>
     <div id="alchemyCraftGuideBody" class="patch-modal-body alchemy-guide-modal-body"></div>
   </div>
 </div>
