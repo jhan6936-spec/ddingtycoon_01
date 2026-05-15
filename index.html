@@ -2455,6 +2455,29 @@
     .alchemy-mat-section--chain {
       margin-top: 4px;
     }
+    .alchemy-mat-tier-detail-section {
+      margin-bottom: 22px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid #2a3140;
+    }
+    .alchemy-mat-tier-detail-section:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+    .alchemy-mat-subsection {
+      margin-top: 12px;
+    }
+    .alchemy-mat-subsection:first-of-type {
+      margin-top: 10px;
+    }
+    .alchemy-mat-subsection-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #8fa4bc;
+      margin: 0 0 8px 0;
+      letter-spacing: 0.02em;
+    }
     .alchemy-summary-stage-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
@@ -6894,13 +6917,13 @@ function buildAlchemySummaryMaterialSectionsHTML(planEntries, qtyMode) {
         ? `<div class="alchemy-mat-subsection">
         <h5 class="alchemy-mat-subsection-title">바닐라 재료</h5>
         ${renderVanillaWarehouseCategoriesHTML(tier.vanilla, m)}
-      </motion.div>`
+      </div>`
         : '';
-      return `<motion.div class="alchemy-mat-section alchemy-mat-tier-detail-section">
+      return `<div class="alchemy-mat-section alchemy-mat-tier-detail-section">
       <h4 class="alchemy-star-tier-heading">${tier.title}</h4>
       ${shellBlock}
       ${vanillaBlock}
-    </motion.div>`;
+    </div>`;
     })
     .join('');
 }
@@ -8566,7 +8589,7 @@ function analyzeEfficiency() {
     const alchemyIntermediates = aggregatePlanAlchemyMaterialNodesNeeded(planEntries);
     const summaryBox = document.createElement('div');
     summaryBox.className = 'alchemy-mat-summary';
-    lastAlchemySummaryData = { shell, vanilla, directInputs, alchemyIntermediates };
+    lastAlchemySummaryData = { shell, vanilla, directInputs, planEntries };
     summaryBox.innerHTML = `
       <div class="alchemy-summary-head-row">
         <div class="alchemy-summary-title-text">추천 제작 기준 필요 재료 합계</div>
