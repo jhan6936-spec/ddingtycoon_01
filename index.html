@@ -8611,9 +8611,10 @@ function analyzeEfficiency() {
         </div>
       </div>
       <div style="font-size:11px;color:#8899aa;line-height:1.5;margin-bottom:12px;">바닐라 무한 계산을 켠 경우에도, 레시피상 필요한 개수는 아래와 같습니다.</div>
-      <div id="alchemyMaterialDetailWrap" hidden>
-        <div id="alchemyMaterialSummaryBody"></div>
-      </div>
+      <motion.div id="alchemyMaterialDetailWrap" hidden>
+        <motion.div class="alchemy-summary-detail-hint">1·2·3성 연금품 제작에 들어가는 <strong>어패류·바닐라 재료</strong>만 성급별로 합산합니다. (정수·핵·에센스 등 연금 중간 산물은 표시하지 않습니다.)</motion.div>
+        <motion.div id="alchemyMaterialSummaryBody"></motion.div>
+      </motion.div>
       <div id="alchemyMaterialSummaryWrap" hidden>
         <div class="alchemy-summary-stage-hint">최종 제작에 바로 들어가는 재료와, 그 아래 단계의 연금품(정수·핵·에센스·결정·엘릭서·영약)을 카드로 보여 줍니다. 카드에 마우스를 올리면 그다음 단계 레시피와 수량이 표시됩니다.</div>
         <div id="alchemyMaterialSummaryStage"></div>
