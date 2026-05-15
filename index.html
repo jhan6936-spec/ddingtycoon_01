@@ -4568,9 +4568,15 @@ let sageEngravingState = {
 let efficiencySub = 'stamina';
 let settingsSub = 'experts';
 const SHELLFISH_NAMES = ['굴', '소라', '문어', '미역', '성게'];
-/** 어패류 1★→2★ 승급 비용 (1★ 개수 / 2★ 1개) */
+/** 어패류 1★→2★ 승급 비용 (1★ 개수 / 2★ 1개) — 조합법 표시용 */
 const SHELLFISH_PROMOTE_ONE_TO_TWO_COST = 3;
-/** 연금 재료 집계 시 1★→2★ 승급 레시피 무시(별도 ILP 승급 변수로 처리) */
+/**
+ * 연금 ILP: 창고 성급별 수량을 유지하되, 고성급 어패류를 저성급 연금 재료로 환산해 사용.
+ * 1성(★) 수요 충족 풀 = ★ + ★★×2 + ★★★×4, 2성(★★) = ★★ + ★★★, 3성(★★★) = ★★★
+ */
+const SHELLFISH_CASCADE_TO_ONE_STAR = { star2: 2, star3: 4 };
+const SHELLFISH_CASCADE_TO_TWO_STAR = { star3: 1 };
+/** 연금 재료 집계 시 승급 레시피 전개 중단(성급별 잎 노드 유지) */
 const SHELLFISH_PROMOTE_TWO_STAR = new Set(['굴 ★★', '소라 ★★', '문어 ★★', '미역 ★★', '성게 ★★']);
 /** @deprecated 하위 호환 — 승급 대상 2★와 동일 집합 참조 */
 const SHELLFISH_DOWNGRADE_ONE_STAR = SHELLFISH_PROMOTE_TWO_STAR;
