@@ -8637,7 +8637,7 @@ function analyzeEfficiency() {
   revBox.style.borderRadius = '10px';
   const diluentRevNote =
     diluentCount > 0
-      ? `<motion.div style="font-size:11px;color:#8899aa;margin-top:6px;line-height:1.45;">추출된 희석액 <strong style="color:#b8c9d9;">${diluentCount.toLocaleString()}개</strong>는 최종 9종과 함께 재료 제약 안에서 총 판매가가 최대가 되도록 함께 산출된 결과입니다.</motion.div>`
+      ? `<div style="font-size:11px;color:#8899aa;margin-top:6px;line-height:1.45;">추출된 희석액 <strong style="color:#b8c9d9;">${diluentCount.toLocaleString()}개</strong>는 최종 9종과 함께 재료 제약 안에서 총 판매가가 최대가 되도록 함께 산출된 결과입니다.</div>`
       : '';
   const tierSumParts = [
     g1.boosted > 0 ? `1성 ${g1.boosted.toLocaleString()}G` : '',
