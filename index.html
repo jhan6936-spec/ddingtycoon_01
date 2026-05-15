@@ -7518,25 +7518,51 @@ function optimizeAlchemyPlanILP(inv) {
   needsList.forEach((needs) => Object.keys(needs).forEach((m) => allMats.add(m)));
 
   const constraints = {};
-  allMats.forEach((m) => {
-    const stock = Math.max(0, Number(inv[m]) || 0);
-    const max = isShellfishStockName(m)
-      ? stock
-      : Math.max(stock, ALCHEMY_PLAN_UNBOUNDED_STOCK);
-    constraints[lpMaterialKey(m)] = { max };
-  });
-
   const variables = {};
   const ints = {};
+
+  allMats.forEach((m) => {
+    if (isShellfishStockName(m)) return;
+    const stock = Math.max(0, Number(inv[m]) || 0);
+    constraints[lpMaterialKey(m)] = {
+      max: Math.max(stock, ALCHEMY_PLAN_UNBOUNDED_STOCK),
+    };
+  });
+
   products.forEach((name, i) => {
     const vid = varIds[i];
     const recipe = data.recipes.find((r) => r.name === name);
     variables[vid] = { revenue: getAlchemyBoostedSellPriceGold(recipe) || 0 };
-    Object.entries(needsList[i]).forEach(([mat, cnt]) => {
-      const c = Number(cnt);
-      if (c > 0) variables[vid][lpMaterialKey(mat)] = c;
-    });
     ints[vid] = 1;
+  });
+
+  SHELLFISH_NAMES.forEach((species) => {
+    const n1 = `${species} ★`;
+    const n2 = `${species} ★★`;
+    const n3 = `${species} ★★★`;
+    const s1 = Math.max(0, Number(inv[n1]) || 0);
+    const s2 = Math.max(0, Number(inv[n2]) || 0);
+    const s3 = Math.max(0, Number(inv[n3]) || 0);
+    const c1 = lpMaterialKey(`shell_t1:${species}`);
+    const c2 = lpMaterialKey(`shell_t2:${species}`);
+    const c3 = lpMaterialKey(`shell_t3:${species}`);
+    constraints[c1] = { max: s1 };
+    constraints[c2] = { max: s2 };
+    constraints[c3] = { max: s3 };
+
+    products.forEach((_, i) => {
+      const vid = varIds[i];
+      const needs = needsList[i];
+      if (needs[n1] > 0) variables[vid][c1] = (variables[vid][c1] || 0) + Number(needs[n1]);
+      if (needs[n2] > 0) variables[vid][c2] = (variables[vid][c2] || 0) + Number(needs[n2]);
+      if (needs[n3] > 0) variables[vid][c3] = (variables[vid][c3] || 0) + Number(needs[n3]);
+    });
+
+    const upId = 'up_' + species;
+    variables[upId] = { revenue: 0 };
+    variables[upId][c1] = SHELLFISH_PROMOTE_ONE_TO_TWO_COST;
+    variables[upId][c2] = -1;
+    ints[upId] = 1;
   });
 
   if (typeof solver === 'undefined' || !solver || typeof solver.Solve !== 'function') {
