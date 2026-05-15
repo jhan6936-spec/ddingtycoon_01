@@ -8620,17 +8620,13 @@ function analyzeEfficiency() {
   planWrap.style.borderRadius = '12px';
   planWrap.innerHTML = `
     <div style="font-size:14px;font-weight:900;color:#e8f4ff;margin-bottom:10px;">제작 추천</div>
-    ${renderTriFinalPlan('1성', FINAL_GROUP1, plan1)}
-    ${renderTriFinalPlan('2성', FINAL_GROUP2, plan2)}
-    ${renderTriFinalPlan('3성', FINAL_GROUP3, plan3)}
+    ${renderTriFinalPlan('1성', FINAL_GROUP1, plan1, g1)}
+    ${renderTriFinalPlan('2성', FINAL_GROUP2, plan2, g2)}
+    ${renderTriFinalPlan('3성', FINAL_GROUP3, plan3, g3)}
     ${renderZeroStarDiluentPlanBlock(diluentCount, effects)}
   `;
   containerAlchemy.appendChild(planWrap);
 
-  const g1 = sumFinalPlanGold(plan1, effects);
-  const g2 = sumFinalPlanGold(plan2, effects);
-  const g3 = sumFinalPlanGold(plan3, effects);
-  const gD = sumFinalPlanGold({ '추출된 희석액': diluentCount }, effects);
   const totalBase = g1.base + g2.base + g3.base + gD.base;
   const totalBoosted = g1.boosted + g2.boosted + g3.boosted + gD.boosted;
   const revBox = document.createElement('div');
