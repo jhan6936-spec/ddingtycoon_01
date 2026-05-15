@@ -8393,62 +8393,11 @@ function analyzeEfficiency() {
     });
   }
 
-  // 검증: 모든 성급 순서 조합 + 전역 탐욕법을 시도해서 최대 수익 조합 선택
-  const tierGroups = [
-    { key: '1', names: FINAL_GROUP1 },
-    { key: '2', names: FINAL_GROUP2 },
-    { key: '3', names: FINAL_GROUP3 }
-  ];
-  const permutations = [
-    [0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]
-  ];
-
-  function tryTierOrder(order, srcInv) {
-    const inv = { ...srcInv };
-    const plans = [{}, {}, {}];
-    let dCount = 0;
-    for (const idx of order) {
-      const { counts, diluentCount: dPart } = greedyCraftFinalCounts(tierGroups[idx].names, inv, {
-        includeDiluentCandidate: true,
-      });
-      plans[idx] = counts;
-      dCount += dPart;
-    }
-    const dRecipe = data.recipes.find((r) => r.name === '추출된 희석액');
-    const gold = [0, 1, 2].reduce((sum, idx) => sum + sumFinalPlanGold(plans[idx], effects).boosted, 0);
-    const dGold = dRecipe ? Math.round((dRecipe.price || 0) * (1 + effects.alchemyPriceBoost / 100)) * dCount : 0;
-    return { plans, diluentCount: dCount, totalGold: gold + dGold };
-  }
-
-  // 전역: 9종+희석액 후보 중 남은 재료로 만들 수 있는 것만 두고, 1개당 전문가 반영 판매가가 가장 높은 것을 반복 선택(동액이면 단위 시간 효율·이름)
-  function tryGlobalGreedy(srcInv) {
-    const inv = { ...srcInv };
-    const allFinals = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3];
-    const { counts, diluentCount: dCount } = greedyCraftFinalCounts(allFinals, inv, { includeDiluentCandidate: true });
-    const plans = [
-      Object.fromEntries(FINAL_GROUP1.map((n) => [n, counts[n] || 0])),
-      Object.fromEntries(FINAL_GROUP2.map((n) => [n, counts[n] || 0])),
-      Object.fromEntries(FINAL_GROUP3.map((n) => [n, counts[n] || 0])),
-    ];
-    const gold = plans.reduce((sum, p) => sum + sumFinalPlanGold(p, effects).boosted, 0);
-    const dRecipe = data.recipes.find((r) => r.name === '추출된 희석액');
-    const dGold = dRecipe ? Math.round((dRecipe.price || 0) * (1 + effects.alchemyPriceBoost / 100)) * dCount : 0;
-    return { plans, diluentCount: dCount, totalGold: gold + dGold };
-  }
-
-  // 모든 후보 중 최대 수익 선택
-  let bestResult = null;
-  for (const perm of permutations) {
-    const result = tryTierOrder(perm, baseInvForPlan);
-    if (!bestResult || result.totalGold > bestResult.totalGold) bestResult = result;
-  }
-  const globalResult = tryGlobalGreedy(baseInvForPlan);
-  if (globalResult.totalGold > bestResult.totalGold) bestResult = globalResult;
-
-  const plan1 = bestResult.plans[0];
-  const plan2 = bestResult.plans[1];
-  const plan3 = bestResult.plans[2];
-  const diluentCount = bestResult.diluentCount;
+  const optimized = optimizeAlchemyPlan(baseInvForPlan, effects);
+  const plan1 = optimized.plans[0];
+  const plan2 = optimized.plans[1];
+  const plan3 = optimized.plans[2];
+  const diluentCount = optimized.diluentCount;
   const planWrap = document.createElement('div');
   planWrap.style.marginBottom = '18px';
   planWrap.style.padding = '14px';
