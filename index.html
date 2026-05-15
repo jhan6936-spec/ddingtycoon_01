@@ -7585,7 +7585,14 @@ function optimizeAlchemyPlanILP(inv) {
     products.forEach((name, i) => {
       counts[name] = Math.max(0, Math.floor(Number(result[varIds[i]]) || 0));
     });
-    return packAlchemyPlanResult(counts);
+    const shellfishPromotions = {};
+    SHELLFISH_NAMES.forEach((species) => {
+      const u = Math.max(0, Math.floor(Number(result['up_' + species]) || 0));
+      if (u > 0) shellfishPromotions[species] = u;
+    });
+    const packed = packAlchemyPlanResult(counts);
+    packed.shellfishPromotions = shellfishPromotions;
+    return packed;
   } catch (e) {
     console.warn('[alchemy ILP]', e);
     return null;
