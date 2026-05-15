@@ -6701,7 +6701,6 @@ function buildAlchemySummaryStageGridHTML(directInputs, qtyMode) {
   if (!entries.length) {
     return '<div style="font-size:12px;color:#778899;padding:10px 0;">합산된 한 단계 아래 재료가 없습니다.</div>';
   }
-  const cols = partitionAlchemyChainTotalsByCategory(directInputs);
   const renderCard = ([nm, cnt]) => {
     const img = buildImageTag(nm, '', 'height:28px;display:block;margin:0 auto 6px;');
     const qtyLabel = formatAlchemySummaryQty(cnt, m);
