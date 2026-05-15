@@ -7552,8 +7552,13 @@ function optimizeAlchemyPlanILP(inv) {
     const c1 = lpMaterialKey(`shell_t1:${species}`);
     const c2 = lpMaterialKey(`shell_t2:${species}`);
     const c3 = lpMaterialKey(`shell_t3:${species}`);
-    constraints[c1] = { max: s1 };
-    constraints[c2] = { max: s2 };
+    const poolOneStar =
+      s1 +
+      s2 * SHELLFISH_CASCADE_TO_ONE_STAR.star2 +
+      s3 * SHELLFISH_CASCADE_TO_ONE_STAR.star3;
+    const poolTwoStar = s2 + s3 * SHELLFISH_CASCADE_TO_TWO_STAR.star3;
+    constraints[c1] = { max: poolOneStar };
+    constraints[c2] = { max: poolTwoStar };
     constraints[c3] = { max: s3 };
 
     products.forEach((_, i) => {
@@ -7563,12 +7568,6 @@ function optimizeAlchemyPlanILP(inv) {
       if (needs[n2] > 0) variables[vid][c2] = (variables[vid][c2] || 0) + Number(needs[n2]);
       if (needs[n3] > 0) variables[vid][c3] = (variables[vid][c3] || 0) + Number(needs[n3]);
     });
-
-    const upId = 'up_' + species;
-    variables[upId] = { revenue: 0 };
-    variables[upId][c1] = SHELLFISH_PROMOTE_ONE_TO_TWO_COST;
-    variables[upId][c2] = -1;
-    ints[upId] = 1;
   });
 
   if (typeof solver === 'undefined' || !solver || typeof solver.Solve !== 'function') {
@@ -7591,14 +7590,7 @@ function optimizeAlchemyPlanILP(inv) {
     products.forEach((name, i) => {
       counts[name] = Math.max(0, Math.floor(Number(result[varIds[i]]) || 0));
     });
-    const shellfishPromotions = {};
-    SHELLFISH_NAMES.forEach((species) => {
-      const u = Math.max(0, Math.floor(Number(result['up_' + species]) || 0));
-      if (u > 0) shellfishPromotions[species] = u;
-    });
-    const packed = packAlchemyPlanResult(counts);
-    packed.shellfishPromotions = shellfishPromotions;
-    return packed;
+    return packAlchemyPlanResult(counts);
   } catch (e) {
     console.warn('[alchemy ILP]', e);
     return null;
