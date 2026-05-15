@@ -8610,6 +8610,14 @@ function analyzeEfficiency() {
     diluentCount > 0
       ? `<div style="font-size:11px;color:#8899aa;margin-top:6px;line-height:1.45;">추출된 희석액 <strong style="color:#b8c9d9;">${diluentCount.toLocaleString()}개</strong>는 최종 9종과 함께 재료 제약 안에서 총 판매가가 최대가 되도록 함께 산출된 결과입니다.</div>`
       : '';
+  const promos = optimized.shellfishPromotions || {};
+  const promoEntries = Object.entries(promos).filter(([, n]) => n > 0);
+  const promoteRevNote =
+    promoEntries.length > 0
+      ? `<div style="font-size:11px;color:#8899aa;margin-top:6px;line-height:1.45;">어패류 승급(1★ 3개→2★ 1개): ${promoEntries
+          .map(([s, n]) => `<strong style="color:#b8c9d9;">${s} ${n}회</strong>`)
+          .join(', ')}</div>`
+      : '';
   revBox.innerHTML = `
     <div style="font-size:11px;color:#8899aa;line-height:1.45;margin-bottom:10px;">
       창고 <strong style="color:#b8c9d9;">성급별 어패류</strong> 수량 안에서 최종 9종·추출된 희석액 개수를 조정합니다. 승급은 <strong style="color:#b8c9d9;">1★ 3개→2★ 1개</strong>만 반영하며(2★→3★ 승급 없음), 이득일 때만 승급합니다. 바닐라·광물·회 등 부재료는 제한 없이 가정합니다.
