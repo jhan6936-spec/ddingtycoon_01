@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>?��???| ?�양 ?�업 계산�?/title>
+  <title>띵타해 | 해양 작업 계산기</title>
   <link rel="icon" href="assets/favicon/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/favicon-16x16.png">
@@ -38,11 +38,11 @@
         radial-gradient(45% 35% at 15% 12%, rgba(20, 108, 168, 0.14) 0%, rgba(20, 108, 168, 0) 75%),
         linear-gradient(180deg, #0c1520 0%, #0f1012 38%, #0f0f0f 100%);
     }
-    /* 기본 ?�?�포: 과한 굵기 ?�화 */
+    /* 기본 타이포: 과한 굵기 완화 */
     h1, h2, h3, h4, h5, h6, strong, b {
       font-weight: 600;
     }
-    /* ?�형 ?�스?�는 ???�게 처리 */
+    /* 소형 텍스트는 더 얇게 처리 */
     .sidebar-title,
     .sub-nav .sub-item,
     .recipe-section-title,
@@ -53,7 +53,7 @@
     .info-label {
       font-weight: 400 !important;
     }
-    /* ?�라?�으�?700~900??준 ?�형 ?�스???�화 */
+    /* 인라인으로 700~900을 준 소형 텍스트 완화 */
     [style*="font-size:10px"][style*="font-weight"],
     [style*="font-size:11px"][style*="font-weight"],
     [style*="font-size:12px"][style*="font-weight"],
@@ -70,7 +70,7 @@
       display: flex;
       min-height: 100vh;
     }
-    /* ?�이?�바 */
+    /* 사이드바 */
     .sidebar {
       width: 236px;
       flex-shrink: 0;
@@ -279,7 +279,7 @@
       line-height: 1.6;
     }
 
-    /* 거래????검????+ 글로우 강조 + 2???�레???�널 */
+    /* 거래소 — 검정 톤 + 글로우 강조 + 2열 스레드 패널 */
     #trade-hub .header h1 {
       color: #f6f7f9;
       text-shadow:
@@ -1288,7 +1288,7 @@
         border-left: none;
       }
     }
-    /* 거래??글?�이 ?�로??(?�스코드 ?�사) */
+    /* 거래소 글쓴이 프로필 (디스코드 유사) */
     .trade-profile-modal {
       z-index: 10050;
     }
@@ -1614,7 +1614,7 @@
       border-color: rgba(74, 143, 217, 0.28);
       font-weight: 600 !important;
     }
-    /* 메인 컨텐�?*/
+    /* 메인 컨텐츠 */
     .main-content {
       flex: 1;
       padding: 30px 40px;
@@ -1712,7 +1712,7 @@
       0%, 100% { opacity: 0.5; transform: translate3d(0, 0, 0) scale(1); }
       50% { opacity: 0.9; transform: translate3d(-8px, 4px, 0) scale(1.05); }
     }
-    /* 검??& ?�터 */
+    /* 검색 & 필터 */
     .search-filter {
       display: flex;
       gap: 15px;
@@ -1745,7 +1745,7 @@
       font-size: 14px;
       cursor: pointer;
     }
-    /* ?�시??카드 그리??*/
+    /* 레시피 카드 그리드 */
     .recipes-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -1845,7 +1845,7 @@
       color: #bbb;
     }
     .ingredient-item:before {
-      content: "??;
+      content: "•";
       margin-right: 8px;
       color: #4a8fd9;
       font-weight: bold;
@@ -1861,7 +1861,7 @@
       color: #4a8fd9;
       font-weight: 600;
     }
-    /* 창고 ?�션 */
+    /* 창고 섹션 */
     .warehouse-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
@@ -2040,7 +2040,7 @@
       gap: 7px !important;
     }
 
-    /* ?�패�??�금???�션 - 콤팩??*/
+    /* 어패류/연금품 섹션 - 콤팩트 */
     .warehouse-grid.shellfish-compact,
     .warehouse-grid.alchemy-compact {
       grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
@@ -2062,7 +2062,7 @@
       font-size: 12px;
     }
 
-    /* 창고 ?�더 ?�션 */
+    /* 창고 헤더 액션 */
     .header-row {
       display: flex;
       align-items: flex-end;
@@ -2719,7 +2719,7 @@
       color: #fff;
     }
 
-    /* 공장 ?�작�?*/
+    /* 공장 제작법 */
     .factory-tabs {
       display: flex;
       gap: 10px;
@@ -2830,7 +2830,7 @@
       }
     }
 
-    /* 공장 ?�진 ?��? 뷰어 */
+    /* 공장 사진 확대 뷰어 */
     .viewer-overlay {
       position: fixed;
       inset: 0;
@@ -2946,7 +2946,7 @@
       color: #eee;
     }
 
-    /* 계산�??�업 (창고: 카드 ??absolute / 기�?: ?�면 fixed) */
+    /* 계산기 팝업 (창고: 카드 안 absolute / 기타: 화면 fixed) */
     .calc-popup {
       width: 280px;
       background: #141414;
@@ -3106,7 +3106,7 @@
     .action-btn.danger:hover {
       border-color: #d94a4a;
     }
-    /* ?�크롤바 */
+    /* 스크롤바 */
     ::-webkit-scrollbar {
       width: 8px;
     }
@@ -3126,7 +3126,7 @@
     .content-section.active {
       display: block;
     }
-    /* ?�율 분석 ?�션 */
+    /* 효율 분석 섹션 */
     .efficiency-card {
       background: #1a1a1a;
       border: 1px solid #2a2a2a;
@@ -3189,7 +3189,7 @@
       background: #1a1a1a;
       border-radius: 8px;
     }
-    /* 카테고리 ?�터 버튼 */
+    /* 카테고리 필터 버튼 */
     .category-filters {
       display: flex;
       gap: 8px;
@@ -3555,7 +3555,7 @@
     .alchemy-guide-pyramid-slab--final {
       max-width: min(100%, var(--pyramid-w, 100%));
     }
-    /** ?��? 줄·아???�살??(?�션 ?�리 ?�낌) */
+    /** 얇은 줄·아래 화살표 (포션 트리 느낌) */
     .alchemy-guide-pyramid-arrow {
       width: 1px;
       height: 16px;
@@ -3613,7 +3613,7 @@
       background: rgba(143, 213, 255, 0.08);
       border: 1px solid rgba(143, 213, 255, 0.14);
     }
-    /** 문어�? ?�크 배�????�량 강조 + 구분??+ ?�료�? */
+    /** 문어발: 다크 배지형(수량 강조 + 구분선 + 재료명) */
     .alchemy-guide-node-row {
       display: flex;
       flex-wrap: wrap;
@@ -3903,133 +3903,133 @@
 <body>
 
 <div class="main-layout">
-  <!-- ?�이?�바 ?�비게이??-->
+  <!-- 사이드바 네비게이션 -->
   <div class="sidebar">
-    <nav class="sidebar-inner" aria-label="?�이??메뉴">
+    <nav class="sidebar-inner" aria-label="사이드 메뉴">
     <div class="sidebar-title">메뉴</div>
 
       <div class="nav-item active" data-nav-section="main" onclick="switchSection('main', this)">메인</div>
 
       <div class="sidebar-calc-group">
-        <div class="sidebar-group-label">계산�?/div>
+        <div class="sidebar-group-label">계산기</div>
         <div id="calculatorSubNav" class="sub-nav calc-sub">
-          <div class="sub-item" data-calc-section="craft" onclick="switchSection('craft', this)">?�작 �?조합�?/div>
-          <div class="sub-item" data-calc-section="warehouse" onclick="switchSection('warehouse', this)">?�료 창고</div>
+          <div class="sub-item" data-calc-section="craft" onclick="switchSection('craft', this)">제작 및 조합법</div>
+          <div class="sub-item" data-calc-section="warehouse" onclick="switchSection('warehouse', this)">재료 창고</div>
           <div class="sidebar-efficiency-group">
-            <div class="sub-item" data-calc-section="efficiency" onclick="switchSection('efficiency', this)">?�율 분석</div>
+            <div class="sub-item" data-calc-section="efficiency" onclick="switchSection('efficiency', this)">효율 분석</div>
             <div id="efficiencySubNav" class="sub-nav nested-eff" style="display: none;">
-              <div class="sub-item" onclick="openEfficiencySub('stamina', this)">?�태미나 계산</div>
-              <div class="sub-item" onclick="openEfficiencySub('alchemy', this)">?�금??계산</div>
-              <div class="sub-item" onclick="openEfficiencySub('craftPrice', this)">공예??계산</div>
+              <div class="sub-item" onclick="openEfficiencySub('stamina', this)">스태미나 계산</div>
+              <div class="sub-item" onclick="openEfficiencySub('alchemy', this)">연금품 계산</div>
+              <div class="sub-item" onclick="openEfficiencySub('craftPrice', this)">공예품 계산</div>
             </div>
           </div>
-          <div class="sub-item" data-calc-section="settings" onclick="switchSection('settings', this)">개인?�정</div>
+          <div class="sub-item" data-calc-section="settings" onclick="switchSection('settings', this)">개인설정</div>
         </div>
       </div>
 
       <div class="sidebar-divider" aria-hidden="true"></div>
 
-      <div class="nav-item" data-nav-section="marine-guide" onclick="switchSection('marine-guide', this)">?�양?�문가 가?�드</div>
-      <div class="nav-item" data-nav-section="factory" onclick="switchSection('factory', this)">공장 ?�작�?/div>
+      <div class="nav-item" data-nav-section="marine-guide" onclick="switchSection('marine-guide', this)">해양전문가 가이드</div>
+      <div class="nav-item" data-nav-section="factory" onclick="switchSection('factory', this)">공장 제작법</div>
     </nav>
   </div>
 
-  <!-- 메인 컨텐�?-->
+  <!-- 메인 컨텐츠 -->
   <div class="main-content">
     <header class="site-auth-bar" id="siteAuthBar" aria-label="계정">
       <div class="site-auth-inner">
         <div id="authStateGuest" class="auth-state-guest">
-          <button type="button" class="btn-discord" id="btnDiscordLogin" onclick="authSignInDiscord()" aria-label="Discord�?로그??>
+          <button type="button" class="btn-discord" id="btnDiscordLogin" onclick="authSignInDiscord()" aria-label="Discord로 로그인">
             <svg class="discord-icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
               <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
             </svg>
-            Discord�?계속?�기
+            Discord로 계속하기
           </button>
-          <p class="auth-config-hint" id="authConfigHint" hidden>Supabase URL�?Anon ?��? ?�요?�니?? supabase-config.js??window.SUPABASE_CONFIG�??�인?�세??</p>
+          <p class="auth-config-hint" id="authConfigHint" hidden>Supabase URL과 Anon 키가 필요합니다. supabase-config.js의 window.SUPABASE_CONFIG를 확인하세요.</p>
         </div>
       </div>
     </header>
 
-    <button type="button" id="authProfileTrigger" class="auth-profile-trigger" onclick="openProfileSettingsModal()" hidden aria-label="?�로???�정">
+    <button type="button" id="authProfileTrigger" class="auth-profile-trigger" onclick="openProfileSettingsModal()" hidden aria-label="프로필 설정">
       <img id="authAvatarImg" alt="" width="44" height="44" decoding="async">
     </button>
-    <!-- 메인 ?�션 -->
+    <!-- 메인 섹션 -->
     <div id="main" class="content-section active">
       <div class="header main-hero">
         <div class="header-row">
           <div>
             <span class="hero-kicker">Marine Work Toolkit</span>
-            <h1>?��???/h1>
-            <p class="header-subtitle">?�양 ?�장 ?�업?��? ?�한 ?�작 · 채집 ?�율 계산 ?�이지</p>
+            <h1>띵타해</h1>
+            <p class="header-subtitle">해양 현장 작업자를 위한 제작 · 채집 효율 계산 페이지</p>
           </div>
           <div class="header-actions">
-            <button class="patch-note-btn" type="button" onclick="openPatchNotes()">?�치?�트</button>
+            <button class="patch-note-btn" type="button" onclick="openPatchNotes()">패치노트</button>
           </div>
         </div>
       </div>
       <div style="margin-top: 30px;">
         <div style="background: rgba(74, 143, 217, 0.1); border-left: 4px solid #4a8fd9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-          <h2 style="color: #4a8fd9; margin-bottom: 10px; font-size: 18px;">?�� ?�용 가?�드</h2>
+          <h2 style="color: #4a8fd9; margin-bottom: 10px; font-size: 18px;">📖 사용 가이드</h2>
           <p style="color: #bbb; line-height: 1.6; font-size: 14px;">
-            ??계산기는 ?��??�의 ?�양???�이???�작 �?채집 ?�동???�율?�을 분석?�니??<br>
+            이 계산기는 띵타해의 다양한 아이템 제작 및 채집 활동의 효율성을 분석합니다.<br>
             <br>
             <strong>주요 기능:</strong>
           </p>
           <ul style="color: #bbb; margin-left: 20px; margin-top: 10px; line-height: 1.8; font-size: 14px;">
-            <li><strong>?�작 �?조합�?/strong> - ?�체 ?�시?��? ?�인?�고 ?�요???�료�??�악?�니??/li>
-            <li><strong>?�료 창고</strong> - 보유???�료 ?�량???�력?�여 ?�작 가?�성??분석?�니??/li>
-            <li><strong>?�율 분석</strong> - ?�태미나, ?�금?? 공예??가�??�율??계산?�니??/li>
-            <li><strong>개인?�정</strong> - ?�문가 ?�킬�??�이지 ?�싯?� ?�벨???�정?�니??/li>
-            <li><strong>공장 ?�작�?/strong> - 공장?�서???�이???�작 방법???�인?�니??/li>
+            <li><strong>제작 및 조합법</strong> - 전체 레시피를 확인하고 필요한 재료를 파악합니다</li>
+            <li><strong>재료 창고</strong> - 보유한 재료 수량을 입력하여 제작 가능성을 분석합니다</li>
+            <li><strong>효율 분석</strong> - 스태미나, 연금품, 공예품 가격 효율을 계산합니다</li>
+            <li><strong>개인설정</strong> - 전문가 스킬과 세이지 낚싯대 레벨을 설정합니다</li>
+            <li><strong>공장 제작법</strong> - 공장에서의 아이템 제작 방법을 확인합니다</li>
           </ul>
         </div>
         <div style="background: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; padding: 20px; border-radius: 8px;">
-          <h2 style="color: #ffc107; margin-bottom: 10px; font-size: 18px;">?�� ??/h2>
+          <h2 style="color: #ffc107; margin-bottom: 10px; font-size: 18px;">💡 팁</h2>
           <p style="color: #bbb; line-height: 1.6; font-size: 14px;">
-            ?�료 창고?�서 바닐???�료 계산 ?��????�용?�여 바닐???�료???�향??조절?????�습?�다.<br>
-            개인?�정?�서 ?�신??캐릭???�보�??�력?�면 ???�확???�율 분석??가?�합?�다.
+            재료 창고에서 바닐라 재료 계산 토글을 사용하여 바닐라 재료의 영향을 조절할 수 있습니다.<br>
+            개인설정에서 당신의 캐릭터 정보를 입력하면 더 정확한 효율 분석이 가능합니다.
           </p>
         </div>
         <div class="main-credits-block">
-          <h2 class="main-credits-block-title">?��??��? 만드?????��???주신 분들</h2>
-          <p class="main-credits-block-lead">고마??분들???�개?�니?? ?�진?� ?�서부??박총�? ?�링, ?? 부?? ?�진 ???�입?�다.</p>
+          <h2 class="main-credits-block-title">띵타해를 만드는 데 도움을 주신 분들</h2>
+          <p class="main-credits-block-lead">고마운 분들을 소개합니다. 사진은 앞서부터 박총총, 세링, 율, 부시, 혜진 님 순입니다.</p>
           <div id="mainCreditsInline" class="main-credits-inline"></div>
           <div class="main-credits-footer">
-            <button type="button" class="main-credits-trigger" onclick="openCreditsModal()">?�게 보기</button>
+            <button type="button" class="main-credits-trigger" onclick="openCreditsModal()">크게 보기</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ?�작 �?조합�??�션 -->
+    <!-- 제작 및 조합법 섹션 -->
     <div id="craft" class="content-section">
       <div class="header">
-        <h1>?�작 �?조합�?/h1>
-        <p class="header-subtitle">?�양 ?�이?�들???�작?�는 방법???�인?�세??/p>
+        <h1>제작 및 조합법</h1>
+        <p class="header-subtitle">해양 아이템들을 제작하는 방법을 확인하세요</p>
       </div>
 
       <div class="alchemy-craft-toolbar">
-        <button type="button" class="patch-note-btn" onclick="openEfficiencySub('alchemy', null)">?�금??계산</button>
+        <button type="button" class="patch-note-btn" onclick="openEfficiencySub('alchemy', null)">연금품 계산</button>
       </div>
 
       <div class="search-filter">
         <div class="search-box">
-          <input type="text" id="searchInput" placeholder="?�이??검??.." onkeyup="searchRecipes()">
+          <input type="text" id="searchInput" placeholder="아이템 검색..." onkeyup="searchRecipes()">
         </div>
       </div>
 
       <div id="recipesContainer" class="recipes-grid">
-        <!-- ?�시??카드?�이 ?�기 ?�성??-->
+        <!-- 레시피 카드들이 여기 생성됨 -->
       </div>
     </div>
 
-    <!-- ?�료 창고 ?�션 -->
+    <!-- 재료 창고 섹션 -->
     <div id="warehouse" class="content-section">
       <div class="header">
         <div class="header-row">
           <div>
-            <h1>?�료 창고</h1>
-            <p class="header-subtitle">보유???�료???�량??기입?�세??/p>
+            <h1>재료 창고</h1>
+            <p class="header-subtitle">보유한 재료의 수량을 기입하세요</p>
           </div>
         </div>
       </div>
@@ -4039,99 +4039,99 @@
           <div class="warehouse-toolbar-row warehouse-toolbar-row--vanilla">
             <div class="toggle-wrap warehouse-toggle-inline">
               <span class="warehouse-vanilla-label-block">
-                <span class="warehouse-vanilla-label-text">바닐???�료 계산</span>
+                <span class="warehouse-vanilla-label-text">바닐라 재료 계산</span>
                 <span class="warehouse-info-anchor">
                   <button
                     type="button"
                     class="warehouse-info-badge"
                     aria-describedby="warehouseVanillaTipText"
-                    aria-label="?��?�? 바닐???�료 계산"
+                    aria-label="도움말: 바닐라 재료 계산"
                   ><span aria-hidden="true">i</span></button>
                   <span id="warehouseVanillaTipText" class="warehouse-info-tooltip" role="tooltip">
-                    바닐???�료???�량??무한?�로 ?�정?�는 버튼?�니??
+                    바닐라 재료의 수량을 무한으로 설정하는 버튼입니다.
                   </span>
                 </span>
               </span>
-              <label class="toggle-switch" title="켜짐: 바닐???�료 ?�량 반영 / 꺼짐: 바닐???�료 무한?�">
+              <label class="toggle-switch" title="켜짐: 바닐라 재료 수량 반영 / 꺼짐: 바닐라 재료 무한대">
                 <input id="vanillaCalcToggle" type="checkbox" checked>
                 <span class="toggle-slider"></span>
               </label>
             </div>
           </div>
           <div class="warehouse-toolbar-row warehouse-toolbar-row--actions">
-            <button class="btn danger" type="button" onclick="resetAllWarehouse()">?�체 초기??/button>
-            <button class="btn" type="button" id="warehouseSetDisplayToggle" onclick="toggleWarehouseSetDisplayMode()">�?��/?�트 변??/button>
+            <button class="btn danger" type="button" onclick="resetAllWarehouse()">전체 초기화</button>
+            <button class="btn" type="button" id="warehouseSetDisplayToggle" onclick="toggleWarehouseSetDisplayMode()">갯수/세트 변환</button>
           </div>
         </div>
       </div>
 
       <div id="warehouseContainer" class="warehouse-sections">
-        <!-- ?�료 ?�력 ??��?�이 ?�기 ?�성??-->
+        <!-- 재료 입력 항목들이 여기 생성됨 -->
       </div>
     </div>
 
-    <!-- ?�율 분석 ?�션 -->
+    <!-- 효율 분석 섹션 -->
     <div id="efficiency" class="content-section">
       <div class="header">
-        <h1>?�율 분석</h1>
-        <p class="header-subtitle">보유???�료�?만들 ???�는 최고 ?�율???�작 루트�??�인?�세??/p>
+        <h1>효율 분석</h1>
+        <p class="header-subtitle">보유한 재료로 만들 수 있는 최고 효율의 제작 루트를 확인하세요</p>
       </div>
       <div id="effStaminaPane" class="mini-pane active">
-        <div style="font-size:32px; font-weight:900; color:#fff; text-align:center; margin:8px 0 18px;">?�태미나 계산</div>
+        <div style="font-size:32px; font-weight:900; color:#fff; text-align:center; margin:8px 0 18px;">스태미나 계산</div>
         <div class="panel-card">
           <div class="stamina-row">
-            <label for="staminaInput">보유 ?�태미나</label>
-            <input id="staminaInput" type="number" min="0" value="" placeholder="?�태미나 ?�력">
+            <label for="staminaInput">보유 스태미나</label>
+            <input id="staminaInput" type="number" min="0" value="" placeholder="스태미나 입력">
             <button class="btn" type="button" onclick="renderStaminaPlan(); saveStaminaInputState();">계산</button>
           </div>
-          <div id="staminaResult" class="no-result">?�태미나�??�력?�면 추천 분배�?계산?�니??/div>
+          <div id="staminaResult" class="no-result">스태미나를 입력하면 추천 분배를 계산합니다</div>
         </div>
       </div>
       <div id="effAlchemyPane" class="mini-pane">
         <div class="eff-alchemy-pane-head">
           <div class="eff-alchemy-pane-title-wrap">
-            <div class="eff-alchemy-pane-title">?�금??계산</div>
+            <div class="eff-alchemy-pane-title">연금품 계산</div>
           </div>
           <div class="eff-alchemy-pane-actions">
-            <button type="button" class="patch-note-btn alchemy-screenshot-exclude" onclick="openAlchemyCraftGuide()">?�작 가?�드</button>
-            <button type="button" class="btn alchemy-screenshot-exclude" id="alchemyScreenshotBtn" onclick="downloadAlchemyPaneScreenshot()">?�진?�로 ?�운</button>
+            <button type="button" class="patch-note-btn alchemy-screenshot-exclude" onclick="openAlchemyCraftGuide()">제작 가이드</button>
+            <button type="button" class="btn alchemy-screenshot-exclude" id="alchemyScreenshotBtn" onclick="downloadAlchemyPaneScreenshot()">사진으로 다운</button>
           </div>
         </div>
         <div id="efficiencyContainerAlchemy">
-          <div class="no-result">?�금??계산 결과가 ?�기???�시?�니??/div>
+          <div class="no-result">연금품 계산 결과가 여기에 표시됩니다</div>
         </div>
       </div>
       <div id="effCraftPricePane" class="mini-pane">
-        <div style="font-size:32px; font-weight:900; color:var(--t-text-inv); text-align:center; margin:8px 0 18px;">공예??가�?/div>
+        <div style="font-size:32px; font-weight:900; color:var(--t-text-inv); text-align:center; margin:8px 0 18px;">공예품 가격</div>
         <div class="craft-sales-toolbar">
-          <button class="btn" type="button" id="craftSalesCalcToggleBtn" onclick="toggleCraftSalesCalcPanel()" aria-expanded="false">공예??계산</button>
+          <button class="btn" type="button" id="craftSalesCalcToggleBtn" onclick="toggleCraftSalesCalcPanel()" aria-expanded="false">공예품 계산</button>
         </div>
         <div id="efficiencyContainerCraftPrice">
-          <div class="no-result">공예??가격이 ?�기???�시?�니??/div>
+          <div class="no-result">공예품 가격이 여기에 표시됩니다</div>
         </div>
       </div>
     </div>
 
     <div id="settings" class="content-section">
       <div class="header">
-        <h1>개인?�정</h1>
-        <p class="header-subtitle">?�문가?� ?�이지 ?�싯?� ?�정</p>
+        <h1>개인설정</h1>
+        <p class="header-subtitle">전문가와 세이지 낚싯대 설정</p>
       </div>
       <div class="factory-tabs">
-        <button class="tab-btn active" type="button" data-settings-tab="experts" onclick="showSettingsSub('experts')">?�문가</button>
-        <button class="tab-btn" type="button" data-settings-tab="sageRod" onclick="showSettingsSub('sageRod')">?�이지 ?�싯?�</button>
+        <button class="tab-btn active" type="button" data-settings-tab="experts" onclick="showSettingsSub('experts')">전문가</button>
+        <button class="tab-btn" type="button" data-settings-tab="sageRod" onclick="showSettingsSub('sageRod')">세이지 낚싯대</button>
       </div>
       <div id="settingsExpertsPane" class="mini-pane active">
         <div id="expertsContainer" class="experts-grid"></div>
       </div>
       <div id="settingsSageRodPane" class="mini-pane">
         <div class="panel-card">
-          <div class="expert-name">?�이지 ?�싯?�</div>
-          <div class="expert-desc">강화 ?�계???�라 ?�패�?채집 ?�율???�라집니??/div>
-          <div class="rod-visual" id="sageRodVisual" aria-label="?�이지 ?�싯?� ?�형"></div>
+          <div class="expert-name">세이지 낚싯대</div>
+          <div class="expert-desc">강화 단계에 따라 어패류 채집 효율이 달라집니다</div>
+          <div class="rod-visual" id="sageRodVisual" aria-label="세이지 낚싯대 외형"></div>
           <div class="expert-controls" style="margin-bottom:10px;">
-            <button class="expert-btn" type="button" onclick="changeSageRodLevel(-1)">??/button>
-            <div class="expert-level" id="sageRodLevel">0�?/div>
+            <button class="expert-btn" type="button" onclick="changeSageRodLevel(-1)">−</button>
+            <div class="expert-level" id="sageRodLevel">0강</div>
             <button class="expert-btn" type="button" onclick="changeSageRodLevel(1)">+</button>
           </div>
           <div id="sageRodStats"></div>
@@ -4140,55 +4140,55 @@
       </div>
     </div>
 
-    <!-- ?�양?�문가 가?�드 -->
+    <!-- 해양전문가 가이드 -->
     <div id="marine-guide" class="content-section">
       <div class="header">
-        <h1>?�양?�문가 가?�드</h1>
-        <p class="header-subtitle">?�비�??�한 ?�양 ?�문가 ?�내</p>
+        <h1>해양전문가 가이드</h1>
+        <p class="header-subtitle">뉴비를 위한 해양 전문가 안내</p>
       </div>
 
-      <div class="marine-guide-carousel" aria-roledescription="carousel" aria-label="?�양?�문가 가?�드 ?��?지">
-        <button type="button" class="marine-guide-nav" id="marineGuidePrev" onclick="marineGuideStep(-1)" aria-label="?�전 ?��?지">??/button>
+      <div class="marine-guide-carousel" aria-roledescription="carousel" aria-label="해양전문가 가이드 이미지">
+        <button type="button" class="marine-guide-nav" id="marineGuidePrev" onclick="marineGuideStep(-1)" aria-label="이전 이미지">‹</button>
         <div class="marine-guide-slide-wrap marine-guide-viewport" id="marineGuideViewport">
           <div class="marine-guide-track" id="marineGuideTrack"></div>
           <div class="marine-guide-counter" id="marineGuideSlideCounter" aria-live="polite">1 / 15</div>
         </div>
-        <button type="button" class="marine-guide-nav" id="marineGuideNext" onclick="marineGuideStep(1)" aria-label="?�음 ?��?지">??/button>
+        <button type="button" class="marine-guide-nav" id="marineGuideNext" onclick="marineGuideStep(1)" aria-label="다음 이미지">›</button>
       </div>
 
       <div class="marine-guide-block">
         <h2>각인 추천</h2>
         <ul>
-          <li>?�의??�??�태 ?�우???�간 ?�축 - ?�중?�흡, 빠른 ?��?</li>
-          <li>?�율???�이??각인 - ?�패 ?�운, 조개 ?�색, 물고�??�운, ?�령 고래</li>
-          <li>?�수???�황???�니�??�매??각인 - ?�획 강화, 가?�리 ?�도, ?��? 룰렛</li>
+          <li>편의성 및 스태 태우는 시간 단축 - 수중호흡, 빠른 어부</li>
+          <li>효율성 높이는 각인 - 어패 행운, 조개 탐색, 물고기 행운, 정령 고래</li>
+          <li>특수한 상황이 아니면 애매한 각인 - 어획 강화, 가오리 인도, 어부 룰렛</li>
         </ul>
-        <p class="marine-guide-note">?�만 각인?� 최소 ?�유?�금 1000만원 ?�으?????�작?�시??�?추천?�립?�다.</p>
+        <p class="marine-guide-note">다만 각인은 최소 여유자금 1000만원 있으실 때 시작하시는 걸 추천드립니다.</p>
       </div>
 
-      <p class="marine-guide-credit">???�보???�코 ??x_x?�과 ?�드�??�님???�보�?기반?�로 ?�용 & ?�작?�었?�니??.</p>
+      <p class="marine-guide-credit">이 정보는 디코 닉 x_x님과 해드림 율님의 정보를 기반으로 사용 & 제작되었습니다 .</p>
     </div>
 
 
-    <!-- 공장 ?�작�??�션 -->
+    <!-- 공장 제작법 섹션 -->
     <div id="factory" class="content-section">
       <div class="header">
-        <h1>공장 ?�작�?/h1>
-        <p class="header-subtitle">?�초 공장 / 불우?�쉥???�작법을 ?�인?�세??/p>
+        <h1>공장 제작법</h1>
+        <p class="header-subtitle">해초 공장 / 불우렁쉥이 제작법을 확인하세요</p>
       </div>
 
       <div class="factory-tabs">
-        <button class="tab-btn active" type="button" onclick="showFactorySub('seaweed')">?�초 공장 ?�작�?/button>
-        <button class="tab-btn" type="button" onclick="showFactorySub('tunicate')">불우?�쉥???�작�?/button>
+        <button class="tab-btn active" type="button" onclick="showFactorySub('seaweed')">해초 공장 제작법</button>
+        <button class="tab-btn" type="button" onclick="showFactorySub('tunicate')">불우렁쉥이 제작법</button>
       </div>
 
       <div id="factorySeaweed" style="display:block;">
         <div class="factory-media-grid" id="seaweedMediaGrid"></div>
 
         <div class="factory-video-wrap">
-          <div class="factory-video-title">?�험 ?�상</div>
+          <div class="factory-video-title">실험 영상</div>
           <video class="factory-video" id="seaweedVideo" controls playsinline preload="metadata">
-            <source src="?�초공장/?�초 공장 ?�험 ?�상.mp4" type="video/mp4">
+            <source src="해초공장/해초 공장 실험 영상.mp4" type="video/mp4">
           </video>
         </div>
       </div>
@@ -4197,15 +4197,15 @@
         <div class="factory-media-grid" id="tunicateMediaGrid"></div>
 
         <div class="factory-video-wrap">
-          <div class="factory-video-title">?�험 ?�상</div>
+          <div class="factory-video-title">실험 영상</div>
           <video class="factory-video" id="tunicateVideo" controls playsinline preload="metadata">
-            <source src="불우?�쉥??공장/불우?�쉥???�험가???�상.mp4" type="video/mp4">
+            <source src="불우렁쉥이 공장/불우렁쉥이 시험가동 영상.mp4" type="video/mp4">
           </video>
         </div>
       </div>
 
       <div class="factory-credit">
-        ???�보???�코 ??<strong>hochool(?�출)??/strong>???�진 �??�상 ?�용???�???��?�?받고 ?�용?��??�을 ?�려?�립?�다
+        이 정보는 디코 닉 <strong>hochool(호출)님</strong>의 사진 및 영상 사용에 대한 허가를 받고 사용하였음을 알려드립니다
       </div>
     </div>
   </div>
@@ -4214,20 +4214,20 @@
 <div id="profileSettingsModal" class="patch-modal" onclick="closeProfileSettingsOnBackdrop(event)">
   <div class="patch-modal-card" onclick="event.stopPropagation()" style="width: min(420px, 100%); max-width: 100%;">
     <div class="patch-modal-header">
-      <div class="patch-modal-title">?�로???�정</div>
-      <button class="patch-close-btn" type="button" onclick="closeProfileSettingsModal()">?�기</button>
+      <div class="patch-modal-title">프로필 설정</div>
+      <button class="patch-close-btn" type="button" onclick="closeProfileSettingsModal()">닫기</button>
     </div>
     <div class="patch-modal-body">
       <div class="profile-settings-preview">
         <img id="profileSettingsAvatar" alt="">
       </div>
-      <label class="profile-field-label" for="profileDisplayNameInput">?�시 ?�름</label>
-      <input type="text" id="profileDisplayNameInput" class="profile-field-input" maxlength="80" autocomplete="nickname" placeholder="?�름">
-      <label class="profile-field-label" for="profileBioInput">?�개</label>
-      <textarea id="profileBioInput" class="profile-field-textarea" maxlength="500" placeholder="간단???�개�??�어 주세??></textarea>
+      <label class="profile-field-label" for="profileDisplayNameInput">표시 이름</label>
+      <input type="text" id="profileDisplayNameInput" class="profile-field-input" maxlength="80" autocomplete="nickname" placeholder="이름">
+      <label class="profile-field-label" for="profileBioInput">소개</label>
+      <textarea id="profileBioInput" class="profile-field-textarea" maxlength="500" placeholder="간단한 소개를 적어 주세요"></textarea>
       <div class="profile-settings-actions">
-        <button type="button" class="profile-save-btn" onclick="saveProfileSettings()">?�??/button>
-        <button type="button" class="profile-logout-btn" onclick="logoutFromProfileModal()">로그?�웃</button>
+        <button type="button" class="profile-save-btn" onclick="saveProfileSettings()">저장</button>
+        <button type="button" class="profile-logout-btn" onclick="logoutFromProfileModal()">로그아웃</button>
       </div>
     </div>
   </div>
@@ -4236,8 +4236,8 @@
 <div id="patchNotesModal" class="patch-modal" onclick="closePatchNotesOnBackdrop(event)">
   <div class="patch-modal-card" onclick="event.stopPropagation()">
     <div class="patch-modal-header">
-      <div class="patch-modal-title">?�치?�트</div>
-      <button class="patch-close-btn" type="button" onclick="closePatchNotes()">?�기</button>
+      <div class="patch-modal-title">패치노트</div>
+      <button class="patch-close-btn" type="button" onclick="closePatchNotes()">닫기</button>
     </div>
     <div id="patchNotesBody" class="patch-modal-body"></div>
   </div>
@@ -4246,8 +4246,8 @@
 <div id="creditsModal" class="patch-modal" onclick="closeCreditsModalOnBackdrop(event)">
   <div class="patch-modal-card" onclick="event.stopPropagation()">
     <div class="patch-modal-header">
-      <div class="patch-modal-title">[?��???�?만드?????��???주신 분들</div>
-      <button class="patch-close-btn" type="button" onclick="closeCreditsModal()">?�기</button>
+      <div class="patch-modal-title">[띵타해]를 만드는 데 도움을 주신 분들</div>
+      <button class="patch-close-btn" type="button" onclick="closeCreditsModal()">닫기</button>
     </div>
     <div id="creditsModalBody" class="patch-modal-body"></div>
   </div>
@@ -4256,25 +4256,25 @@
 <div id="alchemyCraftGuideModal" class="patch-modal" onclick="closeAlchemyCraftGuideOnBackdrop(event)">
   <div class="patch-modal-card alchemy-guide-modal-card" onclick="event.stopPropagation()">
     <div class="patch-modal-header">
-      <div class="patch-modal-title">?�금???�작 가?�드</div>
-      <button class="patch-close-btn" type="button" onclick="closeAlchemyCraftGuide()">?�기</button>
+      <div class="patch-modal-title">연금품 제작 가이드</div>
+      <button class="patch-close-btn" type="button" onclick="closeAlchemyCraftGuide()">닫기</button>
     </div>
-    <p class="alchemy-guide-top-note">?�량?� ?�쪽 <strong>?�작 추천</strong> ?��? 같습?�다. 창고·?�문가 ?�정??바꾼 ?�에???�금??계산????�????�행?�면 반영?�니??</p>
+    <p class="alchemy-guide-top-note">수량은 위쪽 <strong>제작 추천</strong> 표와 같습니다. 창고·전문가 설정을 바꾼 뒤에는 연금품 계산을 한 번 더 실행하면 반영됩니다.</p>
     <div id="alchemyCraftGuideBody" class="patch-modal-body alchemy-guide-modal-body"></div>
   </div>
 </div>
 
-<!-- 공장 ?�진 ?��? 뷰어 -->
+<!-- 공장 사진 확대 뷰어 -->
 <div class="viewer-overlay" id="factoryViewer" aria-hidden="true">
-  <div class="viewer-dialog" role="dialog" aria-modal="true" aria-label="공장 ?�진 ?��?">
+  <div class="viewer-dialog" role="dialog" aria-modal="true" aria-label="공장 사진 확대">
     <div class="viewer-topbar">
-      <div class="viewer-title" id="viewerTitle">?�진</div>
-      <button class="viewer-close" type="button" id="viewerClose" aria-label="?�기">??/button>
+      <div class="viewer-title" id="viewerTitle">사진</div>
+      <button class="viewer-close" type="button" id="viewerClose" aria-label="닫기">✕</button>
     </div>
     <div class="viewer-stage" id="viewerStage">
-      <button class="viewer-arrow left" type="button" id="viewerPrev" aria-label="?�전">??/button>
+      <button class="viewer-arrow left" type="button" id="viewerPrev" aria-label="이전">‹</button>
       <img class="viewer-img" id="viewerImg" alt="">
-      <button class="viewer-arrow right" type="button" id="viewerNext" aria-label="?�음">??/button>
+      <button class="viewer-arrow right" type="button" id="viewerNext" aria-label="다음">›</button>
     </div>
     <div class="viewer-counter">
       <div><strong id="viewerStep">1</strong> / <span id="viewerTotal">1</span></div>
@@ -4287,165 +4287,167 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/javascript-lp-solver@0.4.24/prod/solver.js"></script>
 <script>
-// ===== ?�이??=====
+// ===== 데이터 =====
 const data = {
   materials: {
-    // ?�패�??�성
-    "�???: { inputs: [{ name: "�??�★", count: 1 }] },
-    "?�라 ??: { inputs: [{ name: "?�라 ?�★", count: 1 }] },
-    "문어 ??: { inputs: [{ name: "문어 ?�★", count: 1 }] },
-    "미역 ??: { inputs: [{ name: "미역 ?�★", count: 1 }] },
-    "?�게 ??: { inputs: [{ name: "?�게 ?�★", count: 1 }] },
+    // 어패류 합성
+    "굴 ★": { inputs: [{ name: "굴 ★★", count: 1 }] },
+    "소라 ★": { inputs: [{ name: "소라 ★★", count: 1 }] },
+    "문어 ★": { inputs: [{ name: "문어 ★★", count: 1 }] },
+    "미역 ★": { inputs: [{ name: "미역 ★★", count: 1 }] },
+    "성게 ★": { inputs: [{ name: "성게 ★★", count: 1 }] },
 
 
 
-    // 1???�금??    "?�호???�수 ??: { inputs: [{ name: "�???, count: 2 }, { name: "?�토", count: 2 }] },
-    "?�동???�수 ??: { inputs: [{ name: "?�라 ??, count: 2 }, { name: "모래", count: 4 }] },
-    "?��????�수 ??: { inputs: [{ name: "문어 ??, count: 2 }, { name: "??, count: 8 }] },
-    "?�명???�수 ??: { inputs: [{ name: "미역 ??, count: 2 }, { name: "?�갈", count: 4 }] },
-    "부?�의 ?�수 ??: { inputs: [{ name: "?�게 ??, count: 2 }, { name: "?�강??, count: 2 }] },
-    "물결 ?�호??????: { inputs: [{ name: "?�호???�수 ??, count: 1 }, { name: "?�동???�수 ??, count: 1 }, { name: "�??�우", count: 1 }] },
-    "?�동 ?�염??????: { inputs: [{ name: "?�동???�수 ??, count: 1 }, { name: "?��????�수 ??, count: 1 }, { name: "?��? ??, count: 1 }] },
-    "질서 ?�괴??????: { inputs: [{ name: "?��????�수 ??, count: 1 }, { name: "?�명???�수 ??, count: 1 }, { name: "�?�� ??, count: 1 }] },
-    "?�력 붕괴??????: { inputs: [{ name: "?�명???�수 ??, count: 1 }, { name: "부?�의 ?�수 ??, count: 1 }, { name: "금붕????, count: 1 }] },
-    "침식 방어??????: { inputs: [{ name: "부?�의 ?�수 ??, count: 1 }, { name: "?�호???�수 ??, count: 1 }, { name: "?�어 ??, count: 1 }] },
+    // 1성 연금품
+    "수호의 정수 ★": { inputs: [{ name: "굴 ★", count: 2 }, { name: "점토", count: 2 }] },
+    "파동의 정수 ★": { inputs: [{ name: "소라 ★", count: 2 }, { name: "모래", count: 4 }] },
+    "혼란의 정수 ★": { inputs: [{ name: "문어 ★", count: 2 }, { name: "흙", count: 8 }] },
+    "생명의 정수 ★": { inputs: [{ name: "미역 ★", count: 2 }, { name: "자갈", count: 4 }] },
+    "부식의 정수 ★": { inputs: [{ name: "성게 ★", count: 2 }, { name: "화강암", count: 2 }] },
+    "물결 수호의 핵 ★": { inputs: [{ name: "수호의 정수 ★", count: 1 }, { name: "파동의 정수 ★", count: 1 }, { name: "깐 새우", count: 1 }] },
+    "파동 오염의 핵 ★": { inputs: [{ name: "파동의 정수 ★", count: 1 }, { name: "혼란의 정수 ★", count: 1 }, { name: "도미 회", count: 1 }] },
+    "질서 파괴의 핵 ★": { inputs: [{ name: "혼란의 정수 ★", count: 1 }, { name: "생명의 정수 ★", count: 1 }, { name: "청어 회", count: 1 }] },
+    "활력 붕괴의 핵 ★": { inputs: [{ name: "생명의 정수 ★", count: 1 }, { name: "부식의 정수 ★", count: 1 }, { name: "금붕어 회", count: 1 }] },
+    "침식 방어의 핵 ★": { inputs: [{ name: "부식의 정수 ★", count: 1 }, { name: "수호의 정수 ★", count: 1 }, { name: "농어 회", count: 1 }] },
 
-    // 2???�금??    "?�호 ?�센???�★": { inputs: [{ name: "�??�★", count: 2 }, { name: "?�초", count: 6 }, { name: "참나�???, count: 6 }] },
-    "?�동 ?�센???�★": { inputs: [{ name: "?�라 ?�★", count: 2 }, { name: "?�초", count: 6 }, { name: "가문비?�무 ??, count: 6 }] },
-    "?��? ?�센???�★": { inputs: [{ name: "문어 ?�★", count: 2 }, { name: "?�초", count: 6 }, { name: "?�작?�무 ??, count: 6 }] },
-    "?�명 ?�센???�★": { inputs: [{ name: "미역 ?�★", count: 2 }, { name: "?�초", count: 6 }, { name: "벚나�???, count: 6 }] },
-    "부???�센???�★": { inputs: [{ name: "?�게 ?�★", count: 2 }, { name: "?�초", count: 6 }, { name: "짙�? 참나�???, count: 6 }] },
-    "?�기 보존??결정 ?�★": { inputs: [{ name: "?�호 ?�센???�★", count: 1 }, { name: "?�명 ?�센???�★", count: 1 }, { name: "켈프", count: 8 }, { name: "�?��??블록", count: 1 }] },
-    "?�도 침식??결정 ?�★": { inputs: [{ name: "?�동 ?�센???�★", count: 1 }, { name: "부???�센???�★", count: 1 }, { name: "켈프", count: 8 }, { name: "?�드?�톤 블록", count: 1 }] },
-    "방어 ?�염??결정 ?�★": { inputs: [{ name: "?��? ?�센???�★", count: 1 }, { name: "?�호 ?�센???�★", count: 1 }, { name: "켈프", count: 8 }, { name: "�?주괴", count: 3 }] },
-    "격류 ?�생??결정 ?�★": { inputs: [{ name: "?�명 ?�센???�★", count: 1 }, { name: "?�동 ?�센???�★", count: 1 }, { name: "켈프", count: 8 }, { name: "�?주괴", count: 2 }] },
-    "맹독 ?��???결정 ?�★": { inputs: [{ name: "부???�센???�★", count: 1 }, { name: "?��? ?�센???�★", count: 1 }, { name: "켈프", count: 8 }, { name: "?�이?�몬??, count: 1 }] },
+    // 2성 연금품
+    "수호 에센스 ★★": { inputs: [{ name: "굴 ★★", count: 2 }, { name: "해초", count: 6 }, { name: "참나무 잎", count: 6 }] },
+    "파동 에센스 ★★": { inputs: [{ name: "소라 ★★", count: 2 }, { name: "해초", count: 6 }, { name: "가문비나무 잎", count: 6 }] },
+    "혼란 에센스 ★★": { inputs: [{ name: "문어 ★★", count: 2 }, { name: "해초", count: 6 }, { name: "자작나무 잎", count: 6 }] },
+    "생명 에센스 ★★": { inputs: [{ name: "미역 ★★", count: 2 }, { name: "해초", count: 6 }, { name: "벚나무 잎", count: 6 }] },
+    "부식 에센스 ★★": { inputs: [{ name: "성게 ★★", count: 2 }, { name: "해초", count: 6 }, { name: "짙은 참나무 잎", count: 6 }] },
+    "활기 보존의 결정 ★★": { inputs: [{ name: "수호 에센스 ★★", count: 1 }, { name: "생명 에센스 ★★", count: 1 }, { name: "켈프", count: 8 }, { name: "청금석 블록", count: 1 }] },
+    "파도 침식의 결정 ★★": { inputs: [{ name: "파동 에센스 ★★", count: 1 }, { name: "부식 에센스 ★★", count: 1 }, { name: "켈프", count: 8 }, { name: "레드스톤 블록", count: 1 }] },
+    "방어 오염의 결정 ★★": { inputs: [{ name: "혼란 에센스 ★★", count: 1 }, { name: "수호 에센스 ★★", count: 1 }, { name: "켈프", count: 8 }, { name: "철 주괴", count: 3 }] },
+    "격류 재생의 결정 ★★": { inputs: [{ name: "생명 에센스 ★★", count: 1 }, { name: "파동 에센스 ★★", count: 1 }, { name: "켈프", count: 8 }, { name: "금 주괴", count: 2 }] },
+    "맹독 혼란의 결정 ★★": { inputs: [{ name: "부식 에센스 ★★", count: 1 }, { name: "혼란 에센스 ★★", count: 1 }, { name: "켈프", count: 8 }, { name: "다이아몬드", count: 1 }] },
 
-    // 3???�금?�품
-    "?�호???�릭???�★??: { inputs: [{ name: "�??�★??, count: 1 }, { name: "불우?�쉥??, count: 2 }, { name: "?�리�?, count: 3 }, { name: "?�더??, count: 8 }] },
-    "?�동???�릭???�★??: { inputs: [{ name: "?�라 ?�★??, count: 1 }, { name: "불우?�쉥??, count: 2 }, { name: "?�리�?, count: 3 }, { name: "마그�?블록", count: 4 }] },
-    "?��????�릭???�★??: { inputs: [{ name: "문어 ?�★??, count: 1 }, { name: "불우?�쉥??, count: 2 }, { name: "?�리�?, count: 3 }, { name: "?�혼 ??, count: 4 }] },
-    "?�명???�릭???�★??: { inputs: [{ name: "미역 ?�★??, count: 1 }, { name: "불우?�쉥??, count: 2 }, { name: "?�리�?, count: 3 }, { name: "진홍�??�루", count: 4 }] },
-    "부?�의 ?�릭???�★??: { inputs: [{ name: "?�게 ?�★??, count: 1 }, { name: "불우?�쉥??, count: 2 }, { name: "?�리�?, count: 3 }, { name: "?��?�??�루", count: 4 }] },
-    "불멸 ?�생???�약 ?�★??: { inputs: [{ name: "?�호???�릭???�★??, count: 1 }, { name: "?�명???�릭???�★??, count: 1 }, { name: "켈프", count: 12 }, { name: "발광 ?�매", count: 4 }, { name: "죽�? 관 ?�호 블록", count: 2 }] },
-    "?�동 ?�벽???�약 ?�★??: { inputs: [{ name: "?�동???�릭???�★??, count: 1 }, { name: "?�호???�릭???�★??, count: 1 }, { name: "켈프", count: 12 }, { name: "발광 ?�매", count: 4 }, { name: "죽�? ?�방?�호 블록", count: 2 }] },
-    "?�??침식???�약 ?�★??: { inputs: [{ name: "?��????�릭???�★??, count: 1 }, { name: "부?�의 ?�릭???�★??, count: 1 }, { name: "켈프", count: 12 }, { name: "발광 ?�매", count: 4 }, { name: "죽�? 거품 ?�호 블록", count: 2 }] },
-    "?�명 광�????�약 ?�★??: { inputs: [{ name: "?�명???�릭???�★??, count: 1 }, { name: "?��????�릭???�★??, count: 1 }, { name: "켈프", count: 12 }, { name: "발광 ?�매", count: 4 }, { name: "죽�? �??�호 블록", count: 2 }] },
-    "맹독 ?�동???�약 ?�★??: { inputs: [{ name: "부?�의 ?�릭???�★??, count: 1 }, { name: "?�동???�릭???�★??, count: 1 }, { name: "켈프", count: 12 }, { name: "발광 ?�매", count: 4 }, { name: "죽�? ???�호 블록", count: 2 }] }
+    // 3성 연금품품
+    "수호의 엘릭서 ★★★": { inputs: [{ name: "굴 ★★★", count: 1 }, { name: "불우렁쉥이", count: 2 }, { name: "유리병", count: 3 }, { name: "네더랙", count: 8 }] },
+    "파동의 엘릭서 ★★★": { inputs: [{ name: "소라 ★★★", count: 1 }, { name: "불우렁쉥이", count: 2 }, { name: "유리병", count: 3 }, { name: "마그마 블록", count: 4 }] },
+    "혼란의 엘릭서 ★★★": { inputs: [{ name: "문어 ★★★", count: 1 }, { name: "불우렁쉥이", count: 2 }, { name: "유리병", count: 3 }, { name: "영혼 흙", count: 4 }] },
+    "생명의 엘릭서 ★★★": { inputs: [{ name: "미역 ★★★", count: 1 }, { name: "불우렁쉥이", count: 2 }, { name: "유리병", count: 3 }, { name: "진홍빛 자루", count: 4 }] },
+    "부식의 엘릭서 ★★★": { inputs: [{ name: "성게 ★★★", count: 1 }, { name: "불우렁쉥이", count: 2 }, { name: "유리병", count: 3 }, { name: "뒤틀린 자루", count: 4 }] },
+    "불멸 재생의 영약 ★★★": { inputs: [{ name: "수호의 엘릭서 ★★★", count: 1 }, { name: "생명의 엘릭서 ★★★", count: 1 }, { name: "켈프", count: 12 }, { name: "발광 열매", count: 4 }, { name: "죽은 관 산호 블록", count: 2 }] },
+    "파동 장벽의 영약 ★★★": { inputs: [{ name: "파동의 엘릭서 ★★★", count: 1 }, { name: "수호의 엘릭서 ★★★", count: 1 }, { name: "켈프", count: 12 }, { name: "발광 열매", count: 4 }, { name: "죽은 사방산호 블록", count: 2 }] },
+    "타락 침식의 영약 ★★★": { inputs: [{ name: "혼란의 엘릭서 ★★★", count: 1 }, { name: "부식의 엘릭서 ★★★", count: 1 }, { name: "켈프", count: 12 }, { name: "발광 열매", count: 4 }, { name: "죽은 거품 산호 블록", count: 2 }] },
+    "생명 광란의 영약 ★★★": { inputs: [{ name: "생명의 엘릭서 ★★★", count: 1 }, { name: "혼란의 엘릭서 ★★★", count: 1 }, { name: "켈프", count: 12 }, { name: "발광 열매", count: 4 }, { name: "죽은 불 산호 블록", count: 2 }] },
+    "맹독 파동의 영약 ★★★": { inputs: [{ name: "부식의 엘릭서 ★★★", count: 1 }, { name: "파동의 엘릭서 ★★★", count: 1 }, { name: "켈프", count: 12 }, { name: "발광 열매", count: 4 }, { name: "죽은 뇌 산호 블록", count: 2 }] }
   },
   recipes: [
     {
-      name: "?�생???�쿠?�스",
-      inputs: [{ name: "물결 ?�호??????, count: 1 }, { name: "질서 ?�괴??????, count: 1 }, { name: "?�력 붕괴??????, count: 1 }],
+      name: "영생의 아쿠티스",
+      inputs: [{ name: "물결 수호의 핵 ★", count: 1 }, { name: "질서 파괴의 핵 ★", count: 1 }, { name: "활력 붕괴의 핵 ★", count: 1 }],
       time: 1,
       price: 5159,
       group: "group1"
     },
     {
-      name: "?�라켄의 광�?�?,
-      inputs: [{ name: "질서 ?�괴??????, count: 1 }, { name: "?�력 붕괴??????, count: 1 }, { name: "?�동 ?�염??????, count: 1 }],
+      name: "크라켄의 광란체",
+      inputs: [{ name: "질서 파괴의 핵 ★", count: 1 }, { name: "활력 붕괴의 핵 ★", count: 1 }, { name: "파동 오염의 핵 ★", count: 1 }],
       time: 1,
       price: 5234,
       group: "group1"
     },
     {
-      name: "리바?�던??깃털",
-      inputs: [{ name: "침식 방어??????, count: 1 }, { name: "?�동 ?�염??????, count: 1 }, { name: "물결 ?�호??????, count: 1 }],
+      name: "리바이던의 깃털",
+      inputs: [{ name: "침식 방어의 핵 ★", count: 1 }, { name: "파동 오염의 핵 ★", count: 1 }, { name: "물결 수호의 핵 ★", count: 1 }],
       time: 1,
       price: 5393,
       group: "group1"
     },
     {
-      name: "?�구 ?�동??코어",
-      inputs: [{ name: "?�기 보존??결정 ?�★", count: 1 }, { name: "?�도 침식??결정 ?�★", count: 1 }, { name: "격류 ?�생??결정 ?�★", count: 1 }],
+      name: "해구 파동의 코어",
+      inputs: [{ name: "활기 보존의 결정 ★★", count: 1 }, { name: "파도 침식의 결정 ★★", count: 1 }, { name: "격류 재생의 결정 ★★", count: 1 }],
       time: 1,
       price: 11131,
       group: "group2"
     },
     {
-      name: "침묵???�해 비약",
-      inputs: [{ name: "?�도 침식??결정 ?�★", count: 1 }, { name: "격류 ?�생??결정 ?�★", count: 1 }, { name: "맹독 ?��???결정 ?�★", count: 1 }],
+      name: "침묵의 심해 비약",
+      inputs: [{ name: "파도 침식의 결정 ★★", count: 1 }, { name: "격류 재생의 결정 ★★", count: 1 }, { name: "맹독 혼란의 결정 ★★", count: 1 }],
       time: 1,
       price: 11242,
       group: "group2"
     },
     {
-      name: "�?��룡의 ?�개",
-      inputs: [{ name: "방어 ?�염??결정 ?�★", count: 1 }, { name: "맹독 ?��???결정 ?�★", count: 1 }, { name: "?�기 보존??결정 ?�★", count: 1 }],
+      name: "청해룡의 날개",
+      inputs: [{ name: "방어 오염의 결정 ★★", count: 1 }, { name: "맹독 혼란의 결정 ★★", count: 1 }, { name: "활기 보존의 결정 ★★", count: 1 }],
       time: 1,
       price: 11399,
       group: "group2"
     },
     {
-      name: "?�쿠???�스 ?�편",
-      inputs: [{ name: "불멸 ?�생???�약 ?�★??, count: 1 }, { name: "?�동 ?�벽???�약 ?�★??, count: 1 }, { name: "맹독 ?�동???�약 ?�★??, count: 1 }],
+      name: "아쿠아 펄스 파편",
+      inputs: [{ name: "불멸 재생의 영약 ★★★", count: 1 }, { name: "파동 장벽의 영약 ★★★", count: 1 }, { name: "맹독 파동의 영약 ★★★", count: 1 }],
       time: 1,
       price: 21833,
       group: "group3"
     },
     {
-      name: "?�우?�러?�의 ??,
-      inputs: [{ name: "?�동 ?�벽???�약 ?�★??, count: 1 }, { name: "?�명 광�????�약 ?�★??, count: 1 }, { name: "불멸 ?�생???�약 ?�★??, count: 1 }],
+      name: "나우틸러스의 손",
+      inputs: [{ name: "파동 장벽의 영약 ★★★", count: 1 }, { name: "생명 광란의 영약 ★★★", count: 1 }, { name: "불멸 재생의 영약 ★★★", count: 1 }],
       time: 1,
       price: 22088,
       group: "group3"
     },
     {
-      name: "무�???척추",
-      inputs: [{ name: "?�??침식???�약 ?�★??, count: 1 }, { name: "맹독 ?�동???�약 ?�★??, count: 1 }, { name: "?�명 광�????�약 ?�★??, count: 1 }],
+      name: "무저의 척추",
+      inputs: [{ name: "타락 침식의 영약 ★★★", count: 1 }, { name: "맹독 파동의 영약 ★★★", count: 1 }, { name: "생명 광란의 영약 ★★★", count: 1 }],
       time: 1,
       price: 22227,
       group: "group3"
     },
 
     {
-      name: "조개껍데�?브로�?,
-      inputs: [{ name: "깨진 조개껍데�?, count: 1 }, { name: "?��?�?진주", count: 1 }, { name: "금속 ?�활?�품", count: 1 }, { name: "거�?�?, count: 4 }],
+      name: "조개껍데기 브로치",
+      inputs: [{ name: "깨진 조개껍데기", count: 1 }, { name: "노란빛 진주", count: 1 }, { name: "금속 재활용품", count: 1 }, { name: "거미줄", count: 4 }],
       time: 1,
       price: 49442,
       group: "craft"
     },
     {
-      name: "?�른 ?�수�?,
-      inputs: [{ name: "깨진 조개껍데�?, count: 2 }, { name: "?�른�?진주", count: 1 }, { name: "?�성?��? ?�활?�품", count: 1 }, { name: "?�라?�틱 ?�활?�품", count: 1 }, { name: "?�동??, count: 8 }],
+      name: "푸른 향수병",
+      inputs: [{ name: "깨진 조개껍데기", count: 2 }, { name: "푸른빛 진주", count: 1 }, { name: "합성수지 재활용품", count: 1 }, { name: "플라스틱 재활용품", count: 1 }, { name: "양동이", count: 8 }],
       time: 1,
       price: 8735,
       group: "craft"
     },
     {
-      name: "?�개 ?�거??,
-      inputs: [{ name: "깨진 조개껍데�?, count: 3 }, { name: "�?���?진주", count: 1 }, { name: "?�금 ?�활?�품", count: 2 }, { name: "?�라?�틱 ?�활?�품", count: 2 }, { name: "?�리??, count: 16 }],
+      name: "자개 손거울",
+      inputs: [{ name: "깨진 조개껍데기", count: 3 }, { name: "청록빛 진주", count: 1 }, { name: "합금 재활용품", count: 2 }, { name: "플라스틱 재활용품", count: 2 }, { name: "유리판", count: 16 }],
       time: 1,
       price: 181006,
       group: "craft"
     },
     {
-      name: "분홍 ?�어?�",
-      inputs: [{ name: "깨진 조개껍데�?, count: 4 }, { name: "분홍�?진주", count: 1 }, { name: "?�성?��? ?�활?�품", count: 3 }, { name: "?�유 ?�활?�품", count: 3 }, { name: "?�?�무", count: 64 }, { name: "분홍 꽃잎", count: 16 }],
+      name: "분홍 헤어핀",
+      inputs: [{ name: "깨진 조개껍데기", count: 4 }, { name: "분홍빛 진주", count: 1 }, { name: "합성수지 재활용품", count: 3 }, { name: "섬유 재활용품", count: 3 }, { name: "대나무", count: 64 }, { name: "분홍 꽃잎", count: 16 }],
       time: 1,
       price: 398690,
       group: "craft"
     },
     {
-      name: "?�개 부�?,
-      inputs: [{ name: "깨진 조개껍데�?, count: 5 }, { name: "보라�?진주", count: 1 }, { name: "?�금 ?�활?�품", count: 5 }, { name: "?�성?��? ?�활?�품", count: 5 }, { name: "막�?�?, count: 64 }, { name: "?�수??조각", count: 16 }],
+      name: "자개 부채",
+      inputs: [{ name: "깨진 조개껍데기", count: 5 }, { name: "보라빛 진주", count: 1 }, { name: "합금 재활용품", count: 5 }, { name: "합성수지 재활용품", count: 5 }, { name: "막대기", count: 64 }, { name: "자수정 조각", count: 16 }],
       time: 1,
       price: 473443,
       group: "craft"
     },
     {
-      name: "?�진�??�계",
-      inputs: [{ name: "깨진 조개껍데�?, count: 7 }, { name: "?�진�?, count: 1 }, { name: "금속 ?�활?�품", count: 7 }, { name: "?�금 ?�활?�품", count: 7 }, { name: "?�유 ?�활?�품", count: 7 }, { name: "?�요??, count: 16 }, { name: "?�계", count: 8 }],
+      name: "흑진주 시계",
+      inputs: [{ name: "깨진 조개껍데기", count: 7 }, { name: "흑진주", count: 1 }, { name: "금속 재활용품", count: 7 }, { name: "합금 재활용품", count: 7 }, { name: "섬유 재활용품", count: 7 }, { name: "흑요석", count: 16 }, { name: "시계", count: 8 }],
       time: 1,
       price: 456079,
       group: "craft"
     },
     {
-      name: "추출???�석??,
+      name: "추출된 희석액",
       inputs: [
-        { name: "침식 방어??????, count: 3 },
-        { name: "방어 ?�염??결정 ?�★", count: 2 },
-        { name: "?�??침식???�약 ?�★??, count: 1 }
+        { name: "침식 방어의 핵 ★", count: 3 },
+        { name: "방어 오염의 결정 ★★", count: 2 },
+        { name: "타락 침식의 영약 ★★★", count: 1 }
       ],
       time: 1,
       price: 18444,
@@ -4458,11 +4460,11 @@ const data = {
 
 // 카테고리 매핑
 const categoryMap = {
-  'synthesis': ['�???, '?�라 ??, '문어 ??, '미역 ??, '?�게 ??],
+  'synthesis': ['굴 ★', '소라 ★', '문어 ★', '미역 ★', '성게 ★'],
 
-  'alchemy1': ['물결 ?�호??????, '?�동 ?�염??????, '질서 ?�괴??????, '?�력 붕괴??????, '침식 방어??????, '?�생???�쿠?�스', '?�라켄의 광�?�???, '리바?�던??깃털 ??],
-  'alchemy2': ['?�기 보존??결정 ?�★', '?�도 침식??결정 ?�★', '방어 ?�염??결정 ?�★', '격류 ?�생??결정 ?�★', '맹독 ?��???결정 ?�★', '?�구 ?�동??코어', '침묵???�해 비약', '�?��룡의 ?�개'],
-  'alchemy3': ['불멸 ?�생???�약 ?�★??, '?�동 ?�벽???�약 ?�★??, '?�??침식???�약 ?�★??, '?�명 광�????�약 ?�★??, '맹독 ?�동???�약 ?�★??, '?�쿠???�스 ?�편', '?�우?�러?�의 ??, '무�???척추']
+  'alchemy1': ['물결 수호의 핵 ★', '파동 오염의 핵 ★', '질서 파괴의 핵 ★', '활력 붕괴의 핵 ★', '침식 방어의 핵 ★', '영생의 아쿠티스', '크라켄의 광란체 ★', '리바이던의 깃털 ★'],
+  'alchemy2': ['활기 보존의 결정 ★★', '파도 침식의 결정 ★★', '방어 오염의 결정 ★★', '격류 재생의 결정 ★★', '맹독 혼란의 결정 ★★', '해구 파동의 코어', '침묵의 심해 비약', '청해룡의 날개'],
+  'alchemy3': ['불멸 재생의 영약 ★★★', '파동 장벽의 영약 ★★★', '타락 침식의 영약 ★★★', '생명 광란의 영약 ★★★', '맹독 파동의 영약 ★★★', '아쿠아 펄스 파편', '나우틸러스의 손', '무저의 척추']
 };
 
 let currentFilter = 'all';
@@ -4477,13 +4479,13 @@ const STORAGE_KEY_WAREHOUSE_SET_VIEW = 'thingta_warehouse_set_view_v1';
 const STORAGE_KEY_ALCHEMY_SUMMARY_QTY = 'thingta_alchemy_summary_qty_mode_v1';
 const STORAGE_KEY_ALCHEMY_MAT_PANEL = 'thingta_alchemy_mat_panel_v1';
 
-/** ?�금 ?�계 ?�널 마�?�??�이??(?��? ???�렌?? */
+/** 연금 합계 패널 마지막 데이터 (토글 시 재렌더) */
 let lastAlchemySummaryData = null;
-/** ?�작 추천(?�율) 기�? 최종 9�?+ ?�석??개수 ???�작 가?�드?� ?�기 */
+/** 제작 추천(효율) 기준 최종 9종 + 희석액 개수 — 제작 가이드와 동기 */
 let lastAlchemyPlanCountsByName = null;
-/** 'setPiece' | 'boxSetPiece' ???�트/�?vs ?�자/?�트/�?*/
+/** 'setPiece' | 'boxSetPiece' — 세트/개 vs 상자/세트/개 */
 let alchemySummaryQtyMode = 'setPiece';
-/** 'none' | 'detail' | 'summary' ???�료 ?�계 ?�널 ?�시 방식 */
+/** 'none' | 'detail' | 'summary' — 재료 합계 패널 표시 방식 */
 let alchemyMatPanelMode = 'summary';
 
 let craftSalesCalcPanelOpen = false;
@@ -4492,29 +4494,29 @@ const craftSalesInputState = {};
 const expertMeta = {
   craftPrice: {
     key: 'craftPrice',
-    name: '조개 좀 ?�조�?,
+    name: '조개 좀 사조개',
     maxLevel: 8,
     values: [0, 5, 7, 10, 15, 20, 30, 40, 50],
-    desc: '공예???�매가 증�?'
+    desc: '공예품 판매가 증가'
   },
   alchemyPrice: {
     key: 'alchemyPrice',
-    name: '?�리미엄 ?�정가',
+    name: '프리미엄 한정가',
     maxLevel: 8,
     values: [0, 5, 7, 9, 12, 15, 20, 25, 30],
-    desc: '?�금???�매가 증�?'
+    desc: '연금품 판매가 증가'
   },
   timeReduce: {
     key: 'timeReduce',
-    name: '�??�르???�술',
+    name: '물 흐르듯 술술',
     maxLevel: 5,
     values: [0, 10, 20, 30, 50, 70],
-    desc: '?�양 ?�작/?�금 ?�작 ?�간 감소'
+    desc: '해양 제작/연금 제작 시간 감소'
   },
-  deepCollector: { key: 'deepCollector', name: '?�해 채집�?, maxLevel: 5, values: [0, 5, 7, 10, 15, 20], desc: '?�패�?추�? ?�롭 ?�률 증�?' },
-  starshell: { key: 'starshell', name: '별별�?', maxLevel: 6, values: [0, 1, 3, 5, 7, 10, 15], desc: '3???�패�??�장 ?�률 증�?' },
-  shellRefill: { key: 'shellRefill', name: '조개 무한리필', maxLevel: 10, values: [0, 1,2,3,4,5,6,7,8,9,10], desc: '조개 ?�장 ?�률 증�?' },
-  // ?�청??7개만 ?��?
+  deepCollector: { key: 'deepCollector', name: '심해 채집꾼', maxLevel: 5, values: [0, 5, 7, 10, 15, 20], desc: '어패류 추가 드롭 확률 증가' },
+  starshell: { key: 'starshell', name: '별별별!', maxLevel: 6, values: [0, 1, 3, 5, 7, 10, 15], desc: '3성 어패류 등장 확률 증가' },
+  shellRefill: { key: 'shellRefill', name: '조개 무한리필', maxLevel: 10, values: [0, 1,2,3,4,5,6,7,8,9,10], desc: '조개 등장 확률 증가' },
+  // 요청된 7개만 유지
 };
 
 let expertState = {
@@ -4535,13 +4537,13 @@ function sageRodVisualSrc(level) {
   return SAGE_ROD_VISUAL_BASE + file;
 }
 const sageEngravingMeta = {
-  fishLuck: { label: '물고�??�운', values: [0, 25, 50, 75, 100], unit: '%', desc: '물고�?추�? ?�롭 ?�률' },
-  fishingPower: { label: '?�획 강화', values: [0, 15, 25, 40], unit: '%', desc: '?�중 ?�획??증�?' },
-  shellSearch: { label: '조개 ?�색', values: [0, 1, 3, 5], unit: '%', desc: '조개 ?�장 ?�률 증�?' },
-  shellLuck: { label: '?�패 ?�운', values: [0, 25, 50, 75, 100], unit: '%', desc: '?�패�?추�? ?�롭 ?�률' },
-  spiritWhale: { label: '?�령 고래', values: [0, 1, 2, 3, 4, 5], unit: '%', desc: '?�령 고래 ?�장 ?�률' },
-  rayGuide: { label: '가?�리 ?�도', values: [0, 1, 2, 3, 4, 5], unit: '%', desc: '가?�리 ?�장 ?�률' },
-  fisherRoulette: { label: '?��? 룰렛', values: [0, 1, 2, 3, 4, 5], unit: '%', desc: '룰렛 ?�장 ?�률' }
+  fishLuck: { label: '물고기 행운', values: [0, 25, 50, 75, 100], unit: '%', desc: '물고기 추가 드롭 확률' },
+  fishingPower: { label: '어획 강화', values: [0, 15, 25, 40], unit: '%', desc: '수중 어획력 증가' },
+  shellSearch: { label: '조개 탐색', values: [0, 1, 3, 5], unit: '%', desc: '조개 등장 확률 증가' },
+  shellLuck: { label: '어패 행운', values: [0, 25, 50, 75, 100], unit: '%', desc: '어패류 추가 드롭 확률' },
+  spiritWhale: { label: '정령 고래', values: [0, 1, 2, 3, 4, 5], unit: '%', desc: '정령 고래 등장 확률' },
+  rayGuide: { label: '가오리 인도', values: [0, 1, 2, 3, 4, 5], unit: '%', desc: '가오리 등장 확률' },
+  fisherRoulette: { label: '어부 룰렛', values: [0, 1, 2, 3, 4, 5], unit: '%', desc: '룰렛 등장 확률' }
 };
 let sageRodLevel = 0;
 let sageEngravingState = {
@@ -4555,99 +4557,99 @@ let sageEngravingState = {
 };
 let efficiencySub = 'stamina';
 let settingsSub = 'experts';
-const SHELLFISH_NAMES = ['�?, '?�라', '문어', '미역', '?�게'];
-/** ?�패�??��? ?�★?�서 깎아 만드???�작 경로 (?�급 ?�외 계산 ??무시) */
-const SHELLFISH_DOWNGRADE_ONE_STAR = new Set(['�???, '?�라 ??, '문어 ??, '미역 ??, '?�게 ??]);
+const SHELLFISH_NAMES = ['굴', '소라', '문어', '미역', '성게'];
+/** 어패류 ★를 ★★에서 깎아 만드는 제작 경로 (승급 제외 계산 시 무시) */
+const SHELLFISH_DOWNGRADE_ONE_STAR = new Set(['굴 ★', '소라 ★', '문어 ★', '미역 ★', '성게 ★']);
 const STAR_PROBS = { s1: 0.6, s2: 0.3, s3: 0.1 };
 const STAMINA_PER_GATHER = 15;
-const IMAGE_FOLDERS = ['../?�료', '?�료', '?�료1', '?�료 1', '?�료2', '?�료 2'];
+const IMAGE_FOLDERS = ['../재료', '재료', '재료1', '재료 1', '재료2', '재료 2'];
 
 function getImagePathCandidates(text) {
   const t = String(text || '').trim().replace(/\s+/g, ' ');
-  // ?�료 ?�름??맞는 ?��?지 경로�?반환
+  // 재료 이름에 맞는 이미지 경로를 반환
   const imageMap = {
-    '�???: '?�료/�?png',
-    '?�라 ??: '?�료/?�라.png',
-    '문어 ??: '?�료/문어.png',
-    '미역 ??: '?�료/미역.png',
-    '?�게 ??: '?�료/?�게.png',
-    '?�호???�수 ??: '?�료/?�호???�수.png',
-    '?�동???�수 ??: '?�료/?�동???�수.png',
-    '?��????�수 ??: '?�료/?��????�수.png',
-    '?�명???�수 ??: '?�료/?�명???�수.png',
-    '부?�의 ?�수 ??: '?�료/부?�의 ?�수.png',
-    '물결 ?�호??????: '?�료/물결 ?�호????png',
-    '?�동 ?�염??????: '?�료/?�동 ?�염????png',
-    '질서 ?�괴??????: '?�료/질서 ?�괴????png',
-    '?�력 붕괴??????: '?�료/?�력 붕괴????png',
-    '침식 방어??????: '?�료/침식 방어????png',
-    '?�호 ?�센???�★': '?�료/?�호 ?�센??png',
-    '?�동 ?�센???�★': '?�료/?�동 ?�센??png',
-    '?��? ?�센???�★': '?�료/?��? ?�센??png',
-    '?�명 ?�센???�★': '?�료/?�명 ?�센??png',
-    '부???�센???�★': '?�료/부???�센??png',
-    '?�기 보존??결정 ?�★': '?�료/?�기 보존??결정.png',
-    '?�도 침식??결정 ?�★': '?�료/?�도 침식??결정.png',
-    '방어 ?�염??결정 ?�★': '?�료/방어 ?�염??결정.png',
-    '격류 ?�생??결정 ?�★': '?�료/격류 ?�생??결정.png',
-    '맹독 ?��???결정 ?�★': '?�료/맹독 ?��???결정.png',
-    '?�호???�릭???�★??: '?�료/?�호???�릭??png',
-    '?�동???�릭???�★??: '?�료/?�동???�릭??png',
-    '?��????�릭???�★??: '?�료/?��????�릭??png',
-    '?�명???�릭???�★??: '?�료/?�명???�릭??png',
-    '부?�의 ?�릭???�★??: '?�료/부?�의 ?�릭??png',
-    '불멸 ?�생???�약 ?�★??: '?�료/불멸 ?�생???�약.png',
-    '?�동 ?�벽???�약 ?�★??: '?�료/?�동 ?�벽???�약.png',
-    '?�??침식???�약 ?�★??: '?�료/?�??침식???�약.png',
-    '?�명 광�????�약 ?�★??: '?�료/?�명 광�????�약.png',
-    '맹독 ?�동???�약 ?�★??: '?�료/맹독 ?�동???�약.png',
-    '?�생???�쿠?�스': '?�료/?�생???�쿠?�스.png',
-    '?�라켄의 광�?�?: '?�료/?�라켄의 광�?�?png',
-    '리바?�던??깃털': '?�료/리바?�던??깃털.png',
-    '?�구 ?�동??코어': '?�료/?�구???�동 코어.png',
-    '침묵???�해 비약': '?�료/침묵???�해 비약.png',
-    '�?��룡의 ?�개': '?�료/�?��룡의 ?�개.png',
-    '?�쿠???�스 ?�편': '?�료/?�쿠???�스 ?�편.png',
-    '?�우?�러?�의 ??: '?�료/?�우?�러?�의 ??png',
-    '무�???척추': '?�료/무�???척추.png',
-    '추출???�석??: '?�료/추출???�석??png',
-    '�??�우': '?�료/�??�우.png',
-    '?��? ??: '?�료/?��? ??png',
-    '�?�� ??: '?�료/�?�� ??png',
-    '금붕????: '?�료/금붕????png',
-    '?�어 ??: '?�료/?�어 ??png',
-    '깨진 조개껍데�?: '?�료/깨진 조개껍데�?png',
-    '?��?�?진주': '?�료/?��?�?진주.png',
-    '?�른�?진주': '?�료/?�른�?진주.png',
-    '�?���?진주': '?�료/�?���?진주.png',
-    '분홍�?진주': '?�료/분홍�?진주.png',
-    '보라�?진주': '?�료/보라�?진주.png',
-    '?�진�?: '?�료/?�진�?png',
-    '금속 ?�활?�품': '?�료/금속 ?�활?�품.png',
-    '?�성?��? ?�활?�품': '?�료/?�성?��? ?�활?�품.png',
-    '?�라?�틱 ?�활?�품': '?�료/?�라?�틱 ?�활?�품.png',
-    '?�금 ?�활?�품': '?�료/?�금 ?�활?�품.png',
-    '?�유 ?�활?�품': '?�료/?�유 ?�활?�품.png',
-    '거�?�?: '?�료/거�?�?png',
-    '?�동??: '?�료/?�동??png',
-    '?�리??: '?�료/?�리??png',
-    '?�?�무': '?�료/?�?�무.png',
-    '분홍 꽃잎': '?�료/분홍 꽃잎.png',
-    '분홍꽃잎': '?�료/분홍 꽃잎.png',
-    '분홓 꽃잎': '?�료/분홍 꽃잎.png',
-    '막�?�?: '?�료/막�?�?png',
-    '?�수??조각': '?�료/?�수??조각.png',
-    '?�요??: '?�료/?�요??png',
-    '?�계': '?�료/?�계.png',
-    '조개껍데�?브로�?: '?�료/조개껍데�?브로�?png',
-    '?�른 ?�수�?: '?�료/?�른 ?�수�?png',
-    '?�개 ?�거??: '?�료/?�개 ?�거??png',
-    '분홍 ?�어?�': '?�료/분홍 ?�어?�.png',
-    '?�개 부�?: '?�료/?�개 부�?png',
-    '?�진�??�계': '?�료/?�진�??�계.png'
+    '굴 ★': '재료/굴.png',
+    '소라 ★': '재료/소라.png',
+    '문어 ★': '재료/문어.png',
+    '미역 ★': '재료/미역.png',
+    '성게 ★': '재료/성게.png',
+    '수호의 정수 ★': '재료/수호의 정수.png',
+    '파동의 정수 ★': '재료/파동의 정수.png',
+    '혼란의 정수 ★': '재료/혼란의 정수.png',
+    '생명의 정수 ★': '재료/생명의 정수.png',
+    '부식의 정수 ★': '재료/부식의 정수.png',
+    '물결 수호의 핵 ★': '재료/물결 수호의 핵.png',
+    '파동 오염의 핵 ★': '재료/파동 오염의 핵.png',
+    '질서 파괴의 핵 ★': '재료/질서 파괴의 핵.png',
+    '활력 붕괴의 핵 ★': '재료/활력 붕괴의 핵.png',
+    '침식 방어의 핵 ★': '재료/침식 방어의 핵.png',
+    '수호 에센스 ★★': '재료/수호 에센스.png',
+    '파동 에센스 ★★': '재료/파동 에센스.png',
+    '혼란 에센스 ★★': '재료/혼란 에센스.png',
+    '생명 에센스 ★★': '재료/생명 에센스.png',
+    '부식 에센스 ★★': '재료/부식 에센스.png',
+    '활기 보존의 결정 ★★': '재료/활기 보존의 결정.png',
+    '파도 침식의 결정 ★★': '재료/파도 침식의 결정.png',
+    '방어 오염의 결정 ★★': '재료/방어 오염의 결정.png',
+    '격류 재생의 결정 ★★': '재료/격류 재생의 결정.png',
+    '맹독 혼란의 결정 ★★': '재료/맹독 혼란의 결정.png',
+    '수호의 엘릭서 ★★★': '재료/수호의 엘릭서.png',
+    '파동의 엘릭서 ★★★': '재료/파동의 엘릭서.png',
+    '혼란의 엘릭서 ★★★': '재료/혼란의 엘릭서.png',
+    '생명의 엘릭서 ★★★': '재료/생명의 엘릭서.png',
+    '부식의 엘릭서 ★★★': '재료/부식의 엘릭서.png',
+    '불멸 재생의 영약 ★★★': '재료/불멸 재생의 영약.png',
+    '파동 장벽의 영약 ★★★': '재료/파동 장벽의 영약.png',
+    '타락 침식의 영약 ★★★': '재료/타락 침식의 영약.png',
+    '생명 광란의 영약 ★★★': '재료/생명 광란의 영약.png',
+    '맹독 파동의 영약 ★★★': '재료/맹독 파동의 영약.png',
+    '영생의 아쿠티스': '재료/영생의 아쿠티스.png',
+    '크라켄의 광란체': '재료/크라켄의 광란체.png',
+    '리바이던의 깃털': '재료/리바이던의 깃털.png',
+    '해구 파동의 코어': '재료/해구의 파동 코어.png',
+    '침묵의 심해 비약': '재료/침묵의 심해 비약.png',
+    '청해룡의 날개': '재료/청해룡의 날개.png',
+    '아쿠아 펄스 파편': '재료/아쿠아 펄스 파편.png',
+    '나우틸러스의 손': '재료/나우틸러스의 손.png',
+    '무저의 척추': '재료/무저의 척추.png',
+    '추출된 희석액': '재료/추출된 희석액.png',
+    '깐 새우': '재료/깐 새우.png',
+    '도미 회': '재료/도미 회.png',
+    '청어 회': '재료/청어 회.png',
+    '금붕어 회': '재료/금붕어 회.png',
+    '농어 회': '재료/농어 회.png',
+    '깨진 조개껍데기': '재료/깨진 조개껍데기.png',
+    '노란빛 진주': '재료/노란빛 진주.png',
+    '푸른빛 진주': '재료/푸른빛 진주.png',
+    '청록빛 진주': '재료/청록빛 진주.png',
+    '분홍빛 진주': '재료/분홍빛 진주.png',
+    '보라빛 진주': '재료/보라빛 진주.png',
+    '흑진주': '재료/흑진주.png',
+    '금속 재활용품': '재료/금속 재활용품.png',
+    '합성수지 재활용품': '재료/합성수지 재활용품.png',
+    '플라스틱 재활용품': '재료/플라스틱 재활용품.png',
+    '합금 재활용품': '재료/합금 재활용품.png',
+    '섬유 재활용품': '재료/섬유 재활용품.png',
+    '거미줄': '재료/거미줄.png',
+    '양동이': '재료/양동이.png',
+    '유리판': '재료/유리판.png',
+    '대나무': '재료/대나무.png',
+    '분홍 꽃잎': '재료/분홍 꽃잎.png',
+    '분홍꽃잎': '재료/분홍 꽃잎.png',
+    '분홓 꽃잎': '재료/분홍 꽃잎.png',
+    '막대기': '재료/막대기.png',
+    '자수정 조각': '재료/자수정 조각.png',
+    '흑요석': '재료/흑요석.png',
+    '시계': '재료/시계.png',
+    '조개껍데기 브로치': '재료/조개껍데기 브로치.png',
+    '푸른 향수병': '재료/푸른 향수병.png',
+    '자개 손거울': '재료/자개 손거울.png',
+    '분홍 헤어핀': '재료/분홍 헤어핀.png',
+    '자개 부채': '재료/자개 부채.png',
+    '흑진주 시계': '재료/흑진주 시계.png'
   };
   const mapped = imageMap[t] || '';
-  const noStars = t.replace(/\s*??/g, '').trim();
+  const noStars = t.replace(/\s*★+/g, '').trim();
   const mappedFile = mapped ? mapped.split('/').pop() : '';
   const baseFile = `${noStars}.png`;
   const candidates = [];
@@ -4702,49 +4704,49 @@ function buildImageTag(name, alt = '', style = '', className = '') {
 const APP_VERSION = '1.0.9';
 
 const PATCH_NOTES_HTML = `
-  <h3>[?��??? ?�로?��???/h3>
+  <h3>[띵타해] 프로토타입</h3>
   <p><strong>버전:</strong> v${APP_VERSION}</p>
-  <p class="patch-notes-lead">?�야기해??반영???�용�??�기???�리?�고, 바�??�마??버전 ?�자�??�립?�다. ??��??많아지�???�??�을 ?�크롤하�??�니??</p>
+  <p class="patch-notes-lead">이야기해서 반영한 내용만 여기에 정리하고, 바뀔 때마다 버전 숫자를 올립니다. 항목이 많아지면 이 창 안을 스크롤하면 됩니다.</p>
   <h3>v1.0.9</h3>
   <ul>
-    <li>?�금??계산???�추�??�작 기�? ?�요 ?�료 ?�계?��? 기본?�로 ?�어 ?�고, <strong>?�세?�보�?/strong>�??�친 ?�에�??�세(?�패류·바?�라) 목록??보이?�록 바꿨?�니??</li>
-    <li><strong>간략?�보�?/strong>?�서??최종 ?�작??바로 ?�어가?????�계 ?�래 ?�료�?카드�?보여 주고, 카드??마우?��? ?�리�?그다???�계 ?�료?� ?�량???�도�??�습?�다.</li>
-    <li>공장 ?�작�???��???�초·불우?�쉥???�환 ???�택????버튼 ?��??�이 맞게 갱신?�도�?고쳤?�니??</li>
+    <li>연금품 계산의 「추천 제작 기준 필요 재료 합계」를 기본으로 접어 두고, <strong>자세히보기</strong>로 펼친 뒤에만 상세(어패류·바닐라) 목록이 보이도록 바꿨습니다.</li>
+    <li><strong>간략히보기</strong>에서는 최종 제작에 바로 들어가는 한 단계 아래 재료만 카드로 보여 주고, 카드에 마우스를 올리면 그다음 단계 재료와 수량이 뜨도록 했습니다.</li>
+    <li>공장 제작법 탭에서 해초·불우렁쉥이 전환 시 선택된 탭 버튼 스타일이 맞게 갱신되도록 고쳤습니다.</li>
   </ul>
   <h3>v1.0.5</h3>
   <ul>
-    <li>?�문가 ??�� ?�금???�매가 보너?��? ?�제?�·조?�법??카드 가격에??반영?�고, ?�금??계산???�작 추천 칸에 개수 ?�래 ?�전부 ?�매 ?��?골드�??�시?�니??</li>
+    <li>전문가 탭의 연금품 판매가 보너스를 「제작·조합법」 카드 가격에도 반영하고, 연금품 계산의 제작 추천 칸에 개수 아래 “전부 판매 시” 골드를 표시합니다.</li>
   </ul>
   <h3>v1.0.2</h3>
   <ul>
-    <li>?�료 창고 ?�단 ?�구줄을 ?�리?�습?�다. 바닐???�료 ?�내·?��??� ??줄에, ?�체 초기?�·갯???�트 변??버튼?� �??�래 가로로 ?�었?�니??</li>
-    <li>?�양?�문가 가?�드 ?��?지 캐러?�??불러?????��??????�껴지?�록, �??�을 먼�? ?�운 ???�머지 ?�라?�드�??�레?�을 ?�눠 붙이�? ?��?지 ?�코?�·리?�이�?처리 방식??조정?�습?�다.</li>
-    <li>?�이?�바?�서 ?�효??분석?�을 ?�르�?바로 ?�래???�위 메뉴가 ?�오?�록 바꿨?�니?? ?�서???�태미나 계산 ???�금??계산 ??공예??계산?�니??</li>
-    <li>�??�면??조금 가벼워지?�록 메인 ?�레??갤러�?�공???��?지 그리?�·효??분석 ?��?�??�유 ?�을 ??그리?�록 미뤘�? ?�료·?�레???��?지??지??로딩·비동�??�코?�을 ?�용?�습?�다.</li>
+    <li>재료 창고 상단 도구줄을 정리했습니다. 바닐라 재료 안내·토글은 한 줄에, 전체 초기화·갯수/세트 변환 버튼은 그 아래 가로로 두었습니다.</li>
+    <li>해양전문가 가이드 이미지 캐러셀을 불러올 때 끊김이 덜 느껴지도록, 첫 장을 먼저 띄운 뒤 나머지 슬라이드를 프레임을 나눠 붙이고, 이미지 디코딩·리사이즈 처리 방식을 조정했습니다.</li>
+    <li>사이드바에서 「효율 분석」을 누르면 바로 아래에 하위 메뉴가 나오도록 바꿨습니다. 순서는 스태미나 계산 → 연금품 계산 → 공예품 계산입니다.</li>
+    <li>첫 화면이 조금 가벼워지도록 메인 크레딧 갤러리·공장 이미지 그리드·효율 분석 일부를 여유 있을 때 그리도록 미뤘고, 재료·크레딧 이미지에 지연 로딩·비동기 디코딩을 적용했습니다.</li>
   </ul>
   <h3>v1.0.1</h3>
   <ul>
-    <li>?�료 창고 ?�량 계산기�? ?�료 카드 ?�에 ?�어, ?�크롤할 ???�면??붙어 ?�라?��? ?�도�??�습?�다.</li>
-    <li>?�치?�트 ?�영 방식???�리?�고 버전???�렸?�니??</li>
-    <li>메인 ?�단???��???주신 분들??보여 주는 갤러리�? 추�??�습?�다.</li>
-    <li>?�료 창고??바닐???�료 구역???�금??계산�?같�? 기�?(광물, 바닐???�류, ?�호·?�양, ?�무 ?? 기�? 바닐???�로 ?�누???�리?�습?�다.</li>
-    <li>메인 ??�� ?�시 배율 80%�?보이�??�고, ?�이?�바·?�른 ??? 기본(100%) ?�기�??�었?�니??</li>
-    <li>?�작·조합법에???�기?� ?�금 ?�료(?�석????명칭???�혼??최종 ?�물?�로 바꾸�? materials???�의???�금 ?�계 ?�작법을 ?�기?� ?�금?�」으�?묶어 ?�수·?�·에?�스·결정·?�릭?�·영?�별�??�누?�습?�다. ?�당 ??��?� ?�매?????�어 카드??가격을 ?�시?��? ?�습?�다.</li>
+    <li>재료 창고 수량 계산기를 재료 카드 안에 두어, 스크롤할 때 화면에 붙어 따라오지 않도록 했습니다.</li>
+    <li>패치노트 운영 방식을 정리하고 버전을 올렸습니다.</li>
+    <li>메인 하단에 도움을 주신 분들을 보여 주는 갤러리를 추가했습니다.</li>
+    <li>재료 창고의 바닐라 재료 구역을 연금품 계산과 같은 기준(광물, 바닐라 어류, 산호·해양, 나무 잎, 기타 바닐라)으로 나누어 정리했습니다.</li>
+    <li>메인 탭만 표시 배율 80%로 보이게 하고, 사이드바·다른 탭은 기본(100%) 크기로 두었습니다.</li>
+    <li>제작·조합법에서 「기타 연금 재료(희석액)」 명칭을 「혼합 최종 산물」로 바꾸고, materials에 정의된 연금 단계 제작법을 「기타 연금품」으로 묶어 정수·핵·에센스·결정·엘릭서·영약별로 나누었습니다. 해당 항목은 판매할 수 없어 카드에 가격을 표시하지 않습니다.</li>
   </ul>
 `;
 
-/** ?�름·?�진(?��? 경로 ?�는 URL). subtitle ?�택 */
+/** 이름·사진(상대 경로 또는 URL). subtitle 선택 */
 const CREDIT_CONTRIBUTORS = [
-  { name: '박총�?, subtitle: 'parkchongchong', photo: 'credits/parkchongchong.png' },
-  { name: '?�링', subtitle: 'Ring_o_o', photo: 'credits/ring_o_o.png' },
-  { name: '??, subtitle: 'Sleepy_yul', photo: 'credits/yul.png' },
-  { name: '부??, subtitle: 'busi0727', photo: 'credits/busi_nyeoke.png' },
-  { name: '?�진', subtitle: 'nnnanu_', photo: 'credits/hyejin.png' },
+  { name: '박총총', subtitle: 'parkchongchong', photo: 'credits/parkchongchong.png' },
+  { name: '세링', subtitle: 'Ring_o_o', photo: 'credits/ring_o_o.png' },
+  { name: '율', subtitle: 'Sleepy_yul', photo: 'credits/yul.png' },
+  { name: '부시', subtitle: 'busi0727', photo: 'credits/busi_nyeoke.png' },
+  { name: '혜진', subtitle: 'nnnanu_', photo: 'credits/hyejin.png' },
 ];
 
 function buildCreditTilesHTML() {
   if (!CREDIT_CONTRIBUTORS.length) {
-    return '<p class="credits-empty">?�직 ?�록??분이 ?�습?�다. 코드 ?�의 <code>CREDIT_CONTRIBUTORS</code> 배열????��??추�??�면 ?�시?�니??</p>';
+    return '<p class="credits-empty">아직 등록된 분이 없습니다. 코드 안의 <code>CREDIT_CONTRIBUTORS</code> 배열에 항목을 추가하면 표시됩니다.</p>';
   }
   return CREDIT_CONTRIBUTORS.map((c) => {
     const name = escapeHtml(c.name || '');
@@ -4827,7 +4829,7 @@ function closePatchNotesOnBackdrop(e) {
 }
 
 function withAlchemyIcon(text) {
-  // ?�전 ?�환?�을 ?�해 ?�스?�만 반환
+  // 이전 호환성을 위해 텍스트만 반환
   return String(text || '');
 }
 
@@ -4838,9 +4840,9 @@ function withAlchemyImage(text, style = '') {
   return `${img}${t}`;
 }
 
-// ===== 창고 계산�??�업) ?�태 =====
+// ===== 창고 계산기(팝업) 상태 =====
 const SET_SIZE = 64;
-/** ?�금 ?�계: 1?�자 = 54?�트 = 54×64�?*/
+/** 연금 합계: 1상자 = 54세트 = 54×64개 */
 const ALCHEMY_BOX_SETS = 54;
 const calcState = {
   isOpen: false,
@@ -4851,7 +4853,7 @@ const calcState = {
   countExpr: '',
   setExpr: '',
   remExpr: '',
-  commitMode: 'apply' // 'apply' | 'add' ??Enter ???�용/추�?
+  commitMode: 'apply' // 'apply' | 'add' — Enter 시 적용/추가
 };
 
 function ensureCalcPopup() {
@@ -4862,25 +4864,25 @@ function ensureCalcPopup() {
   popup.className = 'calc-popup';
   popup.innerHTML = `
     <div class="calc-header">
-      <div class="calc-title" id="calcTitle">?�량 ?�력</div>
+      <div class="calc-title" id="calcTitle">수량 입력</div>
       <button class="calc-close" type="button" id="calcCloseBtn">×</button>
     </div>
     <div class="calc-body">
       <div class="calc-modes">
-        <button type="button" class="mode-btn active" data-mode="count">개수??/button>
-        <button type="button" class="mode-btn" data-mode="set">?�트??64)</button>
+        <button type="button" class="mode-btn active" data-mode="count">개수량</button>
+        <button type="button" class="mode-btn" data-mode="set">세트당(64)</button>
       </div>
       <div class="calc-display">
         <div class="calc-expr" id="calcExpr"></div>
         <div class="calc-modes" id="calcPartModes" style="display:none; margin-top: 10px; margin-bottom: 0;">
-          <button type="button" class="mode-btn active" data-part="set">?�트 ?�력</button>
-          <button type="button" class="mode-btn" data-part="rem">�??�력</button>
+          <button type="button" class="mode-btn active" data-part="set">세트 입력</button>
+          <button type="button" class="mode-btn" data-part="rem">개 입력</button>
         </div>
         <div class="calc-result" id="calcResult">0</div>
       </div>
       <div class="calc-keypad" id="calcKeypad">
         <button class="key alt" type="button" data-key="C">C</button>
-        <button class="key alt" type="button" data-key="BS">??/button>
+        <button class="key alt" type="button" data-key="BS">⌫</button>
         <button class="key op" type="button" data-key="(">(</button>
         <button class="key op" type="button" data-key=")">)</button>
 
@@ -4897,7 +4899,7 @@ function ensureCalcPopup() {
         <button class="key" type="button" data-key="1">1</button>
         <button class="key" type="button" data-key="2">2</button>
         <button class="key" type="button" data-key="3">3</button>
-        <button class="key op" type="button" data-key="-">??/button>
+        <button class="key op" type="button" data-key="-">−</button>
 
         <button class="key wide" type="button" data-key="0">0</button>
         <button class="key" type="button" data-key=".">.</button>
@@ -4905,15 +4907,15 @@ function ensureCalcPopup() {
       </div>
 
       <div class="calc-commit-modes" id="calcCommitModes">
-        <div class="calc-commit-hint">?�터�??�정 (?�택??모드?��??�용·추�?)</div>
+        <div class="calc-commit-hint">엔터로 확정 (선택한 모드대로 적용·추가)</div>
         <div class="calc-commit-btns">
-          <button type="button" class="mode-btn active" data-commit="apply">?�용모드</button>
-          <button type="button" class="mode-btn" data-commit="add">추�?모드</button>
+          <button type="button" class="mode-btn active" data-commit="apply">적용모드</button>
+          <button type="button" class="mode-btn" data-commit="add">추가모드</button>
         </div>
       </div>
 
       <div class="calc-actions">
-        <button class="action-btn danger" type="button" id="calcResetBtn">초기??/button>
+        <button class="action-btn danger" type="button" id="calcResetBtn">초기화</button>
       </div>
     </div>
   `;
@@ -4921,10 +4923,10 @@ function ensureCalcPopup() {
   document.body.appendChild(popup);
   popup.classList.add('calc-popup--fixed');
 
-  // ?�기
+  // 닫기
   popup.querySelector('#calcCloseBtn').addEventListener('click', closeCalculator);
 
-  // 모드 ?�환
+  // 모드 전환
   popup.querySelectorAll('.mode-btn[data-mode]').forEach(btn => {
     btn.addEventListener('click', () => {
       const nextMode = btn.getAttribute('data-mode') || 'count';
@@ -4938,7 +4940,7 @@ function ensureCalcPopup() {
     });
   });
 
-  // ?�트 모드?�서 ?�트/�??�력 ?�환
+  // 세트 모드에서 세트/개 입력 전환
   popup.querySelector('#calcPartModes').addEventListener('click', (e) => {
     const t = e.target;
     if (!(t instanceof HTMLElement)) return;
@@ -4950,7 +4952,8 @@ function ensureCalcPopup() {
     t.classList.add('active');
   });
 
-  // ?�패??  popup.querySelector('#calcKeypad').addEventListener('click', (e) => {
+  // 키패드
+  popup.querySelector('#calcKeypad').addEventListener('click', (e) => {
     const t = e.target;
     if (!(t instanceof HTMLElement)) return;
     const key = t.getAttribute('data-key');
@@ -4958,7 +4961,7 @@ function ensureCalcPopup() {
     handleCalcKey(key);
   });
 
-  // 초기?�만 (?�용·추�????�용모드/추�?모드 + ?�터)
+  // 초기화만 (적용·추가는 적용모드/추가모드 + 엔터)
   popup.querySelector('#calcResetBtn').addEventListener('click', () => commitCalcValue('reset'));
 
   popup.querySelectorAll('#calcCommitModes [data-commit]').forEach((btn) => {
@@ -4971,7 +4974,7 @@ function ensureCalcPopup() {
     });
   });
 
-  // 바깥 ?�릭?�로 ?�기
+  // 바깥 클릭으로 닫기
   document.addEventListener('mousedown', (e) => {
     if (!calcState.isOpen) return;
     const pop = document.getElementById('calcPopup');
@@ -4983,7 +4986,7 @@ function ensureCalcPopup() {
     closeCalculator();
   });
 
-  // ?�보???�력(esc, enter ??
+  // 키보드 입력(esc, enter 등)
   document.addEventListener('keydown', (e) => {
     if (!calcState.isOpen) return;
     if (e.key === 'Escape') {
@@ -4997,7 +5000,7 @@ function ensureCalcPopup() {
       return;
     }
 
-    // ?�자/?�산???�력 지??(?�패???�이??가??
+    // 숫자/연산자 입력 지원 (키패드 없이도 가능)
     const allowed = '0123456789+-*/().';
     if (allowed.includes(e.key)) {
     if (calcState.mode === 'count') {
@@ -5007,7 +5010,7 @@ function ensureCalcPopup() {
       else calcState.setExpr += e.key;
     }
 
-    // ?�트 모드 "�??�력"?� 0~63 범위�??�용(?�보???�력)
+    // 세트 모드 "개 입력"은 0~63 범위만 허용(키보드 입력)
     if (calcState.mode === 'set' && calcState.activePart === 'rem') {
       const trimmed = (calcState.remExpr || '').trim();
       if (/^\d+$/.test(trimmed)) {
@@ -5108,7 +5111,7 @@ function openCalculatorForInput(inputEl) {
 
   calcState.isOpen = true;
   calcState.targetInput = inputEl;
-  calcState.materialName = inputEl.getAttribute('data-material') || '?�량 ?�력';
+  calcState.materialName = inputEl.getAttribute('data-material') || '수량 입력';
 
   calcState.countExpr = '';
   calcState.setExpr = '';
@@ -5184,7 +5187,7 @@ function handleCalcKey(key) {
     else calcState.setExpr += key;
   }
 
-  // ?�트 모드 "�??�력"?� 0~63 범위�??�용 (?�자�??�독 ?�력??경우 즉시 ?�한)
+  // 세트 모드 "개 입력"은 0~63 범위만 허용 (숫자만 단독 입력인 경우 즉시 제한)
   if (calcState.mode === 'set' && calcState.activePart === 'rem') {
     const trimmed = (calcState.remExpr || '').trim();
     if (/^\d+$/.test(trimmed)) {
@@ -5198,7 +5201,7 @@ function handleCalcKey(key) {
 }
 
 function sanitizeExpr(expr) {
-  // ?�용: ?�자, 공백, + - * / ( ) .
+  // 허용: 숫자, 공백, + - * / ( ) .
   const cleaned = (expr || '')
     .replace(/[×]/g, '*')
     .replace(/[÷]/g, '/')
@@ -5210,7 +5213,7 @@ function sanitizeExpr(expr) {
 function safeEval(expr) {
   const cleaned = sanitizeExpr(expr);
   if (!cleaned) return 0;
-  // ?�속 ?�산??같�? ?��???JS가 처리?��?�? ?�류??0?�로
+  // 연속 연산자 같은 엣지는 JS가 처리하지만, 오류는 0으로
   try {
     // eslint-disable-next-line no-new-func
     const v = Function(`"use strict"; return (${cleaned});`)();
@@ -5256,7 +5259,7 @@ function syncCalcDisplay() {
     if (partModes) partModes.style.display = 'grid';
     const setText = (calcState.setExpr || '0');
     const remText = (calcState.remExpr || '0');
-    if (exprEl) exprEl.textContent = `${setText}?�트 ${remText}�?;
+    if (exprEl) exprEl.textContent = `${setText}세트 ${remText}개`;
 
     // part 버튼 active 보정
     if (partModes) {
@@ -5272,7 +5275,7 @@ function syncCalcDisplay() {
   if (resultEl) {
     const v = getCalcResultValue();
     if (v === null) {
-      resultEl.textContent = '?�류';
+      resultEl.textContent = '오류';
       resultEl.style.color = '#d94a4a';
     } else {
       resultEl.textContent = String(v);
@@ -5283,7 +5286,7 @@ function syncCalcDisplay() {
 
 function convertCalcMode(nextMode) {
   if (nextMode === 'set') {
-    // count -> set (�?개수�?n?�트 m개로)
+    // count -> set (총 개수를 n세트 m개로)
     const raw = safeEval(calcState.countExpr);
     const total = toNonNegativeInt(raw);
     if (total === null) {
@@ -5298,7 +5301,7 @@ function convertCalcMode(nextMode) {
     return;
   }
 
-  // set -> count (n?�트 m개�? �?개수�?
+  // set -> count (n세트 m개를 총 개수로)
   const total = getTotalCountFromState();
   if (total === null) {
     calcState.countExpr = '';
@@ -5367,7 +5370,7 @@ function getSupabaseClient() {
   if (supabaseAuthClient) return supabaseAuthClient;
   const cfg = window.SUPABASE_CONFIG;
   if (!cfg || !cfg.url || !cfg.anonKey) {
-    console.error('[Supabase Auth] window.SUPABASE_CONFIG ??url / anonKey 가 ?�습?�다.');
+    console.error('[Supabase Auth] window.SUPABASE_CONFIG 에 url / anonKey 가 없습니다.');
     return null;
   }
   const mod = window.supabase;
@@ -5378,7 +5381,7 @@ function getSupabaseClient() {
         ? mod.default.createClient
         : null;
   if (!createClient) {
-    console.error('[Supabase Auth] supabase-js UMD 로드 ?�패: window.supabase.createClient ?�음');
+    console.error('[Supabase Auth] supabase-js UMD 로드 실패: window.supabase.createClient 없음');
     return null;
   }
   try {
@@ -5386,14 +5389,14 @@ function getSupabaseClient() {
       auth: {
         persistSession: true,
         autoRefreshToken: true,
-        // OAuth code 교환?� /auth/callback ?�서�??�행. ?�기??true�?콜백·메인 ?�중 교환?�로 PKCE 깨질 ???�음.
+        // OAuth code 교환은 /auth/callback 에서만 수행. 여기서 true면 콜백·메인 이중 교환으로 PKCE 깨질 수 있음.
         detectSessionInUrl: false,
         flowType: 'pkce',
         storage: window.localStorage
       }
     });
   } catch (e) {
-    console.error('[Supabase Auth] createClient ?�외:', e);
+    console.error('[Supabase Auth] createClient 예외:', e);
     return null;
   }
   return supabaseAuthClient;
@@ -5401,19 +5404,19 @@ function getSupabaseClient() {
 
 let cachedAuthUserForProfile = null;
 let currentAuthUserId = null;
-/** 로그?�웃 ????�� ?�나??fetchAuthUserForUI가 로그??UI�???��?��? ?�게 ??*/
+/** 로그아웃 후 늦게 끝나는 fetchAuthUserForUI가 로그인 UI를 덮어쓰지 않게 함 */
 let authUiNonce = 0;
 
-/** ?�버?�서 최신 ?�용???�레??반영 (Discord ?�로???? */
+/** 서버에서 최신 사용자 클레임 반영 (Discord 프로필 등) */
 async function fetchAuthUserForUI(sb) {
   const { data, error } = await sb.auth.getUser();
   if (error) {
-    console.error('[Supabase Auth] getUser ?�패:', error.message, error);
+    console.error('[Supabase Auth] getUser 실패:', error.message, error);
     const { data: sessData } = await sb.auth.getSession();
     return sessData.session?.user ?? null;
   }
   if (data.user) {
-    console.debug('[Supabase Auth] ?�용???�이??', {
+    console.debug('[Supabase Auth] 사용자 데이터:', {
       id: data.user.id,
       email: data.user.email,
       providers: (data.user.identities || []).map((i) => i.provider)
@@ -5423,7 +5426,7 @@ async function fetchAuthUserForUI(sb) {
 }
 
 function extractDiscordProfile(user) {
-  if (!user) return { name: '?�용??, avatarUrl: '' };
+  if (!user) return { name: '사용자', avatarUrl: '' };
   const meta = user.user_metadata || {};
   let name =
     meta.full_name ||
@@ -5433,7 +5436,7 @@ function extractDiscordProfile(user) {
     meta.custom_claims?.global_name ||
     meta.custom_claims?.username ||
     user.email ||
-    'Discord ?�용??;
+    'Discord 사용자';
   let avatarUrl = meta.avatar_url || meta.picture || '';
 
   const identities = user.identities || [];
@@ -5573,7 +5576,7 @@ function setAuthConfigHint(visible, message) {
   if (btn) btn.disabled = visible;
 }
 
-/** ?�션???�으�?session.user�?UI�?반영????getUser()�?최신 ?�레?�을 반영?�니?? */
+/** 세션이 있으면 session.user로 UI를 반영한 뒤 getUser()로 최신 클레임을 반영합니다. */
 async function refreshAuthUIFromSession(sb, session) {
   const n = authUiNonce;
   if (!session) {
@@ -5588,7 +5591,7 @@ async function refreshAuthUIFromSession(sb, session) {
     if (n !== authUiNonce) return;
     updateAuthUI(user || session.user);
   } catch (e) {
-    console.error('[Supabase Auth] refreshAuthUIFromSession ?�류:', e);
+    console.error('[Supabase Auth] refreshAuthUIFromSession 오류:', e);
     if (n !== authUiNonce) return;
     updateAuthUI(session.user ?? null);
   }
@@ -5598,7 +5601,7 @@ async function initSupabaseAuth() {
   try {
     const sb = getSupabaseClient();
     if (!sb) {
-      setAuthConfigHint(true, 'window.SUPABASE_CONFIG(url, anonKey)가 ?�습?�다. supabase-config.js�??�인?�세??');
+      setAuthConfigHint(true, 'window.SUPABASE_CONFIG(url, anonKey)가 없습니다. supabase-config.js를 확인하세요.');
       updateAuthUI(null);
       return;
     }
@@ -5609,20 +5612,20 @@ async function initSupabaseAuth() {
         console.debug('[Supabase Auth] onAuthStateChange:', event);
         await refreshAuthUIFromSession(sb, session);
       } catch (e) {
-        console.error('[Supabase Auth] onAuthStateChange 처리 ?�류:', e);
+        console.error('[Supabase Auth] onAuthStateChange 처리 오류:', e);
         updateAuthUI(session?.user ?? null);
       }
     });
 
     const { data: sessWrap, error: sessErr } = await sb.auth.getSession();
     if (sessErr) {
-      console.error('[Supabase Auth] getSession ?�패:', sessErr.message, sessErr);
+      console.error('[Supabase Auth] getSession 실패:', sessErr.message, sessErr);
       updateAuthUI(null);
       return;
     }
     await refreshAuthUIFromSession(sb, sessWrap.session);
   } catch (e) {
-    console.error('[Supabase Auth] initSupabaseAuth ?�외:', e);
+    console.error('[Supabase Auth] initSupabaseAuth 예외:', e);
     updateAuthUI(null);
   }
 }
@@ -5630,8 +5633,8 @@ async function initSupabaseAuth() {
 async function authSignInDiscord() {
   const sb = getSupabaseClient();
   if (!sb) {
-    console.error('[Supabase Auth] 로그??불�?: ?�라?�언??미생??);
-    alert('Supabase ?�정???�인?????�습?�다. 콘솔 로그�??�인?�세??');
+    console.error('[Supabase Auth] 로그인 불가: 클라이언트 미생성');
+    alert('Supabase 설정을 확인할 수 없습니다. 콘솔 로그를 확인하세요.');
     return;
   }
   const cfgAuth = window.SUPABASE_CONFIG || {};
@@ -5654,13 +5657,13 @@ async function authSignInDiscord() {
     }
   });
   if (error) {
-    console.error('[Supabase Auth] signInWithOAuth ?�패:', error.message, error);
+    console.error('[Supabase Auth] signInWithOAuth 실패:', error.message, error);
     return;
   }
-  if (data?.url) console.debug('[Supabase Auth] OAuth 리다?�렉??URL 발급??);
+  if (data?.url) console.debug('[Supabase Auth] OAuth 리다이렉트 URL 발급됨');
 }
 
-/** 브라?��????��? Supabase ?�션 ?�토리�? ?�거 (signOut ?�패·?�백?? */
+/** 브라우저에 남은 Supabase 세션 스토리지 제거 (signOut 실패·폴백용) */
 function clearSupabaseAuthStorage() {
   try {
     Object.keys(localStorage).forEach((key) => {
@@ -5706,23 +5709,23 @@ async function authSignOut() {
   window.location.replace(window.location.origin + '/?logout=' + Date.now());
 }
 
-// ===== ?�양?�문가 가?�드 ?��?지 ?�라?�더 =====
+// ===== 해양전문가 가이드 이미지 슬라이더 =====
 const MARINE_GUIDE_SLIDES = [
-  { src: 'marine-guide/01.png', alt: '?�양?�문가 가?�드 ?��?' },
-  { src: 'marine-guide/02.png', alt: '?�양 ?�문가?�?' },
-  { src: 'marine-guide/03.png', alt: '?�금�?공예 ?�내' },
+  { src: 'marine-guide/01.png', alt: '해양전문가 가이드 표지' },
+  { src: 'marine-guide/02.png', alt: '해양 전문가란?' },
+  { src: 'marine-guide/03.png', alt: '연금과 공예 안내' },
   { src: 'marine-guide/04.png', alt: '준비물' },
-  { src: 'marine-guide/05.png', alt: '?�패류�? 진주' },
-  { src: 'marine-guide/06.png', alt: '?�양 ?? },
-  { src: 'marine-guide/07.png', alt: '?�료 ?? },
-  { src: 'marine-guide/08.png', alt: '?�루 ?�과' },
-  { src: 'marine-guide/09.png', alt: '?�문가 ?�킬' },
-  { src: 'marine-guide/10.png', alt: '?�문가 ?�킬 ?�명' },
-  { src: 'marine-guide/11.png', alt: '?�킬 ?�착 구간' },
-  { src: 'marine-guide/12.png', alt: '?�킬 주차 구간 (?�매가)' },
-  { src: 'marine-guide/13.png', alt: '조개 무한리필 ?�킬 주차' },
-  { src: 'marine-guide/14.png', alt: '?�킬 주차 구간 (?�작 ?�간·?�롯)' },
-  { src: 'marine-guide/15.png', alt: '?�문가 ?? }
+  { src: 'marine-guide/05.png', alt: '어패류와 진주' },
+  { src: 'marine-guide/06.png', alt: '해양 팁' },
+  { src: 'marine-guide/07.png', alt: '재료 팁' },
+  { src: 'marine-guide/08.png', alt: '하루 일과' },
+  { src: 'marine-guide/09.png', alt: '전문가 스킬' },
+  { src: 'marine-guide/10.png', alt: '전문가 스킬 설명' },
+  { src: 'marine-guide/11.png', alt: '스킬 정착 구간' },
+  { src: 'marine-guide/12.png', alt: '스킬 주차 구간 (판매가)' },
+  { src: 'marine-guide/13.png', alt: '조개 무한리필 스킬 주차' },
+  { src: 'marine-guide/14.png', alt: '스킬 주차 구간 (제작 시간·슬롯)' },
+  { src: 'marine-guide/15.png', alt: '전문가 팁' }
 ];
 
 let marineGuideSlideIndex = 0;
@@ -5732,7 +5735,7 @@ function syncMarineGuideSlideWidths() {
   const track = document.getElementById('marineGuideTrack');
   if (!viewport || !track) return;
   const w = viewport.offsetWidth;
-  /* ?�겨�??�션(display:none)?�서???�비가 0 ???�라?�드�?0px�?고정?�면 ?��?지가 보이지 ?�음 */
+  /* 숨겨진 섹션(display:none)에서는 너비가 0 → 슬라이드를 0px로 고정하면 이미지가 보이지 않음 */
   if (!w || w < 2) return;
   track.querySelectorAll('.marine-guide-slide').forEach((el) => {
     el.style.flex = `0 0 ${w}px`;
@@ -5849,7 +5852,7 @@ document.addEventListener('keydown', (e) => {
 
 
 
-// ===== ?�션 ?�환 =====
+// ===== 섹션 전환 =====
 function switchSection(sectionId, clickedEl) {
   saveWarehouseInventory();
   document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
@@ -5947,11 +5950,11 @@ function showFactorySub(subKey) {
 const factoryMedia = {
   seaweed: Array.from({ length: 11 }, (_, i) => {
     const step = String(i + 1);
-    return { title: step, src: `?�초공장/?�초 ${step}.jpg` };
+    return { title: step, src: `해초공장/해초 ${step}.jpg` };
   }),
   tunicate: Array.from({ length: 5 }, (_, i) => {
     const step = String(i + 1);
-    return { title: step, src: `불우?�쉥??공장/불우?�쉥??${step}.jpg` };
+    return { title: step, src: `불우렁쉥이 공장/불우렁쉥이 ${step}.jpg` };
   })
 };
 
@@ -5977,7 +5980,7 @@ function renderFactoryMedia(gridId, items, viewerKey, titlePrefix) {
         const body = card.querySelector('.media-card-body');
         if (body) {
           body.style.display = 'block';
-          body.textContent = `?��?지 ?�일??찾을 ???�습?�다: ${it.src}`;
+          body.textContent = `이미지 파일을 찾을 수 없습니다: ${it.src}`;
         }
       });
     }
@@ -5988,11 +5991,11 @@ function renderFactoryMedia(gridId, items, viewerKey, titlePrefix) {
 }
 
 function renderFactorySeaweedMedia() {
-  renderFactoryMedia('seaweedMediaGrid', factoryMedia.seaweed, 'seaweed', '?�계');
+  renderFactoryMedia('seaweedMediaGrid', factoryMedia.seaweed, 'seaweed', '단계');
 }
 
 function renderFactoryTunicateMedia() {
-  renderFactoryMedia('tunicateMediaGrid', factoryMedia.tunicate, 'tunicate', '?�계');
+  renderFactoryMedia('tunicateMediaGrid', factoryMedia.tunicate, 'tunicate', '단계');
 }
 
 let viewerState = { key: 'seaweed', index: 0 };
@@ -6070,19 +6073,19 @@ function renderFactoryViewerFrame() {
   const total = document.getElementById('viewerTotal');
   const srcEl = document.getElementById('viewerSrc');
 
-  const kindLabel = viewerState.key === 'tunicate' ? '불우?�쉥??공장' : '?�초 공장';
-  if (title) title.textContent = `${kindLabel} - ?�계 ${it.title}`;
+  const kindLabel = viewerState.key === 'tunicate' ? '불우렁쉥이 공장' : '해초 공장';
+  if (title) title.textContent = `${kindLabel} - 단계 ${it.title}`;
   if (step) step.textContent = String(viewerState.index + 1);
   if (total) total.textContent = String(items.length);
   if (srcEl) srcEl.textContent = it.src;
 
   if (img) {
-    img.alt = `${kindLabel} ?�계 ${it.title}`;
+    img.alt = `${kindLabel} 단계 ${it.title}`;
     img.src = it.src;
   }
 }
 
-// ===== ?�시???�터�?=====
+// ===== 레시피 필터링 =====
 function filterRecipes(category) {
   currentFilter = category;
   
@@ -6092,27 +6095,27 @@ function filterRecipes(category) {
   renderRecipes();
 }
 
-// ===== ?�시??검??=====
+// ===== 레시피 검색 =====
 function searchRecipes() {
   currentSearch = document.getElementById('searchInput').value.toLowerCase();
   renderRecipes();
 }
 
-/** ?�작·조합�? data.materials �??�금 ?�계(?�수·?�·에?�스·결정·?�릭?�·영?? ?�이?????�패�????�급 ?�외 */
+/** 제작·조합법: data.materials 중 연금 단계(정수·핵·에센스·결정·엘릭서·영약) 아이템 — 어패류 ★ 승급 제외 */
 function isMaterialsTabAlchemyChainItem(name) {
-  if (/^(�??�라|문어|미역|?�게)\s+??$/.test(name)) return false;
-  return /(?�수|???�센??결정|?�릭???�약)\s+??.test(name);
+  if (/^(굴|소라|문어|미역|성게)\s+★+$/.test(name)) return false;
+  return /(정수|핵|에센스|결정|엘릭서|영약)\s+★/.test(name);
 }
 
-/** ?�금 ?�계�?분류(?�작·조합�?`partitionMiscAlchemyRecipes`?� ?�일 규칙·?�서) */
+/** 연금 단계별 분류(제작·조합법 `partitionMiscAlchemyRecipes`와 동일 규칙·순서) */
 function partitionAlchemyChainTotalsByCategory(totalsObj) {
   const meta = [
-    { title: '?�수', test: (n) => /?�수\s+??/.test(n) },
-    { title: '??, test: (n) => /??s+??/.test(n) },
-    { title: '?�센??, test: (n) => /?�센??s+?�★$/.test(n) },
-    { title: '결정', test: (n) => /결정\s+?�★$/.test(n) },
-    { title: '?�릭??, test: (n) => /?�릭??s+?�★??/.test(n) },
-    { title: '?�약', test: (n) => /?�약\s+?�★??/.test(n) },
+    { title: '정수', test: (n) => /정수\s+★$/.test(n) },
+    { title: '핵', test: (n) => /핵\s+★$/.test(n) },
+    { title: '에센스', test: (n) => /에센스\s+★★$/.test(n) },
+    { title: '결정', test: (n) => /결정\s+★★$/.test(n) },
+    { title: '엘릭서', test: (n) => /엘릭서\s+★★★$/.test(n) },
+    { title: '영약', test: (n) => /영약\s+★★★$/.test(n) },
   ];
   const cols = meta.map((m) => ({ title: m.title, obj: {} }));
   const other = {};
@@ -6123,15 +6126,15 @@ function partitionAlchemyChainTotalsByCategory(totalsObj) {
     else other[name] = c;
   });
   const out = cols.filter((col) => Object.keys(col.obj).length > 0);
-  if (Object.keys(other).length > 0) out.push({ title: '기�?', obj: other });
+  if (Object.keys(other).length > 0) out.push({ title: '기타', obj: other });
   return out;
 }
 
-/** 1·2·3???�금???�료(?�수·??/ ?�센?�·결??/ ?�릭?�·영?? */
+/** 1·2·3성 연금품 재료(정수·핵 / 에센스·결정 / 엘릭서·영약) */
 const ALCHEMY_STAR_TIER_GROUPS = [
-  { title: '1???�금???�료', typeTitles: ['?�수', '??] },
-  { title: '2???�금???�료', typeTitles: ['?�센??, '결정'] },
-  { title: '3???�금???�료', typeTitles: ['?�릭??, '?�약'] },
+  { title: '1성 연금품 재료', typeTitles: ['정수', '핵'] },
+  { title: '2성 연금품 재료', typeTitles: ['에센스', '결정'] },
+  { title: '3성 연금품 재료', typeTitles: ['엘릭서', '영약'] },
 ];
 
 function partitionAlchemyChainByStarTier(totalsObj) {
@@ -6140,32 +6143,32 @@ function partitionAlchemyChainByStarTier(totalsObj) {
     title: tier.title,
     cols: cols.filter((c) => tier.typeTitles.includes(c.title)),
   })).filter((t) => t.cols.some((c) => Object.keys(c.obj).length > 0));
-  const otherCol = cols.find((c) => c.title === '기�?');
+  const otherCol = cols.find((c) => c.title === '기타');
   if (otherCol && Object.keys(otherCol.obj).length > 0) {
-    tiers.push({ title: '기�? ?�금???�료', cols: [otherCol] });
+    tiers.push({ title: '기타 연금품 재료', cols: [otherCol] });
   }
   return tiers;
 }
 
-/** 기�? ?�금??materials) ???�수·?�·에?�스·결정·?�릭?�·영??*/
+/** 기타 연금품(materials) → 정수·핵·에센스·결정·엘릭서·영약 */
 function partitionMiscAlchemyRecipes(recipes) {
   const sortKo = (a, b) => a.name.localeCompare(b.name, 'ko');
   const tiers = [
-    { title: '?�수', items: recipes.filter((r) => /?�수\s+??/.test(r.name)).sort(sortKo) },
-    { title: '??, items: recipes.filter((r) => /??s+??/.test(r.name)).sort(sortKo) },
-    { title: '?�센??, items: recipes.filter((r) => /?�센??s+?�★$/.test(r.name)).sort(sortKo) },
-    { title: '결정', items: recipes.filter((r) => /결정\s+?�★$/.test(r.name)).sort(sortKo) },
-    { title: '?�릭??, items: recipes.filter((r) => /?�릭??s+?�★??/.test(r.name)).sort(sortKo) },
-    { title: '?�약', items: recipes.filter((r) => /?�약\s+?�★??/.test(r.name)).sort(sortKo) }
+    { title: '정수', items: recipes.filter((r) => /정수\s+★$/.test(r.name)).sort(sortKo) },
+    { title: '핵', items: recipes.filter((r) => /핵\s+★$/.test(r.name)).sort(sortKo) },
+    { title: '에센스', items: recipes.filter((r) => /에센스\s+★★$/.test(r.name)).sort(sortKo) },
+    { title: '결정', items: recipes.filter((r) => /결정\s+★★$/.test(r.name)).sort(sortKo) },
+    { title: '엘릭서', items: recipes.filter((r) => /엘릭서\s+★★★$/.test(r.name)).sort(sortKo) },
+    { title: '영약', items: recipes.filter((r) => /영약\s+★★★$/.test(r.name)).sort(sortKo) }
   ];
   const used = new Set();
   tiers.forEach((t) => t.items.forEach((r) => used.add(r.name)));
   const other = recipes.filter((r) => !used.has(r.name)).sort(sortKo);
-  if (other.length) tiers.push({ title: '기�?', items: other });
+  if (other.length) tiers.push({ title: '기타', items: other });
   return tiers;
 }
 
-// ===== ?�시??카드 ?�더�?=====
+// ===== 레시피 카드 렌더링 =====
 function renderRecipes() {
   const container = document.getElementById('recipesContainer');
   let recipesToShow = data.recipes;
@@ -6176,19 +6179,19 @@ function renderRecipes() {
   
   container.innerHTML = '';
   
-  // ?�금?�만 ?�터�?(?�수, ?? ?�센?? 결정, ?�릭?? ?�약)
+  // 연금품만 필터링 (정수, 핵, 에센스, 결정, 엘릭서, 영약)
   const alchemyRecipes = recipesToShow.filter(r => 
-    /(?�석???�수|???�센??결정|?�릭???�약|비약|코어|?�쿠?�스|광�?�?깃털|?�개|?�편|?�우?�러??무�?)/.test(r.name)
+    /(희석액|정수|핵|에센스|결정|엘릭서|영약|비약|코어|아쿠티스|광란체|깃털|날개|파편|나우틸러스|무저)/.test(r.name)
   );
   
   const groups = [
-    { title: '1???�금??(??', items: alchemyRecipes.filter(r => /??s+??/.test(r.name)) },
-    { title: '1??최종 ?�물', items: alchemyRecipes.filter(r => r.group === 'group1') },
-    { title: '2???�금??(결정)', items: alchemyRecipes.filter(r => /결정\s+?�★$/.test(r.name)) },
-    { title: '2??최종 ?�물', items: alchemyRecipes.filter(r => r.group === 'group2') },
-    { title: '3???�금??(?�약)', items: alchemyRecipes.filter(r => /?�약\s+?�★??/.test(r.name)) },
-    { title: '3??최종 ?�물', items: alchemyRecipes.filter(r => r.group === 'group3') },
-    { title: '?�합 최종 ?�물', items: alchemyRecipes.filter(r => /?�석??.test(r.name) && !/(?�수|???�센??결정|?�릭???�약)\s+??.test(r.name)) }
+    { title: '1성 연금품 (핵)', items: alchemyRecipes.filter(r => /핵\s+★$/.test(r.name)) },
+    { title: '1성 최종 산물', items: alchemyRecipes.filter(r => r.group === 'group1') },
+    { title: '2성 연금품 (결정)', items: alchemyRecipes.filter(r => /결정\s+★★$/.test(r.name)) },
+    { title: '2성 최종 산물', items: alchemyRecipes.filter(r => r.group === 'group2') },
+    { title: '3성 연금품 (영약)', items: alchemyRecipes.filter(r => /영약\s+★★★$/.test(r.name)) },
+    { title: '3성 최종 산물', items: alchemyRecipes.filter(r => r.group === 'group3') },
+    { title: '혼합 최종 산물', items: alchemyRecipes.filter(r => /희석액/.test(r.name) && !/(정수|핵|에센스|결정|엘릭서|영약)\s+★/.test(r.name)) }
   ];
 
   const renderCard = (recipe, opts = {}) => {
@@ -6212,7 +6215,7 @@ function renderRecipes() {
           priceStr = `<span class="recipe-card-price-val">${baseNum.toLocaleString()}G</span>`;
         }
       } else {
-        priceStr = '??;
+        priceStr = '—';
       }
     }
     const priceEl = hidePrice ? '' : `<div class="recipe-card-price">${priceStr}</div>`;
@@ -6226,7 +6229,7 @@ function renderRecipes() {
         </div>
       `).join('');
     } else {
-      ingredientsHTML = '<div style="color: #666; font-size: 12px;">기본 ?�료 ?�음</div>';
+      ingredientsHTML = '<div style="color: #666; font-size: 12px;">기본 재료 없음</div>';
     }
     
     card.innerHTML = `
@@ -6236,7 +6239,7 @@ function renderRecipes() {
       </div>
       <div class="recipe-card-body">
         <div class="recipe-section">
-          <div class="recipe-section-title">?�요 ?�료</div>
+          <div class="recipe-section-title">필요 재료</div>
           ${ingredientsHTML}
         </div>
       </div>
@@ -6245,7 +6248,7 @@ function renderRecipes() {
     return card;
   };
 
-  // ?�금??그룹 ?�시
+  // 연금품 그룹 표시
   groups.forEach((g) => {
     if (!g.items.length) return;
     const title = document.createElement('div');
@@ -6259,7 +6262,7 @@ function renderRecipes() {
     g.items.forEach((r) => container.appendChild(renderCard(r)));
   });
 
-  // 기�? ?�금?? materials???�의???�금 ?�계 ?�이???�작�??�음), ?�합 최종 ?�물 ?�래
+  // 기타 연금품: materials에 정의된 연금 단계 아이템(제작법 있음), 혼합 최종 산물 아래
   let miscAlchemyPairs = Object.entries(data.materials).filter(([name, rec]) =>
     rec.inputs && rec.inputs.length > 0 && isMaterialsTabAlchemyChainItem(name)
   );
@@ -6280,7 +6283,7 @@ function renderRecipes() {
     miscTitle.style.fontWeight = '900';
     miscTitle.style.color = '#e5e5e5';
     miscTitle.style.margin = '20px 0 2px';
-    miscTitle.textContent = '기�? ?�금??;
+    miscTitle.textContent = '기타 연금품';
     container.appendChild(miscTitle);
 
     const miscTiers = partitionMiscAlchemyRecipes(miscAlchemyRecipes);
@@ -6299,19 +6302,19 @@ function renderRecipes() {
   }
 
   if (container.children.length === 0) {
-    container.innerHTML = '<p style="grid-column: 1/-1; color: #666; text-align: center; padding: 40px;">검??결과가 ?�습?�다</p>';
+    container.innerHTML = '<p style="grid-column: 1/-1; color: #666; text-align: center; padding: 40px;">검색 결과가 없습니다</p>';
   }
 }
 
-// ===== 바닐???�료 분류(창고 UI · ?�금 ?�계 공통) =====
-const ALCHEMY_SUMMARY_MINERAL_NAMES = new Set(['?�이?�몬??, '�?주괴', '�?��??블록', '?�드?�톤 블록', '�?주괴']);
-const ALCHEMY_SUMMARY_VANILLA_FISH_NAMES = new Set(['�??�우', '금붕????, '?�어 ??, '?��? ??, '�?�� ??]);
+// ===== 바닐라 재료 분류(창고 UI · 연금 합계 공통) =====
+const ALCHEMY_SUMMARY_MINERAL_NAMES = new Set(['다이아몬드', '금 주괴', '청금석 블록', '레드스톤 블록', '철 주괴']);
+const ALCHEMY_SUMMARY_VANILLA_FISH_NAMES = new Set(['깐 새우', '금붕어 회', '농어 회', '도미 회', '청어 회']);
 
 function classifyVanillaWarehouseBucket(name) {
   if (ALCHEMY_SUMMARY_MINERAL_NAMES.has(name)) return 'minerals';
   if (ALCHEMY_SUMMARY_VANILLA_FISH_NAMES.has(name)) return 'vanillaFish';
-  if (/?�호|켈프|?�초/.test(name)) return 'coralSea';
-  if (/??/.test(name)) return 'leaves';
+  if (/산호|켈프|해초/.test(name)) return 'coralSea';
+  if (/잎$/.test(name)) return 'leaves';
   return 'other';
 }
 
@@ -6356,14 +6359,15 @@ function partitionVanillaNamesForWarehouse(namesArr) {
   return { minerals, vanillaFish, coralSea, leaves, other };
 }
 
-// ===== 창고 ?�더�?=====
+// ===== 창고 렌더링 =====
 function renderWarehouse() {
   closeCalculator();
   const container = document.getElementById('warehouseContainer');
   container.innerHTML = '';
   const savedInventory = loadWarehouseInventory();
   
-  // 창고???�시???�체 ?�료: (?�의???�료 + 모든 ?�력 ?�료) ?�집??  const allMaterials = new Set();
+  // 창고에 표시할 전체 재료: (정의된 재료 + 모든 입력 재료) 합집합
+  const allMaterials = new Set();
   Object.keys(data.materials).forEach(mat => {
     allMaterials.add(mat);
   });
@@ -6378,31 +6382,31 @@ function renderWarehouse() {
     });
   });
 
-  const isShellfishBase = (name) => /^(�??�라|문어|미역|?�게)\s+??$/.test(name);
+  const isShellfishBase = (name) => /^(굴|소라|문어|미역|성게)\s+★+$/.test(name);
   const starCount = (name) => {
-    const m = name.match(/??/);
+    const m = name.match(/★+/);
     return m ? m[0].length : 0;
   };
 
   const pick = (arr, pred) => arr.filter(pred).sort((a, b) => a.localeCompare(b, 'ko'));
   const all = Array.from(allMaterials);
 
-  // ?�패�?1/2/3??
+  // 어패류(1/2/3성)
   const shellfish1 = pick(all, n => isShellfishBase(n) && starCount(n) === 1);
   const shellfish2 = pick(all, n => isShellfishBase(n) && starCount(n) === 2);
   const shellfish3 = pick(all, n => isShellfishBase(n) && starCount(n) === 3);
 
-  // 1???�금?????�수)
-  const alchemy1Core = pick(all, n => /??s+??/.test(n));
-  const alchemy1Ess = pick(all, n => /?�수\s+??/.test(n));
+  // 1성 연금품(핵/정수)
+  const alchemy1Core = pick(all, n => /핵\s+★$/.test(n));
+  const alchemy1Ess = pick(all, n => /정수\s+★$/.test(n));
 
-  // 2???�금???�센??결정)
-  const alchemy2Ess = pick(all, n => /?�센??s+?�★$/.test(n));
-  const alchemy2Crystal = pick(all, n => /결정\s+?�★$/.test(n));
+  // 2성 연금품(에센스/결정)
+  const alchemy2Ess = pick(all, n => /에센스\s+★★$/.test(n));
+  const alchemy2Crystal = pick(all, n => /결정\s+★★$/.test(n));
 
-  // 3???�금???�릭???�약)
-  const alchemy3Elixir = pick(all, n => /?�릭??s+?�★??/.test(n));
-  const alchemy3Potion = pick(all, n => /?�약\s+?�★??/.test(n));
+  // 3성 연금품(엘릭서/영약)
+  const alchemy3Elixir = pick(all, n => /엘릭서\s+★★★$/.test(n));
+  const alchemy3Potion = pick(all, n => /영약\s+★★★$/.test(n));
 
   const assigned = new Set([
     ...shellfish1, ...shellfish2, ...shellfish3,
@@ -6427,8 +6431,8 @@ function renderWarehouse() {
 
   const isCraftOnlyMaterial = (name) => craftRelated.has(name) && !nonCraftUsed.has(name);
   const isCraftRelatedVanilla = (name) => {
-    // 공예??관??바닐???�료 ?�턴
-    return /진주|?�활?�품|거�?�??�동???�리???�?�무|꽃잎|막�?�??�수???�요???�계|조개껍데�?.test(name);
+    // 공예품 관련 바닐라 재료 패턴
+    return /진주|재활용품|거미줄|양동이|유리판|대나무|꽃잎|막대기|자수정|흑요석|시계|조개껍데기/.test(name);
   };
   const other = pick(all, n => !assigned.has(n) && !isCraftOnlyMaterial(n) && !isCraftRelatedVanilla(n))
     .sort((a, b) => a.localeCompare(b, 'ko'));
@@ -6445,7 +6449,7 @@ function renderWarehouse() {
     section.innerHTML = `
       <div class="warehouse-section-title">
         <h2>${title}</h2>
-        <div class="warehouse-section-sub">${subtitle || (items.length + '�?)}</div>
+        <div class="warehouse-section-sub">${subtitle || (items.length + '종')}</div>
       </div>
       <div class="warehouse-grid"></div>
     `;
@@ -6467,7 +6471,7 @@ function renderWarehouse() {
       const cnt = savedInventory[material] ?? 0;
       item.innerHTML = `
         <div class="warehouse-item-name">${imageHTML}${material}</div>
-        <input type="number" min="0" value="${cnt}" data-warehouse-count="${cnt}" data-material="${material}" ${isVanillaSection ? 'data-vanilla="1"' : ''} placeholder="?�량 ?�력">
+        <input type="number" min="0" value="${cnt}" data-warehouse-count="${cnt}" data-material="${material}" ${isVanillaSection ? 'data-vanilla="1"' : ''} placeholder="수량 입력">
       `;
       grid.appendChild(item);
     });
@@ -6477,34 +6481,34 @@ function renderWarehouse() {
 
   const shellfishCategoryTitle = document.createElement('div');
   shellfishCategoryTitle.className = 'warehouse-category-title';
-  shellfishCategoryTitle.textContent = '?�� ?�패�?;
+  shellfishCategoryTitle.textContent = '🐚 어패류';
   container.appendChild(shellfishCategoryTitle);
 
-  createSection('?�패�?(1??', shellfish1, '', { isShellfish: true });
-  createSection('?�패�?(2??', shellfish2, '', { isShellfish: true });
-  createSection('?�패�?(3??', shellfish3, '', { isShellfish: true });
+  createSection('어패류 (1성)', shellfish1, '', { isShellfish: true });
+  createSection('어패류 (2성)', shellfish2, '', { isShellfish: true });
+  createSection('어패류 (3성)', shellfish3, '', { isShellfish: true });
 
   const alchemyCategoryTitle = document.createElement('div');
   alchemyCategoryTitle.className = 'warehouse-category-title';
-  alchemyCategoryTitle.textContent = '?�️ ?�금??;
+  alchemyCategoryTitle.textContent = '⚗️ 연금품';
   container.appendChild(alchemyCategoryTitle);
 
-  createSection('1???�금??· ??, alchemy1Core, '', { isAlchemy: true });
-  createSection('1???�금??· ?�수', alchemy1Ess, '', { isAlchemy: true });
+  createSection('1성 연금품 · 핵', alchemy1Core, '', { isAlchemy: true });
+  createSection('1성 연금품 · 정수', alchemy1Ess, '', { isAlchemy: true });
 
-  createSection('2???�금??· ?�센??, alchemy2Ess, '', { isAlchemy: true });
-  createSection('2???�금??· 결정', alchemy2Crystal, '', { isAlchemy: true });
+  createSection('2성 연금품 · 에센스', alchemy2Ess, '', { isAlchemy: true });
+  createSection('2성 연금품 · 결정', alchemy2Crystal, '', { isAlchemy: true });
 
-  createSection('3???�금??· ?�릭??, alchemy3Elixir, '', { isAlchemy: true });
-  createSection('3???�금??· ?�약', alchemy3Potion, '', { isAlchemy: true });
+  createSection('3성 연금품 · 엘릭서', alchemy3Elixir, '', { isAlchemy: true });
+  createSection('3성 연금품 · 영약', alchemy3Potion, '', { isAlchemy: true });
 
-  // 바닐???�료 ?�목 추�?
+  // 바닐라 재료 제목 추가
   const vanillaTitle = document.createElement('div');
   vanillaTitle.className = 'warehouse-category-title';
-  vanillaTitle.textContent = '?�� 바닐???�료';
+  vanillaTitle.textContent = '🌾 바닐라 재료';
   container.appendChild(vanillaTitle);
 
-  // 바닐???�료 그룹
+  // 바닐라 재료 그룹
   const vanillaContainer = document.createElement('div');
   vanillaContainer.className = 'warehouse-vanilla-container';
   container.appendChild(vanillaContainer);
@@ -6512,12 +6516,12 @@ function renderWarehouse() {
   const vb = partitionVanillaNamesForWarehouse(other);
 
   if (vb.minerals.length > 0) createSection('광물', vb.minerals, '', { isVanillaSection: true, appendTo: vanillaContainer, vanillaDense: true });
-  if (vb.vanillaFish.length > 0) createSection('바닐???�류', vb.vanillaFish, '', { isVanillaSection: true, appendTo: vanillaContainer, vanillaDense: true });
-  if (vb.coralSea.length > 0) createSection('?�호 · ?�양', vb.coralSea, '', { isVanillaSection: true, appendTo: vanillaContainer, vanillaDense: true });
-  if (vb.leaves.length > 0) createSection('?�무 ??, vb.leaves, '', { isVanillaSection: true, appendTo: vanillaContainer, vanillaDense: true });
-  if (vb.other.length > 0) createSection('기�? 바닐??, vb.other, '', { isVanillaSection: true, appendTo: vanillaContainer, vanillaDense: true });
+  if (vb.vanillaFish.length > 0) createSection('바닐라 어류', vb.vanillaFish, '', { isVanillaSection: true, appendTo: vanillaContainer, vanillaDense: true });
+  if (vb.coralSea.length > 0) createSection('산호 · 해양', vb.coralSea, '', { isVanillaSection: true, appendTo: vanillaContainer, vanillaDense: true });
+  if (vb.leaves.length > 0) createSection('나무 잎', vb.leaves, '', { isVanillaSection: true, appendTo: vanillaContainer, vanillaDense: true });
+  if (vb.other.length > 0) createSection('기타 바닐라', vb.other, '', { isVanillaSection: true, appendTo: vanillaContainer, vanillaDense: true });
   
-  // ?�력 ?�드???�벤??리스??추�?
+  // 입력 필드에 이벤트 리스너 추가
   const inputs = document.querySelectorAll('#warehouseContainer input[data-material]');
   inputs.forEach(input => {
     input.addEventListener('change', () => {
@@ -6537,7 +6541,7 @@ function renderWarehouse() {
   updateVanillaInputState();
 }
 
-// ===== 창고 ?�트(64) ?�시 모드 =====
+// ===== 창고 세트(64) 표시 모드 =====
 function loadWarehouseSetViewState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY_WAREHOUSE_SET_VIEW);
@@ -6558,32 +6562,32 @@ function warehouseSetViewEnabled() {
 
 function formatWarehouseStackCount(total) {
   const n = Math.max(0, Math.floor(Number(total) || 0));
-  if (n === 0) return '0�?;
+  if (n === 0) return '0개';
   const sets = Math.floor(n / SET_SIZE);
   const rem = n % SET_SIZE;
-  if (sets === 0) return `${rem}�?;
-  if (rem === 0) return `${sets}?�트`;
-  return `${sets}?�트 ${rem}�?;
+  if (sets === 0) return `${rem}개`;
+  if (rem === 0) return `${sets}세트`;
+  return `${sets}세트 ${rem}개`;
 }
 
 function formatAlchemySummaryBoxSetPiece(total) {
   const n = Math.max(0, Math.floor(Number(total) || 0));
-  if (n === 0) return '0�?;
+  if (n === 0) return '0개';
   const perBox = ALCHEMY_BOX_SETS * SET_SIZE;
   const boxes = Math.floor(n / perBox);
   let r = n % perBox;
   const sets = Math.floor(r / SET_SIZE);
   const rem = r % SET_SIZE;
   const parts = [];
-  if (boxes > 0) parts.push(`${boxes}?�자`);
-  if (sets > 0) parts.push(`${sets}?�트`);
-  if (rem > 0) parts.push(`${rem}�?);
-  return parts.length ? parts.join(' ') : '0�?;
+  if (boxes > 0) parts.push(`${boxes}상자`);
+  if (sets > 0) parts.push(`${sets}세트`);
+  if (rem > 0) parts.push(`${rem}개`);
+  return parts.length ? parts.join(' ') : '0개';
 }
 
 function formatAlchemyPlainPiece(count) {
   const n = Math.max(0, Math.floor(Number(count) || 0));
-  return `${n.toLocaleString()}�?;
+  return `${n.toLocaleString()}개`;
 }
 
 function formatAlchemySummaryQty(count, mode) {
@@ -6646,7 +6650,7 @@ function aggregatePlanDirectInputs(planEntries) {
   return out;
 }
 
-/** 간략 보기: 직접 ?�료 ???�계 ?�친 ?�산(?�음 ?�시???�계) */
+/** 간략 보기: 직접 재료 한 단계 펼친 합산(다음 레시피 단계) */
 function aggregateMaterialInputsFromTotals(totals) {
   const out = {};
   Object.entries(totals || {}).forEach(([name, c]) => {
@@ -6660,7 +6664,7 @@ function aggregateMaterialInputsFromTotals(totals) {
   return out;
 }
 
-/** ?�수·?�·에?�스·결정·?�릭?�·영??계열(?�패�????�외) */
+/** 정수·핵·에센스·결정·엘릭서·영약 계열(어패류 ★ 제외) */
 function isAlchemyChainProductName(name) {
   return isMaterialsTabAlchemyChainItem(name);
 }
@@ -6675,7 +6679,7 @@ function aggregateDirectInputsNextAlchemyTier(directInputs) {
   return filtered;
 }
 
-/** ?�세??보기?? ?�작 ?�랜 기�? data.materials ?�리?�서 ?�요??중간 ?�금 ?�출 ?�량 */
+/** 자세히 보기용: 제작 플랜 기준 data.materials 트리에서 필요한 중간 연금 산출 수량 */
 function accumAlchemyMaterialNodes(itemName, qty, out) {
   const q = Math.max(0, Math.floor(Number(qty) || 0));
   if (!q) return;
@@ -6716,7 +6720,7 @@ function mergeAlchemyQtyMap(into, from) {
   });
 }
 
-/** ?�작 ?�리�??�까지 ?�쳐 ?�패류·바?�라�??�산(?�금 중간 ?�물 ?�외) */
+/** 제작 트리를 끝까지 펼쳐 어패류·바닐라만 합산(연금 중간 산물 제외) */
 function addPlanLeavesToBucket(bucket, itemName, qty) {
   const leaf = {};
   const opts = { skipShellfishTierConvert: true };
@@ -6728,22 +6732,22 @@ function addPlanLeavesToBucket(bucket, itemName, qty) {
 
 function alchemyMaterialStarTierIndex(name) {
   const s = String(name || '');
-  if (/?�★??.test(s)) return 2;
-  if (/?�★/.test(s)) return 1;
-  if (/??.test(s)) return 0;
+  if (/★★★/.test(s)) return 2;
+  if (/★★/.test(s)) return 1;
+  if (/★/.test(s)) return 0;
   return 0;
 }
 
-/** ?�세?�보�? 1·2·3?�별�??�당 ?�급 ?�작???�는 ?�패류·바?�라 ?�체 */
+/** 자세히보기: 1·2·3성별로 해당 성급 제작에 드는 어패류·바닐라 전체 */
 function aggregatePlanLeafMaterialsByStarTier(planEntries) {
   const planMap = {};
   (planEntries || []).forEach(([name, cnt]) => {
     planMap[name] = Math.max(0, Math.floor(Number(cnt) || 0));
   });
   const buckets = [
-    { title: '1???�금???�료', shell: {}, vanilla: {} },
-    { title: '2???�금???�료', shell: {}, vanilla: {} },
-    { title: '3???�금???�료', shell: {}, vanilla: {} },
+    { title: '1성 연금품 재료', shell: {}, vanilla: {} },
+    { title: '2성 연금품 재료', shell: {}, vanilla: {} },
+    { title: '3성 연금품 재료', shell: {}, vanilla: {} },
   ];
   const tierFinals = [FINAL_GROUP1, FINAL_GROUP2, FINAL_GROUP3];
 
@@ -6759,9 +6763,9 @@ function aggregatePlanLeafMaterialsByStarTier(planEntries) {
     });
   });
 
-  const diluentCnt = planMap['추출???�석??] || 0;
+  const diluentCnt = planMap['추출된 희석액'] || 0;
   if (diluentCnt > 0) {
-    const dRecipe = data.recipes.find((r) => r.name === '추출???�석??);
+    const dRecipe = data.recipes.find((r) => r.name === '추출된 희석액');
     if (dRecipe && dRecipe.inputs) {
       for (const inp of dRecipe.inputs) {
         const tierIdx = alchemyMaterialStarTierIndex(inp.name);
@@ -6789,7 +6793,7 @@ function formatAlchemyOneStepPopoverHTML(name, displayQty, qtyMode) {
   const q = Math.max(0, Math.floor(Number(displayQty) || 0));
   const inputs = getAlchemyOneStepInputs(name);
   if (!inputs.length) {
-    return '<div class="alchemy-summary-popover-empty">바로 ?�래 ?�계 ?�시?��? ?�습?�다</div>';
+    return '<div class="alchemy-summary-popover-empty">바로 아래 단계 레시피가 없습니다</div>';
   }
   return inputs
     .map((inp) => {
@@ -6805,7 +6809,7 @@ function buildAlchemySummaryStageGridHTML(directInputs, qtyMode) {
   const m = qtyMode != null ? qtyMode : alchemySummaryQtyMode;
   const entries = Object.entries(directInputs || {}).filter(([, c]) => c > 0);
   if (!entries.length) {
-    return '<div style="font-size:12px;color:#778899;padding:10px 0;">?�산?????�계 ?�래 ?�료가 ?�습?�다.</div>';
+    return '<div style="font-size:12px;color:#778899;padding:10px 0;">합산된 한 단계 아래 재료가 없습니다.</div>';
   }
   const renderCard = ([nm, cnt]) => {
     const img = buildImageTag(nm, '', 'height:28px;display:block;margin:0 auto 6px;');
@@ -6845,7 +6849,7 @@ function buildAlchemySummaryStageViewsHTML(directInputs, qtyMode) {
   const nextAlchemy = aggregateDirectInputsNextAlchemyTier(directInputs);
   const hasNext = Object.values(nextAlchemy).some((v) => v > 0);
   if (!hasNext) return directGrid;
-  return `${directGrid}<div class="alchemy-summary-stage-subtitle">바로 ?�래 ?�금??(???�계 ??</div>${buildAlchemySummaryStageGridHTML(nextAlchemy, m)}`;
+  return `${directGrid}<div class="alchemy-summary-stage-subtitle">바로 아래 연금품 (한 단계 더)</div>${buildAlchemySummaryStageGridHTML(nextAlchemy, m)}`;
 }
 
 function syncAlchemyMatViewButtons() {
@@ -6897,7 +6901,7 @@ function buildAlchemySummaryMaterialSectionsHTML(planEntries, qtyMode) {
   const m = qtyMode != null ? qtyMode : alchemySummaryQtyMode;
   const tiers = aggregatePlanLeafMaterialsByStarTier(planEntries);
   if (!tiers.length) {
-    return '<div style="font-size:12px;color:#778899;padding:8px 0;">?�작 추천 ?�량???�어 ?�시???�료가 ?�습?�다.</div>';
+    return '<div style="font-size:12px;color:#778899;padding:8px 0;">제작 추천 수량이 없어 표시할 재료가 없습니다.</div>';
   }
   return tiers
     .map((tier) => {
@@ -6905,13 +6909,13 @@ function buildAlchemySummaryMaterialSectionsHTML(planEntries, qtyMode) {
       const hasVanilla = Object.values(tier.vanilla).some((v) => v > 0);
       const shellBlock = hasShell
         ? `<div class="alchemy-mat-subsection">
-        <h5 class="alchemy-mat-subsection-title">?�패�?/h5>
+        <h5 class="alchemy-mat-subsection-title">어패류</h5>
         ${renderShellfishTiersHTML(tier.shell, m)}
       </div>`
         : '';
       const vanillaBlock = hasVanilla
         ? `<div class="alchemy-mat-subsection">
-        <h5 class="alchemy-mat-subsection-title">바닐???�료</h5>
+        <h5 class="alchemy-mat-subsection-title">바닐라 재료</h5>
         ${renderVanillaWarehouseCategoriesHTML(tier.vanilla, m)}
       </div>`
         : '';
@@ -6957,7 +6961,7 @@ function applyWarehouseSetDisplayMode() {
   });
   const btn = document.getElementById('warehouseSetDisplayToggle');
   if (btn) {
-    btn.textContent = setMode ? '개수(?�체)�?보기' : '�?��/?�트 변??;
+    btn.textContent = setMode ? '개수(전체)로 보기' : '갯수/세트 변환';
     btn.setAttribute('aria-pressed', setMode ? 'true' : 'false');
   }
 }
@@ -6974,7 +6978,7 @@ function toggleWarehouseSetDisplayMode() {
   applyWarehouseSetDisplayMode();
 }
 
-// ===== 창고?�서 ?�재 ?�량 가?�오�?=====
+// ===== 창고에서 현재 수량 가져오기 =====
 function getWarehouseInventory() {
   const inventory = {};
   document.querySelectorAll('#warehouseContainer input[data-material]').forEach((input) => {
@@ -7010,8 +7014,8 @@ function getVanillaMaterials() {
 }
 
 function getInfiniteVanillaMaterials() {
-  const isShellfishStar = (name) => /^(�??�라|문어|미역|?�게)\s+??$/.test(name);
-  const isAlchemyItem = (name) => /(?�석???�수|???�센??결정|?�릭???�약)/.test(name);
+  const isShellfishStar = (name) => /^(굴|소라|문어|미역|성게)\s+★+$/.test(name);
+  const isAlchemyItem = (name) => /(희석액|정수|핵|에센스|결정|엘릭서|영약)/.test(name);
   const inputs = Array.from(document.querySelectorAll('#warehouseContainer input[data-vanilla="1"]'));
   const names = inputs
     .map((i) => i.getAttribute('data-material') || '')
@@ -7093,7 +7097,7 @@ function renderExperts() {
       <div class="expert-name">${meta.name}</div>
       <div class="expert-desc">${meta.desc}</div>
       <div class="expert-controls">
-        <button class="expert-btn" type="button" data-expert="${meta.key}" data-delta="-1">??/button>
+        <button class="expert-btn" type="button" data-expert="${meta.key}" data-delta="-1">−</button>
         <div class="expert-level">Lv.${lv} (${value}${unit})</div>
         <button class="expert-btn" type="button" data-expert="${meta.key}" data-delta="1">+</button>
       </div>
@@ -7129,9 +7133,9 @@ function getExpertEffects() {
   return { craftPriceBoost, alchemyPriceBoost, timeReduce };
 }
 
-/** ?�금???�매가(?�문가 보너???�용) ???�율 분석�??�일 ?�별 */
+/** 연금품 판매가(전문가 보너스 적용) — 효율 분석과 동일 판별 */
 function isAlchemySellPricedRecipeName(name) {
-  return /(?�석???�수|???�센??결정|?�릭???�약|비약|코어|?�쿠?�스|광�?�?깃털|?�개|?�편|?�우?�러??무�?)/.test(String(name || ''));
+  return /(희석액|정수|핵|에센스|결정|엘릭서|영약|비약|코어|아쿠티스|광란체|깃털|날개|파편|나우틸러스|무저)/.test(String(name || ''));
 }
 
 function getAlchemyBoostedSellPriceGold(recipe) {
@@ -7144,19 +7148,19 @@ function getAlchemyBoostedSellPriceGold(recipe) {
 }
 
 function getBaseAlchemyTimeSec(name) {
-  if (name === '추출???�석??) return 60;
-  if (/(?�생???�쿠?�스|?�라켄의 광�?�?리바?�던??깃털)/.test(name)) return 30;
-  if (/(?�구 ?�동??코어|침묵???�해 비약|�?��룡의 ?�개)/.test(name)) return 30;
-  if (/(?�쿠???�스 ?�편|?�우?�러?�의 ??무�???척추)/.test(name)) return 60;
-  if (/(?�수|?�센??/.test(name)) return 5;
-  if (/(??결정|?�릭??/.test(name)) return 10;
-  if (/?�약/.test(name)) return 20;
+  if (name === '추출된 희석액') return 60;
+  if (/(영생의 아쿠티스|크라켄의 광란체|리바이던의 깃털)/.test(name)) return 30;
+  if (/(해구 파동의 코어|침묵의 심해 비약|청해룡의 날개)/.test(name)) return 30;
+  if (/(아쿠아 펄스 파편|나우틸러스의 손|무저의 척추)/.test(name)) return 60;
+  if (/(정수|에센스)/.test(name)) return 5;
+  if (/(핵|결정|엘릭서)/.test(name)) return 10;
+  if (/영약/.test(name)) return 20;
   return 60;
 }
 
-const FINAL_GROUP1 = ['?�생???�쿠?�스', '?�라켄의 광�?�?, '리바?�던??깃털'];
-const FINAL_GROUP2 = ['?�구 ?�동??코어', '침묵???�해 비약', '�?��룡의 ?�개'];
-const FINAL_GROUP3 = ['?�쿠???�스 ?�편', '?�우?�러?�의 ??, '무�???척추'];
+const FINAL_GROUP1 = ['영생의 아쿠티스', '크라켄의 광란체', '리바이던의 깃털'];
+const FINAL_GROUP2 = ['해구 파동의 코어', '침묵의 심해 비약', '청해룡의 날개'];
+const FINAL_GROUP3 = ['아쿠아 펄스 파편', '나우틸러스의 손', '무저의 척추'];
 
 function deductCraftTree(name, count, inv, options = {}) {
   if (!count || count <= 0) return;
@@ -7175,7 +7179,7 @@ function deductCraftTree(name, count, inv, options = {}) {
   }
 }
 
-/** ?�작 추천 ?�랜 기�? ?�위 ?�료 ?�비??집계(deductCraftTree?� ?�일 규칙) */
+/** 제작 추천 플랜 기준 하위 재료 소비량 집계(deductCraftTree와 동일 규칙) */
 function accumulateCraftTree(name, count, accum, options = {}) {
   if (!count || count <= 0) return;
   const skip = options.skipShellfishTierConvert === true;
@@ -7200,7 +7204,7 @@ function accumulateFinalRecipeNeeds(recipe, count, accum, options) {
 }
 
 function isShellfishStockName(name) {
-  return /^(�??�라|문어|미역|?�게)(\s+??)?$/.test(String(name || '').trim());
+  return /^(굴|소라|문어|미역|성게)(\s+★+)?$/.test(String(name || '').trim());
 }
 
 function splitShellfishVanillaTotals(rawTotals) {
@@ -7218,7 +7222,7 @@ function formatAlchemyMaterialLinesHTML(matObj, qtyMode) {
   const mode = qtyMode != null ? qtyMode : alchemySummaryQtyMode;
   const entries = Object.entries(matObj).filter(([, c]) => c > 0).sort((a, b) => a[0].localeCompare(b[0], 'ko'));
   if (!entries.length) {
-    return '<div style="font-size:12px;color:#778899;">?�당 ?�음</div>';
+    return '<div style="font-size:12px;color:#778899;">해당 없음</div>';
   }
   return entries
     .map(([name, c]) => {
@@ -7229,13 +7233,13 @@ function formatAlchemyMaterialLinesHTML(matObj, qtyMode) {
     .join('');
 }
 
-/** ?�세?�보�? 1·2·3???�금???�료 ???�수·?????�위 ??*/
+/** 자세히보기: 1·2·3성 연금품 재료 → 정수·핵 등 하위 열 */
 function renderAlchemyChainCategoryGroupsHTML(totalsObj, qtyMode) {
   const qm = qtyMode != null ? qtyMode : alchemySummaryQtyMode;
   const hasAny = Object.keys(totalsObj || {}).some((k) => (totalsObj[k] || 0) > 0);
-  if (!hasAny) return '<div style="font-size:12px;color:#778899;">?�당 ?�음</div>';
+  if (!hasAny) return '<div style="font-size:12px;color:#778899;">해당 없음</div>';
   const tiers = partitionAlchemyChainByStarTier(totalsObj);
-  if (!tiers.length) return '<div style="font-size:12px;color:#778899;">?�당 ?�음</div>';
+  if (!tiers.length) return '<div style="font-size:12px;color:#778899;">해당 없음</div>';
   return tiers
     .map((tier) => {
       const cols = tier.cols.filter((c) => Object.keys(c.obj).length > 0);
@@ -7267,9 +7271,9 @@ function partitionShellfishByStar(shellObj) {
   Object.entries(shellObj).forEach(([name, c]) => {
     if (!c || c <= 0) return;
     const s = String(name);
-    if (/?�★??.test(s)) t3[name] = c;
-    else if (/?�★/.test(s)) t2[name] = c;
-    else if (/??.test(s)) t1[name] = c;
+    if (/★★★/.test(s)) t3[name] = c;
+    else if (/★★/.test(s)) t2[name] = c;
+    else if (/★/.test(s)) t1[name] = c;
     else t1[name] = c;
   });
   return { t1, t2, t3 };
@@ -7279,12 +7283,12 @@ function renderShellfishTiersHTML(shellObj, qtyMode) {
   const qm = qtyMode != null ? qtyMode : alchemySummaryQtyMode;
   const { t1, t2, t3 } = partitionShellfishByStar(shellObj);
   const cols = [
-    { label: '1???�패�?, obj: t1 },
-    { label: '2???�패�?, obj: t2 },
-    { label: '3???�패�?, obj: t3 },
+    { label: '1성 어패류', obj: t1 },
+    { label: '2성 어패류', obj: t2 },
+    { label: '3성 어패류', obj: t3 },
   ].filter((c) => Object.keys(c.obj).length > 0);
   const n = cols.length;
-  if (n === 0) return '<div style="font-size:12px;color:#778899;">?�당 ?�음</div>';
+  if (n === 0) return '<div style="font-size:12px;color:#778899;">해당 없음</div>';
   const templateCols = `repeat(${n}, minmax(0, 1fr))`;
   const cells = cols
     .map(
@@ -7303,12 +7307,12 @@ function renderVanillaWarehouseCategoriesHTML(vanillaObj, qtyMode) {
   const { minerals, vanillaFish, coralSea, leaves, other } = partitionVanillaByWarehouseCategory(vanillaObj);
   const blocks = [
     { title: '광물', obj: minerals },
-    { title: '바닐???�류', obj: vanillaFish },
-    { title: '?�호 · ?�양', obj: coralSea },
-    { title: '?�무 ??, obj: leaves },
-    { title: '기�? 바닐??, obj: other },
+    { title: '바닐라 어류', obj: vanillaFish },
+    { title: '산호 · 해양', obj: coralSea },
+    { title: '나무 잎', obj: leaves },
+    { title: '기타 바닐라', obj: other },
   ].filter((b) => Object.keys(b.obj).length > 0);
-  if (!blocks.length) return '<div style="font-size:12px;color:#778899;">?�당 ?�음</div>';
+  if (!blocks.length) return '<div style="font-size:12px;color:#778899;">해당 없음</div>';
   const n = blocks.length;
   const templateCols = n === 1 ? '1fr' : `repeat(${Math.min(n, 3)}, minmax(0, 1fr))`;
   return `<div class="alchemy-vanilla-grid" style="display:grid;grid-template-columns:${templateCols};gap:12px;align-items:start;">${blocks
@@ -7346,7 +7350,7 @@ function greedyCraftFinalCounts(recipeNames, inv, options = {}) {
   let diluentCount = 0;
   const effects = getExpertEffects();
   const craftOpts = { skipShellfishTierConvert: true };
-  const dRecipe = includeDiluentCandidate ? data.recipes.find((r) => r.name === '추출???�석??) : null;
+  const dRecipe = includeDiluentCandidate ? data.recipes.find((r) => r.name === '추출된 희석액') : null;
 
   const guard = 200000;
   let iter = 0;
@@ -7383,7 +7387,7 @@ function greedyCraftFinalCounts(recipeNames, inv, options = {}) {
     }
     if (!bestRecipe) break;
     deductFinalRecipe(bestRecipe, inv, craftOpts);
-    if (bestRecipe.name === '추출???�석??) diluentCount++;
+    if (bestRecipe.name === '추출된 희석액') diluentCount++;
     else counts[bestRecipe.name]++;
   }
   return { counts, diluentCount };
@@ -7412,7 +7416,7 @@ function packAlchemyPlanResult(counts) {
   const plan1 = Object.fromEntries(FINAL_GROUP1.map((n) => [n, counts[n] || 0]));
   const plan2 = Object.fromEntries(FINAL_GROUP2.map((n) => [n, counts[n] || 0]));
   const plan3 = Object.fromEntries(FINAL_GROUP3.map((n) => [n, counts[n] || 0]));
-  const diluentCount = Math.max(0, Math.floor(Number(counts['추출???�석??]) || 0));
+  const diluentCount = Math.max(0, Math.floor(Number(counts['추출된 희석액']) || 0));
   return { plans: [plan1, plan2, plan3], diluentCount };
 }
 
@@ -7421,7 +7425,7 @@ function alchemyPlanTotalGold(packed, effects) {
     sumFinalPlanGold(packed.plans[0], effects).boosted +
     sumFinalPlanGold(packed.plans[1], effects).boosted +
     sumFinalPlanGold(packed.plans[2], effects).boosted +
-    sumFinalPlanGold({ '추출???�석??: packed.diluentCount }, effects).boosted
+    sumFinalPlanGold({ '추출된 희석액': packed.diluentCount }, effects).boosted
   );
 }
 
@@ -7450,7 +7454,7 @@ function optimizeAlchemyPlanGreedy(inv) {
       Object.assign(merged, counts);
       dCount += dPart;
     }
-    merged['추출???�석??] = dCount;
+    merged['추출된 희석액'] = dCount;
     return packAlchemyPlanResult(merged);
   }
 
@@ -7468,7 +7472,7 @@ function optimizeAlchemyPlanGreedy(inv) {
   const { counts, diluentCount } = greedyCraftFinalCounts(allFinals, invGlobal, {
     includeDiluentCandidate: true,
   });
-  const globalPacked = packAlchemyPlanResult({ ...counts, '추출???�석??: diluentCount });
+  const globalPacked = packAlchemyPlanResult({ ...counts, '추출된 희석액': diluentCount });
   const globalGold = alchemyPlanTotalGold(globalPacked, effects);
   if (globalGold > bestGold) return globalPacked;
   return best;
@@ -7477,7 +7481,7 @@ function optimizeAlchemyPlanGreedy(inv) {
 function optimizeAlchemyPlanILP(inv) {
   _lpMatKeys.clear();
   _lpMatSeq = 0;
-  const products = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출???�석??];
+  const products = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'];
   const varIds = products.map((_, i) => 'v' + i);
   const needsList = products.map((name) => buildFinalProductLeafNeeds(name));
   const allMats = new Set();
@@ -7547,11 +7551,11 @@ function renderTriFinalPlan(title, orderedNames, counts) {
     const totalSell = unitSell * n;
     const sellLine =
       n > 0 && unitSell > 0
-        ? `<div style="font-size:11px;color:#9ecb7a;margin-top:5px;line-height:1.35;">?��? ?�매 ??<strong style="color:#c8f5a8;">${totalSell.toLocaleString()}G</strong></div>`
+        ? `<div style="font-size:11px;color:#9ecb7a;margin-top:5px;line-height:1.35;">전부 판매 시 <strong style="color:#c8f5a8;">${totalSell.toLocaleString()}G</strong></div>`
         : '';
     return `<div style="background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:10px 8px;text-align:center;min-height:72px;display:flex;flex-direction:column;justify-content:center;">
       <div style="font-size:11px;color:#9eb2c8;line-height:1.25;word-break:keep-all;">${imgH}${name}</div>
-      <div style="font-size:17px;font-weight:900;color:#8fd5ff;margin-top:6px;">${n}�?/div>
+      <div style="font-size:17px;font-weight:900;color:#8fd5ff;margin-top:6px;">${n}개</div>
       ${sellLine}
     </div>`;
   }).join('');
@@ -7561,10 +7565,10 @@ function renderTriFinalPlan(title, orderedNames, counts) {
   </div>`;
 }
 
-/** 0?? 추출???�석????1·2·3?�과 ?�일 카드 ?��?????�� 1�??�시) */
+/** 0성: 추출된 희석액 — 1·2·3성과 동일 카드 스타일(항상 1칸 표시) */
 function renderZeroStarDiluentPlanBlock(diluentCount, effects) {
   const n = Math.max(0, Math.floor(Number(diluentCount) || 0));
-  const name = '추출???�석??;
+  const name = '추출된 희석액';
   const mult = 1 + (effects.alchemyPriceBoost || 0) / 100;
   const recipe = data.recipes.find((r) => r.name === name);
   const imgH = buildImageTag(name, '', 'height:22px;vertical-align:middle;margin-right:6px;');
@@ -7573,40 +7577,40 @@ function renderZeroStarDiluentPlanBlock(diluentCount, effects) {
   const baseTotal = recipe ? (recipe.price || 0) * n : 0;
   const sellLine =
     n > 0 && unitSell > 0
-      ? `<div style="font-size:11px;color:#9ecb7a;margin-top:5px;line-height:1.35;">?��? ?�매 ??<strong style="color:#c8f5a8;">${totalSell.toLocaleString()}G</strong></div>`
+      ? `<div style="font-size:11px;color:#9ecb7a;margin-top:5px;line-height:1.35;">전부 판매 시 <strong style="color:#c8f5a8;">${totalSell.toLocaleString()}G</strong></div>`
       : '';
   const baseLine =
     n > 0 && (effects.alchemyPriceBoost || 0) > 0 && recipe
-      ? `<div style="font-size:10px;color:#8899aa;margin-top:4px;line-height:1.35;">기본가 ??<strong style="color:#9da7b3;">${baseTotal.toLocaleString()}G</strong> · ?�문가 ?�금 +${effects.alchemyPriceBoost}% 반영 금액</div>`
+      ? `<div style="font-size:10px;color:#8899aa;margin-top:4px;line-height:1.35;">기본가 합 <strong style="color:#9da7b3;">${baseTotal.toLocaleString()}G</strong> · 전문가 연금 +${effects.alchemyPriceBoost}% 반영 금액</div>`
       : '';
   const zeroNote =
     n === 0
-      ? `<div style="font-size:10px;color:#667788;margin-top:5px;line-height:1.35;">?�번 추천?�서???�작?��? ?�았?�니??</div>`
+      ? `<div style="font-size:10px;color:#667788;margin-top:5px;line-height:1.35;">이번 추천에서는 제작되지 않았습니다.</div>`
       : '';
   const cell = `<div style="background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:10px 8px;text-align:center;min-height:72px;display:flex;flex-direction:column;justify-content:center;grid-column:1 / -1;">
       <div style="font-size:11px;color:#9eb2c8;line-height:1.25;word-break:keep-all;">${imgH}${name}</div>
-      <div style="font-size:17px;font-weight:900;color:#8fd5ff;margin-top:6px;">${n}�?/div>
+      <div style="font-size:17px;font-weight:900;color:#8fd5ff;margin-top:6px;">${n}개</div>
       ${sellLine}
       ${baseLine}
       ${zeroNote}
     </div>`;
   return `<div style="margin-bottom:14px;">
-    <div style="font-size:13px;font-weight:800;color:#e5e5e5;margin-bottom:8px;">0??/div>
+    <div style="font-size:13px;font-weight:800;color:#e5e5e5;margin-bottom:8px;">0성</div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">${cell}</div>
   </div>`;
 }
 
 function formatGuideDurationSec(totalSec) {
   const s0 = Math.max(0, Math.floor(Number(totalSec) || 0));
-  if (s0 === 0) return '0�?;
+  if (s0 === 0) return '0초';
   let s = s0;
   const h = Math.floor(s / 3600);
   s %= 3600;
   const m = Math.floor(s / 60);
   const sec = s % 60;
-  if (h > 0) return `${h}?�간 ${m}�?${sec}�?;
-  if (m > 0) return `${m}�?${sec}�?;
-  return `${sec}�?;
+  if (h > 0) return `${h}시간 ${m}분 ${sec}초`;
+  if (m > 0) return `${m}분 ${sec}초`;
+  return `${sec}초`;
 }
 
 function alchemyGuideMergeQty(map, name, add) {
@@ -7669,12 +7673,12 @@ function alchemyGuideBuildStages(recipe, copies) {
   return stages;
 }
 
-/** 가?�드??보이???�량 문자??ceil ???�트 ?�기) ???�계 중복 ?�별??*/
+/** 가이드에 보이는 수량 문자열(ceil 후 세트 표기) — 단계 중복 판별용 */
 function alchemyGuideQtyDisplayToken(q) {
   return formatWarehouseStackCount(Math.ceil(Math.max(0, Number(q) || 0)));
 }
 
-/** ?�작 가?�드???�속?�로 같�? ?�용??보이???�계 ?�거(부?�소?�·ceil ???�일 ?? */
+/** 제작 가이드에 연속으로 같은 내용이 보이는 단계 제거(부동소수·ceil 후 동일 등) */
 function alchemyGuideQtyMapsVisualEqual(a, b) {
   const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
   for (const k of keys) {
@@ -7714,7 +7718,7 @@ function getAlchemyGuideRecipeCopies(recipeName) {
   return Math.max(0, Math.floor(Number(v) || 0));
 }
 
-/** ??최종)??좁고, ?�래(기초 ?�료)�?갈수�??�어지???�형 ????문어�??�리 */
+/** 위(최종)는 좁고, 아래(기초 재료)로 갈수록 넓어지는 ▽형 폭 — 문어발 트리 */
 function alchemyGuidePyramidWidthPctDown(levelIndex, totalLevels) {
   if (totalLevels <= 1) return 100;
   const t = levelIndex / (totalLevels - 1);
@@ -7727,7 +7731,7 @@ function alchemyGuideColInnerHtml(map) {
     .filter(([, q]) => q > 0)
     .sort((a, b) => a[0].localeCompare(b[0], 'ko'));
   if (!entries.length) {
-    return '<div class="alchemy-guide-node-row alchemy-guide-node-row--empty"><div class="alchemy-guide-empty">??/div></div>';
+    return '<div class="alchemy-guide-node-row alchemy-guide-node-row--empty"><div class="alchemy-guide-empty">—</div></div>';
   }
   return `<div class="alchemy-guide-node-row">${entries
     .map(([nm, q]) => {
@@ -7743,7 +7747,7 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
   if (!recipe || !recipe.inputs || !recipe.inputs.length) {
     return `<div class="alchemy-guide-product alchemy-guide-product--error">
       <h3 class="alchemy-guide-product-title">${escapeHtml(finalName)}</h3>
-      <p class="alchemy-guide-missing">?�시???�이?��? 찾을 ???�습?�다.</p>
+      <p class="alchemy-guide-missing">레시피 데이터를 찾을 수 없습니다.</p>
     </div>`;
   }
   if (copies <= 0) {
@@ -7753,10 +7757,10 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
         <div class="alchemy-guide-product-icon">${headImg}</div>
         <div class="alchemy-guide-product-meta">
           <h3 class="alchemy-guide-product-title">${escapeHtml(finalName)}</h3>
-          <p class="alchemy-guide-product-stats">?�작 추천 <strong>0�?/strong></p>
+          <p class="alchemy-guide-product-stats">제작 추천 <strong>0개</strong></p>
         </div>
       </div>
-      <p class="alchemy-guide-zero-note">?�번 추천?�서???�작?��? ?�습?�다.</p>
+      <p class="alchemy-guide-zero-note">이번 추천에서는 제작되지 않습니다.</p>
     </div>`;
   }
   const stagesRaw = alchemyGuideBuildStages(recipe, copies);
@@ -7774,13 +7778,13 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
   const sell = getAlchemyBoostedSellPriceGold(recipe);
   const sellLine =
     sell != null && copies > 0
-      ? `<div class="alchemy-guide-sell">?�상 ?�매가 ??(${copies.toLocaleString()}�? ?�문가 ?�금 보너??: <strong>${(sell * copies).toLocaleString()}G</strong></div>`
+      ? `<div class="alchemy-guide-sell">예상 판매가 합 (${copies.toLocaleString()}개, 전문가 연금 보너스): <strong>${(sell * copies).toLocaleString()}G</strong></div>`
       : '';
   stepParts.push(`<div class="alchemy-guide-pyramid-slab-out"><div class="alchemy-guide-pyramid-slab alchemy-guide-pyramid-slab--final" style="--pyramid-w:${wApex}%"><div class="alchemy-guide-col alchemy-guide-col--final">
-      <div class="alchemy-guide-step-label alchemy-guide-step-label--final">최종 ?�성</div>
+      <div class="alchemy-guide-step-label alchemy-guide-step-label--final">최종 연성</div>
       <div class="alchemy-guide-final-row">${img}<span>${escapeHtml(finalName)}</span></div>
-      <div class="alchemy-guide-final-qty">?�작 추천 ${formatWarehouseStackCount(copies)}</div>
-      <div class="alchemy-guide-time">?�산 기본 ?�작 ?�간(참고): <strong>${escapeHtml(formatGuideDurationSec(totalSec))}</strong></div>
+      <div class="alchemy-guide-final-qty">제작 추천 ${formatWarehouseStackCount(copies)}</div>
+      <div class="alchemy-guide-time">합산 기본 제작 시간(참고): <strong>${escapeHtml(formatGuideDurationSec(totalSec))}</strong></div>
       ${sellLine}
     </div></div></div>`);
 
@@ -7790,16 +7794,16 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
     const nMat = Object.entries(map).filter(([, q]) => q > 0).length;
     const label =
       j === 0
-        ? 'STEP 1 · 직접 ?�료'
+        ? 'STEP 1 · 직접 재료'
         : j === stages.length - 1
-          ? `STEP ${j + 1} · 기초 ?�료`
+          ? `STEP ${j + 1} · 기초 재료`
           : `STEP ${j + 1} · 중간`;
     const c = stepColors[j % stepColors.length];
     stepParts.push(
       `<div class="alchemy-guide-pyramid-slab" style="--pyramid-w:${w}%"><div class="alchemy-guide-col alchemy-guide-col--step" style="--guide-accent:${c}">
         <div class="alchemy-guide-step-header">
           <span class="alchemy-guide-step-label" style="color:${c}">${label}</span>
-          <span class="alchemy-guide-step-count">${nMat}�?/span>
+          <span class="alchemy-guide-step-count">${nMat}종</span>
         </div>
         ${alchemyGuideColInnerHtml(map)}
       </div></div>`
@@ -7813,7 +7817,7 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
       <div class="alchemy-guide-product-icon">${headImg}</div>
       <div class="alchemy-guide-product-meta">
         <h3 class="alchemy-guide-product-title">${escapeHtml(finalName)}</h3>
-        <p class="alchemy-guide-product-stats">?�작 추천 <strong>${formatWarehouseStackCount(copies)}</strong> · ?�산 기본 ?�간 <strong>${escapeHtml(formatGuideDurationSec(totalSec))}</strong></p>
+        <p class="alchemy-guide-product-stats">제작 추천 <strong>${formatWarehouseStackCount(copies)}</strong> · 합산 기본 시간 <strong>${escapeHtml(formatGuideDurationSec(totalSec))}</strong></p>
       </div>
     </div>
     <div class="alchemy-guide-timeline">${stepsVerticalHtml}</div>
@@ -7824,10 +7828,10 @@ function renderAlchemyCraftGuideBody() {
   const body = document.getElementById('alchemyCraftGuideBody');
   if (!body) return;
   if (!lastAlchemyPlanCountsByName) {
-    body.innerHTML = `<div class="alchemy-guide-lead-box alchemy-guide-lead-box--solo"><p class="alchemy-guide-lead">?�료 창고???�량???�력????<strong>?�금??계산</strong>???�행?�면, ??<strong>?�작 추천</strong> ?�량 기�??�로 가?�드가 채워집니??</p></div>`;
+    body.innerHTML = `<div class="alchemy-guide-lead-box alchemy-guide-lead-box--solo"><p class="alchemy-guide-lead">재료 창고에 수량을 입력한 뒤 <strong>연금품 계산</strong>이 실행되면, 위 <strong>제작 추천</strong> 수량 기준으로 가이드가 채워집니다.</p></div>`;
     return;
   }
-  const targets = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출???�석??];
+  const targets = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'];
   const blocks = targets.map((nm) => renderOneAlchemyGuideBlock(nm, getAlchemyGuideRecipeCopies(nm))).join('');
   body.innerHTML = blocks;
 }
@@ -7852,14 +7856,14 @@ function computeShellfishEfficiencyScores(inv) {
   const scores = {};
   SHELLFISH_NAMES.forEach((s) => { scores[s] = 0.001; });
   data.recipes.forEach((recipe) => {
-    const isAlchemy = /(?�석?????�수|?�센??결정|?�릭???�약|비약|코어|?�쿠?�스|광�?�?깃털|?�개|?�편|?�우?�러??무�?)/.test(recipe.name);
+    const isAlchemy = /(희석액|핵|정수|에센스|결정|엘릭서|영약|비약|코어|아쿠티스|광란체|깃털|날개|파편|나우틸러스|무저)/.test(recipe.name);
     if (!isAlchemy) return;
     if (calculateMaxCraft(recipe, inv, {}, { skipShellfishTierConvert: true }) < 1) return;
     const ue = unitAlchemyEfficiency(recipe, effects);
     const req = calculateRequiredMaterials(recipe, 1);
     SHELLFISH_NAMES.forEach((base) => {
       [1, 2, 3].forEach((st) => {
-        const key = `${base} ${'??.repeat(st)}`;
+        const key = `${base} ${'★'.repeat(st)}`;
         const c = req[key] || 0;
         if (c > 0) scores[base] += ue * c;
       });
@@ -7980,15 +7984,15 @@ function renderSageRod() {
   const engraving = getSageEngravingEffects();
   const finalPower = Math.round((sageRodStats.power[sageRodLevel] || 0) * (1 + engraving.fishingPowerBoost / 100));
   const finalShellChance = (sageRodStats.shellChance[sageRodLevel] || 0) + engraving.shellSearchChance;
-  lvEl.textContent = `${sageRodLevel}�?;
-  visEl.innerHTML = `<img class="sage-rod-visual-img" src="${sageRodVisualSrc(sageRodLevel)}" alt="?�이지 ?�싯?� (${sageRodLevel}�?" loading="lazy" decoding="async">`;
+  lvEl.textContent = `${sageRodLevel}강`;
+  visEl.innerHTML = `<img class="sage-rod-visual-img" src="${sageRodVisualSrc(sageRodLevel)}" alt="세이지 낚싯대 (${sageRodLevel}강)" loading="lazy" decoding="async">`;
   statEl.innerHTML = `
-    <div class="expert-desc">?�간 감소?? ${sageRodStats.timeReduce[sageRodLevel]}%</div>
-    <div class="expert-desc">조개 ?�장 ?�률: ${finalShellChance}% (기본 ${sageRodStats.shellChance[sageRodLevel]}% + 각인 ${engraving.shellSearchChance}%)</div>
-    <div class="expert-desc">?�패�??�롭 ?? ${sageRodStats.shellDrop[sageRodLevel]}�?/div>
-    <div class="expert-desc">?�중 ?�획?? ${finalPower} (기본 ${sageRodStats.power[sageRodLevel]} + 각인 ${engraving.fishingPowerBoost}%)</div>
-    <div class="expert-desc">추�? 기�?�??�패/??: ?�패 ?�운 +${(engraving.shellLuckChance / 100).toFixed(2)}, 룰렛 +${engraving.rouletteShellExpected.toFixed(2)}</div>
-    <div class="expert-desc">?�벤???�률: 물고�??�운 ${engraving.fishLuckChance}%, ?�령 고래 ${engraving.spiritWhaleChance}%, 가?�리 ?�도 ${engraving.rayGuideChance}%</div>
+    <div class="expert-desc">시간 감소율: ${sageRodStats.timeReduce[sageRodLevel]}%</div>
+    <div class="expert-desc">조개 등장 확률: ${finalShellChance}% (기본 ${sageRodStats.shellChance[sageRodLevel]}% + 각인 ${engraving.shellSearchChance}%)</div>
+    <div class="expert-desc">어패류 드롭 수: ${sageRodStats.shellDrop[sageRodLevel]}개</div>
+    <div class="expert-desc">수중 어획력: ${finalPower} (기본 ${sageRodStats.power[sageRodLevel]} + 각인 ${engraving.fishingPowerBoost}%)</div>
+    <div class="expert-desc">추가 기대값(어패/회): 어패 행운 +${(engraving.shellLuckChance / 100).toFixed(2)}, 룰렛 +${engraving.rouletteShellExpected.toFixed(2)}</div>
+    <div class="expert-desc">이벤트 확률: 물고기 행운 ${engraving.fishLuckChance}%, 정령 고래 ${engraving.spiritWhaleChance}%, 가오리 인도 ${engraving.rayGuideChance}%</div>
   `;
 
   const renderOptions = (key) => {
@@ -8010,7 +8014,7 @@ function renderSageRod() {
     `;
   };
   engraveEl.innerHTML = `
-    <div style="margin-bottom:8px;color:#cfe7ff;font-size:13px;">?�이지 각인???�정</div>
+    <div style="margin-bottom:8px;color:#cfe7ff;font-size:13px;">세이지 각인석 설정</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;">
       ${Object.keys(sageEngravingMeta).map(renderOptions).join('')}
     </div>
@@ -8078,11 +8082,11 @@ function renderStaminaPlan() {
   const stamina = staminaRaw - (staminaRaw % STAMINA_PER_GATHER);
   const gathers = Math.floor(stamina / STAMINA_PER_GATHER);
   if (rawStr === '') {
-    result.innerHTML = '<div class="no-result">?�태미나�??�력?�면 추천 분배�?계산?�니??/div>';
+    result.innerHTML = '<div class="no-result">스태미나를 입력하면 추천 분배를 계산합니다</div>';
     return;
   }
   if (gathers <= 0) {
-    result.innerHTML = '<div class="no-result">?�태미나가 부족합?�다 (?�패�?1??채집??15 ?�모). 채집?�는 15??배수�?반영?�니??</div>';
+    result.innerHTML = '<div class="no-result">스태미나가 부족합니다 (어패류 1회 채집에 15 소모). 채집에는 15의 배수만 반영됩니다.</div>';
     return;
   }
   const inventory = getWarehouseInventory();
@@ -8102,9 +8106,9 @@ function renderStaminaPlan() {
     const w2 = 1 / p2;
     const w3 = 1 / p3;
     baseStock[name] =
-      (inventory[`${name} ??] || 0) * w1 +
-      (inventory[`${name} ?�★`] || 0) * w2 +
-      (inventory[`${name} ?�★??] || 0) * w3;
+      (inventory[`${name} ★`] || 0) * w1 +
+      (inventory[`${name} ★★`] || 0) * w2 +
+      (inventory[`${name} ★★★`] || 0) * w3;
   });
   const stockW = SHELLFISH_NAMES.map((n) => 1 / (baseStock[n] + 1));
   const effW = SHELLFISH_NAMES.map((n) => effScores[n] || 0.001);
@@ -8118,7 +8122,7 @@ function renderStaminaPlan() {
     remain -= STAMINA_PER_GATHER;
     turn += 1;
   }
-  const shellfishImages = { �? '?�료/�?png', ?�라: '?�료/?�라.png', 문어: '?�료/문어.png', 미역: '?�료/미역.png', ?�게: '?�료/?�게.png' };
+  const shellfishImages = { 굴: '재료/굴.png', 소라: '재료/소라.png', 문어: '재료/문어.png', 미역: '재료/미역.png', 성게: '재료/성게.png' };
   const deepBonus = (expertMeta.deepCollector.values[expertState.deepCollector] || 0) / 100;
   const engraving = getSageEngravingEffects();
   const effectiveDrops = (sageRodStats.shellDrop[sageRodLevel] || 1) * (1 + deepBonus) + (engraving.shellLuckChance / 100) + engraving.rouletteShellExpected;
@@ -8135,19 +8139,19 @@ function renderStaminaPlan() {
       <div style="display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:10px; align-items:center; padding:12px 10px; border-top:1px solid #2a2a2a;">
         <div style="font-weight:900; color:#fff;">${imgHTML}${name}</div>
         <div style="font-weight:900; color:#66a7ff;">${useStamina}</div>
-        <div style="font-weight:900; color:#fff;">${localGathers}??/div>
+        <div style="font-weight:900; color:#fff;">${localGathers}회</div>
       </div>
     `;
   });
 
   result.innerHTML = `
-    <div style="font-size:13px; color:#9eb2c8; margin-bottom:8px; text-align:center;">?�력 ${staminaRaw} ??채집???�용 <strong style="color:#cde7ff;">${stamina}</strong> (15 ?�위)</div>
-    <div style="font-size:14px; font-weight:900; color:#f2f2f2; margin-bottom:10px; padding:12px; background:#1a1a1a; border-radius:8px; text-align:center;">??�?채집 가?? ${gathers}??(?�태미나 15 ?�모 기�?)</div>
-    <div style="font-size:12px; color:#9eb2c8; margin-bottom:10px; text-align:center;">?�이지 ?�롭 ${effectiveDrops.toFixed(2)}�???(?�해채집�?각인 반영), 조개 ?�장 ${shellChanceTotal.toFixed(1)}%, ?�획??${fishingPowerTotal}, 3???�률 ${star3Chance.toFixed(1)}%</div>
-    <div style="font-size:11px; color:#7f99b6; margin-bottom:10px; text-align:center;">각인 기�?�? 물고�?+${expectedExtraFish.toFixed(2)}?�분, ?�령고래 깨진 조개껍데�?+${expectedWhaleBrokenShell.toFixed(2)}�?(룰렛 ?�함 기�? ?�패???�롭/?�에 반영)</div>
+    <div style="font-size:13px; color:#9eb2c8; margin-bottom:8px; text-align:center;">입력 ${staminaRaw} → 채집에 사용 <strong style="color:#cde7ff;">${stamina}</strong> (15 단위)</div>
+    <div style="font-size:14px; font-weight:900; color:#f2f2f2; margin-bottom:10px; padding:12px; background:#1a1a1a; border-radius:8px; text-align:center;">⚡ 총 채집 가능: ${gathers}회 (스태미나 15 소모 기준)</div>
+    <div style="font-size:12px; color:#9eb2c8; margin-bottom:10px; text-align:center;">세이지 드롭 ${effectiveDrops.toFixed(2)}개/회 (심해채집꾼+각인 반영), 조개 등장 ${shellChanceTotal.toFixed(1)}%, 어획력 ${fishingPowerTotal}, 3성 확률 ${star3Chance.toFixed(1)}%</div>
+    <div style="font-size:11px; color:#7f99b6; margin-bottom:10px; text-align:center;">각인 기대값: 물고기 +${expectedExtraFish.toFixed(2)}회분, 정령고래 깨진 조개껍데기 +${expectedWhaleBrokenShell.toFixed(2)}개 (룰렛 포함 기대 어패는 드롭/회에 반영)</div>
     <div style="background:#1f1f1f; border:1px solid #2a2a2a; border-radius:10px; overflow:hidden;">
       <div style="display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:10px; padding:10px; background:#262626; color:#9ea7b3; font-size:12px; font-weight:900;">
-        <div>?�목 ?�름</div><div>?�태미나</div><div>채집 ?�수</div>
+        <div>품목 이름</div><div>스태미나</div><div>채집 횟수</div>
       </div>
       ${rows.join('')}
     </div>
@@ -8164,18 +8168,18 @@ function updateVanillaInputState() {
     sec.classList.toggle('vanilla-disabled', !isVanillaCalcOn);
     const sub = sec.querySelector('.warehouse-section-sub');
     const nIn = sec.querySelectorAll('input[data-vanilla="1"]').length;
-    if (sub) sub.textContent = isVanillaCalcOn ? `${nIn}�? : '무한';
+    if (sub) sub.textContent = isVanillaCalcOn ? `${nIn}종` : '무한';
   });
 
   vanillaInputs.forEach((input) => {
     input.disabled = !isVanillaCalcOn;
-    input.placeholder = isVanillaCalcOn ? '?�량 ?�력' : '무한';
+    input.placeholder = isVanillaCalcOn ? '수량 입력' : '무한';
   });
 
   applyWarehouseSetDisplayMode();
 }
 
-// ===== ?�료 ?�량 가?�오�?(?�리 가??최�???계산) =====
+// ===== 재료 수량 가져오기 (요리 가능 최대량 계산) =====
 function calculateMaxCraft(recipe, inventory, memo = {}, options = {}) {
   if (!recipe.inputs || recipe.inputs.length === 0) {
     return Infinity;
@@ -8189,7 +8193,7 @@ function calculateMaxCraft(recipe, inventory, memo = {}, options = {}) {
 
     if (input.name in data.materials) {
       if (skipShell && SHELLFISH_DOWNGRADE_ONE_STAR.has(input.name)) {
-        /* 창고???�는 ?�당 ?�급�??�용 (?�★?�★ 분해 ?�작 ???? */
+        /* 창고에 있는 해당 성급만 사용 (★★→★ 분해 제작 안 함) */
       } else {
         const materialRecipe = data.materials[input.name];
         const craftableFromRecipe = calculateMaxCraft(materialRecipe, inventory, memo, options);
@@ -8204,7 +8208,7 @@ function calculateMaxCraft(recipe, inventory, memo = {}, options = {}) {
   return maxCount === Infinity ? 0 : maxCount;
 }
 
-// ===== 최종 ?�물???�요??모든 ?�료 계산 =====
+// ===== 최종 산물에 필요한 모든 재료 계산 =====
 function calculateRequiredMaterials(recipe, count, visited = new Set()) {
   const required = {};
   
@@ -8220,7 +8224,7 @@ function calculateRequiredMaterials(recipe, count, visited = new Set()) {
     }
     required[input.name] += neededCount;
     
-    // 중간 ?�료�?만들 ???�는지 ?�인
+    // 중간 재료를 만들 수 있는지 확인
     if (input.name in data.materials && !visited.has(input.name)) {
       visited.add(input.name);
       const subRequired = calculateRequiredMaterials(data.materials[input.name], neededCount, visited);
@@ -8236,7 +8240,7 @@ function calculateRequiredMaterials(recipe, count, visited = new Set()) {
   return required;
 }
 
-const CRAFT_PRICE_ITEM_ORDER = ['조개껍데�?브로�?, '?�른 ?�수�?, '?�개 ?�거??, '분홍 ?�어?�', '?�개 부�?, '?�진�??�계'];
+const CRAFT_PRICE_ITEM_ORDER = ['조개껍데기 브로치', '푸른 향수병', '자개 손거울', '분홍 헤어핀', '자개 부채', '흑진주 시계'];
 
 function toggleCraftSalesCalcPanel() {
   craftSalesCalcPanelOpen = !craftSalesCalcPanelOpen;
@@ -8273,7 +8277,7 @@ function updateCraftSalesCalcTotals() {
   const elNote = document.getElementById('craftSalesBoostNote');
   if (elTB) elTB.textContent = `${totalBase.toLocaleString()}G`;
   if (elTA) elTA.textContent = `${totalAdj.toLocaleString()}G`;
-  if (elNote) elNote.textContent = boost > 0 ? `?�문가 공예 ?�매가 +${boost}% 반영` : '?�문가 공예 보너???�음 (0%)';
+  if (elNote) elNote.textContent = boost > 0 ? `전문가 공예 판매가 +${boost}% 반영` : '전문가 공예 보너스 없음 (0%)';
 }
 
 function renderCraftPricePanel(effects) {
@@ -8298,18 +8302,18 @@ function renderCraftPricePanel(effects) {
         <div style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--t-title-muted);">${imgHTML}<span>${name}</span></div>
         <input type="number" min="0" step="1" id="craftSalesQty_${idx}" class="craft-sales-qty-input" value="${qtyVal}">
       </div>
-      <div style="font-size:11px;color:var(--t-label);margin-top:4px;text-align:right;">?�계 · 기본 <span id="craftSalesSubBase_${idx}">0G</span> · ?�문가 <span id="craftSalesSubAdj_${idx}" style="color:#8fd5ff;">0G</span></div>
+      <div style="font-size:11px;color:var(--t-label);margin-top:4px;text-align:right;">소계 · 기본 <span id="craftSalesSubBase_${idx}">0G</span> · 전문가 <span id="craftSalesSubAdj_${idx}" style="color:#8fd5ff;">0G</span></div>
     </div>`;
   }).join('');
 
   salesWrap.innerHTML = `
-    <div style="font-size:13px;font-weight:800;color:var(--t-title-muted);margin-bottom:8px;">보유 개수 ???�매�?계산</div>
-    <div style="font-size:11px;color:var(--t-caption);margin-bottom:14px;line-height:1.45;">�?공예??보유 개수�??�력?�세?? 개인?�정???�조�?좀 ?�조개�?보너?��? ?�문가 ?�에 반영?�니??</div>
+    <div style="font-size:13px;font-weight:800;color:var(--t-title-muted);margin-bottom:8px;">보유 개수 → 판매금 계산</div>
+    <div style="font-size:11px;color:var(--t-caption);margin-bottom:14px;line-height:1.45;">각 공예품 보유 개수를 입력하세요. 개인설정의 「조개 좀 사조개」 보너스가 전문가 행에 반영됩니다.</div>
     ${salesLines}
     <div class="craft-sales-totals" style="max-width:none;margin-top:6px;">
       <div id="craftSalesBoostNote" style="font-size:11px;color:var(--t-caption);margin-bottom:8px;"></div>
-      <div class="craft-sales-totals-row"><span>기본 ?�매가 ?�계</span><strong id="craftSalesTotalBase">0G</strong></div>
-      <div class="craft-sales-totals-row"><span>?�문가 ?�용 ?�매가 ?�계</span><strong id="craftSalesTotalAdj" style="color:#8fd5ff;">0G</strong></div>
+      <div class="craft-sales-totals-row"><span>기본 판매가 합계</span><strong id="craftSalesTotalBase">0G</strong></div>
+      <div class="craft-sales-totals-row"><span>전문가 적용 판매가 합계</span><strong id="craftSalesTotalAdj" style="color:#8fd5ff;">0G</strong></div>
     </div>
   `;
   containerCraftPrice.appendChild(salesWrap);
@@ -8328,27 +8332,27 @@ function renderCraftPricePanel(effects) {
   updateCraftSalesCalcTotals();
 
   const currentPriceMap = {
-    '조개껍데�?브로�?: 49442,
-    '?�른 ?�수�?: 8735,
-    '?�개 ?�거??: 181006,
-    '분홍 ?�어?�': 398690,
-    '?�개 부�?: 473443,
-    '?�진�??�계': 456079
+    '조개껍데기 브로치': 49442,
+    '푸른 향수병': 8735,
+    '자개 손거울': 181006,
+    '분홍 헤어핀': 398690,
+    '자개 부채': 473443,
+    '흑진주 시계': 456079
   };
   const maxPriceMap = {
-    '조개껍데�?브로�?: 49941,
-    '?�른 ?�수�?: 145583,
-    '?�개 ?�거??: 301677,
-    '분홍 ?�어?�': 498363,
-    '?�개 부�?: 696240,
-    '?�진�??�계': 991476
+    '조개껍데기 브로치': 49941,
+    '푸른 향수병': 145583,
+    '자개 손거울': 301677,
+    '분홍 헤어핀': 498363,
+    '자개 부채': 696240,
+    '흑진주 시계': 991476
   };
 
   const headerRow = document.createElement('div');
   headerRow.style.cssText = 'display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;flex-wrap:wrap;gap:8px;';
   headerRow.innerHTML = `
-    <div style="font-size:14px;font-weight:900;color:#e5e5e5;">공예??가�?/div>
-    <div style="font-size:11px;color:#e8945a;font-weight:600;">?�재가, 최고가, 최고가 ?��?비율???�께 ?�시?�니??</div>
+    <div style="font-size:14px;font-weight:900;color:#e5e5e5;">공예품 가격</div>
+    <div style="font-size:11px;color:#e8945a;font-weight:600;">현재가, 최고가, 최고가 대비 비율을 함께 표시합니다.</div>
   `;
   containerCraftPrice.appendChild(headerRow);
 
@@ -8382,7 +8386,7 @@ function renderCraftPricePanel(effects) {
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:8px 10px;background:#151515;border:1px solid #2a2a2a;border-radius:8px;margin-bottom:10px;">
         <div>
-          <div style="font-size:10px;color:#8a8a8a;">?�재 가�?/div>
+          <div style="font-size:10px;color:#8a8a8a;">현재 가격</div>
           <div style="font-size:14px;font-weight:900;color:#8fd5ff;">${currentPrice.toLocaleString()}G</div>
         </div>
         <div>
@@ -8390,14 +8394,14 @@ function renderCraftPricePanel(effects) {
           <div style="font-size:14px;font-weight:900;color:#f6c15a;">${maxPrice.toLocaleString()}G</div>
         </div>
         <div>
-          <div style="font-size:10px;color:#8a8a8a;">최고가 ?��?/div>
+          <div style="font-size:10px;color:#8a8a8a;">최고가 대비</div>
           <div style="font-size:14px;font-weight:900;color:${ratioColor};">${ratio.toFixed(1)}%</div>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:0 2px 10px;">
-        <div style="font-size:11px;color:#9d9d9d;">기본 ?�작 ?�매가</div>
+        <div style="font-size:11px;color:#9d9d9d;">기본 제작 판매가</div>
         <div style="font-size:11px;color:#ddd;text-align:right;">${recipePrice.toLocaleString()}G</div>
-        <div style="font-size:11px;color:#9d9d9d;">?�문가 ?�용 ?�매가</div>
+        <div style="font-size:11px;color:#9d9d9d;">전문가 적용 판매가</div>
         <div style="font-size:11px;color:${hasCraftBoost ? '#8fd5ff' : '#777'};text-align:right;">${boostedRecipePrice.toLocaleString()}G${hasCraftBoost ? ` ( +${effects.craftPriceBoost}% )` : ''}</div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:2px 12px;padding-top:8px;border-top:1px solid #2a2a2a;">
@@ -8416,7 +8420,7 @@ function renderCraftPricePanel(effects) {
       emptyCard.innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
           <div class="expert-name" style="margin-bottom:0;">${name}</div>
-          <div style="font-size:12px;color:#888;">?�이???�음</div>
+          <div style="font-size:12px;color:#888;">데이터 없음</div>
         </div>
       `;
       list.appendChild(emptyCard);
@@ -8426,7 +8430,7 @@ function renderCraftPricePanel(effects) {
   containerCraftPrice.appendChild(list);
 }
 
-// ===== ?�율??분석 =====
+// ===== 효율성 분석 =====
 function analyzeEfficiency() {
   const inventory = getWarehouseInventory();
   const effects = getExpertEffects();
@@ -8438,7 +8442,7 @@ function analyzeEfficiency() {
     lastAlchemySummaryData = null;
     lastAlchemyPlanCountsByName = null;
     const al = document.getElementById('efficiencyContainerAlchemy');
-    if (al) al.innerHTML = '<div class="no-result">?�료 창고???�량???�력?�면 ?�금??계산???�시?�니??/div>';
+    if (al) al.innerHTML = '<div class="no-result">재료 창고에 수량을 입력하면 연금품 계산이 표시됩니다</div>';
     renderCraftPricePanel(effects);
     renderStaminaPlan();
     return;
@@ -8454,12 +8458,12 @@ function analyzeEfficiency() {
   
   const craftNoPromote = { skipShellfishTierConvert: true };
 
-  // �?최종 ?�물???�??분석
+  // 각 최종 산물에 대해 분석
   data.recipes.forEach(recipe => {
     const maxCraft = calculateMaxCraft(recipe, inventory, {}, craftNoPromote);
     
     if (maxCraft > 0) {
-      const isAlchemy = /(?�석?????�수|?�센??결정|?�릭???�약|비약|코어|?�쿠?�스|광�?�?깃털|?�개|?�편|?�우?�러??무�?)/.test(recipe.name);
+      const isAlchemy = /(희석액|핵|정수|에센스|결정|엘릭서|영약|비약|코어|아쿠티스|광란체|깃털|날개|파편|나우틸러스|무저)/.test(recipe.name);
       const isCraft = recipe.group === 'craft';
       const priceMultiplier = isAlchemy ? (1 + effects.alchemyPriceBoost / 100) : (isCraft ? (1 + effects.craftPriceBoost / 100) : 1);
       const adjustedPrice = Math.round((recipe.price || 0) * priceMultiplier);
@@ -8481,7 +8485,7 @@ function analyzeEfficiency() {
     }
   });
   
-  // ?�렬: 바닐??OFF�??�패�??�량(?�작 가???�량) ?�선, �??�는 ?�율???�선
+  // 정렬: 바닐라 OFF면 어패류 수량(제작 가능 수량) 우선, 그 외는 효율성 우선
   if (!isVanillaCalcOn) {
     results.sort((a, b) => {
       if (b.maxCount !== a.maxCount) return b.maxCount - a.maxCount;
@@ -8520,10 +8524,10 @@ function analyzeEfficiency() {
   planWrap.style.border = '1px solid #2a3140';
   planWrap.style.borderRadius = '12px';
   planWrap.innerHTML = `
-    <div style="font-size:14px;font-weight:900;color:#e8f4ff;margin-bottom:10px;">?�작 추천</div>
-    ${renderTriFinalPlan('1??, FINAL_GROUP1, plan1)}
-    ${renderTriFinalPlan('2??, FINAL_GROUP2, plan2)}
-    ${renderTriFinalPlan('3??, FINAL_GROUP3, plan3)}
+    <div style="font-size:14px;font-weight:900;color:#e8f4ff;margin-bottom:10px;">제작 추천</div>
+    ${renderTriFinalPlan('1성', FINAL_GROUP1, plan1)}
+    ${renderTriFinalPlan('2성', FINAL_GROUP2, plan2)}
+    ${renderTriFinalPlan('3성', FINAL_GROUP3, plan3)}
     ${renderZeroStarDiluentPlanBlock(diluentCount, effects)}
   `;
   containerAlchemy.appendChild(planWrap);
@@ -8531,7 +8535,7 @@ function analyzeEfficiency() {
   const g1 = sumFinalPlanGold(plan1, effects);
   const g2 = sumFinalPlanGold(plan2, effects);
   const g3 = sumFinalPlanGold(plan3, effects);
-  const gD = sumFinalPlanGold({ '추출???�석??: diluentCount }, effects);
+  const gD = sumFinalPlanGold({ '추출된 희석액': diluentCount }, effects);
   const totalBase = g1.base + g2.base + g3.base + gD.base;
   const totalBoosted = g1.boosted + g2.boosted + g3.boosted + gD.boosted;
   const revBox = document.createElement('div');
@@ -8542,25 +8546,25 @@ function analyzeEfficiency() {
   revBox.style.borderRadius = '10px';
   const diluentRevNote =
     diluentCount > 0
-      ? `<div style="font-size:11px;color:#8899aa;margin-top:6px;line-height:1.45;">추출???�석??<strong style="color:#b8c9d9;">${diluentCount.toLocaleString()}�?/strong>??최종 9종과 ?�께 ?�료 ?�약 ?�에??�??�매가가 최�?가 ?�도�??�께 ?�출??결과?�니??</div>`
+      ? `<div style="font-size:11px;color:#8899aa;margin-top:6px;line-height:1.45;">추출된 희석액 <strong style="color:#b8c9d9;">${diluentCount.toLocaleString()}개</strong>는 최종 9종과 함께 재료 제약 안에서 총 판매가가 최대가 되도록 함께 산출된 결과입니다.</div>`
       : '';
   revBox.innerHTML = `
     <div style="font-size:11px;color:#8899aa;line-height:1.45;margin-bottom:10px;">
-      창고 ?�료 ?�약 ?�에??최종 9종·추출된 ?�석???�작 개수�?<strong style="color:#b8c9d9;">?�시??조정</strong>?? ?�문가 반영 <strong style="color:#b8c9d9;">?�매가 ?�계가 최�?</strong>가 ?�도�?계산?�니??
+      창고 재료 제약 안에서 최종 9종·추출된 희석액 제작 개수를 <strong style="color:#b8c9d9;">동시에 조정</strong>해, 전문가 반영 <strong style="color:#b8c9d9;">판매가 합계가 최대</strong>가 되도록 계산합니다.
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;font-size:13px;color:#ddd;align-items:center;">
-      <div>기본가 ??<strong style="color:#fff;">${totalBase.toLocaleString()}G</strong></div>
-      <div>?�문가 ?�용 ??<strong style="color:#8fd5ff;">${totalBoosted.toLocaleString()}G</strong></div>
+      <div>기본가 합 <strong style="color:#fff;">${totalBase.toLocaleString()}G</strong></div>
+      <div>전문가 적용 합 <strong style="color:#8fd5ff;">${totalBoosted.toLocaleString()}G</strong></div>
     </div>
     ${diluentRevNote}
   `;
   containerAlchemy.appendChild(revBox);
   
-  // ?�금???�션 - ?�작 추천 결과 기반?�로 ?�시
+  // 연금품 섹션 - 제작 추천 결과 기반으로 표시
   const allPlanCounts = { ...plan1, ...plan2, ...plan3 };
-  allPlanCounts['추출???�석??] = diluentCount;
+  allPlanCounts['추출된 희석액'] = diluentCount;
   lastAlchemyPlanCountsByName = {};
-  [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출???�석??].forEach((name) => {
+  [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'].forEach((name) => {
     lastAlchemyPlanCountsByName[name] = Math.max(0, Math.floor(Number(allPlanCounts[name]) || 0));
   });
   const planEntries = Object.entries(allPlanCounts).filter(([, n]) => n > 0);
@@ -8570,7 +8574,7 @@ function analyzeEfficiency() {
     alchemyTitle.style.fontWeight = '900';
     alchemyTitle.style.color = '#e5e5e5';
     alchemyTitle.style.marginBottom = '15px';
-    alchemyTitle.textContent = '?�금???�작';
+    alchemyTitle.textContent = '연금품 제작';
     containerAlchemy.appendChild(alchemyTitle);
 
     const planOpts = { skipShellfishTierConvert: true };
@@ -8587,32 +8591,32 @@ function analyzeEfficiency() {
     lastAlchemySummaryData = { shell, vanilla, directInputs, planEntries };
     summaryBox.innerHTML = `
       <div class="alchemy-summary-head-row">
-        <div class="alchemy-summary-title-text">추천 ?�작 기�? ?�요 ?�료 ?�계</div>
+        <div class="alchemy-summary-title-text">추천 제작 기준 필요 재료 합계</div>
         <div class="alchemy-mat-toolbar-outer">
           <div class="alchemy-mat-view-row">
             <div class="alchemy-mat-toolbar" role="presentation">
-              <div class="alchemy-mat-view-toggles" role="group" aria-label="?�료 ?�시 방식">
-                <button type="button" class="alchemy-mat-view-btn" data-alchemy-mat-view="detail" onclick="setAlchemyMaterialPanelMode('detail')">?�세?�보�?/button>
-                <button type="button" class="alchemy-mat-view-btn" data-alchemy-mat-view="summary" onclick="setAlchemyMaterialPanelMode('summary')">간략?�보�?/button>
+              <div class="alchemy-mat-view-toggles" role="group" aria-label="재료 표시 방식">
+                <button type="button" class="alchemy-mat-view-btn" data-alchemy-mat-view="detail" onclick="setAlchemyMaterialPanelMode('detail')">자세히보기</button>
+                <button type="button" class="alchemy-mat-view-btn" data-alchemy-mat-view="summary" onclick="setAlchemyMaterialPanelMode('summary')">간략히보기</button>
               </div>
             </div>
           </div>
           <div id="alchemyMatQtyRow" class="alchemy-mat-qty-row">
-            <div class="alchemy-qty-mode-toggles" role="group" aria-label="?�량 ?�시 ?�위">
-              <button type="button" class="alchemy-qty-mode-btn" data-alchemy-qty-mode="boxSetPiece" onclick="setAlchemySummaryQtyMode('boxSetPiece')">?�자/?�트/�?/button>
-              <button type="button" class="alchemy-qty-mode-btn" data-alchemy-qty-mode="setPiece" onclick="setAlchemySummaryQtyMode('setPiece')">?�트/�?/button>
-              <button type="button" class="alchemy-qty-mode-btn" data-alchemy-qty-mode="plainPiece" onclick="setAlchemySummaryQtyMode('plainPiece')">�?/button>
+            <div class="alchemy-qty-mode-toggles" role="group" aria-label="수량 표시 단위">
+              <button type="button" class="alchemy-qty-mode-btn" data-alchemy-qty-mode="boxSetPiece" onclick="setAlchemySummaryQtyMode('boxSetPiece')">상자/세트/개</button>
+              <button type="button" class="alchemy-qty-mode-btn" data-alchemy-qty-mode="setPiece" onclick="setAlchemySummaryQtyMode('setPiece')">세트/개</button>
+              <button type="button" class="alchemy-qty-mode-btn" data-alchemy-qty-mode="plainPiece" onclick="setAlchemySummaryQtyMode('plainPiece')">개</button>
             </div>
           </div>
         </div>
       </div>
-      <div style="font-size:11px;color:#8899aa;line-height:1.5;margin-bottom:12px;">바닐??무한 계산??�?경우?�도, ?�시?�상 ?�요??개수???�래?� 같습?�다.</div>
+      <div style="font-size:11px;color:#8899aa;line-height:1.5;margin-bottom:12px;">바닐라 무한 계산을 켠 경우에도, 레시피상 필요한 개수는 아래와 같습니다.</div>
       <div id="alchemyMaterialDetailWrap" hidden>
-        <div class="alchemy-summary-detail-hint">1·2·3???�금???�작???�어가??<strong>?�패류·바?�라 ?�료</strong>�??�급별로 ?�산?�니?? (?�수·?�·에?�스 ???�금 중간 ?�물?� ?�시?��? ?�습?�다.)</div>
+        <div class="alchemy-summary-detail-hint">1·2·3성 연금품 제작에 들어가는 <strong>어패류·바닐라 재료</strong>만 성급별로 합산합니다. (정수·핵·에센스 등 연금 중간 산물은 표시하지 않습니다.)</div>
         <div id="alchemyMaterialSummaryBody"></div>
       </div>
       <div id="alchemyMaterialSummaryWrap" hidden>
-        <div class="alchemy-summary-stage-hint">최종 ?�작??바로 ?�어가???�료?�, �??�래 ?�계???�금???�수·?�·에?�스·결정·?�릭?�·영????카드�?보여 줍니?? 카드??마우?��? ?�리�?그다???�계 ?�시?��? ?�량???�시?�니??</div>
+        <div class="alchemy-summary-stage-hint">최종 제작에 바로 들어가는 재료와, 그 아래 단계의 연금품(정수·핵·에센스·결정·엘릭서·영약)을 카드로 보여 줍니다. 카드에 마우스를 올리면 그다음 단계 레시피와 수량이 표시됩니다.</div>
         <div id="alchemyMaterialSummaryStage"></div>
       </div>
     `;
@@ -8628,7 +8632,7 @@ function analyzeEfficiency() {
     const emptyNote = document.createElement('div');
     emptyNote.className = 'no-result';
     emptyNote.style.marginTop = '12px';
-    emptyNote.textContent = '?�금??계산 결과가 ?�습?�다';
+    emptyNote.textContent = '연금품 계산 결과가 없습니다';
     containerAlchemy.appendChild(emptyNote);
   }
   
@@ -8639,13 +8643,13 @@ async function downloadAlchemyPaneScreenshot() {
   const pane = document.getElementById('effAlchemyPane');
   if (!pane) return;
   if (typeof html2canvas !== 'function') {
-    alert('?��?지 ?�성 ?�이브러리�? 불러?��? 못했?�니?? ?�터???�결 ???�시 ?�도??주세??');
+    alert('이미지 생성 라이브러리를 불러오지 못했습니다. 인터넷 연결 후 다시 시도해 주세요.');
     return;
   }
   const btn = document.getElementById('alchemyScreenshotBtn');
   if (btn) {
     btn.disabled = true;
-    btn.textContent = '?�성 중�?;
+    btn.textContent = '생성 중…';
   }
   try {
     await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
@@ -8666,7 +8670,7 @@ async function downloadAlchemyPaneScreenshot() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `?��????�금?�계??${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.png`;
+        a.download = `띵타해_연금품계산_${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.png`;
         a.rel = 'noopener';
         document.body.appendChild(a);
         a.click();
@@ -8677,16 +8681,16 @@ async function downloadAlchemyPaneScreenshot() {
     });
   } catch (e) {
     console.error(e);
-    alert('?��?지�?만들지 못했?�니?? ?�시 ???�시 ?�도??주세??');
+    alert('이미지를 만들지 못했습니다. 잠시 후 다시 시도해 주세요.');
   } finally {
     if (btn) {
       btn.disabled = false;
-      btn.textContent = '?�진?�로 ?�운';
+      btn.textContent = '사진으로 다운';
     }
   }
 }
 
-// ===== 초기 ?�더�?=====
+// ===== 초기 렌더링 =====
 function runWhenIdle(fn, timeoutMs) {
   const run = () => {
     try {
@@ -8741,7 +8745,7 @@ window.addEventListener('DOMContentLoaded', function() {
   updateVanillaInputState();
   runWhenIdle(() => analyzeEfficiency(), 900);
   } catch (e) {
-    console.error('[Init] ?�이지 초기??�??�류 (로그??UI???��? 초기?�됨):', e);
+    console.error('[Init] 페이지 초기화 중 오류 (로그인 UI는 이미 초기화됨):', e);
   }
 });
 </script>
