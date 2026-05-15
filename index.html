@@ -3623,54 +3623,55 @@
       width: 100%;
       min-width: 0;
       box-sizing: border-box;
-      padding: 14px 14px 16px;
-      border-radius: 8px;
-      background: #131618;
-      border: 1px solid rgba(143, 213, 255, 0.22);
+      padding: 20px 20px 22px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #1a2228 0%, #14181c 100%);
+      border: 1px solid rgba(143, 213, 255, 0.28);
+      box-shadow: 0 6px 28px rgba(0, 0, 0, 0.28);
     }
     .alchemy-guide-step-label--final {
-      margin: 0 0 8px;
-      font-size: 10px;
+      margin: 0 0 12px;
+      font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.08em;
       color: #8fd5ff;
     }
     .alchemy-guide-final-row {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 16px;
+      gap: 12px;
+      font-size: 17px;
       font-weight: 700;
       color: #fff;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
     .alchemy-guide-final-row img {
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       object-fit: contain;
     }
     .alchemy-guide-final-qty {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 700;
-      color: #8fd5ff;
-      margin-bottom: 10px;
+      color: #9fd8ff;
+      margin-bottom: 12px;
     }
     .alchemy-guide-time {
-      font-size: 12px;
-      color: #6f7d8c;
-      line-height: 1.45;
+      font-size: 13px;
+      color: #7a8896;
+      line-height: 1.55;
     }
     .alchemy-guide-time strong {
-      color: #9eb4cc;
+      color: #b0c6d8;
       font-weight: 600;
     }
     .alchemy-guide-sell {
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid #252b24;
-      font-size: 12px;
-      color: #86b06e;
-      line-height: 1.45;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(158, 203, 122, 0.18);
+      font-size: 13px;
+      color: #8eb87a;
+      line-height: 1.55;
     }
     .alchemy-guide-sell strong {
       color: #b0d898;
@@ -7328,10 +7329,11 @@ function getAlchemyGuideRecipeCopies(recipeName) {
   return Math.max(0, Math.floor(Number(v) || 0));
 }
 
-/** 역삼각(깔때기): 위는 넓고 아래로 갈수록 좁게 — levelIndex 0이 가장 넓음 */
+/** 역삼각(깔때기): 위는 넓고 아래로 좁아짐 — 너무 조이지 않도록 하한 ~74% */
 function alchemyGuidePyramidWidthPct(levelIndex, totalLevels) {
   if (totalLevels <= 1) return 100;
-  return Math.round(100 - (levelIndex / (totalLevels - 1)) * 46);
+  const raw = 100 - (levelIndex / (totalLevels - 1)) * 26;
+  return Math.round(Math.max(74, raw));
 }
 
 function alchemyGuideColInnerHtml(map) {
