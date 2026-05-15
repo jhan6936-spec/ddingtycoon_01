@@ -7399,23 +7399,38 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
     </div>`;
   }
   const stages = alchemyGuideBuildStages(recipe, copies);
-  const rev = [...stages].reverse();
   let totalSec = getBaseAlchemyTimeSec(finalName) * copies;
   for (let i = 0; i < stages.length - 1; i++) {
     totalSec += alchemyGuideSumTierCraftSec(stages[i]);
   }
   const stepColors = ['#6ec8ff', '#b89cff', '#ff9b9b', '#8fd5ff'];
   const stepParts = [];
-  const totalLevels = rev.length + 1;
-  rev.forEach((map, j) => {
-    if (j > 0) stepParts.push('<div class="alchemy-guide-pyramid-arrow" aria-hidden="true"></div>');
-    const w = alchemyGuidePyramidWidthPct(j, totalLevels);
+  const totalLevels = stages.length + 1;
+
+  const wApex = alchemyGuidePyramidWidthPctDown(0, totalLevels);
+  const img = buildImageTag(finalName, '', 'width:24px;height:24px;object-fit:contain;display:block;');
+  const sell = getAlchemyBoostedSellPriceGold(recipe);
+  const sellLine =
+    sell != null && copies > 0
+      ? `<div class="alchemy-guide-sell">예상 판매가 합 (${copies.toLocaleString()}개, 전문가 연금 보너스): <strong>${(sell * copies).toLocaleString()}G</strong></div>`
+      : '';
+  stepParts.push(`<div class="alchemy-guide-pyramid-slab-out"><div class="alchemy-guide-pyramid-slab alchemy-guide-pyramid-slab--final" style="--pyramid-w:${wApex}%"><div class="alchemy-guide-col alchemy-guide-col--final">
+      <div class="alchemy-guide-step-label alchemy-guide-step-label--final">최종 연성</div>
+      <div class="alchemy-guide-final-row">${img}<span>${escapeHtml(finalName)}</span></div>
+      <div class="alchemy-guide-final-qty">제작 추천 ${formatWarehouseStackCount(copies)}</div>
+      <div class="alchemy-guide-time">합산 기본 제작 시간(참고): <strong>${escapeHtml(formatGuideDurationSec(totalSec))}</strong></div>
+      ${sellLine}
+    </div></div></div>`);
+
+  stages.forEach((map, j) => {
+    stepParts.push('<div class="alchemy-guide-pyramid-arrow" aria-hidden="true"></div>');
+    const w = alchemyGuidePyramidWidthPctDown(j + 1, totalLevels);
     const nMat = Object.entries(map).filter(([, q]) => q > 0).length;
     const label =
       j === 0
-        ? 'STEP 1 · 원재료'
-        : j === rev.length - 1
-          ? `STEP ${j + 1} · 최종 직전`
+        ? 'STEP 1 · 직접 재료'
+        : j === stages.length - 1
+          ? `STEP ${j + 1} · 기초 재료`
           : `STEP ${j + 1} · 중간`;
     const c = stepColors[j % stepColors.length];
     stepParts.push(
@@ -7428,23 +7443,9 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
       </div></div>`
     );
   });
-  stepParts.push('<div class="alchemy-guide-pyramid-arrow" aria-hidden="true"></div>');
-  const wFinal = alchemyGuidePyramidWidthPct(rev.length, totalLevels);
-  const img = buildImageTag(finalName, '', 'width:32px;height:32px;object-fit:contain;display:block;');
-  const sell = getAlchemyBoostedSellPriceGold(recipe);
-  const sellLine =
-    sell != null && copies > 0
-      ? `<div class="alchemy-guide-sell">예상 판매가 합 (${copies.toLocaleString()}개, 전문가 연금 보너스): <strong>${(sell * copies).toLocaleString()}G</strong></div>`
-      : '';
-  stepParts.push(`<div class="alchemy-guide-timeline-final-wrap"><div class="alchemy-guide-pyramid-slab alchemy-guide-pyramid-slab--final" style="--pyramid-w:${wFinal}%"><div class="alchemy-guide-col alchemy-guide-col--final">
-      <div class="alchemy-guide-step-label alchemy-guide-step-label--final">최종 연성</div>
-      <div class="alchemy-guide-final-row">${img}<span>${escapeHtml(finalName)}</span></div>
-      <div class="alchemy-guide-final-qty">제작 추천 ${formatWarehouseStackCount(copies)}</div>
-      <div class="alchemy-guide-time">합산 기본 제작 시간(참고): <strong>${escapeHtml(formatGuideDurationSec(totalSec))}</strong></div>
-      ${sellLine}
-    </div></div></div>`);
+
   const stepsVerticalHtml = stepParts.join('');
-  const headImg = buildImageTag(finalName, '', 'width:40px;height:40px;object-fit:contain;display:block;');
+  const headImg = buildImageTag(finalName, '', 'width:34px;height:34px;object-fit:contain;display:block;');
   return `<div class="alchemy-guide-product">
     <div class="alchemy-guide-product-head">
       <div class="alchemy-guide-product-icon">${headImg}</div>
