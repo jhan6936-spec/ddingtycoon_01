@@ -3373,107 +3373,93 @@
       margin: 4px 0 18px;
     }
     .alchemy-guide-modal-card {
-      width: min(720px, 96vw) !important;
+      width: min(920px, 96vw) !important;
       max-width: 100%;
     }
     .patch-modal-card.alchemy-guide-modal-card {
-      padding: 20px 22px 22px;
+      padding: 22px 24px 26px;
     }
-    .alchemy-guide-toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 10px 14px;
-      margin-bottom: 14px;
-      padding: 12px 14px;
-      background: linear-gradient(165deg, rgba(22, 32, 44, 0.55) 0%, rgba(14, 18, 24, 0.95) 100%);
-      border: 1px solid rgba(143, 213, 255, 0.2);
-      border-radius: 12px;
-      box-shadow: 0 6px 28px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    }
-    .alchemy-guide-copies-label {
+    .alchemy-guide-top-note {
+      margin: 0 0 18px;
+      padding: 0 2px;
       font-size: 12px;
-      font-weight: 700;
-      color: #b8d4f0;
-    }
-    .alchemy-guide-copies-input {
-      width: 88px;
-      padding: 7px 10px;
-      border-radius: 8px;
-      border: 1px solid rgba(143, 213, 255, 0.38);
-      background: #0a1016;
-      color: #8fd5ff;
-      font-size: 14px;
-      font-weight: 700;
-    }
-    .alchemy-guide-toolbar-hint {
-      font-size: 11px;
-      color: #8a9aac;
       line-height: 1.55;
-      flex: 1 1 200px;
+      color: #7e8c9a;
+    }
+    .alchemy-guide-top-note strong {
+      color: #9eb6cc;
+      font-weight: 600;
     }
     .alchemy-guide-modal-body {
-      max-height: min(82vh, 880px);
-      padding-right: 6px;
+      max-height: min(84vh, 900px);
+      padding-right: 4px;
     }
     .alchemy-guide-lead-box {
-      margin-bottom: 22px;
-      padding: 14px 16px;
-      border-radius: 12px;
-      background: rgba(16, 22, 30, 0.85);
-      border: 1px solid rgba(143, 213, 255, 0.14);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      margin-bottom: 20px;
+      padding: 14px 18px;
+      border-radius: 10px;
+      background: #161616;
+      border: 1px solid #2a2a2a;
+    }
+    .alchemy-guide-lead-box--solo {
+      margin-bottom: 0;
     }
     .alchemy-guide-lead {
       margin: 0;
-      color: #aab6c4;
+      color: #909dad;
       font-size: 13px;
-      line-height: 1.65;
+      line-height: 1.6;
     }
     .alchemy-guide-product {
-      background: linear-gradient(160deg, rgba(26, 36, 48, 0.55) 0%, rgba(11, 13, 18, 0.96) 100%);
-      border: 1px solid rgba(143, 213, 255, 0.14);
-      border-radius: 16px;
-      padding: 20px 18px 22px;
-      margin-bottom: 18px;
-      box-shadow:
-        0 14px 44px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      background: #141414;
+      border: 1px solid #2a2a2a;
+      border-radius: 14px;
+      padding: 26px 24px 28px;
+      margin-bottom: 20px;
     }
     .alchemy-guide-product:last-child {
       margin-bottom: 0;
     }
     .alchemy-guide-product--error {
-      border-color: rgba(255, 130, 130, 0.28);
+      border-color: #4a3333;
     }
     .alchemy-guide-product--error .alchemy-guide-product-title {
       margin: 0 0 10px;
+    }
+    .alchemy-guide-product--zero {
+      opacity: 0.95;
+    }
+    .alchemy-guide-zero-note {
+      margin: 0;
+      padding: 4px 0 0;
+      font-size: 14px;
+      color: #6f7d8c;
+      line-height: 1.5;
     }
     .alchemy-guide-product-head {
       display: flex;
       align-items: flex-start;
       flex-wrap: wrap;
-      gap: 16px;
-      margin-bottom: 16px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      gap: 18px;
+      margin-bottom: 20px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid #2a2a2a;
     }
     .alchemy-guide-product-icon {
       flex-shrink: 0;
-      width: 56px;
-      height: 56px;
+      width: 72px;
+      height: 72px;
       border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(6, 10, 16, 0.75);
-      border: 1px solid rgba(143, 213, 255, 0.22);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      background: #101010;
+      border: 1px solid #333;
     }
     .alchemy-guide-product-icon img {
       display: block;
-      max-width: 40px;
-      max-height: 40px;
+      max-width: 52px;
+      max-height: 52px;
       object-fit: contain;
     }
     .alchemy-guide-product-meta {
@@ -3482,82 +3468,75 @@
     }
     .alchemy-guide-product-title {
       margin: 0;
-      font-size: 18px;
-      font-weight: 800;
-      color: #f2f8ff;
+      font-size: 20px;
+      font-weight: 700;
+      color: #eef4f9;
       letter-spacing: -0.02em;
-      line-height: 1.25;
+      line-height: 1.2;
     }
     .alchemy-guide-product-stats {
-      margin: 8px 0 0;
-      font-size: 12px;
-      color: #8fa3b8;
+      margin: 10px 0 0;
+      font-size: 13px;
+      color: #7f8f9f;
       line-height: 1.55;
     }
     .alchemy-guide-product-stats strong {
-      color: #c5dff5;
+      color: #8fd5ff;
       font-weight: 700;
     }
     .alchemy-guide-missing {
       margin: 0;
-      color: #e8a0a0;
-      font-size: 13px;
+      color: #b08080;
+      font-size: 14px;
       line-height: 1.5;
     }
     .alchemy-guide-timeline {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 18px;
     }
     .alchemy-guide-col--step {
-      --guide-accent: #6ec8ff;
+      --guide-accent: #5eb0e8;
       width: 100%;
       min-width: 0;
       box-sizing: border-box;
       border-radius: 12px;
-      background: rgba(14, 18, 26, 0.88);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      box-shadow:
-        inset 3px 0 0 0 var(--guide-accent),
-        0 6px 22px rgba(0, 0, 0, 0.28);
+      background: #181818;
+      border: 1px solid #2c2c2c;
+      border-left: 4px solid var(--guide-accent);
       overflow: hidden;
     }
     .alchemy-guide-step-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      padding: 11px 14px 10px;
-      background: rgba(0, 0, 0, 0.22);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      gap: 14px;
+      padding: 14px 18px 12px;
+      border-bottom: 1px solid #262626;
     }
     .alchemy-guide-step-label {
       margin: 0;
       font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.03em;
+      font-weight: 700;
+      letter-spacing: 0.02em;
       line-height: 1.3;
     }
     .alchemy-guide-step-count {
       flex-shrink: 0;
       font-size: 11px;
-      font-weight: 700;
-      color: #7d8fa3;
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      font-weight: 600;
+      color: #5f6f7f;
     }
     .alchemy-guide-lines {
-      padding: 4px 0 2px;
+      padding: 2px 0 4px;
     }
     .alchemy-guide-line {
       display: grid;
-      grid-template-columns: 32px minmax(0, 1fr) auto;
+      grid-template-columns: 36px minmax(0, 1fr) auto;
       align-items: center;
-      gap: 10px 12px;
-      padding: 10px 14px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      gap: 12px 16px;
+      padding: 14px 18px;
+      border-bottom: 1px solid #242424;
     }
     .alchemy-guide-line:last-child {
       border-bottom: none;
@@ -3568,95 +3547,91 @@
       justify-content: center;
     }
     .alchemy-guide-line-icon img {
-      width: 26px;
-      height: 26px;
+      width: 30px;
+      height: 30px;
       object-fit: contain;
       display: block;
     }
     .alchemy-guide-line-name {
       min-width: 0;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 500;
-      color: #e6eef5;
-      line-height: 1.4;
+      color: #dce4ec;
+      line-height: 1.45;
       word-break: keep-all;
       overflow-wrap: anywhere;
     }
     .alchemy-guide-line-qty {
-      font-size: 13px;
-      font-weight: 800;
+      font-size: 14px;
+      font-weight: 700;
       color: #8fd5ff;
       font-variant-numeric: tabular-nums;
       white-space: nowrap;
     }
     .alchemy-guide-empty {
-      padding: 14px 16px;
-      color: #6a7a8c;
-      font-size: 13px;
+      padding: 16px 18px;
+      color: #5f6b78;
+      font-size: 14px;
     }
     .alchemy-guide-timeline-final-wrap {
-      margin-top: 2px;
+      margin-top: 0;
     }
     .alchemy-guide-col--final {
       width: 100%;
       min-width: 0;
       box-sizing: border-box;
-      padding: 16px 16px 18px;
-      border-radius: 14px;
-      background: radial-gradient(120% 80% at 50% 0%, rgba(60, 120, 180, 0.18) 0%, rgba(10, 14, 20, 0.96) 55%);
-      border: 1px solid rgba(143, 213, 255, 0.42);
-      box-shadow:
-        0 0 0 1px rgba(143, 213, 255, 0.1),
-        0 0 28px rgba(80, 160, 240, 0.25),
-        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      padding: 22px 20px 24px;
+      border-radius: 12px;
+      background: #12161a;
+      border: 1px solid rgba(143, 213, 255, 0.28);
     }
     .alchemy-guide-step-label--final {
-      margin: 0 0 12px;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.08em;
+      margin: 0 0 14px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
       color: #8fd5ff;
     }
     .alchemy-guide-final-row {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 16px;
-      font-weight: 800;
+      gap: 12px;
+      font-size: 18px;
+      font-weight: 700;
       color: #fff;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
     .alchemy-guide-final-row img {
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       object-fit: contain;
     }
     .alchemy-guide-final-qty {
-      font-size: 14px;
-      font-weight: 800;
+      font-size: 15px;
+      font-weight: 700;
       color: #8fd5ff;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
     .alchemy-guide-time {
-      font-size: 12px;
-      color: #8a9aac;
+      font-size: 13px;
+      color: #6f7d8c;
       line-height: 1.5;
     }
     .alchemy-guide-time strong {
-      color: #c5dff5;
-      font-weight: 700;
+      color: #9eb4cc;
+      font-weight: 600;
     }
     .alchemy-guide-sell {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid rgba(158, 203, 122, 0.2);
-      font-size: 12px;
-      color: #9ecb7a;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid #2a3228;
+      font-size: 13px;
+      color: #86b06e;
       line-height: 1.5;
     }
     .alchemy-guide-sell strong {
-      color: #d4f5b8;
-      font-weight: 800;
+      color: #b0d898;
+      font-weight: 700;
     }
     .main-credits-block {
       margin-top: 36px;
