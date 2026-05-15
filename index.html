@@ -8647,13 +8647,13 @@ function analyzeEfficiency() {
   ].filter(Boolean);
   const tierSumExpr = tierSumParts.length ? tierSumParts.join(' + ') : '0';
   revBox.innerHTML = `
-    <motion.div style="font-size:12px;color:#c8d6e4;line-height:1.5;margin-bottom:10px;">
+    <div style="font-size:12px;color:#c8d6e4;line-height:1.5;margin-bottom:10px;">
       <strong style="color:#e8f4ff;">총 판매가</strong>는 위 제작 추천의 <strong style="color:#b8c9d9;">1성·2성·3성 연금품 + 희석액</strong>을 모두 팔았을 때의 합입니다.<br>
       <span style="color:#9ecb7a;">${tierSumExpr} = ${totalBoosted.toLocaleString()}G</span>
       <span style="color:#8899aa;"> (전문가 연금 +${effects.alchemyPriceBoost || 0}%)</span>
     </div>
     <div style="font-size:11px;color:#8899aa;line-height:1.5;margin-bottom:10px;padding:10px 12px;background:#0a1018;border-radius:8px;border:1px solid #243040;">
-      <motion.div style="font-weight:700;color:#b8c9d9;margin-bottom:6px;">계산 요약</div>
+      <div style="font-weight:700;color:#b8c9d9;margin-bottom:6px;">계산 요약</div>
       <ul style="margin:0;padding-left:18px;">
         <li>어패류만 창고 수량 제한 · 바닐라·회 등 부재료는 충분하다고 가정</li>
         <li>1·2성 연금용 ★: 창고 ★ + ★★×3 + ★★★×9 (고성급을 1성 분량으로 환산)</li>
