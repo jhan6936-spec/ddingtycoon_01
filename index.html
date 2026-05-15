@@ -6798,10 +6798,9 @@ function buildAlchemySummaryMaterialSectionsHTML(shell, alchemyIntermediates, va
       <h4>어패류</h4>
       ${renderShellfishTiersHTML(shell, m)}
     </div>
-    <div class="alchemy-mat-section">
-      <h4>연금품 (중간 제작)</h4>
+    <motion.div class="alchemy-mat-section alchemy-mat-section--chain">
       ${alchemyLines}
-    </div>
+    </motion.div>
     <div class="alchemy-mat-section">
       <h4>바닐라 재료</h4>
       ${renderVanillaWarehouseCategoriesHTML(vanilla, m)}
