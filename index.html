@@ -7326,12 +7326,17 @@ function alchemyGuideQtyMapsEqual(a, b) {
   return true;
 }
 
-function alchemyGuideExpandOneLayer(layerMap) {
+function alchemyGuideExpandOneLayer(layerMap, options = {}) {
+  const skip = options.skipShellfishTierConvert === true;
   const out = {};
   Object.entries(layerMap).forEach(([name, qty]) => {
     if (!qty || qty <= 0) return;
     const mat = data.materials[name];
     if (mat && mat.inputs && mat.inputs.length) {
+      if (skip && SHELLFISH_DOWNGRADE_ONE_STAR.has(name)) {
+        alchemyGuideMergeQty(out, name, qty);
+        return;
+      }
       mat.inputs.forEach((inp) => {
         alchemyGuideMergeQty(out, inp.name, (inp.count || 0) * qty);
       });
@@ -7343,6 +7348,7 @@ function alchemyGuideExpandOneLayer(layerMap) {
 }
 
 function alchemyGuideBuildStages(recipe, copies) {
+  const expandOpts = { skipShellfishTierConvert: true };
   let cur = {};
   for (const inp of recipe.inputs) {
     alchemyGuideMergeQty(cur, inp.name, (inp.count || 0) * copies);
@@ -7350,7 +7356,7 @@ function alchemyGuideBuildStages(recipe, copies) {
   const stages = [alchemyGuideCloneQtyMap(cur)];
   let guard = 0;
   while (guard++ < 48) {
-    const next = alchemyGuideExpandOneLayer(cur);
+    const next = alchemyGuideExpandOneLayer(cur, expandOpts);
     if (alchemyGuideQtyMapsEqual(cur, next)) break;
     stages.push(alchemyGuideCloneQtyMap(next));
     cur = next;
