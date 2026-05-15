@@ -4382,6 +4382,8 @@ const STORAGE_KEY_ALCHEMY_MAT_PANEL = 'thingta_alchemy_mat_panel_v1';
 
 /** 연금 합계 패널 마지막 데이터 (토글 시 재렌더) */
 let lastAlchemySummaryData = null;
+/** 제작 추천(효율) 기준 최종 9종 + 희석액 개수 — 제작 가이드와 동기 */
+let lastAlchemyPlanCountsByName = null;
 /** 'setPiece' | 'boxSetPiece' — 세트/개 vs 상자/세트/개 */
 let alchemySummaryQtyMode = 'setPiece';
 /** 'none' | 'detail' | 'summary' — 재료 합계 패널 표시 방식 */
@@ -8020,6 +8022,7 @@ function analyzeEfficiency() {
   const hasItems = Object.values(inventory).some(v => (parseInt(v, 10) || 0) > 0);
   if (!hasItems) {
     lastAlchemySummaryData = null;
+    lastAlchemyPlanCountsByName = null;
     const al = document.getElementById('efficiencyContainerAlchemy');
     if (al) al.innerHTML = '<div class="no-result">재료 창고에 수량을 입력하면 연금품 계산이 표시됩니다</div>';
     renderCraftPricePanel(effects);
@@ -8079,6 +8082,7 @@ function analyzeEfficiency() {
   if (!containerAlchemy) return;
   containerAlchemy.innerHTML = '';
   lastAlchemySummaryData = null;
+  lastAlchemyPlanCountsByName = null;
   if (containerCraftPrice) containerCraftPrice.innerHTML = '';
 
   const alchemyResults = results.filter(r => r.kind === 'alchemy');
@@ -8191,7 +8195,11 @@ function analyzeEfficiency() {
   
   // 연금품 섹션 - 제작 추천 결과 기반으로 표시
   const allPlanCounts = { ...plan1, ...plan2, ...plan3 };
-  if (diluentCount > 0) allPlanCounts['추출된 희석액'] = diluentCount;
+  allPlanCounts['추출된 희석액'] = diluentCount;
+  lastAlchemyPlanCountsByName = {};
+  [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'].forEach((name) => {
+    lastAlchemyPlanCountsByName[name] = Math.max(0, Math.floor(Number(allPlanCounts[name]) || 0));
+  });
   const planEntries = Object.entries(allPlanCounts).filter(([, n]) => n > 0);
   if (planEntries.length > 0) {
     const alchemyTitle = document.createElement('div');
