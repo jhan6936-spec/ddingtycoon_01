@@ -4568,11 +4568,15 @@ let sageEngravingState = {
 let efficiencySub = 'stamina';
 let settingsSub = 'experts';
 const SHELLFISH_NAMES = ['굴', '소라', '문어', '미역', '성게'];
-/** 어패류 승급: 1★ 3개 → 2★ 1개 (유일한 성급 승급 경로) */
+/** 어패류 승급: 1★ 3개 → 2★ 1개 (게임 내 유일한 승급) */
 const SHELLFISH_PROMOTE_ONE_TO_TWO_COST = 3;
-/** 창고 ★★ 1개 = ★ 3개분, ★★★ 1개 = ★ 9개분 (승급 3:1을 두 단계 적용한 환산) */
-const SHELLFISH_PROMOTE_TWO_STAR_EQUIV = 3;
-const SHELLFISH_PROMOTE_THREE_STAR_EQUIV = 9;
+/** 1성 연금용 ★ 환산: 창고 ★★ 1개 = ★ 3개분 (승급 3:1 역산) */
+const SHELLFISH_ONE_STAR_POOL_PER_TWO_STAR = 3;
+/** 1성 연금용 ★ 환산: 창고 ★★★ 1개 = ★ 9개분 (승급 3:1을 두 번 역산) */
+const SHELLFISH_ONE_STAR_POOL_PER_THREE_STAR = 9;
+/** @deprecated 이전 이름 호환 */
+const SHELLFISH_PROMOTE_TWO_STAR_EQUIV = SHELLFISH_ONE_STAR_POOL_PER_TWO_STAR;
+const SHELLFISH_PROMOTE_THREE_STAR_EQUIV = SHELLFISH_ONE_STAR_POOL_PER_THREE_STAR;
 /** 2성 연금 중간재(에센스·결정 등) — 승급 레시피(1★×3)로 전개 */
 const SHELLFISH_PROMOTE_TWO_STAR = new Set(['굴 ★★', '소라 ★★', '문어 ★★', '미역 ★★', '성게 ★★']);
 /** @deprecated 하위 호환 — 승급 대상 2★와 동일 집합 참조 */
@@ -7578,7 +7582,10 @@ function optimizeAlchemyPlanILP(inv) {
     const c1 = lpMaterialKey(`shell_equiv1:${species}`);
     const c3 = lpMaterialKey(`shell_t3:${species}`);
     constraints[c1] = {
-      max: s1 + s2 * SHELLFISH_PROMOTE_TWO_STAR_EQUIV + s3 * SHELLFISH_PROMOTE_THREE_STAR_EQUIV,
+      max:
+        s1 +
+        s2 * SHELLFISH_ONE_STAR_POOL_PER_TWO_STAR +
+        s3 * SHELLFISH_ONE_STAR_POOL_PER_THREE_STAR,
     };
     constraints[c3] = { max: s3 };
 
