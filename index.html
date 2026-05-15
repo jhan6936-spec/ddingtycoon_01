@@ -8608,6 +8608,10 @@ function analyzeEfficiency() {
   const plan2 = optimized.plans[1];
   const plan3 = optimized.plans[2];
   const diluentCount = optimized.diluentCount;
+  const g1 = sumFinalPlanGold(plan1, effects);
+  const g2 = sumFinalPlanGold(plan2, effects);
+  const g3 = sumFinalPlanGold(plan3, effects);
+  const gD = sumFinalPlanGold({ '추출된 희석액': diluentCount }, effects);
   const planWrap = document.createElement('div');
   planWrap.style.marginBottom = '18px';
   planWrap.style.padding = '14px';
