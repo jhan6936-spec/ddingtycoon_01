@@ -8586,7 +8586,6 @@ function analyzeEfficiency() {
     const { shell, vanilla } = splitShellfishVanillaTotals(rawTotals);
 
     const directInputs = aggregatePlanDirectInputs(planEntries);
-    const alchemyIntermediates = aggregatePlanAlchemyMaterialNodesNeeded(planEntries);
     const summaryBox = document.createElement('div');
     summaryBox.className = 'alchemy-mat-summary';
     lastAlchemySummaryData = { shell, vanilla, directInputs, planEntries };
