@@ -3373,11 +3373,11 @@
       margin: 4px 0 18px;
     }
     .alchemy-guide-modal-card {
-      width: min(1120px, 98vw) !important;
+      width: min(1360px, 99.5vw) !important;
       max-width: 100%;
     }
     .patch-modal-card.alchemy-guide-modal-card {
-      padding: 24px 28px 28px;
+      padding: 26px 32px 32px;
     }
     .alchemy-guide-top-note {
       margin: 0 0 14px;
@@ -3391,7 +3391,7 @@
       font-weight: 600;
     }
     .alchemy-guide-modal-body {
-      max-height: min(88vh, 960px);
+      max-height: min(92vh, 1080px);
       padding-right: 4px;
     }
     .alchemy-guide-lead-box {
@@ -3493,7 +3493,29 @@
     .alchemy-guide-timeline {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      align-items: center;
+      gap: 0;
+      padding: 6px 0 4px;
+    }
+    .alchemy-guide-pyramid-slab {
+      width: 100%;
+      max-width: min(100%, var(--pyramid-w, 100%));
+      margin-left: auto;
+      margin-right: auto;
+      box-sizing: border-box;
+    }
+    .alchemy-guide-pyramid-slab--final {
+      max-width: min(100%, var(--pyramid-w, 100%));
+    }
+    .alchemy-guide-pyramid-arrow {
+      width: 0;
+      height: 0;
+      margin: 4px auto 6px;
+      border-left: clamp(14px, 2.2vw, 28px) solid transparent;
+      border-right: clamp(14px, 2.2vw, 28px) solid transparent;
+      border-top: 11px solid rgba(120, 175, 220, 0.38);
+      flex-shrink: 0;
+      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.45));
     }
     .alchemy-guide-col--step {
       --guide-accent: #5eb0e8;
@@ -3575,6 +3597,9 @@
     }
     .alchemy-guide-timeline-final-wrap {
       margin-top: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
     }
     .alchemy-guide-col--final {
       width: 100%;
