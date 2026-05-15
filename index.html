@@ -6888,10 +6888,10 @@ function buildAlchemySummaryMaterialSectionsHTML(planEntries, qtyMode) {
         ? `<div class="alchemy-mat-subsection">
         <h5 class="alchemy-mat-subsection-title">어패류</h5>
         ${renderShellfishTiersHTML(tier.shell, m)}
-      </motion.div>`
+      </div>`
         : '';
       const vanillaBlock = hasVanilla
-        ? `<motion.div class="alchemy-mat-subsection">
+        ? `<div class="alchemy-mat-subsection">
         <h5 class="alchemy-mat-subsection-title">바닐라 재료</h5>
         ${renderVanillaWarehouseCategoriesHTML(tier.vanilla, m)}
       </motion.div>`
