@@ -8618,14 +8618,13 @@ function analyzeEfficiency() {
       : '';
   revBox.innerHTML = `
     <div style="font-size:11px;color:#8899aa;line-height:1.45;margin-bottom:10px;">
-      창고 <strong style="color:#b8c9d9;">어패류 수량</strong> 제약 안에서 최종 9종·추출된 희석액 제작 개수를 <strong style="color:#b8c9d9;">동시에 조정</strong>해 판매가 합계가 최대가 되도록 계산합니다. 1★→2★ 승급(1★ 3개→2★ 1개)은 이득일 때만 반영하며, 바닐라·광물·회 등 부재료는 제한 없이 가정합니다.
+      창고에 입력한 <strong style="color:#b8c9d9;">성급별 어패류</strong>를 바탕으로 최종 9종·추출된 희석액 개수를 조정합니다. 1성 연금의 ★ 어패류는 ★＋★★×2＋★★★×4, 2성 연금의 ★★는 ★★＋★★★로 환산해 사용합니다. 바닐라·광물·회 등 부재료는 제한 없이 가정합니다.
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;font-size:13px;color:#ddd;align-items:center;">
       <div>기본가 합 <strong style="color:#fff;">${totalBase.toLocaleString()}G</strong></div>
       <div>전문가 적용 합 <strong style="color:#8fd5ff;">${totalBoosted.toLocaleString()}G</strong></div>
     </div>
     ${diluentRevNote}
-    ${promoteRevNote}
   `;
   containerAlchemy.appendChild(revBox);
   
