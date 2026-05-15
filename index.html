@@ -7310,6 +7310,12 @@ function getAlchemyGuideRecipeCopies(recipeName) {
   return Math.max(0, Math.floor(Number(v) || 0));
 }
 
+/** 역삼각(깔때기): 위는 넓고 아래로 갈수록 좁게 — levelIndex 0이 가장 넓음 */
+function alchemyGuidePyramidWidthPct(levelIndex, totalLevels) {
+  if (totalLevels <= 1) return 100;
+  return Math.round(100 - (levelIndex / (totalLevels - 1)) * 46);
+}
+
 function alchemyGuideColInnerHtml(map) {
   const entries = Object.entries(map)
     .filter(([, q]) => q > 0)
@@ -7353,7 +7359,10 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
   }
   const stepColors = ['#6ec8ff', '#b89cff', '#ff9b9b', '#8fd5ff'];
   const stepParts = [];
+  const totalLevels = rev.length + 1;
   rev.forEach((map, j) => {
+    if (j > 0) stepParts.push('<div class="alchemy-guide-pyramid-arrow" aria-hidden="true"></div>');
+    const w = alchemyGuidePyramidWidthPct(j, totalLevels);
     const nMat = Object.entries(map).filter(([, q]) => q > 0).length;
     const label =
       j === 0
@@ -7363,28 +7372,30 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
           : `STEP ${j + 1} · 중간`;
     const c = stepColors[j % stepColors.length];
     stepParts.push(
-      `<div class="alchemy-guide-col alchemy-guide-col--step" style="--guide-accent:${c}">
+      `<div class="alchemy-guide-pyramid-slab" style="--pyramid-w:${w}%"><div class="alchemy-guide-col alchemy-guide-col--step" style="--guide-accent:${c}">
         <div class="alchemy-guide-step-header">
           <span class="alchemy-guide-step-label" style="color:${c}">${label}</span>
           <span class="alchemy-guide-step-count">${nMat}종</span>
         </div>
         ${alchemyGuideColInnerHtml(map)}
-      </div>`
+      </div></div>`
     );
   });
+  stepParts.push('<div class="alchemy-guide-pyramid-arrow" aria-hidden="true"></div>');
+  const wFinal = alchemyGuidePyramidWidthPct(rev.length, totalLevels);
   const img = buildImageTag(finalName, '', 'width:28px;height:28px;object-fit:contain;display:block;');
   const sell = getAlchemyBoostedSellPriceGold(recipe);
   const sellLine =
     sell != null && copies > 0
       ? `<div class="alchemy-guide-sell">예상 판매가 합 (${copies.toLocaleString()}개, 전문가 연금 보너스): <strong>${(sell * copies).toLocaleString()}G</strong></div>`
       : '';
-  stepParts.push(`<div class="alchemy-guide-timeline-final-wrap"><div class="alchemy-guide-col alchemy-guide-col--final">
+  stepParts.push(`<div class="alchemy-guide-timeline-final-wrap"><div class="alchemy-guide-pyramid-slab alchemy-guide-pyramid-slab--final" style="--pyramid-w:${wFinal}%"><div class="alchemy-guide-col alchemy-guide-col--final">
       <div class="alchemy-guide-step-label alchemy-guide-step-label--final">최종 연성</div>
       <div class="alchemy-guide-final-row">${img}<span>${escapeHtml(finalName)}</span></div>
       <div class="alchemy-guide-final-qty">제작 추천 ${formatWarehouseStackCount(copies)}</div>
       <div class="alchemy-guide-time">합산 기본 제작 시간(참고): <strong>${escapeHtml(formatGuideDurationSec(totalSec))}</strong></div>
       ${sellLine}
-    </div></div>`);
+    </div></div></div>`);
   const stepsVerticalHtml = stepParts.join('');
   const headImg = buildImageTag(finalName, '', 'width:36px;height:36px;object-fit:contain;display:block;');
   return `<div class="alchemy-guide-product">
