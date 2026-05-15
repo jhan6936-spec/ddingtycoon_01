@@ -7403,6 +7403,22 @@ function greedyCraftFinalCounts(recipeNames, inv, options = {}) {
   return { counts, diluentCount };
 }
 
+/** 연금 제작 추천: 어패류만 창고 수량 제한, 바닐라·잎·광물 등은 무한 가정 */
+const ALCHEMY_PLAN_UNBOUNDED_STOCK = 1e12;
+
+function prepareInventoryForAlchemyPlan(inv) {
+  const out = { ...inv };
+  const products = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'];
+  products.forEach((name) => {
+    Object.keys(buildFinalProductLeafNeeds(name)).forEach((mat) => {
+      if (!isShellfishStockName(mat)) {
+        out[mat] = Math.max(Number(out[mat]) || 0, ALCHEMY_PLAN_UNBOUNDED_STOCK);
+      }
+    });
+  });
+  return out;
+}
+
 const _lpMatKeys = new Map();
 let _lpMatSeq = 0;
 function lpMaterialKey(name) {
@@ -7499,7 +7515,11 @@ function optimizeAlchemyPlanILP(inv) {
 
   const constraints = {};
   allMats.forEach((m) => {
-    constraints[lpMaterialKey(m)] = { max: Math.max(0, Number(inv[m]) || 0) };
+    const stock = Math.max(0, Number(inv[m]) || 0);
+    const max = isShellfishStockName(m)
+      ? stock
+      : Math.max(stock, ALCHEMY_PLAN_UNBOUNDED_STOCK);
+    constraints[lpMaterialKey(m)] = { max };
   });
 
   const variables = {};
@@ -8515,12 +8535,7 @@ function analyzeEfficiency() {
 
   const alchemyResults = results.filter(r => r.kind === 'alchemy');
 
-  const baseInvForPlan = { ...inventory };
-  if (!isVanillaCalcOn) {
-    infiniteVanillaMaterials.forEach(name => {
-      baseInvForPlan[name] = Number.MAX_SAFE_INTEGER;
-    });
-  }
+  const baseInvForPlan = prepareInventoryForAlchemyPlan(inventory);
 
   const optimized = optimizeAlchemyPlan(baseInvForPlan, effects);
   const plan1 = optimized.plans[0];
