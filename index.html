@@ -6088,6 +6088,26 @@ function partitionAlchemyChainTotalsByCategory(totalsObj) {
   return out;
 }
 
+/** 1·2·3성 연금품 재료(정수·핵 / 에센스·결정 / 엘릭서·영약) */
+const ALCHEMY_STAR_TIER_GROUPS = [
+  { title: '1성 연금품 재료', typeTitles: ['정수', '핵'] },
+  { title: '2성 연금품 재료', typeTitles: ['에센스', '결정'] },
+  { title: '3성 연금품 재료', typeTitles: ['엘릭서', '영약'] },
+];
+
+function partitionAlchemyChainByStarTier(totalsObj) {
+  const cols = partitionAlchemyChainTotalsByCategory(totalsObj);
+  const tiers = ALCHEMY_STAR_TIER_GROUPS.map((tier) => ({
+    title: tier.title,
+    cols: cols.filter((c) => tier.typeTitles.includes(c.title)),
+  })).filter((t) => t.cols.some((c) => Object.keys(c.obj).length > 0));
+  const otherCol = cols.find((c) => c.title === '기타');
+  if (otherCol && Object.keys(otherCol.obj).length > 0) {
+    tiers.push({ title: '기타 연금품 재료', cols: [otherCol] });
+  }
+  return tiers;
+}
+
 /** 기타 연금품(materials) → 정수·핵·에센스·결정·엘릭서·영약 */
 function partitionMiscAlchemyRecipes(recipes) {
   const sortKo = (a, b) => a.name.localeCompare(b.name, 'ko');
