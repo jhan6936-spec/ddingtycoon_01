@@ -7632,9 +7632,13 @@ function optimizeAlchemyPlan(inv, effects) {
   return alchemyPlanTotalGold(ilp, effects) >= alchemyPlanTotalGold(greedy, effects) ? ilp : greedy;
 }
 
-function renderTriFinalPlan(title, orderedNames, counts) {
+function renderTriFinalPlan(title, orderedNames, counts, tierGold) {
   const effects = getExpertEffects();
   const mult = 1 + effects.alchemyPriceBoost / 100;
+  const tierSellLine =
+    tierGold && tierGold.boosted > 0
+      ? `<div style="font-size:11px;color:#9ecb7a;margin-top:4px;">이 구역 판매가 합 <strong style="color:#c8f5a8;">${tierGold.boosted.toLocaleString()}G</strong>${(effects.alchemyPriceBoost || 0) > 0 ? ` <span style="color:#8899aa;">(기본 ${tierGold.base.toLocaleString()}G)</span>` : ''}</motion.div>`
+      : '';
   const cells = orderedNames.map((name) => {
     const n = counts[name] || 0;
     const imgH = buildImageTag(name, '', 'height:22px;vertical-align:middle;margin-right:6px;');
