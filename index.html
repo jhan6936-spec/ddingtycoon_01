@@ -7358,6 +7358,33 @@ function alchemyGuideBuildStages(recipe, copies) {
   return stages;
 }
 
+/** 가이드에 보이는 수량 문자열(ceil 후 세트 표기) — 단계 중복 판별용 */
+function alchemyGuideQtyDisplayToken(q) {
+  return formatWarehouseStackCount(Math.ceil(Math.max(0, Number(q) || 0)));
+}
+
+/** 제작 가이드에 연속으로 같은 내용이 보이는 단계 제거(부동소수·ceil 후 동일 등) */
+function alchemyGuideQtyMapsVisualEqual(a, b) {
+  const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
+  for (const k of keys) {
+    if (alchemyGuideQtyDisplayToken(a[k]) !== alchemyGuideQtyDisplayToken(b[k])) return false;
+  }
+  return true;
+}
+
+function alchemyGuideDedupeGuideStages(stages) {
+  if (!stages || stages.length <= 1) return stages ? stages.slice() : [];
+  const out = [alchemyGuideCloneQtyMap(stages[0])];
+  for (let i = 1; i < stages.length; i++) {
+    const prev = out[out.length - 1];
+    const cur = stages[i];
+    if (alchemyGuideQtyMapsEqual(prev, cur)) continue;
+    if (alchemyGuideQtyMapsVisualEqual(prev, cur)) continue;
+    out.push(alchemyGuideCloneQtyMap(cur));
+  }
+  return out;
+}
+
 function alchemyGuideSumTierCraftSec(layerMap) {
   let t = 0;
   Object.entries(layerMap).forEach(([name, qty]) => {
@@ -7421,10 +7448,11 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
       <p class="alchemy-guide-zero-note">이번 추천에서는 제작되지 않습니다.</p>
     </div>`;
   }
-  const stages = alchemyGuideBuildStages(recipe, copies);
+  const stagesRaw = alchemyGuideBuildStages(recipe, copies);
+  const stages = alchemyGuideDedupeGuideStages(stagesRaw);
   let totalSec = getBaseAlchemyTimeSec(finalName) * copies;
-  for (let i = 0; i < stages.length - 1; i++) {
-    totalSec += alchemyGuideSumTierCraftSec(stages[i]);
+  for (let i = 0; i < stagesRaw.length - 1; i++) {
+    totalSec += alchemyGuideSumTierCraftSec(stagesRaw[i]);
   }
   const stepColors = ['#6ec8ff', '#b89cff', '#ff9b9b', '#8fd5ff'];
   const stepParts = [];
