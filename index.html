@@ -6798,9 +6798,9 @@ function buildAlchemySummaryMaterialSectionsHTML(shell, alchemyIntermediates, va
       <h4>어패류</h4>
       ${renderShellfishTiersHTML(shell, m)}
     </div>
-    <motion.div class="alchemy-mat-section alchemy-mat-section--chain">
+    <div class="alchemy-mat-section alchemy-mat-section--chain">
       ${alchemyLines}
-    </motion.div>
+    </div>
     <div class="alchemy-mat-section">
       <h4>바닐라 재료</h4>
       ${renderVanillaWarehouseCategoriesHTML(vanilla, m)}
@@ -8426,11 +8426,11 @@ function analyzeEfficiency() {
   revBox.style.borderRadius = '10px';
   const diluentRevNote =
     diluentCount > 0
-      ? `<div style="font-size:11px;color:#8899aa;margin-top:6px;line-height:1.45;">추출된 희석액 <strong style="color:#b8c9d9;">${diluentCount.toLocaleString()}개</strong>는 9종 최종과 동일 후보 풀에서, 위와 같은 기준(판매가 우선)으로 제작 순서에 포함된 결과입니다.</div>`
+      ? `<div style="font-size:11px;color:#8899aa;margin-top:6px;line-height:1.45;">추출된 희석액 <strong style="color:#b8c9d9;">${diluentCount.toLocaleString()}개</strong>는 최종 9종과 함께 재료 제약 안에서 총 판매가가 최대가 되도록 함께 산출된 결과입니다.</div>`
       : '';
   revBox.innerHTML = `
     <div style="font-size:11px;color:#8899aa;line-height:1.45;margin-bottom:10px;">
-      남은 재료로 만들 수 있는 최종 9종·추출된 희석액 가운데 <strong style="color:#b8c9d9;">1개당 전문가 반영 판매가</strong>가 가장 높은 것을 반복해 고릅니다. 금액이 같으면 <strong style="color:#b8c9d9;">제작 시간 대비 효율</strong>이 높은 쪽을 먼저 씁니다.
+      창고 재료 제약 안에서 최종 9종·추출된 희석액 제작 개수를 <strong style="color:#b8c9d9;">동시에 조정</strong>해, 전문가 반영 <strong style="color:#b8c9d9;">판매가 합계가 최대</strong>가 되도록 계산합니다.
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;font-size:13px;color:#ddd;align-items:center;">
       <div>기본가 합 <strong style="color:#fff;">${totalBase.toLocaleString()}G</strong></div>
