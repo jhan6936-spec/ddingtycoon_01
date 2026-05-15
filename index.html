@@ -7353,11 +7353,12 @@ function getAlchemyGuideRecipeCopies(recipeName) {
   return Math.max(0, Math.floor(Number(v) || 0));
 }
 
-/** 역삼각(깔때기): 위는 넓고 아래로 좁아짐 — 너무 조이지 않도록 하한 ~74% */
-function alchemyGuidePyramidWidthPct(levelIndex, totalLevels) {
+/** 위(최종)는 좁고, 아래(기초 재료)로 갈수록 넓어지는 ▽형 폭 — 문어발 트리 */
+function alchemyGuidePyramidWidthPctDown(levelIndex, totalLevels) {
   if (totalLevels <= 1) return 100;
-  const raw = 100 - (levelIndex / (totalLevels - 1)) * 26;
-  return Math.round(Math.max(74, raw));
+  const t = levelIndex / (totalLevels - 1);
+  const minN = 42;
+  return Math.round(minN + t * (100 - minN));
 }
 
 function alchemyGuideColInnerHtml(map) {
@@ -7365,13 +7366,13 @@ function alchemyGuideColInnerHtml(map) {
     .filter(([, q]) => q > 0)
     .sort((a, b) => a[0].localeCompare(b[0], 'ko'));
   if (!entries.length) {
-    return '<div class="alchemy-guide-ingredient-list alchemy-guide-ingredient-list--empty"><div class="alchemy-guide-empty">—</div></div>';
+    return '<div class="alchemy-guide-node-row alchemy-guide-node-row--empty"><div class="alchemy-guide-empty">—</div></div>';
   }
-  return `<div class="alchemy-guide-ingredient-list">${entries
+  return `<div class="alchemy-guide-node-row">${entries
     .map(([nm, q]) => {
-      const img = buildImageTag(nm, '', 'width:28px;height:28px;object-fit:contain;display:block;');
+      const img = buildImageTag(nm, '', 'width:22px;height:22px;object-fit:contain;display:block;');
       const qdisp = formatWarehouseStackCount(Math.ceil(Number(q) || 0));
-      return `<div class="alchemy-guide-line"><span class="alchemy-guide-line-icon">${img}</span><span class="alchemy-guide-line-name">${escapeHtml(nm)}</span><span class="alchemy-guide-line-qty">${escapeHtml(qdisp)}</span></div>`;
+      return `<div class="alchemy-guide-node" title="${escapeHtml(nm)}"><div class="alchemy-guide-node-icon">${img}</div><div class="alchemy-guide-node-name">${escapeHtml(nm)}</div><div class="alchemy-guide-node-qty">${escapeHtml(qdisp)}</div></div>`;
     })
     .join('')}</div>`;
 }
@@ -7385,7 +7386,7 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
     </div>`;
   }
   if (copies <= 0) {
-    const headImg = buildImageTag(finalName, '', 'width:40px;height:40px;object-fit:contain;display:block;');
+    const headImg = buildImageTag(finalName, '', 'width:34px;height:34px;object-fit:contain;display:block;');
     return `<div class="alchemy-guide-product alchemy-guide-product--zero">
       <div class="alchemy-guide-product-head">
         <div class="alchemy-guide-product-icon">${headImg}</div>
