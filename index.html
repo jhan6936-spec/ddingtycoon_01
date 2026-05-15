@@ -4300,12 +4300,12 @@
 // ===== 데이터 =====
 const data = {
   materials: {
-    // 어패류 합성
-    "굴 ★": { inputs: [{ name: "굴 ★★", count: 1 }] },
-    "소라 ★": { inputs: [{ name: "소라 ★★", count: 1 }] },
-    "문어 ★": { inputs: [{ name: "문어 ★★", count: 1 }] },
-    "미역 ★": { inputs: [{ name: "미역 ★★", count: 1 }] },
-    "성게 ★": { inputs: [{ name: "성게 ★★", count: 1 }] },
+    // 어패류 승급 (1★ 3개 → 2★ 1개, 연금 최적화·ILP에서도 동일 비율)
+    "굴 ★★": { inputs: [{ name: "굴 ★", count: 3 }] },
+    "소라 ★★": { inputs: [{ name: "소라 ★", count: 3 }] },
+    "문어 ★★": { inputs: [{ name: "문어 ★", count: 3 }] },
+    "미역 ★★": { inputs: [{ name: "미역 ★", count: 3 }] },
+    "성게 ★★": { inputs: [{ name: "성게 ★", count: 3 }] },
 
 
 
@@ -4568,8 +4568,12 @@ let sageEngravingState = {
 let efficiencySub = 'stamina';
 let settingsSub = 'experts';
 const SHELLFISH_NAMES = ['굴', '소라', '문어', '미역', '성게'];
-/** 어패류 ★를 ★★에서 깎아 만드는 제작 경로 (승급 제외 계산 시 무시) */
-const SHELLFISH_DOWNGRADE_ONE_STAR = new Set(['굴 ★', '소라 ★', '문어 ★', '미역 ★', '성게 ★']);
+/** 어패류 1★→2★ 승급 비용 (1★ 개수 / 2★ 1개) */
+const SHELLFISH_PROMOTE_ONE_TO_TWO_COST = 3;
+/** 연금 재료 집계 시 1★→2★ 승급 레시피 무시(별도 ILP 승급 변수로 처리) */
+const SHELLFISH_PROMOTE_TWO_STAR = new Set(['굴 ★★', '소라 ★★', '문어 ★★', '미역 ★★', '성게 ★★']);
+/** @deprecated 하위 호환 — 승급 대상 2★와 동일 집합 참조 */
+const SHELLFISH_DOWNGRADE_ONE_STAR = SHELLFISH_PROMOTE_TWO_STAR;
 const STAR_PROBS = { s1: 0.6, s2: 0.3, s3: 0.1 };
 const STAMINA_PER_GATHER = 15;
 const IMAGE_FOLDERS = ['../재료', '재료', '재료1', '재료 1', '재료2', '재료 2'];
@@ -7195,7 +7199,7 @@ function accumulateCraftTree(name, count, accum, options = {}) {
   const skip = options.skipShellfishTierConvert === true;
   const recipe = data.materials[name];
   if (recipe && recipe.inputs && recipe.inputs.length) {
-    if (skip && SHELLFISH_DOWNGRADE_ONE_STAR.has(name)) {
+    if (skip && SHELLFISH_PROMOTE_TWO_STAR.has(name)) {
       accum[name] = (accum[name] || 0) + count;
       return;
     }
