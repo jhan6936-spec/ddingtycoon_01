@@ -6874,23 +6874,35 @@ function refreshAlchemySummaryBody() {
   refreshAlchemyMaterialPanelBodies();
 }
 
-function buildAlchemySummaryMaterialSectionsHTML(shell, alchemyIntermediates, vanilla, qtyMode) {
+function buildAlchemySummaryMaterialSectionsHTML(planEntries, qtyMode) {
   const m = qtyMode != null ? qtyMode : alchemySummaryQtyMode;
-  const alchemyObj = alchemyIntermediates || {};
-  const alchemyLines = renderAlchemyChainCategoryGroupsHTML(alchemyObj, m);
-  return `
-    <div class="alchemy-mat-section">
-      <h4>어패류</h4>
-      ${renderShellfishTiersHTML(shell, m)}
-    </div>
-    <div class="alchemy-mat-section alchemy-mat-section--chain">
-      ${alchemyLines}
-    </div>
-    <div class="alchemy-mat-section">
-      <h4>바닐라 재료</h4>
-      ${renderVanillaWarehouseCategoriesHTML(vanilla, m)}
-    </div>
-  `;
+  const tiers = aggregatePlanLeafMaterialsByStarTier(planEntries);
+  if (!tiers.length) {
+    return '<motion.div style="font-size:12px;color:#778899;padding:8px 0;">제작 추천 수량이 없어 표시할 재료가 없습니다.</motion.div>';
+  }
+  return tiers
+    .map((tier) => {
+      const hasShell = Object.values(tier.shell).some((v) => v > 0);
+      const hasVanilla = Object.values(tier.vanilla).some((v) => v > 0);
+      const shellBlock = hasShell
+        ? `<motion.div class="alchemy-mat-subsection">
+        <h5 class="alchemy-mat-subsection-title">어패류</h5>
+        ${renderShellfishTiersHTML(tier.shell, m)}
+      </motion.div>`
+        : '';
+      const vanillaBlock = hasVanilla
+        ? `<motion.div class="alchemy-mat-subsection">
+        <h5 class="alchemy-mat-subsection-title">바닐라 재료</h5>
+        ${renderVanillaWarehouseCategoriesHTML(tier.vanilla, m)}
+      </motion.div>`
+        : '';
+      return `<motion.div class="alchemy-mat-section alchemy-mat-tier-detail-section">
+      <h4 class="alchemy-star-tier-heading">${tier.title}</h4>
+      ${shellBlock}
+      ${vanillaBlock}
+    </motion.div>`;
+    })
+    .join('');
 }
 
 function syncWarehouseInputRawAttribute(input) {
