@@ -6689,6 +6689,74 @@ function aggregatePlanAlchemyMaterialNodesNeeded(planEntries) {
   return filtered;
 }
 
+function mergeAlchemyQtyMap(into, from) {
+  Object.entries(from || {}).forEach(([k, v]) => {
+    const n = Number(v);
+    if (!n || n <= 0) return;
+    into[k] = (into[k] || 0) + n;
+  });
+}
+
+/** 제작 트리를 끝까지 펼쳐 어패류·바닐라만 합산(연금 중간 산물 제외) */
+function addPlanLeavesToBucket(bucket, itemName, qty) {
+  const leaf = {};
+  const opts = { skipShellfishTierConvert: true };
+  accumulateCraftTree(itemName, qty, leaf, opts);
+  const { shell, vanilla } = splitShellfishVanillaTotals(leaf);
+  mergeAlchemyQtyMap(bucket.shell, shell);
+  mergeAlchemyQtyMap(bucket.vanilla, vanilla);
+}
+
+function alchemyMaterialStarTierIndex(name) {
+  const s = String(name || '');
+  if (/★★★/.test(s)) return 2;
+  if (/★★/.test(s)) return 1;
+  if (/★/.test(s)) return 0;
+  return 0;
+}
+
+/** 자세히보기: 1·2·3성별로 해당 성급 제작에 드는 어패류·바닐라 전체 */
+function aggregatePlanLeafMaterialsByStarTier(planEntries) {
+  const planMap = {};
+  (planEntries || []).forEach(([name, cnt]) => {
+    planMap[name] = Math.max(0, Math.floor(Number(cnt) || 0));
+  });
+  const buckets = [
+    { title: '1성 연금품 재료', shell: {}, vanilla: {} },
+    { title: '2성 연금품 재료', shell: {}, vanilla: {} },
+    { title: '3성 연금품 재료', shell: {}, vanilla: {} },
+  ];
+  const tierFinals = [FINAL_GROUP1, FINAL_GROUP2, FINAL_GROUP3];
+
+  tierFinals.forEach((finals, tierIdx) => {
+    finals.forEach((prodName) => {
+      const copies = planMap[prodName] || 0;
+      if (!copies) return;
+      const recipe = data.recipes.find((r) => r.name === prodName);
+      if (!recipe || !recipe.inputs) return;
+      for (const inp of recipe.inputs) {
+        addPlanLeavesToBucket(buckets[tierIdx], inp.name, inp.count * copies);
+      }
+    });
+  });
+
+  const diluentCnt = planMap['추출된 희석액'] || 0;
+  if (diluentCnt > 0) {
+    const dRecipe = data.recipes.find((r) => r.name === '추출된 희석액');
+    if (dRecipe && dRecipe.inputs) {
+      for (const inp of dRecipe.inputs) {
+        const tierIdx = alchemyMaterialStarTierIndex(inp.name);
+        addPlanLeavesToBucket(buckets[tierIdx], inp.name, inp.count * diluentCnt);
+      }
+    }
+  }
+
+  return buckets.filter(
+    (b) =>
+      Object.values(b.shell).some((v) => v > 0) || Object.values(b.vanilla).some((v) => v > 0)
+  );
+}
+
 function getAlchemyOneStepInputs(name) {
   const mat = data.materials[name];
   if (mat && mat.inputs && mat.inputs.length) return mat.inputs;
