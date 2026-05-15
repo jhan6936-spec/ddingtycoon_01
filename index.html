@@ -6850,14 +6850,12 @@ function applyAlchemyMatPanelVisibility() {
 
 function refreshAlchemyMaterialPanelBodies() {
   if (!lastAlchemySummaryData) return;
-  const { shell, vanilla, directInputs, alchemyIntermediates } = lastAlchemySummaryData;
+  const { directInputs, planEntries } = lastAlchemySummaryData;
   const body = document.getElementById('alchemyMaterialSummaryBody');
   const stage = document.getElementById('alchemyMaterialSummaryStage');
   if (body) {
     body.innerHTML = buildAlchemySummaryMaterialSectionsHTML(
-      shell,
-      alchemyIntermediates || {},
-      vanilla,
+      planEntries || [],
       alchemySummaryQtyMode
     );
   }
