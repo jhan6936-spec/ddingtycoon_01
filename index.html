@@ -8630,7 +8630,7 @@ function analyzeEfficiency() {
       : '';
   revBox.innerHTML = `
     <div style="font-size:11px;color:#8899aa;line-height:1.45;margin-bottom:10px;">
-      창고 <strong style="color:#b8c9d9;">성급별 어패류</strong> 수량 안에서 최종 9종·추출된 희석액 개수를 조정합니다. 승급은 <strong style="color:#b8c9d9;">1★ 3개→2★ 1개</strong>만 반영하며(2★→3★ 승급 없음), 이득일 때만 승급합니다. 바닐라·광물·회 등 부재료는 제한 없이 가정합니다.
+      창고 <strong style="color:#b8c9d9;">성급별 어패류</strong>와 조합법(2성 재료는 <strong style="color:#b8c9d9;">1★ 3개→2★ 1개</strong> 승급 레시피)으로 최적화합니다. 1성 연금용 ★ 환산: ★＋★★×3＋★★★×9, 3성 연금 ★★★는 창고 ★★★만 사용합니다. 바닐라·광물·회 등 부재료는 제한 없이 가정합니다.
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;font-size:13px;color:#ddd;align-items:center;">
       <div>기본가 합 <strong style="color:#fff;">${totalBase.toLocaleString()}G</strong></div>
