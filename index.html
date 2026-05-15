@@ -7383,12 +7383,7 @@ function renderAlchemyCraftGuideBody() {
   }
   const targets = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'];
   const blocks = targets.map((nm) => renderOneAlchemyGuideBlock(nm, getAlchemyGuideRecipeCopies(nm))).join('');
-  body.innerHTML = `
-    <div class="alchemy-guide-lead-box">
-      <p class="alchemy-guide-lead">각 카드의 수량은 현재 화면의 <strong>제작 추천</strong>과 동일합니다. 창고나 전문가 설정을 바꾼 뒤에는 연금품 계산을 한 번 더 돌리면 반영됩니다.</p>
-    </div>
-    ${blocks}
-  `;
+  body.innerHTML = blocks;
 }
 
 function openAlchemyCraftGuide() {
