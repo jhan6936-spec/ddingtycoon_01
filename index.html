@@ -4570,13 +4570,10 @@ let settingsSub = 'experts';
 const SHELLFISH_NAMES = ['굴', '소라', '문어', '미역', '성게'];
 /** 어패류 승급: 1★ 3개 → 2★ 1개 (게임 내 유일한 승급) */
 const SHELLFISH_PROMOTE_ONE_TO_TWO_COST = 3;
-/** 1성 연금용 ★ 환산: 창고 ★★ 1개 = ★ 3개분 (승급 3:1 역산) */
-const SHELLFISH_ONE_STAR_POOL_PER_TWO_STAR = 3;
-/** 1성 연금용 ★ 환산: 창고 ★★★ 1개 = ★ 9개분 (승급 3:1을 두 번 역산) */
-const SHELLFISH_ONE_STAR_POOL_PER_THREE_STAR = 9;
+/** 1·2성 연금용 ★ 환산: 창고 ★★ 1개 = ★ 3개분 (게임 승급 1★×3→2★ 1개의 역산만) */
+const SHELLFISH_ONE_STAR_POOL_PER_TWO_STAR = SHELLFISH_PROMOTE_ONE_TO_TWO_COST;
 /** @deprecated 이전 이름 호환 */
 const SHELLFISH_PROMOTE_TWO_STAR_EQUIV = SHELLFISH_ONE_STAR_POOL_PER_TWO_STAR;
-const SHELLFISH_PROMOTE_THREE_STAR_EQUIV = SHELLFISH_ONE_STAR_POOL_PER_THREE_STAR;
 /** 2성 연금 중간재(에센스·결정 등) — 승급 레시피(1★×3)로 전개 */
 const SHELLFISH_PROMOTE_TWO_STAR = new Set(['굴 ★★', '소라 ★★', '문어 ★★', '미역 ★★', '성게 ★★']);
 /** @deprecated 하위 호환 — 승급 대상 2★와 동일 집합 참조 */
@@ -7582,10 +7579,7 @@ function optimizeAlchemyPlanILP(inv) {
     const c1 = lpMaterialKey(`shell_equiv1:${species}`);
     const c3 = lpMaterialKey(`shell_t3:${species}`);
     constraints[c1] = {
-      max:
-        s1 +
-        s2 * SHELLFISH_ONE_STAR_POOL_PER_TWO_STAR +
-        s3 * SHELLFISH_ONE_STAR_POOL_PER_THREE_STAR,
+      max: s1 + s2 * SHELLFISH_ONE_STAR_POOL_PER_TWO_STAR,
     };
     constraints[c3] = { max: s3 };
 
@@ -8656,9 +8650,9 @@ function analyzeEfficiency() {
       <div style="font-weight:700;color:#b8c9d9;margin-bottom:6px;">계산 요약</div>
       <ul style="margin:0;padding-left:18px;">
         <li>어패류만 창고 수량 제한 · 바닐라·회 등 부재료는 충분하다고 가정</li>
-        <li>1·2성 연금용 ★: 창고 ★ + ★★×3 + ★★★×9 (고성급을 1성 분량으로 환산)</li>
-        <li>3성 연금용 ★★★: 창고 ★★★만 사용</li>
-        <li>2성 중간재는 조합법 <strong style="color:#b8c9d9;">1★ 3개→2★ 1개</strong> 승급과 같게 ★까지 전개</li>
+        <li>승급은 게임과 같이 <strong style="color:#b8c9d9;">1★ 3개→2★ 1개</strong>만 반영 (2★→3★ 승급 없음, 3★를 1★·2★ 연금에 넣지 않음)</li>
+        <li>1·2성 연금용 ★: 창고 ★ + ★★×3 (★★는 승급 역산만, 2성 중간재는 조합법대로 ★까지 전개)</li>
+        <li>3성 연금용 ★★★: 창고 ★★★만 사용 (아쿠아 펄스·나우틸러스·무저 등)</li>
       </ul>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;font-size:12px;color:#ddd;margin-bottom:8px;">
