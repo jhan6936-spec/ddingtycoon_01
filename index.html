@@ -7340,10 +7340,12 @@ function alchemyGuideColInnerHtml(map) {
   const entries = Object.entries(map)
     .filter(([, q]) => q > 0)
     .sort((a, b) => a[0].localeCompare(b[0], 'ko'));
-  if (!entries.length) return '<div class="alchemy-guide-empty">—</div>';
-  return `<div class="alchemy-guide-lines">${entries
+  if (!entries.length) {
+    return '<div class="alchemy-guide-ingredient-list alchemy-guide-ingredient-list--empty"><div class="alchemy-guide-empty">—</div></div>';
+  }
+  return `<div class="alchemy-guide-ingredient-list">${entries
     .map(([nm, q]) => {
-      const img = buildImageTag(nm, '', 'width:22px;height:22px;object-fit:contain;display:block;');
+      const img = buildImageTag(nm, '', 'width:28px;height:28px;object-fit:contain;display:block;');
       const qdisp = formatWarehouseStackCount(Math.ceil(Number(q) || 0));
       return `<div class="alchemy-guide-line"><span class="alchemy-guide-line-icon">${img}</span><span class="alchemy-guide-line-name">${escapeHtml(nm)}</span><span class="alchemy-guide-line-qty">${escapeHtml(qdisp)}</span></div>`;
     })
@@ -7359,7 +7361,7 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
     </div>`;
   }
   if (copies <= 0) {
-    const headImg = buildImageTag(finalName, '', 'width:36px;height:36px;object-fit:contain;display:block;');
+    const headImg = buildImageTag(finalName, '', 'width:40px;height:40px;object-fit:contain;display:block;');
     return `<div class="alchemy-guide-product alchemy-guide-product--zero">
       <div class="alchemy-guide-product-head">
         <div class="alchemy-guide-product-icon">${headImg}</div>
@@ -7403,7 +7405,7 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
   });
   stepParts.push('<div class="alchemy-guide-pyramid-arrow" aria-hidden="true"></div>');
   const wFinal = alchemyGuidePyramidWidthPct(rev.length, totalLevels);
-  const img = buildImageTag(finalName, '', 'width:28px;height:28px;object-fit:contain;display:block;');
+  const img = buildImageTag(finalName, '', 'width:32px;height:32px;object-fit:contain;display:block;');
   const sell = getAlchemyBoostedSellPriceGold(recipe);
   const sellLine =
     sell != null && copies > 0
