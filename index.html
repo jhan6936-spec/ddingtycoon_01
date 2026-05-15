@@ -7292,7 +7292,7 @@ function alchemyGuideColInnerHtml(map) {
   if (!entries.length) return '<div class="alchemy-guide-empty">—</div>';
   return `<div class="alchemy-guide-lines">${entries
     .map(([nm, q]) => {
-      const img = buildImageTag(nm, '', 'width:30px;height:30px;object-fit:contain;display:block;');
+      const img = buildImageTag(nm, '', 'width:22px;height:22px;object-fit:contain;display:block;');
       const qdisp = formatWarehouseStackCount(Math.ceil(Number(q) || 0));
       return `<div class="alchemy-guide-line"><span class="alchemy-guide-line-icon">${img}</span><span class="alchemy-guide-line-name">${escapeHtml(nm)}</span><span class="alchemy-guide-line-qty">${escapeHtml(qdisp)}</span></div>`;
     })
@@ -7308,7 +7308,7 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
     </div>`;
   }
   if (copies <= 0) {
-    const headImg = buildImageTag(finalName, '', 'width:44px;height:44px;object-fit:contain;display:block;');
+    const headImg = buildImageTag(finalName, '', 'width:36px;height:36px;object-fit:contain;display:block;');
     return `<div class="alchemy-guide-product alchemy-guide-product--zero">
       <div class="alchemy-guide-product-head">
         <div class="alchemy-guide-product-icon">${headImg}</div>
@@ -7347,7 +7347,7 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
       </div>`
     );
   });
-  const img = buildImageTag(finalName, '', 'width:36px;height:36px;object-fit:contain;display:block;');
+  const img = buildImageTag(finalName, '', 'width:28px;height:28px;object-fit:contain;display:block;');
   const sell = getAlchemyBoostedSellPriceGold(recipe);
   const sellLine =
     sell != null && copies > 0
@@ -7361,7 +7361,7 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
       ${sellLine}
     </div></div>`);
   const stepsVerticalHtml = stepParts.join('');
-  const headImg = buildImageTag(finalName, '', 'width:44px;height:44px;object-fit:contain;display:block;');
+  const headImg = buildImageTag(finalName, '', 'width:36px;height:36px;object-fit:contain;display:block;');
   return `<div class="alchemy-guide-product">
     <div class="alchemy-guide-product-head">
       <div class="alchemy-guide-product-icon">${headImg}</div>
