@@ -6712,17 +6712,25 @@ function buildAlchemySummaryStageGridHTML(directInputs, qtyMode) {
         <div class="alchemy-summary-popover" aria-hidden="true"><div class="alchemy-summary-popover-inner">${pop}</div></div>
       </div>`;
   };
-  return cols
-    .map((col) => {
-      const sorted = Object.entries(col.obj).sort((a, b) => a[0].localeCompare(b[0], 'ko'));
-      if (!sorted.length) return '';
-      return `<div class="alchemy-summary-stage-cat-block">
+  const renderCol = (col) => {
+    const sorted = Object.entries(col.obj).sort((a, b) => a[0].localeCompare(b[0], 'ko'));
+    if (!sorted.length) return '';
+    return `<div class="alchemy-summary-stage-cat-block">
         <div class="alchemy-summary-stage-cat-heading">${col.title}</div>
         <div class="alchemy-summary-stage-grid">${sorted.map(renderCard).join('')}</div>
       </div>`;
+  };
+  return partitionAlchemyChainByStarTier(directInputs)
+    .map((tier) => {
+      const inner = tier.cols.map(renderCol).filter(Boolean).join('');
+      if (!inner) return '';
+      return `<div class="alchemy-star-tier-block">
+        <div class="alchemy-star-tier-heading">${tier.title}</div>
+        ${inner}
+      </div>`;
     })
     .filter(Boolean)
-    .join('');
+    .join('');    .join('');
 }
 
 function buildAlchemySummaryStageViewsHTML(directInputs, qtyMode) {
