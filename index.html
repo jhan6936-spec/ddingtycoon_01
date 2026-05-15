@@ -3628,11 +3628,9 @@
       text-overflow: ellipsis;
     }
     .alchemy-guide-node-divider {
-      width: 100%;
+      align-self: stretch;
       height: 1px;
-      margin: 4px 5px;
-      max-width: calc(100% - 10px);
-      align-self: center;
+      margin: 4px 6px;
       background: rgba(74, 107, 130, 0.55);
       flex-shrink: 0;
     }
@@ -3648,6 +3646,7 @@
       display: -webkit-box;
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 2;
+      line-clamp: 2;
       overflow: hidden;
     }
     .alchemy-guide-empty {
@@ -7394,7 +7393,7 @@ function alchemyGuideColInnerHtml(map) {
   }
   return `<div class="alchemy-guide-node-row">${entries
     .map(([nm, q]) => {
-      const img = buildImageTag(nm, '', 'width:22px;height:22px;object-fit:contain;display:block;');
+      const img = buildImageTag(nm, '', 'width:20px;height:20px;object-fit:contain;display:block;');
       const qdisp = formatWarehouseStackCount(Math.ceil(Number(q) || 0));
       return `<div class="alchemy-guide-node" title="${escapeHtml(nm)}"><div class="alchemy-guide-node-icon">${img}</div><div class="alchemy-guide-node-stack"><div class="alchemy-guide-node-qty">${escapeHtml(qdisp)}</div><div class="alchemy-guide-node-divider" aria-hidden="true"></div><div class="alchemy-guide-node-name">${escapeHtml(nm)}</div></div></div>`;
     })
