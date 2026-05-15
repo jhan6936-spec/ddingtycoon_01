@@ -7274,6 +7274,153 @@ function greedyCraftFinalCounts(recipeNames, inv, options = {}) {
   return { counts, diluentCount };
 }
 
+const _lpMatKeys = new Map();
+let _lpMatSeq = 0;
+function lpMaterialKey(name) {
+  const k = String(name || '');
+  if (!_lpMatKeys.has(k)) _lpMatKeys.set(k, 'm' + _lpMatSeq++);
+  return _lpMatKeys.get(k);
+}
+
+function buildFinalProductLeafNeeds(productName) {
+  const needs = {};
+  const recipe = data.recipes.find((r) => r.name === productName);
+  if (!recipe || !recipe.inputs) return needs;
+  const opts = { skipShellfishTierConvert: true };
+  for (const inp of recipe.inputs) {
+    accumulateCraftTree(inp.name, inp.count || 0, needs, opts);
+  }
+  return needs;
+}
+
+function packAlchemyPlanResult(counts) {
+  const plan1 = Object.fromEntries(FINAL_GROUP1.map((n) => [n, counts[n] || 0]));
+  const plan2 = Object.fromEntries(FINAL_GROUP2.map((n) => [n, counts[n] || 0]));
+  const plan3 = Object.fromEntries(FINAL_GROUP3.map((n) => [n, counts[n] || 0]));
+  const diluentCount = Math.max(0, Math.floor(Number(counts['추출된 희석액']) || 0));
+  return { plans: [plan1, plan2, plan3], diluentCount };
+}
+
+function alchemyPlanTotalGold(packed, effects) {
+  return (
+    sumFinalPlanGold(packed.plans[0], effects).boosted +
+    sumFinalPlanGold(packed.plans[1], effects).boosted +
+    sumFinalPlanGold(packed.plans[2], effects).boosted +
+    sumFinalPlanGold({ '추출된 희석액': packed.diluentCount }, effects).boosted
+  );
+}
+
+function optimizeAlchemyPlanGreedy(inv) {
+  const tierGroups = [{ names: FINAL_GROUP1 }, { names: FINAL_GROUP2 }, { names: FINAL_GROUP3 }];
+  const permutations = [
+    [0, 1, 2],
+    [0, 2, 1],
+    [1, 0, 2],
+    [1, 2, 0],
+    [2, 0, 1],
+    [2, 1, 0],
+  ];
+  const effects = getExpertEffects();
+  let best = packAlchemyPlanResult({});
+  let bestGold = -1;
+
+  function tryTierOrder(order, srcInv) {
+    const invCopy = { ...srcInv };
+    const merged = {};
+    let dCount = 0;
+    for (const idx of order) {
+      const { counts, diluentCount: dPart } = greedyCraftFinalCounts(tierGroups[idx].names, invCopy, {
+        includeDiluentCandidate: true,
+      });
+      Object.assign(merged, counts);
+      dCount += dPart;
+    }
+    merged['추출된 희석액'] = dCount;
+    return packAlchemyPlanResult(merged);
+  }
+
+  for (const perm of permutations) {
+    const packed = tryTierOrder(perm, inv);
+    const gold = alchemyPlanTotalGold(packed, effects);
+    if (gold > bestGold) {
+      bestGold = gold;
+      best = packed;
+    }
+  }
+
+  const invGlobal = { ...inv };
+  const allFinals = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3];
+  const { counts, diluentCount } = greedyCraftFinalCounts(allFinals, invGlobal, {
+    includeDiluentCandidate: true,
+  });
+  const globalPacked = packAlchemyPlanResult({ ...counts, '추출된 희석액': diluentCount });
+  const globalGold = alchemyPlanTotalGold(globalPacked, effects);
+  if (globalGold > bestGold) return globalPacked;
+  return best;
+}
+
+function optimizeAlchemyPlanILP(inv) {
+  _lpMatKeys.clear();
+  _lpMatSeq = 0;
+  const products = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'];
+  const varIds = products.map((_, i) => 'v' + i);
+  const needsList = products.map((name) => buildFinalProductLeafNeeds(name));
+  const allMats = new Set();
+  needsList.forEach((needs) => Object.keys(needs).forEach((m) => allMats.add(m)));
+
+  const constraints = {};
+  allMats.forEach((m) => {
+    constraints[lpMaterialKey(m)] = { max: Math.max(0, Number(inv[m]) || 0) };
+  });
+
+  const variables = {};
+  const ints = {};
+  products.forEach((name, i) => {
+    const vid = varIds[i];
+    const recipe = data.recipes.find((r) => r.name === name);
+    variables[vid] = { revenue: getAlchemyBoostedSellPriceGold(recipe) || 0 };
+    Object.entries(needsList[i]).forEach(([mat, cnt]) => {
+      const c = Number(cnt);
+      if (c > 0) variables[vid][lpMaterialKey(mat)] = c;
+    });
+    ints[vid] = 1;
+  });
+
+  if (typeof solver === 'undefined' || !solver || typeof solver.Solve !== 'function') {
+    return null;
+  }
+  if (!Object.keys(constraints).length) {
+    return packAlchemyPlanResult(Object.fromEntries(products.map((n) => [n, 0])));
+  }
+
+  try {
+    const result = solver.Solve({
+      optimize: 'revenue',
+      opType: 'max',
+      constraints,
+      variables,
+      ints,
+    });
+    if (!result || result.feasible === false) return null;
+    const counts = {};
+    products.forEach((name, i) => {
+      counts[name] = Math.max(0, Math.floor(Number(result[varIds[i]]) || 0));
+    });
+    return packAlchemyPlanResult(counts);
+  } catch (e) {
+    console.warn('[alchemy ILP]', e);
+    return null;
+  }
+}
+
+function optimizeAlchemyPlan(inv, effects) {
+  const ilp = optimizeAlchemyPlanILP(inv);
+  const greedy = optimizeAlchemyPlanGreedy(inv);
+  if (!ilp) return greedy;
+  if (!greedy) return ilp;
+  return alchemyPlanTotalGold(ilp, effects) >= alchemyPlanTotalGold(greedy, effects) ? ilp : greedy;
+}
+
 function renderTriFinalPlan(title, orderedNames, counts) {
   const effects = getExpertEffects();
   const mult = 1 + effects.alchemyPriceBoost / 100;
