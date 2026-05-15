@@ -7279,12 +7279,10 @@ function alchemyGuideSumTierCraftSec(layerMap) {
   return t;
 }
 
-function getAlchemyGuideTargetCopies() {
-  const el = document.getElementById('alchemyGuideCopiesInput');
-  let n = Math.max(1, parseInt(String(el && el.value), 10) || 1);
-  if (!Number.isFinite(n)) n = 1;
-  if (n > 9999) n = 9999;
-  return n;
+function getAlchemyGuideRecipeCopies(recipeName) {
+  if (!lastAlchemyPlanCountsByName) return 0;
+  const v = lastAlchemyPlanCountsByName[recipeName];
+  return Math.max(0, Math.floor(Number(v) || 0));
 }
 
 function alchemyGuideColInnerHtml(map) {
@@ -7294,7 +7292,7 @@ function alchemyGuideColInnerHtml(map) {
   if (!entries.length) return '<div class="alchemy-guide-empty">—</div>';
   return `<div class="alchemy-guide-lines">${entries
     .map(([nm, q]) => {
-      const img = buildImageTag(nm, '', 'width:26px;height:26px;object-fit:contain;display:block;');
+      const img = buildImageTag(nm, '', 'width:30px;height:30px;object-fit:contain;display:block;');
       const qdisp = formatWarehouseStackCount(Math.ceil(Number(q) || 0));
       return `<div class="alchemy-guide-line"><span class="alchemy-guide-line-icon">${img}</span><span class="alchemy-guide-line-name">${escapeHtml(nm)}</span><span class="alchemy-guide-line-qty">${escapeHtml(qdisp)}</span></div>`;
     })
@@ -7307,6 +7305,19 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
     return `<div class="alchemy-guide-product alchemy-guide-product--error">
       <h3 class="alchemy-guide-product-title">${escapeHtml(finalName)}</h3>
       <p class="alchemy-guide-missing">레시피 데이터를 찾을 수 없습니다.</p>
+    </div>`;
+  }
+  if (copies <= 0) {
+    const headImg = buildImageTag(finalName, '', 'width:44px;height:44px;object-fit:contain;display:block;');
+    return `<div class="alchemy-guide-product alchemy-guide-product--zero">
+      <div class="alchemy-guide-product-head">
+        <div class="alchemy-guide-product-icon">${headImg}</div>
+        <div class="alchemy-guide-product-meta">
+          <h3 class="alchemy-guide-product-title">${escapeHtml(finalName)}</h3>
+          <p class="alchemy-guide-product-stats">제작 추천 <strong>0개</strong></p>
+        </div>
+      </div>
+      <p class="alchemy-guide-zero-note">이번 추천에서는 제작되지 않습니다.</p>
     </div>`;
   }
   const stages = alchemyGuideBuildStages(recipe, copies);
@@ -7336,7 +7347,7 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
       </div>`
     );
   });
-  const img = buildImageTag(finalName, '', 'width:32px;height:32px;object-fit:contain;display:block;');
+  const img = buildImageTag(finalName, '', 'width:36px;height:36px;object-fit:contain;display:block;');
   const sell = getAlchemyBoostedSellPriceGold(recipe);
   const sellLine =
     sell != null && copies > 0
@@ -7345,18 +7356,18 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
   stepParts.push(`<div class="alchemy-guide-timeline-final-wrap"><div class="alchemy-guide-col alchemy-guide-col--final">
       <div class="alchemy-guide-step-label alchemy-guide-step-label--final">최종 연성</div>
       <div class="alchemy-guide-final-row">${img}<span>${escapeHtml(finalName)}</span></div>
-      <div class="alchemy-guide-final-qty">목표 ${formatWarehouseStackCount(copies)}</div>
+      <div class="alchemy-guide-final-qty">제작 추천 ${formatWarehouseStackCount(copies)}</div>
       <div class="alchemy-guide-time">합산 기본 제작 시간(참고): <strong>${escapeHtml(formatGuideDurationSec(totalSec))}</strong></div>
       ${sellLine}
     </div></div>`);
   const stepsVerticalHtml = stepParts.join('');
-  const headImg = buildImageTag(finalName, '', 'width:40px;height:40px;object-fit:contain;display:block;');
+  const headImg = buildImageTag(finalName, '', 'width:44px;height:44px;object-fit:contain;display:block;');
   return `<div class="alchemy-guide-product">
     <div class="alchemy-guide-product-head">
       <div class="alchemy-guide-product-icon">${headImg}</div>
       <div class="alchemy-guide-product-meta">
         <h3 class="alchemy-guide-product-title">${escapeHtml(finalName)}</h3>
-        <p class="alchemy-guide-product-stats">목표 <strong>${formatWarehouseStackCount(copies)}</strong> · 합산 기본 시간 <strong>${escapeHtml(formatGuideDurationSec(totalSec))}</strong></p>
+        <p class="alchemy-guide-product-stats">제작 추천 <strong>${formatWarehouseStackCount(copies)}</strong> · 합산 기본 시간 <strong>${escapeHtml(formatGuideDurationSec(totalSec))}</strong></p>
       </div>
     </div>
     <div class="alchemy-guide-timeline">${stepsVerticalHtml}</div>
@@ -7366,20 +7377,21 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
 function renderAlchemyCraftGuideBody() {
   const body = document.getElementById('alchemyCraftGuideBody');
   if (!body) return;
-  const copies = getAlchemyGuideTargetCopies();
+  if (!lastAlchemyPlanCountsByName) {
+    body.innerHTML = `<div class="alchemy-guide-lead-box alchemy-guide-lead-box--solo"><p class="alchemy-guide-lead">재료 창고에 수량을 입력한 뒤 <strong>연금품 계산</strong>이 실행되면, 위 <strong>제작 추천</strong> 수량 기준으로 가이드가 채워집니다.</p></div>`;
+    return;
+  }
   const targets = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'];
-  const blocks = targets.map((nm) => renderOneAlchemyGuideBlock(nm, copies)).join('');
+  const blocks = targets.map((nm) => renderOneAlchemyGuideBlock(nm, getAlchemyGuideRecipeCopies(nm))).join('');
   body.innerHTML = `
     <div class="alchemy-guide-lead-box">
-      <p class="alchemy-guide-lead">각 카드는 <strong>목표 ${copies.toLocaleString()}개</strong> 제작 기준으로 중간 연금 재료를 한 단계씩 아래로 펼친 목록입니다. 재료는 아이콘 · 이름 · 수량 순으로 정렬되어 있습니다.</p>
+      <p class="alchemy-guide-lead">각 카드의 수량은 현재 화면의 <strong>제작 추천</strong>과 동일합니다. 창고나 전문가 설정을 바꾼 뒤에는 연금품 계산을 한 번 더 돌리면 반영됩니다.</p>
     </div>
     ${blocks}
   `;
 }
 
 function openAlchemyCraftGuide() {
-  const inp = document.getElementById('alchemyGuideCopiesInput');
-  if (inp) inp.value = '1';
   renderAlchemyCraftGuideBody();
   const mod = document.getElementById('alchemyCraftGuideModal');
   if (mod) mod.classList.add('open');
