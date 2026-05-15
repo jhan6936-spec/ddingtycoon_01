@@ -6878,14 +6878,14 @@ function buildAlchemySummaryMaterialSectionsHTML(planEntries, qtyMode) {
   const m = qtyMode != null ? qtyMode : alchemySummaryQtyMode;
   const tiers = aggregatePlanLeafMaterialsByStarTier(planEntries);
   if (!tiers.length) {
-    return '<motion.div style="font-size:12px;color:#778899;padding:8px 0;">제작 추천 수량이 없어 표시할 재료가 없습니다.</motion.div>';
+    return '<div style="font-size:12px;color:#778899;padding:8px 0;">제작 추천 수량이 없어 표시할 재료가 없습니다.</div>';
   }
   return tiers
     .map((tier) => {
       const hasShell = Object.values(tier.shell).some((v) => v > 0);
       const hasVanilla = Object.values(tier.vanilla).some((v) => v > 0);
       const shellBlock = hasShell
-        ? `<motion.div class="alchemy-mat-subsection">
+        ? `<div class="alchemy-mat-subsection">
         <h5 class="alchemy-mat-subsection-title">어패류</h5>
         ${renderShellfishTiersHTML(tier.shell, m)}
       </motion.div>`
