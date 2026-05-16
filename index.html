@@ -4491,7 +4491,10 @@
   <div class="patch-modal-card alchemy-history-modal-card" onclick="event.stopPropagation()">
     <div class="patch-modal-header">
       <div class="patch-modal-title">연금품 제작 기록</div>
-      <button class="patch-close-btn" type="button" onclick="closeAlchemyCraftHistory()">닫기</button>
+      <div class="alchemy-history-header-actions">
+        <button class="patch-close-btn" type="button" id="alchemyHistoryDeleteBtn" onclick="handleAlchemyHistoryDeleteButton()">삭제</button>
+        <button class="patch-close-btn" type="button" onclick="closeAlchemyCraftHistory()">닫기</button>
+      </div>
     </div>
     <div id="alchemyCraftHistoryBody" class="patch-modal-body"></div>
   </div>
