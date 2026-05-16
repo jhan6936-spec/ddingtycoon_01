@@ -8326,6 +8326,9 @@ function renderStaminaPlan() {
   const expectedExtraFish = gathers * (engraving.fishLuckChance / 100);
   const expectedWhaleBrokenShell = gathers * engraving.whaleBrokenShellExpected;
   const star3Chance = Math.min(100, 10 + (expertMeta.starshell.values[expertState.starshell] || 0));
+  let staminaTalk = '오늘 하루치는 다 하시는거겠죠?!.';
+  if (staminaRaw > 5000) staminaTalk = '잠은... 자시면서 하시는거죠?';
+  else if (staminaRaw > 3000) staminaTalk = '오~ 돈 좀 있으신가봐요?';
   const rows = SHELLFISH_NAMES.map((name, idx) => {
     const useStamina = baseAlloc[idx];
     const localGathers = Math.floor(useStamina / STAMINA_PER_GATHER);
@@ -8344,6 +8347,7 @@ function renderStaminaPlan() {
     <div style="font-size:14px; font-weight:900; color:#f2f2f2; margin-bottom:10px; padding:12px; background:#1a1a1a; border-radius:8px; text-align:center;">⚡ 총 채집 가능: ${gathers}회 (스태미나 15 소모 기준)</div>
     <div style="font-size:12px; color:#9eb2c8; margin-bottom:10px; text-align:center;">세이지 드롭 ${effectiveDrops.toFixed(2)}개/회 (심해채집꾼+각인 반영), 조개 등장 ${shellChanceTotal.toFixed(1)}%, 어획력 ${fishingPowerTotal}, 3성 확률 ${star3Chance.toFixed(1)}%</div>
     <div style="font-size:11px; color:#7f99b6; margin-bottom:10px; text-align:center;">각인 기대값: 물고기 +${expectedExtraFish.toFixed(2)}회분, 정령고래 깨진 조개껍데기 +${expectedWhaleBrokenShell.toFixed(2)}개 (룰렛 포함 기대 어패는 드롭/회에 반영)</div>
+    <div class="stamina-talk-box">${staminaTalk}</div>
     <div style="background:#1f1f1f; border:1px solid #2a2a2a; border-radius:10px; overflow:hidden;">
       <div style="display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:10px; padding:10px; background:#262626; color:#9ea7b3; font-size:12px; font-weight:900;">
         <div>품목 이름</div><div>스태미나</div><div>채집 횟수</div>
