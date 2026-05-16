@@ -7890,6 +7890,49 @@ function formatGuideDurationSec(totalSec) {
   return `${sec}초`;
 }
 
+function getAlchemyTimeTalk(adjustedSec) {
+  const s = Math.max(0, Math.floor(Number(adjustedSec) || 0));
+  if (s <= (6 * 3600 + 30 * 60)) return '오늘도 수고하십니다!\n연금술사님!';
+  if (s <= (12 * 3600)) return '조금은 쉬시면서 하는 것도 좋지 않을까요?';
+  if (s <= (18 * 3600)) return '잠시 돌려두기만 하시고\n쉬고 오시는 건 어떨까요?';
+  return '잠은 주무시면서 하세요..\n그러다가 쓰러지셔요..';
+}
+
+function calculateAlchemyProductBaseTimeSec(finalName, copies) {
+  const n = Math.max(0, Number(copies) || 0);
+  if (n <= 0) return 0;
+  const recipe = data.recipes.find((r) => r.name === finalName);
+  if (!recipe || !recipe.inputs || !recipe.inputs.length) return 0;
+  const stagesRaw = alchemyGuideBuildStages(recipe, n);
+  let totalSec = getBaseAlchemyTimeSec(finalName) * n;
+  for (let i = 0; i < stagesRaw.length - 1; i++) {
+    totalSec += alchemyGuideSumTierCraftSec(stagesRaw[i]);
+  }
+  return totalSec;
+}
+
+function calculateAlchemyPlanBaseTimeSec(planEntries) {
+  return (planEntries || []).reduce((sum, [name, count]) => sum + calculateAlchemyProductBaseTimeSec(name, count), 0);
+}
+
+function renderAlchemyTimeSummaryBox(baseSec, adjustedSec) {
+  return `
+    <div class="alchemy-time-summary-box">
+      <div class="alchemy-time-grid">
+        <div class="alchemy-time-card">
+          <div class="alchemy-time-label">기본 제작 시간</div>
+          <div class="alchemy-time-value">${escapeHtml(formatGuideDurationSec(baseSec))}</div>
+        </div>
+        <div class="alchemy-time-card">
+          <div class="alchemy-time-label">전문가 적용 제작 시간</div>
+          <div class="alchemy-time-value">${escapeHtml(formatGuideDurationSec(adjustedSec))}</div>
+        </div>
+      </div>
+      <div class="alchemy-time-talk">${escapeHtml(getAlchemyTimeTalk(adjustedSec))}</div>
+    </div>
+  `;
+}
+
 function alchemyGuideMergeQty(map, name, add) {
   map[name] = (map[name] || 0) + add;
 }
