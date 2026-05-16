@@ -9108,9 +9108,29 @@ function saveAlchemyCraftHistoryList(list) {
   localStorage.setItem(STORAGE_KEY_ALCHEMY_HISTORY, JSON.stringify((list || []).slice(0, 100)));
 }
 
+function getAlchemyHistoryRecordId(record, idx) {
+  return record && record.id ? String(record.id) : `alchemy_legacy_${idx}`;
+}
+
+function getAlchemyHistoryDuplicateKey(record) {
+  const counts = record && record.counts ? record.counts : {};
+  const names = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'];
+  return JSON.stringify({
+    counts: names.map((name) => [name, Number(counts[name] || 0)]),
+    totalAdjustedTimeSec: Math.round(Number(record && record.totalAdjustedTimeSec || 0)),
+    totalBoosted: Math.round(Number(record && record.totalBoosted || 0)),
+  });
+}
+
 function saveAlchemyCraftHistory() {
   if (!lastAlchemyPlanSnapshot) {
     alert('저장할 연금품 계산 결과가 없습니다. 먼저 연금품 계산을 실행해 주세요.');
+    return;
+  }
+  const list = loadAlchemyCraftHistory();
+  const nextKey = getAlchemyHistoryDuplicateKey(lastAlchemyPlanSnapshot);
+  if (list.some((record) => getAlchemyHistoryDuplicateKey(record) === nextKey)) {
+    alert('이미 저장된 연금품 제작 기록입니다.');
     return;
   }
   const record = {
@@ -9118,7 +9138,6 @@ function saveAlchemyCraftHistory() {
     id: `alchemy_${Date.now()}`,
     savedAt: new Date().toISOString(),
   };
-  const list = loadAlchemyCraftHistory();
   list.unshift(record);
   saveAlchemyCraftHistoryList(list);
   alert('연금품 제작 기록을 저장했습니다.');
@@ -9140,11 +9159,19 @@ function renderAlchemyCraftHistoryBody() {
   const body = document.getElementById('alchemyCraftHistoryBody');
   if (!body) return;
   const list = loadAlchemyCraftHistory();
+  updateAlchemyHistoryDeleteUi();
   if (!list.length) {
     body.innerHTML = '<div class="no-result">저장된 연금품 제작 기록이 없습니다.</div>';
     return;
   }
-  body.innerHTML = `<div class="alchemy-history-list">${list.map((record, idx) => {
+  const toolbar = alchemyHistoryDeleteMode
+    ? `<div class="alchemy-history-delete-toolbar">
+        <button type="button" class="alchemy-history-select-all" onclick="selectAllAlchemyHistory()">모두 선택</button>
+        <span>선택됨 ${alchemyHistorySelectedIds.size.toLocaleString()}개</span>
+      </div>`
+    : '';
+  body.innerHTML = `${toolbar}<div class="alchemy-history-list">${list.map((record, idx) => {
+    const recordId = getAlchemyHistoryRecordId(record, idx);
     const counts = record.counts || {};
     const products = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액']
       .filter((name) => (counts[name] || 0) > 0)
@@ -9152,7 +9179,10 @@ function renderAlchemyCraftHistoryBody() {
       .join('');
     return `<div class="alchemy-history-item" data-history-idx="${idx}">
       <div class="alchemy-history-summary">
-        <div><strong>${escapeHtml(formatAlchemyHistoryDate(record.savedAt))}</strong></div>
+        <div class="alchemy-history-date-cell">
+          ${alchemyHistoryDeleteMode ? `<input type="checkbox" class="alchemy-history-check" onchange="toggleAlchemyHistorySelected('${escapeHtml(recordId)}', this.checked)" ${alchemyHistorySelectedIds.has(recordId) ? 'checked' : ''} aria-label="삭제할 기록 선택">` : ''}
+          <strong>${escapeHtml(formatAlchemyHistoryDate(record.savedAt))}</strong>
+        </div>
         <div>제작 시간 <strong style="color:#8fd5ff;">${escapeHtml(formatGuideDurationSec(record.totalAdjustedTimeSec || 0))}</strong></div>
         <div>판매가 <strong style="color:#9ecb7a;">${Number(record.totalBoosted || 0).toLocaleString()}G</strong></div>
         <button type="button" class="alchemy-history-toggle" onclick="toggleAlchemyHistoryDetail(${idx})" aria-label="상세 보기">▼</button>
@@ -9167,13 +9197,60 @@ function toggleAlchemyHistoryDetail(idx) {
   if (item) item.classList.toggle('open');
 }
 
+function updateAlchemyHistoryDeleteUi() {
+  const modalCard = document.querySelector('#alchemyCraftHistoryModal .alchemy-history-modal-card');
+  if (modalCard) modalCard.classList.toggle('delete-mode', alchemyHistoryDeleteMode);
+  const deleteBtn = document.getElementById('alchemyHistoryDeleteBtn');
+  if (deleteBtn) {
+    deleteBtn.textContent = alchemyHistoryDeleteMode ? `선택 삭제${alchemyHistorySelectedIds.size ? ` (${alchemyHistorySelectedIds.size})` : ''}` : '삭제';
+  }
+}
+
+function toggleAlchemyHistorySelected(recordId, checked) {
+  if (checked) {
+    alchemyHistorySelectedIds.add(recordId);
+  } else {
+    alchemyHistorySelectedIds.delete(recordId);
+  }
+  renderAlchemyCraftHistoryBody();
+}
+
+function selectAllAlchemyHistory() {
+  const list = loadAlchemyCraftHistory();
+  list.forEach((record, idx) => alchemyHistorySelectedIds.add(getAlchemyHistoryRecordId(record, idx)));
+  renderAlchemyCraftHistoryBody();
+}
+
+function handleAlchemyHistoryDeleteButton() {
+  if (!alchemyHistoryDeleteMode) {
+    alchemyHistoryDeleteMode = true;
+    renderAlchemyCraftHistoryBody();
+    return;
+  }
+  if (!alchemyHistorySelectedIds.size) {
+    alert('삭제할 연금품 제작 기록을 선택해 주세요.');
+    return;
+  }
+  if (!confirm(`선택한 ${alchemyHistorySelectedIds.size.toLocaleString()}개의 제작 기록을 삭제할까요?`)) return;
+  const nextList = loadAlchemyCraftHistory().filter((record, idx) => !alchemyHistorySelectedIds.has(getAlchemyHistoryRecordId(record, idx)));
+  saveAlchemyCraftHistoryList(nextList);
+  alchemyHistorySelectedIds.clear();
+  alchemyHistoryDeleteMode = false;
+  renderAlchemyCraftHistoryBody();
+}
+
 function openAlchemyCraftHistory() {
+  alchemyHistoryDeleteMode = false;
+  alchemyHistorySelectedIds.clear();
   renderAlchemyCraftHistoryBody();
   const modal = document.getElementById('alchemyCraftHistoryModal');
   if (modal) modal.classList.add('open');
 }
 
 function closeAlchemyCraftHistory() {
+  alchemyHistoryDeleteMode = false;
+  alchemyHistorySelectedIds.clear();
+  updateAlchemyHistoryDeleteUi();
   const modal = document.getElementById('alchemyCraftHistoryModal');
   if (modal) modal.classList.remove('open');
 }
