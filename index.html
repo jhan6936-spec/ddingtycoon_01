@@ -7204,8 +7204,9 @@ function deductCraftTree(name, count, inv, options = {}) {
       inv[name] = (inv[name] || 0) - count;
       return;
     }
+    const craftCount = count / getAlchemyMaterialOutputCount(name);
     for (const inp of recipe.inputs) {
-      deductCraftTree(inp.name, inp.count * count, inv, options);
+      deductCraftTree(inp.name, inp.count * craftCount, inv, options);
     }
   } else {
     inv[name] = (inv[name] || 0) - count;
@@ -7222,8 +7223,9 @@ function accumulateCraftTree(name, count, accum, options = {}) {
       accum[name] = (accum[name] || 0) + count;
       return;
     }
+    const craftCount = count / getAlchemyMaterialOutputCount(name);
     for (const inp of recipe.inputs) {
-      accumulateCraftTree(inp.name, inp.count * count, accum, options);
+      accumulateCraftTree(inp.name, inp.count * craftCount, accum, options);
     }
   } else {
     accum[name] = (accum[name] || 0) + count;
