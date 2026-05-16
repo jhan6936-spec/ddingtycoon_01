@@ -4300,7 +4300,7 @@
 // ===== 데이터 =====
 const data = {
   materials: {
-    // 어패류 승급 (1★ 3개 → 2★ 1개, 연금 최적화·ILP에서도 동일 비율)
+    // 어패류 승급 조합법(참고용). 연금 최적화는 승급 없이 성급별 재고를 그대로 사용한다.
     "굴 ★★": { inputs: [{ name: "굴 ★", count: 3 }] },
     "소라 ★★": { inputs: [{ name: "소라 ★", count: 3 }] },
     "문어 ★★": { inputs: [{ name: "문어 ★", count: 3 }] },
@@ -8280,7 +8280,7 @@ function calculateMaxCraft(recipe, inventory, memo = {}, options = {}) {
 
     if (input.name in data.materials) {
       if (skipShell && SHELLFISH_PROMOTE_TWO_STAR.has(input.name)) {
-        /* 창고에 있는 2★만 사용 (1★ 3개→2★ 승급은 ILP에서만 반영) */
+        /* 창고에 있는 2★만 사용 (연금 최적화에서도 승급하지 않음) */
       } else {
         const materialRecipe = data.materials[input.name];
         const craftableFromRecipe = calculateMaxCraft(materialRecipe, inventory, memo, options);
@@ -8647,9 +8647,9 @@ function analyzeEfficiency() {
       <div style="font-weight:700;color:#b8c9d9;margin-bottom:6px;">계산 요약</div>
       <ul style="margin:0;padding-left:18px;">
         <li>어패류만 창고 수량 제한 · 바닐라·회 등 부재료는 충분하다고 가정</li>
-        <li>승급은 게임과 같이 <strong style="color:#b8c9d9;">1★ 3개→2★ 1개</strong>만 반영 (2★→3★ 승급 없음, 3★를 1★·2★ 연금에 넣지 않음)</li>
-        <li>1·2성 연금용 ★: 창고 ★ + ★★×3 (★★는 승급 역산만, 2성 중간재는 조합법대로 ★까지 전개)</li>
-        <li>3성 연금용 ★★★: 창고 ★★★만 사용 (아쿠아 펄스·나우틸러스·무저 등)</li>
+        <li>연금 최적화에서는 어패류를 승급하지 않고, 완제품 레시피가 요구하는 성급 재고를 그대로 사용</li>
+        <li>1성은 ★, 2성은 ★★, 3성은 ★★★ 어패류만 각각 차감 (★★를 ★×3으로 환산하지 않음)</li>
+        <li>희석액도 레시피에 들어가는 1성·2성·3성 재료를 각각 해당 성급 재고에서 차감</li>
       </ul>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;font-size:12px;color:#ddd;margin-bottom:8px;">
