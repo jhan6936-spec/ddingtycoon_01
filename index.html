@@ -4391,6 +4391,16 @@
   </div>
 </div>
 
+<div id="alchemyHistoryModal" class="patch-modal" onclick="closeAlchemyHistoryOnBackdrop(event)">
+  <div class="patch-modal-card" onclick="event.stopPropagation()">
+    <div class="patch-modal-header">
+      <div class="patch-modal-title">연금품 제작 기록</div>
+      <button class="patch-close-btn" type="button" onclick="closeAlchemyHistoryModal()">닫기</button>
+    </div>
+    <div id="alchemyHistoryBody" class="patch-modal-body"></div>
+  </div>
+</div>
+
 <!-- 공장 사진 확대 뷰어 -->
 <div class="viewer-overlay" id="factoryViewer" aria-hidden="true">
   <div class="viewer-dialog" role="dialog" aria-modal="true" aria-label="공장 사진 확대">
