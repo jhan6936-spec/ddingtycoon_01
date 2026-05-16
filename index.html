@@ -4578,6 +4578,21 @@ const SHELLFISH_PROMOTE_TWO_STAR_EQUIV = SHELLFISH_ONE_STAR_POOL_PER_TWO_STAR;
 const SHELLFISH_PROMOTE_TWO_STAR = new Set(['굴 ★★', '소라 ★★', '문어 ★★', '미역 ★★', '성게 ★★']);
 /** @deprecated 하위 호환 — 승급 대상 2★와 동일 집합 참조 */
 const SHELLFISH_DOWNGRADE_ONE_STAR = SHELLFISH_PROMOTE_TWO_STAR;
+const ALCHEMY_DOUBLE_OUTPUT_MATERIALS = new Set([
+  '수호의 정수 ★',
+  '파동의 정수 ★',
+  '혼란의 정수 ★',
+  '생명의 정수 ★',
+  '부식의 정수 ★',
+  '수호 에센스 ★★',
+  '파동 에센스 ★★',
+  '혼란 에센스 ★★',
+  '생명 에센스 ★★',
+  '부식 에센스 ★★',
+]);
+function getAlchemyMaterialOutputCount(name) {
+  return ALCHEMY_DOUBLE_OUTPUT_MATERIALS.has(name) ? 2 : 1;
+}
 const STAR_PROBS = { s1: 0.6, s2: 0.3, s3: 0.1 };
 const STAMINA_PER_GATHER = 15;
 const IMAGE_FOLDERS = ['../재료', '재료', '재료1', '재료 1', '재료2', '재료 2'];
