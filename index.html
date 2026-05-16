@@ -7571,27 +7571,60 @@ function optimizeAlchemyPlanILP(inv) {
   _lpMatSeq = 0;
   const products = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'];
   const varIds = products.map((_, i) => 'v' + i);
-  const needsList = products.map((name) => buildFinalProductLeafNeedsForOptimize(name));
-  const allMats = new Set();
-  needsList.forEach((needs) => Object.keys(needs).forEach((m) => allMats.add(m)));
+  const demandList = products.map((name) => buildFinalProductOptimizeDemand(name));
 
   const constraints = {};
   const variables = {};
   const ints = {};
 
-  allMats.forEach((m) => {
-    if (isShellfishStockName(m)) return;
-    const stock = Math.max(0, Number(inv[m]) || 0);
-    constraints[lpMaterialKey(m)] = {
-      max: Math.max(stock, ALCHEMY_PLAN_UNBOUNDED_STOCK),
-    };
-  });
+  function ensureUnboundedConstraint(mat) {
+    const key = lpMaterialKey(mat);
+    if (!constraints[key]) {
+      const stock = Math.max(0, Number(inv[mat]) || 0);
+      constraints[key] = { max: Math.max(stock, ALCHEMY_PLAN_UNBOUNDED_STOCK) };
+    }
+    return key;
+  }
+
+  function addMaterialUse(vid, mat, count) {
+    if (!count || count <= 0) return;
+    const key = isShellfishStockName(mat) ? lpMaterialKey(mat) : ensureUnboundedConstraint(mat);
+    variables[vid][key] = (variables[vid][key] || 0) + Number(count);
+  }
 
   products.forEach((name, i) => {
     const vid = varIds[i];
     const recipe = data.recipes.find((r) => r.name === name);
     variables[vid] = { revenue: getAlchemyBoostedSellPriceGold(recipe) || 0 };
     ints[vid] = 1;
+    Object.entries(demandList[i].directNeeds).forEach(([mat, count]) => {
+      addMaterialUse(vid, mat, count);
+    });
+  });
+
+  const doubleOutputNames = new Set();
+  demandList.forEach(({ doubleOutputNeeds }) => {
+    Object.keys(doubleOutputNeeds).forEach((name) => doubleOutputNames.add(name));
+  });
+
+  doubleOutputNames.forEach((matName) => {
+    const craftVid = `craft_${lpMaterialKey(matName)}`;
+    variables[craftVid] = { revenue: 0 };
+    ints[craftVid] = 1;
+
+    const outputKey = lpMaterialKey(`output:${matName}`);
+    constraints[outputKey] = { max: 0 };
+    variables[craftVid][outputKey] = -getAlchemyMaterialOutputCount(matName);
+
+    products.forEach((_, i) => {
+      const demand = demandList[i].doubleOutputNeeds[matName] || 0;
+      if (demand > 0) variables[varIds[i]][outputKey] = (variables[varIds[i]][outputKey] || 0) + demand;
+    });
+
+    const materialRecipe = data.materials[matName];
+    for (const inp of materialRecipe.inputs || []) {
+      addMaterialUse(craftVid, inp.name, inp.count || 0);
+    }
   });
 
   SHELLFISH_NAMES.forEach((species) => {
@@ -7607,14 +7640,6 @@ function optimizeAlchemyPlanILP(inv) {
     constraints[c1] = { max: s1 };
     constraints[c2] = { max: s2 };
     constraints[c3] = { max: s3 };
-
-    products.forEach((_, i) => {
-      const vid = varIds[i];
-      const needs = needsList[i];
-      if (needs[n1] > 0) variables[vid][c1] = (variables[vid][c1] || 0) + Number(needs[n1]);
-      if (needs[n2] > 0) variables[vid][c2] = (variables[vid][c2] || 0) + Number(needs[n2]);
-      if (needs[n3] > 0) variables[vid][c3] = (variables[vid][c3] || 0) + Number(needs[n3]);
-    });
   });
 
   if (typeof solver === 'undefined' || !solver || typeof solver.Solve !== 'function') {
