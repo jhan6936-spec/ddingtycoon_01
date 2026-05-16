@@ -8283,7 +8283,7 @@ function calculateMaxCraft(recipe, inventory, memo = {}, options = {}) {
       } else {
         const materialRecipe = data.materials[input.name];
         const craftableFromRecipe = calculateMaxCraft(materialRecipe, inventory, memo, options);
-        available += craftableFromRecipe;
+        available += craftableFromRecipe * getAlchemyMaterialOutputCount(input.name);
       }
     }
 
@@ -8313,7 +8313,8 @@ function calculateRequiredMaterials(recipe, count, visited = new Set()) {
     // 중간 재료를 만들 수 있는지 확인
     if (input.name in data.materials && !visited.has(input.name)) {
       visited.add(input.name);
-      const subRequired = calculateRequiredMaterials(data.materials[input.name], neededCount, visited);
+      const craftCount = neededCount / getAlchemyMaterialOutputCount(input.name);
+      const subRequired = calculateRequiredMaterials(data.materials[input.name], craftCount, visited);
       for (let [mat, matCount] of Object.entries(subRequired)) {
         if (!required[mat]) {
           required[mat] = 0;
