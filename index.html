@@ -6285,6 +6285,11 @@ function renderRecipes() {
       }
     }
     const priceEl = hidePrice ? '' : `<div class="recipe-card-price">${priceStr}</div>`;
+    const outputCount = getAlchemyMaterialOutputCount(recipe.name);
+    const outputEl =
+      outputCount > 1
+        ? `<div class="recipe-card-output" title="제작 1회당 결과 수량">제작 결과 ${outputCount}개</div>`
+        : '';
     
     let ingredientsHTML = '';
     if (inputs.length > 0) {
@@ -6301,7 +6306,7 @@ function renderRecipes() {
     card.innerHTML = `
       <div class="recipe-card-header">
         <div class="recipe-card-title">${withAlchemyImage(recipe.name)}</div>
-        ${priceEl}
+        ${outputEl || priceEl ? `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;">${outputEl}${priceEl}</div>` : ''}
       </div>
       <div class="recipe-card-body">
         <div class="recipe-section">
