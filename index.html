@@ -8759,6 +8759,7 @@ function analyzeEfficiency() {
   if (!hasItems) {
     lastAlchemySummaryData = null;
     lastAlchemyPlanCountsByName = null;
+    lastAlchemyPlanSnapshot = null;
     const al = document.getElementById('efficiencyContainerAlchemy');
     if (al) al.innerHTML = '<div class="no-result">재료 창고에 수량을 입력하면 연금품 계산이 표시됩니다</div>';
     renderCraftPricePanel(effects);
@@ -8819,6 +8820,7 @@ function analyzeEfficiency() {
   containerAlchemy.innerHTML = '';
   lastAlchemySummaryData = null;
   lastAlchemyPlanCountsByName = null;
+  lastAlchemyPlanSnapshot = null;
   if (containerCraftPrice) containerCraftPrice.innerHTML = '';
 
   const alchemyResults = results.filter(r => r.kind === 'alchemy');
@@ -8851,6 +8853,10 @@ function analyzeEfficiency() {
 
   const totalBase = g1.base + g2.base + g3.base + gD.base;
   const totalBoosted = g1.boosted + g2.boosted + g3.boosted + gD.boosted;
+  const allPlanCountsForTime = { ...plan1, ...plan2, ...plan3, '추출된 희석액': diluentCount };
+  const totalBaseTimeSec = getPlanFinalBaseTimeSec(allPlanCountsForTime);
+  const totalAdjustedTimeSec = getAdjustedAlchemyTimeSec(totalBaseTimeSec, effects);
+  const timeTalk = getAlchemyTimeTalk(totalAdjustedTimeSec);
   const revBox = document.createElement('div');
   revBox.style.marginBottom = '18px';
   revBox.style.padding = '12px 14px';
@@ -8896,14 +8902,34 @@ function analyzeEfficiency() {
     ${diluentRevNote}
   `;
   containerAlchemy.appendChild(revBox);
+
+  const timeBox = document.createElement('div');
+  timeBox.className = 'alchemy-time-box';
+  timeBox.innerHTML = `
+    <div class="alchemy-time-grid">
+      <div class="alchemy-time-chip"><span>기본 제작 시간</span><strong>${formatGuideDurationSec(totalBaseTimeSec)}</strong></div>
+      <div class="alchemy-time-chip"><span>전문가 적용 제작 시간</span><strong>${formatGuideDurationSec(totalAdjustedTimeSec)}</strong></div>
+    </div>
+    <div class="alchemy-time-talk">${timeTalk}</div>
+  `;
+  containerAlchemy.appendChild(timeBox);
   
   // 연금품 섹션 - 제작 추천 결과 기반으로 표시
-  const allPlanCounts = { ...plan1, ...plan2, ...plan3 };
-  allPlanCounts['추출된 희석액'] = diluentCount;
+  const allPlanCounts = { ...allPlanCountsForTime };
   lastAlchemyPlanCountsByName = {};
   [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'].forEach((name) => {
     lastAlchemyPlanCountsByName[name] = Math.max(0, Math.floor(Number(allPlanCounts[name]) || 0));
   });
+  lastAlchemyPlanSnapshot = {
+    savedAt: new Date().toISOString(),
+    counts: { ...lastAlchemyPlanCountsByName },
+    totalBase,
+    totalBoosted,
+    totalBaseTimeSec,
+    totalAdjustedTimeSec,
+    alchemyPriceBoost: effects.alchemyPriceBoost || 0,
+    timeReduce: effects.timeReduce || 0,
+  };
   const planEntries = Object.entries(allPlanCounts).filter(([, n]) => n > 0);
   if (planEntries.length > 0) {
     const alchemyTitle = document.createElement('div');
