@@ -8858,6 +8858,7 @@ function analyzeEfficiency() {
   if (!hasItems) {
     lastAlchemySummaryData = null;
     lastAlchemyPlanCountsByName = null;
+    lastAlchemyRecordSnapshot = null;
     const al = document.getElementById('efficiencyContainerAlchemy');
     if (al) al.innerHTML = '<div class="no-result">재료 창고에 수량을 입력하면 연금품 계산이 표시됩니다</div>';
     renderCraftPricePanel(effects);
@@ -8918,6 +8919,7 @@ function analyzeEfficiency() {
   containerAlchemy.innerHTML = '';
   lastAlchemySummaryData = null;
   lastAlchemyPlanCountsByName = null;
+  lastAlchemyRecordSnapshot = null;
   if (containerCraftPrice) containerCraftPrice.innerHTML = '';
 
   const alchemyResults = results.filter(r => r.kind === 'alchemy');
@@ -8933,6 +8935,11 @@ function analyzeEfficiency() {
   const g2 = sumFinalPlanGold(plan2, effects);
   const g3 = sumFinalPlanGold(plan3, effects);
   const gD = sumFinalPlanGold({ '추출된 희석액': diluentCount }, effects);
+  const allPlanCounts = { ...plan1, ...plan2, ...plan3 };
+  allPlanCounts['추출된 희석액'] = diluentCount;
+  const planEntries = Object.entries(allPlanCounts).filter(([, n]) => n > 0);
+  const totalBaseTimeSec = calculateAlchemyPlanBaseTimeSec(planEntries);
+  const totalAdjustedTimeSec = Math.max(0, totalBaseTimeSec * (1 - (effects.timeReduce || 0) / 100));
   const planWrap = document.createElement('div');
   planWrap.style.marginBottom = '18px';
   planWrap.style.padding = '14px';
