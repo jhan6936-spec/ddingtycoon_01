@@ -4630,11 +4630,13 @@ const STORAGE_KEY_STAMINA = 'thingta_stamina_v1';
 const STORAGE_KEY_WAREHOUSE_SET_VIEW = 'thingta_warehouse_set_view_v1';
 const STORAGE_KEY_ALCHEMY_SUMMARY_QTY = 'thingta_alchemy_summary_qty_mode_v1';
 const STORAGE_KEY_ALCHEMY_MAT_PANEL = 'thingta_alchemy_mat_panel_v1';
+const STORAGE_KEY_ALCHEMY_HISTORY = 'thingta_alchemy_craft_history_v1';
 
 /** 연금 합계 패널 마지막 데이터 (토글 시 재렌더) */
 let lastAlchemySummaryData = null;
 /** 제작 추천(효율) 기준 최종 9종 + 희석액 개수 — 제작 가이드와 동기 */
 let lastAlchemyPlanCountsByName = null;
+let lastAlchemyPlanSnapshot = null;
 /** 'setPiece' | 'boxSetPiece' — 세트/개 vs 상자/세트/개 */
 let alchemySummaryQtyMode = 'setPiece';
 /** 'none' | 'detail' | 'summary' — 재료 합계 패널 표시 방식 */
