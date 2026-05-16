@@ -2663,11 +2663,27 @@
     }
     .eff-alchemy-pane-actions {
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 8px;
       flex-shrink: 0;
+    }
+    .alchemy-action-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      width: 100%;
+    }
+    .alchemy-action-row--record {
+      padding-top: 2px;
+    }
+    @media (max-width: 719px) {
+      .alchemy-action-row {
+        justify-content: center;
+      }
     }
     .alchemy-time-summary-box {
       margin: -6px 0 18px;
