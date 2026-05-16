@@ -9002,15 +9002,23 @@ function analyzeEfficiency() {
     ${diluentRevNote}
   `;
   containerAlchemy.appendChild(revBox);
+
+  const timeBox = document.createElement('div');
+  timeBox.innerHTML = renderAlchemyTimeSummaryBox(totalBaseTimeSec, totalAdjustedTimeSec);
+  containerAlchemy.appendChild(timeBox.firstElementChild);
   
   // 연금품 섹션 - 제작 추천 결과 기반으로 표시
-  const allPlanCounts = { ...plan1, ...plan2, ...plan3 };
-  allPlanCounts['추출된 희석액'] = diluentCount;
   lastAlchemyPlanCountsByName = {};
   [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'].forEach((name) => {
     lastAlchemyPlanCountsByName[name] = Math.max(0, Math.floor(Number(allPlanCounts[name]) || 0));
   });
-  const planEntries = Object.entries(allPlanCounts).filter(([, n]) => n > 0);
+  lastAlchemyRecordSnapshot = {
+    totalBase,
+    totalBoosted,
+    baseSec: totalBaseTimeSec,
+    adjustedSec: totalAdjustedTimeSec,
+    counts: { ...lastAlchemyPlanCountsByName },
+  };
   if (planEntries.length > 0) {
     const alchemyTitle = document.createElement('div');
     alchemyTitle.style.fontSize = '14px';
