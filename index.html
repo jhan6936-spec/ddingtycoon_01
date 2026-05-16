@@ -8870,7 +8870,7 @@ function analyzeEfficiency() {
   const totalBase = g1.base + g2.base + g3.base + gD.base;
   const totalBoosted = g1.boosted + g2.boosted + g3.boosted + gD.boosted;
   const allPlanCountsForTime = { ...plan1, ...plan2, ...plan3, '추출된 희석액': diluentCount };
-  const totalBaseTimeSec = getPlanFinalBaseTimeSec(allPlanCountsForTime);
+  const totalBaseTimeSec = getPlanFullBaseTimeSec(allPlanCountsForTime);
   const totalAdjustedTimeSec = getAdjustedAlchemyTimeSec(totalBaseTimeSec, effects);
   const timeTalk = getAlchemyTimeTalk(totalAdjustedTimeSec);
   const revBox = document.createElement('div');
