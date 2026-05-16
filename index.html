@@ -9002,6 +9002,93 @@ function analyzeEfficiency() {
   renderStaminaPlan();
 }
 
+function loadAlchemyCraftHistory() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY_ALCHEMY_HISTORY) || '[]');
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (_) {
+    return [];
+  }
+}
+
+function saveAlchemyCraftHistoryList(list) {
+  localStorage.setItem(STORAGE_KEY_ALCHEMY_HISTORY, JSON.stringify((list || []).slice(0, 100)));
+}
+
+function saveAlchemyCraftHistory() {
+  if (!lastAlchemyPlanSnapshot) {
+    alert('저장할 연금품 계산 결과가 없습니다. 먼저 연금품 계산을 실행해 주세요.');
+    return;
+  }
+  const record = {
+    ...lastAlchemyPlanSnapshot,
+    id: `alchemy_${Date.now()}`,
+    savedAt: new Date().toISOString(),
+  };
+  const list = loadAlchemyCraftHistory();
+  list.unshift(record);
+  saveAlchemyCraftHistoryList(list);
+  alert('연금품 제작 기록을 저장했습니다.');
+}
+
+function formatAlchemyHistoryDate(iso) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '날짜 없음';
+  return d.toLocaleString('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function renderAlchemyCraftHistoryBody() {
+  const body = document.getElementById('alchemyCraftHistoryBody');
+  if (!body) return;
+  const list = loadAlchemyCraftHistory();
+  if (!list.length) {
+    body.innerHTML = '<div class="no-result">저장된 연금품 제작 기록이 없습니다.</div>';
+    return;
+  }
+  body.innerHTML = `<div class="alchemy-history-list">${list.map((record, idx) => {
+    const counts = record.counts || {};
+    const products = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액']
+      .filter((name) => (counts[name] || 0) > 0)
+      .map((name) => `<div class="alchemy-history-product"><span>${escapeHtml(name)}</span><strong>${Number(counts[name] || 0).toLocaleString()}개</strong></div>`)
+      .join('');
+    return `<div class="alchemy-history-item" data-history-idx="${idx}">
+      <div class="alchemy-history-summary">
+        <div><strong>${escapeHtml(formatAlchemyHistoryDate(record.savedAt))}</strong></div>
+        <div>제작 시간 <strong style="color:#8fd5ff;">${escapeHtml(formatGuideDurationSec(record.totalAdjustedTimeSec || 0))}</strong></div>
+        <div>판매가 <strong style="color:#9ecb7a;">${Number(record.totalBoosted || 0).toLocaleString()}G</strong></div>
+        <button type="button" class="alchemy-history-toggle" onclick="toggleAlchemyHistoryDetail(${idx})" aria-label="상세 보기">▼</button>
+      </div>
+      <div class="alchemy-history-detail">${products || '<div class="alchemy-history-product">제작 수량 없음</div>'}</div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function toggleAlchemyHistoryDetail(idx) {
+  const item = document.querySelector(`.alchemy-history-item[data-history-idx="${idx}"]`);
+  if (item) item.classList.toggle('open');
+}
+
+function openAlchemyCraftHistory() {
+  renderAlchemyCraftHistoryBody();
+  const modal = document.getElementById('alchemyCraftHistoryModal');
+  if (modal) modal.classList.add('open');
+}
+
+function closeAlchemyCraftHistory() {
+  const modal = document.getElementById('alchemyCraftHistoryModal');
+  if (modal) modal.classList.remove('open');
+}
+
+function closeAlchemyCraftHistoryOnBackdrop(e) {
+  if (e.target && e.target.id === 'alchemyCraftHistoryModal') closeAlchemyCraftHistory();
+}
+
 async function downloadAlchemyPaneScreenshot() {
   const pane = document.getElementById('effAlchemyPane');
   if (!pane) return;
