@@ -8896,15 +8896,6 @@ function analyzeEfficiency() {
       <span style="color:#9ecb7a;">${tierSumExpr} = ${totalBoosted.toLocaleString()}G</span>
       <span style="color:#8899aa;"> (전문가 연금 +${effects.alchemyPriceBoost || 0}%)</span>
     </div>
-    <div style="font-size:11px;color:#8899aa;line-height:1.5;margin-bottom:10px;padding:10px 12px;background:#0a1018;border-radius:8px;border:1px solid #243040;">
-      <div style="font-weight:700;color:#b8c9d9;margin-bottom:6px;">계산 요약</div>
-      <ul style="margin:0;padding-left:18px;">
-        <li>어패류만 창고 수량 제한 · 바닐라·회 등 부재료는 충분하다고 가정</li>
-        <li>연금 최적화에서는 어패류를 승급하지 않고, 완제품 레시피가 요구하는 성급 재고를 그대로 사용</li>
-        <li>1성은 ★, 2성은 ★★, 3성은 ★★★ 어패류만 각각 차감 (★★를 ★×3으로 환산하지 않음)</li>
-        <li>희석액도 레시피에 들어가는 1성·2성·3성 재료를 각각 해당 성급 재고에서 차감</li>
-      </ul>
-    </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;font-size:12px;color:#ddd;margin-bottom:8px;">
       <div>1성 <strong style="color:#8fd5ff;">${g1.boosted.toLocaleString()}G</strong></div>
       <div>2성 <strong style="color:#8fd5ff;">${g2.boosted.toLocaleString()}G</strong></div>
