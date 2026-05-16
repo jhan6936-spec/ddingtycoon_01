@@ -4721,6 +4721,8 @@ let lastAlchemySummaryData = null;
 /** 제작 추천(효율) 기준 최종 9종 + 희석액 개수 — 제작 가이드와 동기 */
 let lastAlchemyPlanCountsByName = null;
 let lastAlchemyPlanSnapshot = null;
+let alchemyHistoryDeleteMode = false;
+const alchemyHistorySelectedIds = new Set();
 /** 'setPiece' | 'boxSetPiece' — 세트/개 vs 상자/세트/개 */
 let alchemySummaryQtyMode = 'setPiece';
 /** 'none' | 'detail' | 'summary' — 재료 합계 패널 표시 방식 */
