@@ -2662,53 +2662,10 @@
       text-align: center;
     }
     .eff-alchemy-pane-actions {
-      display: grid;
-      gap: 8px;
-      justify-items: center;
-      align-items: center;
-      grid-template-columns: 1fr;
-      grid-template-areas:
-        "top"
-        "bottom";
-      flex-shrink: 0;
-    }
-    .alchemy-action-row {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 8px;
-    }
-    .alchemy-action-row--top {
-      grid-area: top;
       justify-content: center;
-    }
-    .alchemy-action-row--bottom {
-      grid-area: bottom;
-      justify-content: center;
-    }
-    @media (min-width: 720px) {
-      .eff-alchemy-pane-actions {
-        justify-items: end;
-      }
-      .alchemy-action-row--top,
-      .alchemy-action-row--bottom {
-        justify-content: flex-end;
-      }
-    }
-    .alchemy-action-save {
-      order: 2;
-    }
-    .alchemy-action-history {
-      order: 1;
-    }
-    .alchemy-history-modal-card.delete-mode {
-      width: min(980px, calc(100vw - 20px));
-      border-color: rgba(255, 120, 120, 0.36);
-      box-shadow: 0 20px 70px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 120, 120, 0.12);
-    }
-    .alchemy-history-header-actions {
-      display: flex;
-      align-items: center;
       gap: 8px;
       flex-shrink: 0;
     }
@@ -2716,144 +2673,6 @@
       font-size: 32px;
       font-weight: 900;
       color: #fff;
-    }
-    .alchemy-time-box {
-      margin: -8px 0 18px;
-      padding: 14px 16px;
-      background: linear-gradient(135deg, #101820, #0a1018);
-      border: 1px solid #2a3a4d;
-      border-radius: 12px;
-      text-align: center;
-      color: #dbeafe;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 24px rgba(0,0,0,0.18);
-    }
-    .alchemy-time-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    .alchemy-time-chip {
-      padding: 10px 12px;
-      border-radius: 10px;
-      background: rgba(143, 213, 255, 0.08);
-      border: 1px solid rgba(143, 213, 255, 0.22);
-      white-space: pre-line;
-    }
-    .alchemy-time-chip span {
-      display: block;
-      font-size: 11px;
-      color: #95a8bb;
-      margin-bottom: 5px;
-    }
-    .alchemy-time-chip strong {
-      display: block;
-      font-size: 16px;
-      color: #8fd5ff;
-    }
-    .alchemy-time-talk {
-      padding-top: 10px;
-      border-top: 1px solid rgba(143, 213, 255, 0.18);
-      font-size: 13px;
-      font-weight: 900;
-      color: #e8f4ff;
-      white-space: pre-line;
-      line-height: 1.5;
-    }
-    .alchemy-history-modal-card {
-      width: min(900px, calc(100vw - 28px));
-    }
-    .alchemy-history-list {
-      display: grid;
-      gap: 10px;
-    }
-    .alchemy-history-item {
-      padding: 12px;
-      border-radius: 12px;
-      background: #101820;
-      border: 1px solid #27384b;
-    }
-    .alchemy-history-summary {
-      display: grid;
-      grid-template-columns: 1.4fr 1fr 1fr auto;
-      gap: 10px;
-      align-items: center;
-      color: #dbeafe;
-      font-size: 13px;
-    }
-    .alchemy-history-date-cell {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
-    }
-    .alchemy-history-check {
-      width: 18px;
-      height: 18px;
-      accent-color: #66a7ff;
-      flex: 0 0 auto;
-    }
-    .alchemy-history-delete-toolbar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 0 0 12px;
-      padding: 8px 10px;
-      border-radius: 10px;
-      background: rgba(255, 120, 120, 0.08);
-      border: 1px solid rgba(255, 120, 120, 0.24);
-      color: #f3c0c0;
-      font-size: 12px;
-      font-weight: 800;
-    }
-    .alchemy-history-select-all {
-      border: 1px solid rgba(255, 160, 160, 0.36);
-      background: rgba(255, 120, 120, 0.12);
-      color: #ffd0d0;
-      border-radius: 8px;
-      padding: 6px 10px;
-      cursor: pointer;
-      font-weight: 900;
-    }
-    .alchemy-history-toggle {
-      width: 34px;
-      height: 30px;
-      border-radius: 8px;
-      border: 1px solid #3a526c;
-      background: #0b121a;
-      color: #9ecbff;
-      cursor: pointer;
-      font-weight: 900;
-    }
-    .alchemy-history-detail {
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid #243040;
-      display: none;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 8px;
-    }
-    .alchemy-history-item.open .alchemy-history-detail {
-      display: grid;
-    }
-    .alchemy-history-product {
-      padding: 8px 10px;
-      border-radius: 8px;
-      background: #0a1018;
-      border: 1px solid #1f2d3d;
-      color: #cbd5e1;
-      font-size: 12px;
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-    }
-    @media (max-width: 720px) {
-      .alchemy-history-summary {
-        grid-template-columns: 1fr;
-      }
-      .alchemy-history-toggle {
-        width: 100%;
-      }
     }
     .toggle-wrap {
       display: inline-flex;
@@ -4310,14 +4129,8 @@
             <div class="eff-alchemy-pane-title">연금품 계산</div>
           </div>
           <div class="eff-alchemy-pane-actions">
-            <div class="alchemy-action-row alchemy-action-row--top">
-              <button type="button" class="patch-note-btn alchemy-screenshot-exclude" onclick="openAlchemyCraftGuide()">제작 가이드</button>
-              <button type="button" class="btn alchemy-screenshot-exclude" id="alchemyScreenshotBtn" onclick="downloadAlchemyPaneScreenshot()">사진으로 다운</button>
-            </div>
-            <div class="alchemy-action-row alchemy-action-row--bottom">
-              <button type="button" class="patch-note-btn alchemy-screenshot-exclude alchemy-action-history" onclick="openAlchemyCraftHistory()">연금품 제작 기록</button>
-              <button type="button" class="btn alchemy-screenshot-exclude alchemy-action-save" onclick="saveAlchemyCraftHistory()">기록 저장</button>
-            </div>
+            <button type="button" class="patch-note-btn alchemy-screenshot-exclude" onclick="openAlchemyCraftGuide()">제작 가이드</button>
+            <button type="button" class="btn alchemy-screenshot-exclude" id="alchemyScreenshotBtn" onclick="downloadAlchemyPaneScreenshot()">사진으로 다운</button>
           </div>
         </div>
         <div id="efficiencyContainerAlchemy">
@@ -4484,19 +4297,6 @@
     </div>
     <p class="alchemy-guide-top-note">수량은 위쪽 <strong>제작 추천</strong> 표와 같습니다. 창고·전문가 설정을 바꾼 뒤에는 연금품 계산을 한 번 더 실행하면 반영됩니다.</p>
     <div id="alchemyCraftGuideBody" class="patch-modal-body alchemy-guide-modal-body"></div>
-  </div>
-</div>
-
-<div id="alchemyCraftHistoryModal" class="patch-modal" onclick="closeAlchemyCraftHistoryOnBackdrop(event)">
-  <div class="patch-modal-card alchemy-history-modal-card" onclick="event.stopPropagation()">
-    <div class="patch-modal-header">
-      <div class="patch-modal-title">연금품 제작 기록</div>
-      <div class="alchemy-history-header-actions">
-        <button class="patch-close-btn" type="button" id="alchemyHistoryDeleteBtn" onclick="handleAlchemyHistoryDeleteButton()">삭제</button>
-        <button class="patch-close-btn" type="button" onclick="closeAlchemyCraftHistory()">닫기</button>
-      </div>
-    </div>
-    <div id="alchemyCraftHistoryBody" class="patch-modal-body"></div>
   </div>
 </div>
 
@@ -4714,15 +4514,11 @@ const STORAGE_KEY_STAMINA = 'thingta_stamina_v1';
 const STORAGE_KEY_WAREHOUSE_SET_VIEW = 'thingta_warehouse_set_view_v1';
 const STORAGE_KEY_ALCHEMY_SUMMARY_QTY = 'thingta_alchemy_summary_qty_mode_v1';
 const STORAGE_KEY_ALCHEMY_MAT_PANEL = 'thingta_alchemy_mat_panel_v1';
-const STORAGE_KEY_ALCHEMY_HISTORY = 'thingta_alchemy_craft_history_v1';
 
 /** 연금 합계 패널 마지막 데이터 (토글 시 재렌더) */
 let lastAlchemySummaryData = null;
 /** 제작 추천(효율) 기준 최종 9종 + 희석액 개수 — 제작 가이드와 동기 */
 let lastAlchemyPlanCountsByName = null;
-let lastAlchemyPlanSnapshot = null;
-let alchemyHistoryDeleteMode = false;
-const alchemyHistorySelectedIds = new Set();
 /** 'setPiece' | 'boxSetPiece' — 세트/개 vs 상자/세트/개 */
 let alchemySummaryQtyMode = 'setPiece';
 /** 'none' | 'detail' | 'summary' — 재료 합계 패널 표시 방식 */
@@ -7991,41 +7787,6 @@ function formatGuideDurationSec(totalSec) {
   return `${sec}초`;
 }
 
-function getAlchemyTimeTalk(adjustedSec) {
-  const s = Math.max(0, Number(adjustedSec) || 0);
-  if (s <= 4 * 3600) return '오늘도 수고하십니다!\n연금술사님!';
-  if (s <= 8 * 3600) return '조금은 쉬시면서 하는 것도 좋지 않을까요?';
-  if (s <= 12 * 3600) return '잠시 돌려두기만 하시고 쉬고 오시는 건 어떨까요?';
-  return '잠은 주무시면서 하세요..\n그러다가 쓰러지셔요..';
-}
-
-function getPlanFinalBaseTimeSec(countsByName) {
-  return Object.entries(countsByName || {}).reduce((sum, [name, count]) => {
-    const n = Math.max(0, Math.floor(Number(count) || 0));
-    return sum + getBaseAlchemyTimeSec(name) * n;
-  }, 0);
-}
-
-function getPlanFullBaseTimeSec(countsByName) {
-  return Object.entries(countsByName || {}).reduce((sum, [name, count]) => {
-    const n = Math.max(0, Math.floor(Number(count) || 0));
-    if (!n) return sum;
-    const recipe = data.recipes.find((r) => r.name === name);
-    if (!recipe || !recipe.inputs || !recipe.inputs.length) return sum;
-    const stagesRaw = alchemyGuideBuildStages(recipe, n);
-    let totalSec = getBaseAlchemyTimeSec(name) * n;
-    for (let i = 0; i < stagesRaw.length - 1; i++) {
-      totalSec += alchemyGuideSumTierCraftSec(stagesRaw[i]);
-    }
-    return sum + totalSec;
-  }, 0);
-}
-
-function getAdjustedAlchemyTimeSec(baseSec, effects) {
-  const reduce = effects && Number.isFinite(Number(effects.timeReduce)) ? Number(effects.timeReduce) : 0;
-  return Math.max(0, Math.ceil(Math.max(0, Number(baseSec) || 0) * (1 - reduce / 100)));
-}
-
 function alchemyGuideMergeQty(map, name, add) {
   map[name] = (map[name] || 0) + add;
 }
@@ -8546,9 +8307,8 @@ function renderStaminaPlan() {
   const expectedWhaleBrokenShell = gathers * engraving.whaleBrokenShellExpected;
   const star3Chance = Math.min(100, 10 + (expertMeta.starshell.values[expertState.starshell] || 0));
   let staminaTalk = '오늘 하루치는 다 하시는거겠죠?!.';
-  if (staminaRaw >= 6001) staminaTalk = '그.. 일이 많이 밀리셨나봐요. 그쵸? 그래도 쉬어가면서 해주세요..';
-  else if (staminaRaw >= 5000) staminaTalk = '오우~ 너무 빡세게 굴리시는 거 아닌가요?';
-  else if (staminaRaw >= 3001) staminaTalk = '오~ 오늘 좀 많이 일 하시는데요?';
+  if (staminaRaw > 5000) staminaTalk = '잠은... 자시면서 하시는거죠?';
+  else if (staminaRaw > 3000) staminaTalk = '오~ 돈 좀 있으신가봐요?';
   const rows = SHELLFISH_NAMES.map((name, idx) => {
     const useStamina = baseAlloc[idx];
     const localGathers = Math.floor(useStamina / STAMINA_PER_GATHER);
@@ -8861,7 +8621,6 @@ function analyzeEfficiency() {
   if (!hasItems) {
     lastAlchemySummaryData = null;
     lastAlchemyPlanCountsByName = null;
-    lastAlchemyPlanSnapshot = null;
     const al = document.getElementById('efficiencyContainerAlchemy');
     if (al) al.innerHTML = '<div class="no-result">재료 창고에 수량을 입력하면 연금품 계산이 표시됩니다</div>';
     renderCraftPricePanel(effects);
@@ -8922,7 +8681,6 @@ function analyzeEfficiency() {
   containerAlchemy.innerHTML = '';
   lastAlchemySummaryData = null;
   lastAlchemyPlanCountsByName = null;
-  lastAlchemyPlanSnapshot = null;
   if (containerCraftPrice) containerCraftPrice.innerHTML = '';
 
   const alchemyResults = results.filter(r => r.kind === 'alchemy');
@@ -8955,10 +8713,6 @@ function analyzeEfficiency() {
 
   const totalBase = g1.base + g2.base + g3.base + gD.base;
   const totalBoosted = g1.boosted + g2.boosted + g3.boosted + gD.boosted;
-  const allPlanCountsForTime = { ...plan1, ...plan2, ...plan3, '추출된 희석액': diluentCount };
-  const totalBaseTimeSec = getPlanFullBaseTimeSec(allPlanCountsForTime);
-  const totalAdjustedTimeSec = getAdjustedAlchemyTimeSec(totalBaseTimeSec, effects);
-  const timeTalk = getAlchemyTimeTalk(totalAdjustedTimeSec);
   const revBox = document.createElement('div');
   revBox.style.marginBottom = '18px';
   revBox.style.padding = '12px 14px';
@@ -8982,6 +8736,15 @@ function analyzeEfficiency() {
       <span style="color:#9ecb7a;">${tierSumExpr} = ${totalBoosted.toLocaleString()}G</span>
       <span style="color:#8899aa;"> (전문가 연금 +${effects.alchemyPriceBoost || 0}%)</span>
     </div>
+    <div style="font-size:11px;color:#8899aa;line-height:1.5;margin-bottom:10px;padding:10px 12px;background:#0a1018;border-radius:8px;border:1px solid #243040;">
+      <div style="font-weight:700;color:#b8c9d9;margin-bottom:6px;">계산 요약</div>
+      <ul style="margin:0;padding-left:18px;">
+        <li>어패류만 창고 수량 제한 · 바닐라·회 등 부재료는 충분하다고 가정</li>
+        <li>연금 최적화에서는 어패류를 승급하지 않고, 완제품 레시피가 요구하는 성급 재고를 그대로 사용</li>
+        <li>1성은 ★, 2성은 ★★, 3성은 ★★★ 어패류만 각각 차감 (★★를 ★×3으로 환산하지 않음)</li>
+        <li>희석액도 레시피에 들어가는 1성·2성·3성 재료를 각각 해당 성급 재고에서 차감</li>
+      </ul>
+    </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;font-size:12px;color:#ddd;margin-bottom:8px;">
       <div>1성 <strong style="color:#8fd5ff;">${g1.boosted.toLocaleString()}G</strong></div>
       <div>2성 <strong style="color:#8fd5ff;">${g2.boosted.toLocaleString()}G</strong></div>
@@ -8995,34 +8758,14 @@ function analyzeEfficiency() {
     ${diluentRevNote}
   `;
   containerAlchemy.appendChild(revBox);
-
-  const timeBox = document.createElement('div');
-  timeBox.className = 'alchemy-time-box';
-  timeBox.innerHTML = `
-    <div class="alchemy-time-grid">
-      <div class="alchemy-time-chip"><span>기본 제작 시간</span><strong>${formatGuideDurationSec(totalBaseTimeSec)}</strong></div>
-      <div class="alchemy-time-chip"><span>전문가 적용 제작 시간</span><strong>${formatGuideDurationSec(totalAdjustedTimeSec)}</strong></div>
-    </div>
-    <div class="alchemy-time-talk">${timeTalk}</div>
-  `;
-  containerAlchemy.appendChild(timeBox);
   
   // 연금품 섹션 - 제작 추천 결과 기반으로 표시
-  const allPlanCounts = { ...allPlanCountsForTime };
+  const allPlanCounts = { ...plan1, ...plan2, ...plan3 };
+  allPlanCounts['추출된 희석액'] = diluentCount;
   lastAlchemyPlanCountsByName = {};
   [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'].forEach((name) => {
     lastAlchemyPlanCountsByName[name] = Math.max(0, Math.floor(Number(allPlanCounts[name]) || 0));
   });
-  lastAlchemyPlanSnapshot = {
-    savedAt: new Date().toISOString(),
-    counts: { ...lastAlchemyPlanCountsByName },
-    totalBase,
-    totalBoosted,
-    totalBaseTimeSec,
-    totalAdjustedTimeSec,
-    alchemyPriceBoost: effects.alchemyPriceBoost || 0,
-    timeReduce: effects.timeReduce || 0,
-  };
   const planEntries = Object.entries(allPlanCounts).filter(([, n]) => n > 0);
   if (planEntries.length > 0) {
     const alchemyTitle = document.createElement('div');
@@ -9093,170 +8836,6 @@ function analyzeEfficiency() {
   }
   
   renderStaminaPlan();
-}
-
-function loadAlchemyCraftHistory() {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY_ALCHEMY_HISTORY) || '[]');
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (_) {
-    return [];
-  }
-}
-
-function saveAlchemyCraftHistoryList(list) {
-  localStorage.setItem(STORAGE_KEY_ALCHEMY_HISTORY, JSON.stringify((list || []).slice(0, 100)));
-}
-
-function getAlchemyHistoryRecordId(record, idx) {
-  return record && record.id ? String(record.id) : `alchemy_legacy_${idx}`;
-}
-
-function getAlchemyHistoryDuplicateKey(record) {
-  const counts = record && record.counts ? record.counts : {};
-  const names = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'];
-  return JSON.stringify({
-    counts: names.map((name) => [name, Number(counts[name] || 0)]),
-    totalAdjustedTimeSec: Math.round(Number(record && record.totalAdjustedTimeSec || 0)),
-    totalBoosted: Math.round(Number(record && record.totalBoosted || 0)),
-  });
-}
-
-function saveAlchemyCraftHistory() {
-  if (!lastAlchemyPlanSnapshot) {
-    alert('저장할 연금품 계산 결과가 없습니다. 먼저 연금품 계산을 실행해 주세요.');
-    return;
-  }
-  const list = loadAlchemyCraftHistory();
-  const nextKey = getAlchemyHistoryDuplicateKey(lastAlchemyPlanSnapshot);
-  if (list.some((record) => getAlchemyHistoryDuplicateKey(record) === nextKey)) {
-    alert('이미 저장된 연금품 제작 기록입니다.');
-    return;
-  }
-  const record = {
-    ...lastAlchemyPlanSnapshot,
-    id: `alchemy_${Date.now()}`,
-    savedAt: new Date().toISOString(),
-  };
-  list.unshift(record);
-  saveAlchemyCraftHistoryList(list);
-  alert('연금품 제작 기록을 저장했습니다.');
-}
-
-function formatAlchemyHistoryDate(iso) {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '날짜 없음';
-  return d.toLocaleString('ko-KR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
-
-function renderAlchemyCraftHistoryBody() {
-  const body = document.getElementById('alchemyCraftHistoryBody');
-  if (!body) return;
-  const list = loadAlchemyCraftHistory();
-  updateAlchemyHistoryDeleteUi();
-  if (!list.length) {
-    body.innerHTML = '<div class="no-result">저장된 연금품 제작 기록이 없습니다.</div>';
-    return;
-  }
-  const toolbar = alchemyHistoryDeleteMode
-    ? `<div class="alchemy-history-delete-toolbar">
-        <button type="button" class="alchemy-history-select-all" onclick="selectAllAlchemyHistory()">모두 선택</button>
-        <span>선택됨 ${alchemyHistorySelectedIds.size.toLocaleString()}개</span>
-      </div>`
-    : '';
-  body.innerHTML = `${toolbar}<div class="alchemy-history-list">${list.map((record, idx) => {
-    const recordId = getAlchemyHistoryRecordId(record, idx);
-    const counts = record.counts || {};
-    const products = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액']
-      .filter((name) => (counts[name] || 0) > 0)
-      .map((name) => `<div class="alchemy-history-product"><span>${escapeHtml(name)}</span><strong>${Number(counts[name] || 0).toLocaleString()}개</strong></div>`)
-      .join('');
-    return `<div class="alchemy-history-item" data-history-idx="${idx}">
-      <div class="alchemy-history-summary">
-        <div class="alchemy-history-date-cell">
-          ${alchemyHistoryDeleteMode ? `<input type="checkbox" class="alchemy-history-check" onchange="toggleAlchemyHistorySelected('${escapeHtml(recordId)}', this.checked)" ${alchemyHistorySelectedIds.has(recordId) ? 'checked' : ''} aria-label="삭제할 기록 선택">` : ''}
-          <strong>${escapeHtml(formatAlchemyHistoryDate(record.savedAt))}</strong>
-        </div>
-        <div>제작 시간 <strong style="color:#8fd5ff;">${escapeHtml(formatGuideDurationSec(record.totalAdjustedTimeSec || 0))}</strong></div>
-        <div>판매가 <strong style="color:#9ecb7a;">${Number(record.totalBoosted || 0).toLocaleString()}G</strong></div>
-        <button type="button" class="alchemy-history-toggle" onclick="toggleAlchemyHistoryDetail(${idx})" aria-label="상세 보기">▼</button>
-      </div>
-      <div class="alchemy-history-detail">${products || '<div class="alchemy-history-product">제작 수량 없음</div>'}</div>
-    </div>`;
-  }).join('')}</div>`;
-}
-
-function toggleAlchemyHistoryDetail(idx) {
-  const item = document.querySelector(`.alchemy-history-item[data-history-idx="${idx}"]`);
-  if (item) item.classList.toggle('open');
-}
-
-function updateAlchemyHistoryDeleteUi() {
-  const modalCard = document.querySelector('#alchemyCraftHistoryModal .alchemy-history-modal-card');
-  if (modalCard) modalCard.classList.toggle('delete-mode', alchemyHistoryDeleteMode);
-  const deleteBtn = document.getElementById('alchemyHistoryDeleteBtn');
-  if (deleteBtn) {
-    deleteBtn.textContent = alchemyHistoryDeleteMode ? `선택 삭제${alchemyHistorySelectedIds.size ? ` (${alchemyHistorySelectedIds.size})` : ''}` : '삭제';
-  }
-}
-
-function toggleAlchemyHistorySelected(recordId, checked) {
-  if (checked) {
-    alchemyHistorySelectedIds.add(recordId);
-  } else {
-    alchemyHistorySelectedIds.delete(recordId);
-  }
-  renderAlchemyCraftHistoryBody();
-}
-
-function selectAllAlchemyHistory() {
-  const list = loadAlchemyCraftHistory();
-  list.forEach((record, idx) => alchemyHistorySelectedIds.add(getAlchemyHistoryRecordId(record, idx)));
-  renderAlchemyCraftHistoryBody();
-}
-
-function handleAlchemyHistoryDeleteButton() {
-  if (!alchemyHistoryDeleteMode) {
-    alchemyHistoryDeleteMode = true;
-    renderAlchemyCraftHistoryBody();
-    return;
-  }
-  if (!alchemyHistorySelectedIds.size) {
-    alert('삭제할 연금품 제작 기록을 선택해 주세요.');
-    return;
-  }
-  if (!confirm(`선택한 ${alchemyHistorySelectedIds.size.toLocaleString()}개의 제작 기록을 삭제할까요?`)) return;
-  const nextList = loadAlchemyCraftHistory().filter((record, idx) => !alchemyHistorySelectedIds.has(getAlchemyHistoryRecordId(record, idx)));
-  saveAlchemyCraftHistoryList(nextList);
-  alchemyHistorySelectedIds.clear();
-  alchemyHistoryDeleteMode = false;
-  renderAlchemyCraftHistoryBody();
-}
-
-function openAlchemyCraftHistory() {
-  alchemyHistoryDeleteMode = false;
-  alchemyHistorySelectedIds.clear();
-  renderAlchemyCraftHistoryBody();
-  const modal = document.getElementById('alchemyCraftHistoryModal');
-  if (modal) modal.classList.add('open');
-}
-
-function closeAlchemyCraftHistory() {
-  alchemyHistoryDeleteMode = false;
-  alchemyHistorySelectedIds.clear();
-  updateAlchemyHistoryDeleteUi();
-  const modal = document.getElementById('alchemyCraftHistoryModal');
-  if (modal) modal.classList.remove('open');
-}
-
-function closeAlchemyCraftHistoryOnBackdrop(e) {
-  if (e.target && e.target.id === 'alchemyCraftHistoryModal') closeAlchemyCraftHistory();
 }
 
 async function downloadAlchemyPaneScreenshot() {
