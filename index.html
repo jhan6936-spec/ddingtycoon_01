@@ -7731,8 +7731,9 @@ function alchemyGuideExpandOneLayer(layerMap, options = {}) {
         alchemyGuideMergeQty(out, name, qty);
         return;
       }
+      const craftQty = qty / getAlchemyMaterialOutputCount(name);
       mat.inputs.forEach((inp) => {
-        alchemyGuideMergeQty(out, inp.name, (inp.count || 0) * qty);
+        alchemyGuideMergeQty(out, inp.name, (inp.count || 0) * craftQty);
       });
     } else {
       alchemyGuideMergeQty(out, name, qty);
