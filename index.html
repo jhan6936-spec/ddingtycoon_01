@@ -4883,12 +4883,19 @@ function buildImageTag(name, alt = '', style = '', className = '') {
   return `<img src="${src0}" alt="${safeAlt}"${cls} data-img-candidates="${safeCandidates}" data-img-fallback-index="0"${styleAttr} decoding="async" loading="lazy" onerror="handleImageFallback(this)">`;
 }
 
-const APP_VERSION = '1.0.9';
+const APP_VERSION = '1.0.10';
 
 const PATCH_NOTES_HTML = `
   <h3>[띵타해] 프로토타입</h3>
   <p><strong>버전:</strong> v${APP_VERSION}</p>
   <p class="patch-notes-lead">이야기해서 반영한 내용만 여기에 정리하고, 바뀔 때마다 버전 숫자를 올립니다. 항목이 많아지면 이 창 안을 스크롤하면 됩니다.</p>
+  <h3>v1.0.10</h3>
+  <ul>
+    <li>연금품 계산 상단 버튼을 역할별로 다시 정리했습니다. 제작 가이드·사진 다운로드는 첫 줄에, 기록 저장·연금품 제작 기록은 그 아래 줄에 배치했습니다.</li>
+    <li>연금품 제작 기록 기능을 추가했습니다. 기록 저장 시 날짜, 전문가 적용 제작 시간, 전문가 적용 판매가와 제작 품목 수량을 저장하고, 기록 창에서 펼쳐 볼 수 있습니다.</li>
+    <li>연금품 계산에 기본 제작 시간과 전문가 적용 제작 시간 박스를 추가하고, 전문가 적용 시간 기준 안내 문구를 표시하도록 했습니다.</li>
+    <li>스태미나 계산 안내 문구 조건과 대사를 조정했습니다.</li>
+  </ul>
   <h3>v1.0.9</h3>
   <ul>
     <li>연금품 계산의 「추천 제작 기준 필요 재료 합계」를 기본으로 접어 두고, <strong>자세히보기</strong>로 펼친 뒤에만 상세(어패류·바닐라) 목록이 보이도록 바꿨습니다.</li>
