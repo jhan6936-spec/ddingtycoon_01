@@ -7905,6 +7905,26 @@ function formatGuideDurationSec(totalSec) {
   return `${sec}초`;
 }
 
+function getAlchemyTimeTalk(adjustedSec) {
+  const s = Math.max(0, Number(adjustedSec) || 0);
+  if (s <= 4 * 3600) return '오늘도 수고하십니다!\n연금술사님!';
+  if (s <= 8 * 3600) return '조금은 쉬시면서 하는 것도 좋지 않을까요?';
+  if (s <= 12 * 3600) return '잠시 돌려두기만 하시고 쉬고 오시는 건 어떨까요?';
+  return '잠은 주무시면서 하세요..\n그러다가 쓰러지셔요..';
+}
+
+function getPlanFinalBaseTimeSec(countsByName) {
+  return Object.entries(countsByName || {}).reduce((sum, [name, count]) => {
+    const n = Math.max(0, Math.floor(Number(count) || 0));
+    return sum + getBaseAlchemyTimeSec(name) * n;
+  }, 0);
+}
+
+function getAdjustedAlchemyTimeSec(baseSec, effects) {
+  const reduce = effects && Number.isFinite(Number(effects.timeReduce)) ? Number(effects.timeReduce) : 0;
+  return Math.max(0, Math.ceil(Math.max(0, Number(baseSec) || 0) * (1 - reduce / 100)));
+}
+
 function alchemyGuideMergeQty(map, name, add) {
   map[name] = (map[name] || 0) + add;
 }
