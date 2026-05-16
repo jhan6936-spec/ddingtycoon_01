@@ -8445,8 +8445,9 @@ function renderStaminaPlan() {
   const expectedWhaleBrokenShell = gathers * engraving.whaleBrokenShellExpected;
   const star3Chance = Math.min(100, 10 + (expertMeta.starshell.values[expertState.starshell] || 0));
   let staminaTalk = '오늘 하루치는 다 하시는거겠죠?!.';
-  if (staminaRaw > 5000) staminaTalk = '잠은... 자시면서 하시는거죠?';
-  else if (staminaRaw > 3000) staminaTalk = '오~ 돈 좀 있으신가봐요?';
+  if (staminaRaw >= 6001) staminaTalk = '그.. 일이 많이 밀리셨나봐요. 그쵸? 그래도 쉬어가면서 해주세요..';
+  else if (staminaRaw >= 5000) staminaTalk = '오우~ 너무 빡세게 굴리시는 거 아닌가요?';
+  else if (staminaRaw >= 3001) staminaTalk = '오~ 오늘 좀 많이 일 하시는데요?';
   const rows = SHELLFISH_NAMES.map((name, idx) => {
     const useStamina = baseAlloc[idx];
     const localGathers = Math.floor(useStamina / STAMINA_PER_GATHER);
