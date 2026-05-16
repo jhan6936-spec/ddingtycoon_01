@@ -7436,27 +7436,8 @@ function lpMaterialKey(name) {
 }
 
 /** 연금 최적화용: 승급하지 않고 완제품 레시피의 성급별 어패류를 그대로 유지 */
-function accumulateCraftTreePromoteRecipe(name, count, accum) {
-  if (!count || count <= 0) return;
-  const recipe = data.materials[name];
-  if (recipe && recipe.inputs && recipe.inputs.length) {
-    for (const inp of recipe.inputs) {
-      accumulateCraftTreePromoteRecipe(inp.name, inp.count * count, accum);
-    }
-  } else {
-    accum[name] = (accum[name] || 0) + count;
-  }
-}
-
 function buildFinalProductLeafNeedsForOptimize(productName) {
-  const needs = {};
-  const recipe = data.recipes.find((r) => r.name === productName);
-  if (!recipe || !recipe.inputs) return needs;
-  const opts = { skipShellfishTierConvert: true };
-  for (const inp of recipe.inputs) {
-    accumulateCraftTree(inp.name, inp.count || 0, needs, opts);
-  }
-  return needs;
+  return buildFinalProductLeafNeeds(productName);
 }
 
 /** UI·재료 합계용: 성급별 잎 노드 유지(★★는 승급 전개 안 함) */
