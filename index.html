@@ -7920,6 +7920,21 @@ function getPlanFinalBaseTimeSec(countsByName) {
   }, 0);
 }
 
+function getPlanFullBaseTimeSec(countsByName) {
+  return Object.entries(countsByName || {}).reduce((sum, [name, count]) => {
+    const n = Math.max(0, Math.floor(Number(count) || 0));
+    if (!n) return sum;
+    const recipe = data.recipes.find((r) => r.name === name);
+    if (!recipe || !recipe.inputs || !recipe.inputs.length) return sum;
+    const stagesRaw = alchemyGuideBuildStages(recipe, n);
+    let totalSec = getBaseAlchemyTimeSec(name) * n;
+    for (let i = 0; i < stagesRaw.length - 1; i++) {
+      totalSec += alchemyGuideSumTierCraftSec(stagesRaw[i]);
+    }
+    return sum + totalSec;
+  }, 0);
+}
+
 function getAdjustedAlchemyTimeSec(baseSec, effects) {
   const reduce = effects && Number.isFinite(Number(effects.timeReduce)) ? Number(effects.timeReduce) : 0;
   return Math.max(0, Math.ceil(Math.max(0, Number(baseSec) || 0) * (1 - reduce / 100)));
