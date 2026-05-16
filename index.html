@@ -2662,10 +2662,53 @@
       text-align: center;
     }
     .eff-alchemy-pane-actions {
+      display: grid;
+      gap: 8px;
+      justify-items: center;
+      align-items: center;
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "top"
+        "bottom";
+      flex-shrink: 0;
+    }
+    .alchemy-action-row {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
+      gap: 8px;
+    }
+    .alchemy-action-row--top {
+      grid-area: top;
       justify-content: center;
+    }
+    .alchemy-action-row--bottom {
+      grid-area: bottom;
+      justify-content: center;
+    }
+    @media (min-width: 720px) {
+      .eff-alchemy-pane-actions {
+        justify-items: end;
+      }
+      .alchemy-action-row--top,
+      .alchemy-action-row--bottom {
+        justify-content: flex-end;
+      }
+    }
+    .alchemy-action-save {
+      order: 2;
+    }
+    .alchemy-action-history {
+      order: 1;
+    }
+    .alchemy-history-modal-card.delete-mode {
+      width: min(980px, calc(100vw - 20px));
+      border-color: rgba(255, 120, 120, 0.36);
+      box-shadow: 0 20px 70px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 120, 120, 0.12);
+    }
+    .alchemy-history-header-actions {
+      display: flex;
+      align-items: center;
       gap: 8px;
       flex-shrink: 0;
     }
@@ -2737,6 +2780,40 @@
       align-items: center;
       color: #dbeafe;
       font-size: 13px;
+    }
+    .alchemy-history-date-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .alchemy-history-check {
+      width: 18px;
+      height: 18px;
+      accent-color: #66a7ff;
+      flex: 0 0 auto;
+    }
+    .alchemy-history-delete-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 12px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: rgba(255, 120, 120, 0.08);
+      border: 1px solid rgba(255, 120, 120, 0.24);
+      color: #f3c0c0;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .alchemy-history-select-all {
+      border: 1px solid rgba(255, 160, 160, 0.36);
+      background: rgba(255, 120, 120, 0.12);
+      color: #ffd0d0;
+      border-radius: 8px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-weight: 900;
     }
     .alchemy-history-toggle {
       width: 34px;
