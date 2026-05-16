@@ -8172,6 +8172,97 @@ function closeAlchemyCraftGuideOnBackdrop(ev) {
   if (ev.target === ev.currentTarget) closeAlchemyCraftGuide();
 }
 
+function loadAlchemyHistoryRecords() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY_ALCHEMY_HISTORY) || '[]');
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (_) {
+    return [];
+  }
+}
+
+function saveAlchemyHistoryRecords(records) {
+  try {
+    localStorage.setItem(STORAGE_KEY_ALCHEMY_HISTORY, JSON.stringify((records || []).slice(0, 80)));
+  } catch (_) {}
+}
+
+function saveAlchemyProductionRecord() {
+  if (!lastAlchemyRecordSnapshot) {
+    alert('저장할 연금품 계산 결과가 없습니다. 재료 창고 입력 후 연금품 계산을 먼저 실행해 주세요.');
+    return;
+  }
+  const records = loadAlchemyHistoryRecords();
+  records.unshift({
+    ...lastAlchemyRecordSnapshot,
+    id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    savedAt: new Date().toISOString(),
+  });
+  saveAlchemyHistoryRecords(records);
+  alert('연금품 제작 기록을 저장했습니다.');
+}
+
+function formatAlchemyRecordDate(iso) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '날짜 정보 없음';
+  return d.toLocaleString('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function renderAlchemyHistoryBody() {
+  const body = document.getElementById('alchemyHistoryBody');
+  if (!body) return;
+  const records = loadAlchemyHistoryRecords();
+  if (!records.length) {
+    body.innerHTML = '<div class="no-result">저장된 연금품 제작 기록이 없습니다.</div>';
+    return;
+  }
+  body.innerHTML = records.map((record, idx) => {
+    const entries = Object.entries(record.counts || {}).filter(([, count]) => Number(count) > 0);
+    const details = entries.length
+      ? entries.map(([name, count]) => `<div>${escapeHtml(name)} <strong>${Number(count).toLocaleString()}개</strong></div>`).join('')
+      : '<div>제작 품목 없음</div>';
+    return `<div class="alchemy-history-entry" data-history-idx="${idx}">
+      <div class="alchemy-history-entry-head">
+        <div>
+          <div class="alchemy-history-entry-title">${escapeHtml(formatAlchemyRecordDate(record.savedAt))}</div>
+          <div class="alchemy-history-entry-meta">
+            걸리는 시간(전문가 적용): <strong>${escapeHtml(formatGuideDurationSec(record.adjustedSec || 0))}</strong><br>
+            판매가(전문가 적용): <strong>${Number(record.totalBoosted || 0).toLocaleString()}G</strong>
+          </div>
+        </div>
+        <button type="button" class="alchemy-history-toggle" onclick="toggleAlchemyHistoryDetail(${idx})">▼</button>
+      </div>
+      <div class="alchemy-history-detail">${details}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleAlchemyHistoryDetail(idx) {
+  const entry = document.querySelector(`.alchemy-history-entry[data-history-idx="${idx}"]`);
+  if (entry) entry.classList.toggle('open');
+}
+
+function openAlchemyHistoryModal() {
+  renderAlchemyHistoryBody();
+  const mod = document.getElementById('alchemyHistoryModal');
+  if (mod) mod.classList.add('open');
+}
+
+function closeAlchemyHistoryModal() {
+  const mod = document.getElementById('alchemyHistoryModal');
+  if (mod) mod.classList.remove('open');
+}
+
+function closeAlchemyHistoryOnBackdrop(ev) {
+  if (ev.target === ev.currentTarget) closeAlchemyHistoryModal();
+}
+
 function computeShellfishEfficiencyScores(inv) {
   const effects = getExpertEffects();
   const scores = {};
