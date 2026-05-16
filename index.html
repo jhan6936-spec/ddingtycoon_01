@@ -7457,6 +7457,37 @@ function buildFinalProductLeafNeedsForOptimize(productName) {
   return buildFinalProductLeafNeeds(productName);
 }
 
+function accumulateAlchemyOptimizeDemand(name, count, directNeeds, doubleOutputNeeds) {
+  if (!count || count <= 0) return;
+  const recipe = data.materials[name];
+  if (recipe && recipe.inputs && recipe.inputs.length) {
+    if (ALCHEMY_DOUBLE_OUTPUT_MATERIALS.has(name)) {
+      doubleOutputNeeds[name] = (doubleOutputNeeds[name] || 0) + count;
+      return;
+    }
+    if (SHELLFISH_PROMOTE_TWO_STAR.has(name)) {
+      directNeeds[name] = (directNeeds[name] || 0) + count;
+      return;
+    }
+    for (const inp of recipe.inputs) {
+      accumulateAlchemyOptimizeDemand(inp.name, inp.count * count, directNeeds, doubleOutputNeeds);
+    }
+  } else {
+    directNeeds[name] = (directNeeds[name] || 0) + count;
+  }
+}
+
+function buildFinalProductOptimizeDemand(productName) {
+  const directNeeds = {};
+  const doubleOutputNeeds = {};
+  const recipe = data.recipes.find((r) => r.name === productName);
+  if (!recipe || !recipe.inputs) return { directNeeds, doubleOutputNeeds };
+  for (const inp of recipe.inputs) {
+    accumulateAlchemyOptimizeDemand(inp.name, inp.count || 0, directNeeds, doubleOutputNeeds);
+  }
+  return { directNeeds, doubleOutputNeeds };
+}
+
 /** UI·재료 합계용: 성급별 잎 노드 유지(★★는 승급 전개 안 함) */
 function buildFinalProductLeafNeeds(productName) {
   const needs = {};
