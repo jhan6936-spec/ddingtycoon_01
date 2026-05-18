@@ -5860,8 +5860,21 @@ function buildMinecraftDashboardPayload() {
         .filter(([, count]) => Number(count) > 0)
         .sort((a, b) => Number(b[1]) - Number(a[1]))
     : [];
-  const material = directInputs[0] || null;
   const inventory = typeof getWarehouseInventory === 'function' ? getWarehouseInventory() : {};
+  const lowestMaterialEntries = lastAlchemySummaryData
+    ? [
+        ...Object.entries(lastAlchemySummaryData.shell || {}),
+        ...Object.entries(lastAlchemySummaryData.vanilla || {})
+      ]
+        .filter(([, count]) => Number(count) > 0)
+        .sort((a, b) => {
+          const missingA = Math.max(0, Number(a[1] || 0) - Number(inventory[a[0]] || 0));
+          const missingB = Math.max(0, Number(b[1] || 0) - Number(inventory[b[0]] || 0));
+          return missingB - missingA || Number(b[1] || 0) - Number(a[1] || 0);
+        })
+    : [];
+  const materialEntries = lowestMaterialEntries.length ? lowestMaterialEntries : directInputs;
+  const material = materialEntries[0] || null;
   const materialCurrent = material ? Number(inventory[material[0]] || 0) : 0;
   const materialTarget = material ? Number(material[1] || 0) : 1;
   const profit = Number(record?.totalBoosted || 0);
@@ -5881,11 +5894,11 @@ function buildMinecraftDashboardPayload() {
   })();
   const staminaTarget = savedStamina > 0 ? savedStamina - (savedStamina % STAMINA_PER_GATHER) : 600;
   const gatheringTargetCount = Math.max(0, Math.floor(staminaTarget / STAMINA_PER_GATHER));
-  const resourceLines = directInputs.slice(0, 5).map(([name, count]) => {
+  const resourceLines = materialEntries.slice(0, 8).map(([name, count]) => {
     const have = Number(inventory[name] || 0);
     return `${name} ${have.toLocaleString()} / ${Number(count || 0).toLocaleString()}`;
   });
-  const routeLines = directInputs.slice(0, 3).map(([name]) => `${name} 확보 추천 → 효율 파밍 루트 확인`);
+  const routeLines = materialEntries.slice(0, 3).map(([name]) => `${name} 확보 추천 → 효율 파밍 루트 확인`);
   const activityLines = [
     topCraft ? `제작 계획: ${topCraft[0]} x${Number(topCraft[1]).toLocaleString()}` : '제작 계획 없음',
     profit > 0 ? `예상 수익 ${profit.toLocaleString()}G` : '예상 수익 계산 대기',
