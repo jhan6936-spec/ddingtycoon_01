@@ -7528,6 +7528,7 @@ function saveExpertState() {
   try {
     localStorage.setItem(STORAGE_KEY_EXPERTS, JSON.stringify(expertState));
   } catch (_) {}
+  scheduleMinecraftDashboardSync();
 }
 
 function renderExperts() {
@@ -8655,6 +8656,7 @@ function saveStaminaInputState() {
     const v = parseInt(input.value || '0', 10);
     localStorage.setItem(STORAGE_KEY_STAMINA, String(Number.isFinite(v) ? Math.max(0, v) : 0));
   } catch (_) {}
+  scheduleMinecraftDashboardSync();
 }
 
 function loadStaminaInputState() {
