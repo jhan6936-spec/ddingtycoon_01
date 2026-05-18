@@ -5970,25 +5970,22 @@ function setAuthConfigHint(visible, message) {
   if (btn) btn.disabled = visible;
 }
 
-/** 세션이 있으면 session.user로 UI를 반영한 뒤 getUser()로 최신 클레임을 반영합니다. */
-async function refreshAuthUIFromSession(sb, session) {
+/** 세션이 있으면 즉시 UI를 반영하고, 느릴 수 있는 getUser()는 뒤에서 갱신합니다. */
+function refreshAuthUIFromSession(sb, session) {
   const n = authUiNonce;
   if (!session) {
     updateAuthUI(null);
     return;
   }
-  if (session.user) {
-    updateAuthUI(session.user);
-  }
-  try {
-    const user = await fetchAuthUserForUI(sb);
+  updateAuthUI(session.user ?? null);
+  fetchAuthUserForUI(sb).then((user) => {
     if (n !== authUiNonce) return;
     updateAuthUI(user || session.user);
-  } catch (e) {
+  }).catch((e) => {
     console.error('[Supabase Auth] refreshAuthUIFromSession 오류:', e);
     if (n !== authUiNonce) return;
     updateAuthUI(session.user ?? null);
-  }
+  });
 }
 
 async function initSupabaseAuth() {
@@ -6004,7 +6001,7 @@ async function initSupabaseAuth() {
     sb.auth.onAuthStateChange(async (event, session) => {
       try {
         console.debug('[Supabase Auth] onAuthStateChange:', event);
-        await refreshAuthUIFromSession(sb, session);
+        refreshAuthUIFromSession(sb, session);
       } catch (e) {
         console.error('[Supabase Auth] onAuthStateChange 처리 오류:', e);
         updateAuthUI(session?.user ?? null);
@@ -6017,7 +6014,7 @@ async function initSupabaseAuth() {
       updateAuthUI(null);
       return;
     }
-    await refreshAuthUIFromSession(sb, sessWrap.session);
+    refreshAuthUIFromSession(sb, sessWrap.session);
   } catch (e) {
     console.error('[Supabase Auth] initSupabaseAuth 예외:', e);
     updateAuthUI(null);
