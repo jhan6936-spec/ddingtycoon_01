@@ -5635,6 +5635,7 @@ function getSupabaseClient() {
 
 let cachedAuthUserForProfile = null;
 let currentAuthUserId = null;
+const MINECRAFT_PENDING_LINK_CODE_KEY = 'ddingtae_pending_minecraft_link_code';
 /** 로그아웃 후 늦게 끝나는 fetchAuthUserForUI가 로그인 UI를 덮어쓰지 않게 함 */
 let authUiNonce = 0;
 
@@ -5739,6 +5740,7 @@ function updateAuthUI(user) {
         avatarImg.hidden = true;
       }
     }
+    requestAnimationFrame(openPendingMinecraftLinkAfterLogin);
   } else {
     if (bar) bar.hidden = false;
     if (trigger) trigger.hidden = true;
@@ -5747,6 +5749,35 @@ function updateAuthUI(user) {
       avatarImg.alt = '';
     }
   }
+}
+
+function getPendingMinecraftLinkCode() {
+  try {
+    return localStorage.getItem(MINECRAFT_PENDING_LINK_CODE_KEY) || '';
+  } catch (_) {
+    return '';
+  }
+}
+
+function setPendingMinecraftLinkCode(code) {
+  try {
+    if (code) localStorage.setItem(MINECRAFT_PENDING_LINK_CODE_KEY, code);
+  } catch (_) {}
+}
+
+function clearPendingMinecraftLinkCode() {
+  try {
+    localStorage.removeItem(MINECRAFT_PENDING_LINK_CODE_KEY);
+  } catch (_) {}
+}
+
+function openPendingMinecraftLinkAfterLogin() {
+  if (!currentAuthUserId) return;
+  const code = getPendingMinecraftLinkCode();
+  if (!code) return;
+  const modal = document.getElementById('minecraftLinkModal');
+  if (modal && modal.classList.contains('open')) return;
+  openMinecraftLinkModal(code);
 }
 
 function openProfileSettingsModal() {
@@ -5793,6 +5824,7 @@ function saveProfileSettings() {
 }
 
 function openMinecraftLinkModal(prefillCode) {
+  if (prefillCode) setPendingMinecraftLinkCode(prefillCode);
   if (!currentAuthUserId) {
     alert('Discord 로그인 후 마인크래프트 연동을 진행할 수 있습니다.');
     return;
@@ -5913,6 +5945,7 @@ async function claimMinecraftLinkCode() {
     const doneMessage = '연동 완료! 이제 모드 항해일지에서 웹 계산 결과를 확인할 수 있습니다.';
     if (status) status.textContent = doneMessage;
     if (input) input.disabled = true;
+    clearPendingMinecraftLinkCode();
     alert(doneMessage);
   } catch (e) {
     const failMessage = `연동 실패: ${e.message || e}`;
