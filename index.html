@@ -1535,6 +1535,25 @@
       border-color: #666;
       color: #fff;
     }
+    .minecraft-link-btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid #4a8fd9;
+      background: #17324b;
+      color: #d8ecff;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .minecraft-link-btn:hover {
+      background: #21486b;
+    }
+    .minecraft-link-status {
+      margin-top: 10px;
+      color: #aeb8c5;
+      font-size: 12px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
     @media (max-width: 520px) {
       .site-auth-bar {
         margin-top: 0;
@@ -4374,8 +4393,29 @@
       <textarea id="profileBioInput" class="profile-field-textarea" maxlength="500" placeholder="간단한 소개를 적어 주세요"></textarea>
       <div class="profile-settings-actions">
         <button type="button" class="profile-save-btn" onclick="saveProfileSettings()">저장</button>
+        <button type="button" class="minecraft-link-btn" onclick="openMinecraftLinkModal()">마크 연동</button>
         <button type="button" class="profile-logout-btn" onclick="logoutFromProfileModal()">로그아웃</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<div id="minecraftLinkModal" class="patch-modal" onclick="closeMinecraftLinkOnBackdrop(event)">
+  <div class="patch-modal-card" onclick="event.stopPropagation()" style="width: min(420px, 100%); max-width: 100%;">
+    <div class="patch-modal-header">
+      <div class="patch-modal-title">마인크래프트 연동</div>
+      <button class="patch-close-btn" type="button" onclick="closeMinecraftLinkModal()">닫기</button>
+    </div>
+    <div class="patch-modal-body">
+      <p style="color:#b8c1cc; line-height:1.55; margin-top:0;">
+        모드에서 발급된 연동 코드를 입력하면 현재 Discord 계정과 마인크래프트 계정이 연결됩니다.
+      </p>
+      <label class="profile-field-label" for="minecraftLinkCodeInput">연동 코드</label>
+      <input type="text" id="minecraftLinkCodeInput" class="profile-field-input" maxlength="16" autocomplete="one-time-code" placeholder="예: A7K2PQ">
+      <div class="profile-settings-actions">
+        <button type="button" class="profile-save-btn" onclick="claimMinecraftLinkCode()">연동하기</button>
+      </div>
+      <div id="minecraftLinkStatus" class="minecraft-link-status"></div>
     </div>
   </div>
 </div>
@@ -5750,6 +5790,124 @@ function saveProfileSettings() {
   const bio = bioIn ? bioIn.value : '';
   saveStoredUserProfile(currentAuthUserId, displayName, bio);
   closeProfileSettingsModal();
+}
+
+function openMinecraftLinkModal(prefillCode) {
+  if (!currentAuthUserId) {
+    alert('Discord 로그인 후 마인크래프트 연동을 진행할 수 있습니다.');
+    return;
+  }
+  closeProfileSettingsModal();
+  const modal = document.getElementById('minecraftLinkModal');
+  const input = document.getElementById('minecraftLinkCodeInput');
+  const status = document.getElementById('minecraftLinkStatus');
+  if (input && prefillCode) input.value = prefillCode;
+  if (status) status.textContent = '';
+  if (modal) modal.classList.add('open');
+  if (input) input.focus();
+}
+
+function closeMinecraftLinkModal() {
+  const modal = document.getElementById('minecraftLinkModal');
+  if (modal) modal.classList.remove('open');
+}
+
+function closeMinecraftLinkOnBackdrop(e) {
+  if (e.target && e.target.id === 'minecraftLinkModal') closeMinecraftLinkModal();
+}
+
+function buildMinecraftDashboardPayload() {
+  const record = lastAlchemyRecordSnapshot || loadAlchemyHistoryRecords()[0] || null;
+  const counts = record && record.counts ? record.counts : {};
+  const entries = Object.entries(counts)
+    .filter(([, count]) => Number(count) > 0)
+    .sort((a, b) => Number(b[1]) - Number(a[1]));
+  const topCraft = entries[0] || null;
+  const directInputs = lastAlchemySummaryData && lastAlchemySummaryData.directInputs
+    ? Object.entries(lastAlchemySummaryData.directInputs)
+        .filter(([, count]) => Number(count) > 0)
+        .sort((a, b) => Number(b[1]) - Number(a[1]))
+    : [];
+  const material = directInputs[0] || null;
+  const inventory = typeof getWarehouseInventory === 'function' ? getWarehouseInventory() : {};
+  const materialCurrent = material ? Number(inventory[material[0]] || 0) : 0;
+  const materialTarget = material ? Number(material[1] || 0) : 1;
+  const profit = Number(record?.totalBoosted || 0);
+  const adjustedSec = Number(record?.adjustedSec || 0);
+  const resourceLines = directInputs.slice(0, 5).map(([name, count]) => {
+    const have = Number(inventory[name] || 0);
+    return `${name} ${have.toLocaleString()} / ${Number(count || 0).toLocaleString()}`;
+  });
+  const routeLines = directInputs.slice(0, 3).map(([name]) => `${name} 확보 추천 → 효율 파밍 루트 확인`);
+  const activityLines = [
+    topCraft ? `제작 계획: ${topCraft[0]} x${Number(topCraft[1]).toLocaleString()}` : '제작 계획 없음',
+    profit > 0 ? `예상 수익 ${profit.toLocaleString()}G` : '예상 수익 계산 대기',
+    adjustedSec > 0 ? `예상 시간 ${formatGuideDurationSec(adjustedSec)}` : '제작 시간 계산 대기'
+  ];
+
+  return {
+    craftingQueueTitle: topCraft ? `${topCraft[0]} x${Number(topCraft[1]).toLocaleString()} 제작 추천` : '웹 제작 목표 없음',
+    materialLine: material ? `${material[0]} ${materialCurrent.toLocaleString()} / ${materialTarget.toLocaleString()}` : '부족 재료 정보 없음',
+    materialCurrent,
+    materialTarget,
+    efficiencyResult: adjustedSec > 0 ? `예상 제작 시간 ${formatGuideDurationSec(adjustedSec)}` : '연금 효율 계산 대기',
+    expectedProfit: profit > 0 ? `예상 수익 ${profit.toLocaleString()}G` : '예상 수익 없음',
+    captainLog: [
+      'Discord 계정의 웹 계산 결과가 동기화되었습니다.',
+      topCraft ? `추천 제작: ${topCraft[0]} x${Number(topCraft[1]).toLocaleString()}` : '추천 제작 결과가 없습니다.',
+      material ? `주요 필요 재료: ${material[0]}` : '재료 창고 입력 후 계산해 주세요.'
+    ],
+    completionLog: ['띵타이쿤 웹에서 마인크래프트 항해일지로 전송됨'],
+    resourceLines,
+    routeLines,
+    activityLines,
+    crewWebsite: '웹사이트 연결됨',
+    crewSync: '제작 목표 동기화 완료',
+    crewApi: 'API 정상',
+    crewPlayer: 'Discord 선장',
+    crewContract: '항해 계약 활성화',
+    durability: 100,
+    fuel: 100,
+    food: '0일',
+    sailingState: '웹 연동 완료'
+  };
+}
+
+async function claimMinecraftLinkCode() {
+  const sb = getSupabaseClient();
+  const input = document.getElementById('minecraftLinkCodeInput');
+  const status = document.getElementById('minecraftLinkStatus');
+  const code = input ? input.value.trim().toUpperCase() : '';
+  if (!sb || !code) {
+    if (status) status.textContent = '연동 코드를 입력해 주세요.';
+    return;
+  }
+
+  const { data: sessionData, error } = await sb.auth.getSession();
+  if (error || !sessionData.session?.access_token) {
+    if (status) status.textContent = 'Discord 로그인이 필요합니다.';
+    return;
+  }
+
+  if (status) status.textContent = '연동 중입니다...';
+  try {
+    const response = await fetch('/api/minecraft/link/claim', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${sessionData.session.access_token}`
+      },
+      body: JSON.stringify({
+        code,
+        dashboard: buildMinecraftDashboardPayload()
+      })
+    });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(body.error || '연동 실패');
+    if (status) status.textContent = '연동 완료! 이제 모드 항해일지에서 웹 계산 결과를 확인할 수 있습니다.';
+  } catch (e) {
+    if (status) status.textContent = `연동 실패: ${e.message || e}`;
+  }
 }
 
 async function logoutFromProfileModal() {
@@ -9187,7 +9345,12 @@ function runWhenIdle(fn, timeoutMs) {
 }
 
 window.addEventListener('DOMContentLoaded', function() {
-  initSupabaseAuth();
+  initSupabaseAuth().then(() => {
+    try {
+      const code = new URLSearchParams(window.location.search).get('minecraft_link_code');
+      if (code) openMinecraftLinkModal(code);
+    } catch (_) {}
+  });
 
   try {
   loadVanillaToggleState();
