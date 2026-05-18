@@ -11,6 +11,7 @@ const fallbackDashboard = {
   gatheringTargetCount: 100,
   gatheringTargetStamina: 600,
   staminaPerGather: 15,
+  gatheringPlanLines: [],
   captainLog: ['웹사이트 계산 결과가 아직 저장되지 않았습니다.'],
   completionLog: ['띵타해 웹 연동 대기중'],
   resourceLines: ['Discord 로그인 후 재료 계산을 저장하세요'],
