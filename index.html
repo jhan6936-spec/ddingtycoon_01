@@ -5904,9 +5904,14 @@ async function claimMinecraftLinkCode() {
     });
     const body = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(body.error || '연동 실패');
-    if (status) status.textContent = '연동 완료! 이제 모드 항해일지에서 웹 계산 결과를 확인할 수 있습니다.';
+    const doneMessage = '연동 완료! 이제 모드 항해일지에서 웹 계산 결과를 확인할 수 있습니다.';
+    if (status) status.textContent = doneMessage;
+    if (input) input.disabled = true;
+    alert(doneMessage);
   } catch (e) {
-    if (status) status.textContent = `연동 실패: ${e.message || e}`;
+    const failMessage = `연동 실패: ${e.message || e}`;
+    if (status) status.textContent = failMessage;
+    alert(failMessage);
   }
 }
 
