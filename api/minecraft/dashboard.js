@@ -7,6 +7,7 @@ const fallbackDashboard = {
   materialTarget: 1,
   efficiencyResult: '효율 정보 없음',
   expectedProfit: '예상 수익 없음',
+  expertBonusLine: '웹 전문가 보정 없음',
   captainLog: ['웹사이트 계산 결과가 아직 저장되지 않았습니다.'],
   completionLog: ['띵타해 웹 연동 대기중'],
   resourceLines: ['Discord 로그인 후 재료 계산을 저장하세요'],
