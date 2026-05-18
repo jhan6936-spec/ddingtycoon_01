@@ -5894,7 +5894,8 @@ function buildMinecraftDashboardPayload() {
   })();
   const staminaTarget = savedStamina > 0 ? savedStamina - (savedStamina % STAMINA_PER_GATHER) : 600;
   const gatheringTargetCount = Math.max(0, Math.floor(staminaTarget / STAMINA_PER_GATHER));
-  const resourceLines = materialEntries.slice(0, 8).map(([name, count]) => {
+  const gatheringPlanLines = buildMinecraftGatheringPlanLines(savedStamina, inventory);
+  const resourceLines = materialEntries.map(([name, count]) => {
     const have = Number(inventory[name] || 0);
     return `${name} ${have.toLocaleString()} / ${Number(count || 0).toLocaleString()}`;
   });
@@ -5931,6 +5932,7 @@ function buildMinecraftDashboardPayload() {
     gatheringTargetCount,
     gatheringTargetStamina: staminaTarget,
     staminaPerGather: STAMINA_PER_GATHER,
+    gatheringPlanLines,
     captainLog: [
       'Discord 계정의 웹 계산 결과가 동기화되었습니다.',
       topCraft ? `추천 제작: ${topCraft[0]} x${Number(topCraft[1]).toLocaleString()}` : '추천 제작 결과가 없습니다.',
@@ -5952,6 +5954,45 @@ function buildMinecraftDashboardPayload() {
     food: '0일',
     sailingState: '웹 연동 완료'
   };
+}
+
+function buildMinecraftGatheringPlanLines(staminaRaw, inventory) {
+  const stamina = Math.max(0, Number(staminaRaw || 0)) - (Math.max(0, Number(staminaRaw || 0)) % STAMINA_PER_GATHER);
+  if (stamina <= 0) return [];
+  const vanillaToggle = document.getElementById('vanillaCalcToggle');
+  const isVanillaCalcOn = vanillaToggle ? vanillaToggle.checked : true;
+  const invForEff = { ...(inventory || {}) };
+  if (!isVanillaCalcOn) {
+    getInfiniteVanillaMaterials().forEach((n) => { invForEff[n] = Number.MAX_SAFE_INTEGER; });
+  }
+
+  const effScores = computeShellfishEfficiencyScores(invForEff);
+  const baseStock = {};
+  SHELLFISH_NAMES.forEach((name) => {
+    const p3 = Math.min(0.95, STAR_PROBS.s3 + ((expertMeta.starshell.values[expertState.starshell] || 0) / 100));
+    const p1 = Math.max(0.05, STAR_PROBS.s1 - (p3 - STAR_PROBS.s3) * 0.7);
+    const p2 = Math.max(0.05, 1 - p1 - p3);
+    baseStock[name] =
+      (Number(inventory?.[`${name} ★`] || 0) / p1) +
+      (Number(inventory?.[`${name} ★★`] || 0) / p2) +
+      (Number(inventory?.[`${name} ★★★`] || 0) / p3);
+  });
+  const weights = SHELLFISH_NAMES.map((name) => (1 / (baseStock[name] + 1)) * (effScores[name] || 0.001));
+  const totalW = weights.reduce((a, b) => a + b, 0) || 1;
+  const baseAlloc = SHELLFISH_NAMES.map((_, idx) => Math.floor(((stamina * weights[idx]) / totalW) / STAMINA_PER_GATHER) * STAMINA_PER_GATHER);
+  let remain = stamina - baseAlloc.reduce((a, b) => a + b, 0);
+  let turn = 0;
+  while (remain >= STAMINA_PER_GATHER) {
+    baseAlloc[turn % baseAlloc.length] += STAMINA_PER_GATHER;
+    remain -= STAMINA_PER_GATHER;
+    turn += 1;
+  }
+
+  return SHELLFISH_NAMES.map((name, idx) => {
+    const useStamina = baseAlloc[idx];
+    const targetCount = Math.floor(useStamina / STAMINA_PER_GATHER);
+    return [name, String(targetCount), String(useStamina), String(STAMINA_PER_GATHER)].join('|');
+  }).filter((line) => !line.includes('|0|0|'));
 }
 
 let minecraftDashboardSyncTimer = 0;
