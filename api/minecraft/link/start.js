@@ -22,7 +22,7 @@ module.exports = async function handler(req, res) {
     let code = randomCode();
     for (let attempt = 0; attempt < 4; attempt++) {
       try {
-        const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+        const expiresAt = new Date(Date.now() + 30 * 60 * 1000).toISOString();
         await supabaseRest('/minecraft_link_codes', {
           method: 'POST',
           headers: { Prefer: 'return=minimal' },
