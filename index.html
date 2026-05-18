@@ -5866,6 +5866,21 @@ function buildMinecraftDashboardPayload() {
   const materialTarget = material ? Number(material[1] || 0) : 1;
   const profit = Number(record?.totalBoosted || 0);
   const adjustedSec = Number(record?.adjustedSec || 0);
+  const eff = typeof getExpertEffects === 'function' ? getExpertEffects() : { timeReduce: 0 };
+  const timeReduceLevel = Number(expertState?.timeReduce || 0);
+  const staminaInput = document.getElementById('staminaInput');
+  const savedStamina = (() => {
+    const direct = parseInt(staminaInput?.value || '0', 10);
+    if (Number.isFinite(direct) && direct > 0) return direct;
+    try {
+      const stored = parseInt(localStorage.getItem(STORAGE_KEY_STAMINA) || '0', 10);
+      return Number.isFinite(stored) ? Math.max(0, stored) : 0;
+    } catch (_) {
+      return 0;
+    }
+  })();
+  const staminaTarget = savedStamina > 0 ? savedStamina - (savedStamina % STAMINA_PER_GATHER) : 600;
+  const gatheringTargetCount = Math.max(0, Math.floor(staminaTarget / STAMINA_PER_GATHER));
   const resourceLines = directInputs.slice(0, 5).map(([name, count]) => {
     const have = Number(inventory[name] || 0);
     return `${name} ${have.toLocaleString()} / ${Number(count || 0).toLocaleString()}`;
@@ -5884,7 +5899,10 @@ function buildMinecraftDashboardPayload() {
     materialTarget,
     efficiencyResult: adjustedSec > 0 ? `예상 제작 시간 ${formatGuideDurationSec(adjustedSec)}` : '연금 효율 계산 대기',
     expectedProfit: profit > 0 ? `예상 수익 ${profit.toLocaleString()}G` : '예상 수익 없음',
-    expertBonusLine: '웹 전문가 능력치 반영됨',
+    expertBonusLine: `물 흐르듯 술술 Lv.${timeReduceLevel} / 제작 시간 -${Number(eff.timeReduce || 0)}%`,
+    gatheringTargetCount,
+    gatheringTargetStamina: staminaTarget,
+    staminaPerGather: STAMINA_PER_GATHER,
     captainLog: [
       'Discord 계정의 웹 계산 결과가 동기화되었습니다.',
       topCraft ? `추천 제작: ${topCraft[0]} x${Number(topCraft[1]).toLocaleString()}` : '추천 제작 결과가 없습니다.',
