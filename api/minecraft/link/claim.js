@@ -43,19 +43,25 @@ module.exports = async function handler(req, res) {
       })
     });
 
+    let dashboardSaved = false;
     if (body.dashboard && typeof body.dashboard === 'object') {
-      await supabaseRest('/minecraft_dashboard_snapshots', {
-        method: 'POST',
-        headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
-        body: JSON.stringify({
-          user_id: user.id,
-          dashboard: body.dashboard,
-          updated_at: new Date().toISOString()
-        })
-      });
+      try {
+        await supabaseRest('/minecraft_dashboard_snapshots?on_conflict=user_id', {
+          method: 'POST',
+          headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
+          body: JSON.stringify({
+            user_id: user.id,
+            dashboard: body.dashboard,
+            updated_at: new Date().toISOString()
+          })
+        });
+        dashboardSaved = true;
+      } catch (error) {
+        console.warn('[minecraft/link/claim] dashboard snapshot save failed:', error);
+      }
     }
 
-    return sendJson(res, 200, { linked: true });
+    return sendJson(res, 200, { linked: true, dashboardSaved });
   } catch (error) {
     console.error('[minecraft/link/claim]', error);
     return sendJson(res, 500, { error: 'link_claim_failed' });
