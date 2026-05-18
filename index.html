@@ -5898,6 +5898,10 @@ function buildMinecraftDashboardPayload() {
     const have = Number(inventory[name] || 0);
     return `${name} ${have.toLocaleString()} / ${Number(count || 0).toLocaleString()}`;
   });
+  const goalMaterialLines = directInputs.slice(0, 6).map(([name, count]) => {
+    const have = Number(inventory[name] || 0);
+    return `${name} ${have.toLocaleString()} / ${Number(count || 0).toLocaleString()}`;
+  });
   const routeLines = materialEntries.slice(0, 3).map(([name]) => `${name} 확보 추천 → 효율 파밍 루트 확인`);
   const goalLines = entries.slice(0, 15).map(([name, count]) => {
     const percent = 0;
@@ -5934,6 +5938,7 @@ function buildMinecraftDashboardPayload() {
     ],
     completionLog: ['띵타이쿤 웹에서 마인크래프트 항해일지로 전송됨'],
     resourceLines,
+    goalMaterialLines,
     routeLines,
     activityLines,
     goalLines,
