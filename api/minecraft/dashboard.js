@@ -1,4 +1,4 @@
-const { handleCors, sendJson, supabaseRest, hashToken } = require('../_supabase');
+const { handleCors, sendJson, readJson, supabaseRest, getSupabaseUser, hashToken } = require('../_supabase');
 
 const fallbackDashboard = {
   craftingQueueTitle: '웹 연동 대기',
@@ -8,6 +8,9 @@ const fallbackDashboard = {
   efficiencyResult: '효율 정보 없음',
   expectedProfit: '예상 수익 없음',
   expertBonusLine: '웹 전문가 보정 없음',
+  gatheringTargetCount: 100,
+  gatheringTargetStamina: 600,
+  staminaPerGather: 15,
   captainLog: ['웹사이트 계산 결과가 아직 저장되지 않았습니다.'],
   completionLog: ['띵타해 웹 연동 대기중'],
   resourceLines: ['Discord 로그인 후 재료 계산을 저장하세요'],
@@ -26,9 +29,28 @@ const fallbackDashboard = {
 
 module.exports = async function handler(req, res) {
   if (handleCors(req, res)) return;
-  if (req.method !== 'GET') return sendJson(res, 405, { error: 'method_not_allowed' });
+  if (req.method !== 'GET' && req.method !== 'POST') return sendJson(res, 405, { error: 'method_not_allowed' });
 
   try {
+    if (req.method === 'POST') {
+      const user = await getSupabaseUser(req.headers.authorization || '');
+      if (!user || !user.id) return sendJson(res, 401, { error: 'login_required' });
+      const body = await readJson(req);
+      if (!body.dashboard || typeof body.dashboard !== 'object') {
+        return sendJson(res, 400, { error: 'dashboard_required' });
+      }
+      await supabaseRest('/minecraft_dashboard_snapshots?on_conflict=user_id', {
+        method: 'POST',
+        headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
+        body: JSON.stringify({
+          user_id: user.id,
+          dashboard: body.dashboard,
+          updated_at: new Date().toISOString()
+        })
+      });
+      return sendJson(res, 200, { saved: true });
+    }
+
     const authorization = req.headers.authorization || '';
     const token = authorization.startsWith('Bearer ') ? authorization.slice(7).trim() : '';
     if (!token) return sendJson(res, 401, { error: 'token_required' });
