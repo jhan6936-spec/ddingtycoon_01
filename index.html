@@ -5884,6 +5884,7 @@ function buildMinecraftDashboardPayload() {
     materialTarget,
     efficiencyResult: adjustedSec > 0 ? `예상 제작 시간 ${formatGuideDurationSec(adjustedSec)}` : '연금 효율 계산 대기',
     expectedProfit: profit > 0 ? `예상 수익 ${profit.toLocaleString()}G` : '예상 수익 없음',
+    expertBonusLine: '웹 전문가 능력치 반영됨',
     captainLog: [
       'Discord 계정의 웹 계산 결과가 동기화되었습니다.',
       topCraft ? `추천 제작: ${topCraft[0]} x${Number(topCraft[1]).toLocaleString()}` : '추천 제작 결과가 없습니다.',
