@@ -5924,6 +5924,33 @@ function buildMinecraftDashboardPayload() {
   };
 }
 
+let minecraftDashboardSyncTimer = 0;
+
+function scheduleMinecraftDashboardSync() {
+  clearTimeout(minecraftDashboardSyncTimer);
+  minecraftDashboardSyncTimer = setTimeout(syncMinecraftDashboardSnapshot, 700);
+}
+
+async function syncMinecraftDashboardSnapshot() {
+  const sb = getSupabaseClient();
+  if (!sb) return;
+  const { data: sessionData } = await sb.auth.getSession().catch(() => ({ data: null }));
+  const token = sessionData?.session?.access_token;
+  if (!token) return;
+  try {
+    await fetch('/api/minecraft/dashboard', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ dashboard: buildMinecraftDashboardPayload() })
+    });
+  } catch (e) {
+    console.warn('[minecraft/dashboard] snapshot sync failed:', e);
+  }
+}
+
 async function claimMinecraftLinkCode() {
   const sb = getSupabaseClient();
   const input = document.getElementById('minecraftLinkCodeInput');
