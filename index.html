@@ -5928,9 +5928,12 @@ async function claimMinecraftLinkCode() {
 
   if (status) status.textContent = '연동 중입니다...';
   if (button) button.disabled = true;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
   try {
     const response = await fetch('/api/minecraft/link/claim', {
       method: 'POST',
+      signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${sessionData.session.access_token}`
@@ -5948,10 +5951,14 @@ async function claimMinecraftLinkCode() {
     clearPendingMinecraftLinkCode();
     alert(doneMessage);
   } catch (e) {
-    const failMessage = `연동 실패: ${e.message || e}`;
+    const failMessage = e && e.name === 'AbortError'
+      ? '연동 실패: 서버 응답이 15초 이상 지연되었습니다. Vercel 배포/API 로그를 확인해 주세요.'
+      : `연동 실패: ${e.message || e}`;
     if (status) status.textContent = failMessage;
     alert(failMessage);
     if (button) button.disabled = false;
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
