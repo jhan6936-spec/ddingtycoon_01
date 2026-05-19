@@ -9544,11 +9544,42 @@ function runWhenIdle(fn, timeoutMs) {
   }
 }
 
+async function loadLiveNpcMarketPrices() {
+  try {
+    const response = await fetch('/api/minecraft/market-prices?server=ddingtycoon');
+    if (!response.ok) return;
+    const body = await response.json();
+    const prices = body && body.prices ? body.prices : null;
+    if (!prices || typeof prices !== 'object') return;
+
+    let applied = 0;
+    (data.recipes || []).forEach((recipe) => {
+      const live = prices[recipe.name];
+      if (live === undefined || live === null) return;
+      const numeric = Number(live);
+      if (!Number.isFinite(numeric) || numeric <= 0) return;
+      recipe.price = Math.round(numeric);
+      applied += 1;
+    });
+    if (applied > 0) {
+      console.info('[market-prices] applied', applied, 'live NPC prices for', body.date || 'today');
+    }
+  } catch (error) {
+    console.warn('[market-prices] load failed:', error);
+  }
+}
+
 window.addEventListener('DOMContentLoaded', function() {
   initSupabaseAuth().then(() => {
     try {
       const code = new URLSearchParams(window.location.search).get('minecraft_link_code');
       if (code) openMinecraftLinkModal(code);
+    } catch (_) {}
+  });
+
+  loadLiveNpcMarketPrices().then(() => {
+    try {
+      renderCraftPricePanel(typeof getExpertEffects === 'function' ? getExpertEffects() : { craftPriceBoost: 0 });
     } catch (_) {}
   });
 
