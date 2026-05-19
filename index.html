@@ -5848,10 +5848,36 @@ function closeMinecraftLinkOnBackdrop(e) {
   if (e.target && e.target.id === 'minecraftLinkModal') closeMinecraftLinkModal();
 }
 
+function buildMinecraftProductGoalLine(productName, count, effects) {
+  const n = Math.max(0, Math.floor(Number(count) || 0));
+  const recipe = data.recipes.find((r) => r.name === productName);
+  const calcCount = n > 0 ? n : 1;
+  const baseTimeSec = calculateAlchemyProductBaseTimeSec(productName, calcCount);
+  const adjustedSec = Math.max(0, Math.floor(baseTimeSec * (1 - (effects.timeReduce || 0) / 100)));
+  const mult = 1 + (effects.alchemyPriceBoost || 0) / 100;
+  const unitProfit = recipe ? Math.round((recipe.price || 0) * mult) : 0;
+  const totalProfit = unitProfit * n;
+  const timeReduceLevel = Number(expertState?.timeReduce || 0);
+  const expertLine = `물 흐르듯 술술 Lv.${timeReduceLevel} / 제작 시간 -${Number(effects.timeReduce || 0)}%`;
+  return [
+    productName,
+    n > 0 ? `${productName} x${n.toLocaleString()} 제작 추천` : `${productName} (웹 계획 0개 · 1개 기준 미리보기)`,
+    adjustedSec > 0
+      ? (n > 0 ? `예상 제작 시간 ${formatGuideDurationSec(adjustedSec)}` : `1개 기준 ${formatGuideDurationSec(adjustedSec)}`)
+      : '제작 시간 계산 대기',
+    n > 0
+      ? (totalProfit > 0 ? `예상 수익 ${totalProfit.toLocaleString()}G` : '예상 수익 없음')
+      : (unitProfit > 0 ? `1개당 ${unitProfit.toLocaleString()}G` : '예상 수익 없음'),
+    expertLine,
+    '0'
+  ].join('|');
+}
+
 function buildMinecraftDashboardPayload() {
   const record = lastAlchemyRecordSnapshot || loadAlchemyHistoryRecords()[0] || null;
-  const counts = record && record.counts ? record.counts : {};
+  const counts = lastAlchemyPlanCountsByName || (record && record.counts ? record.counts : {});
   const minecraftFinalProducts = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'];
+  const eff = typeof getExpertEffects === 'function' ? getExpertEffects() : { timeReduce: 0, alchemyPriceBoost: 0 };
   const entries = Object.entries(counts)
     .filter(([name, count]) => Number(count) > 0 && minecraftFinalProducts.includes(name))
     .sort((a, b) => Number(b[1]) - Number(a[1]));
@@ -5880,7 +5906,6 @@ function buildMinecraftDashboardPayload() {
   const materialTarget = material ? Number(material[1] || 0) : 1;
   const profit = Number(record?.totalBoosted || 0);
   const adjustedSec = Number(record?.adjustedSec || 0);
-  const eff = typeof getExpertEffects === 'function' ? getExpertEffects() : { timeReduce: 0 };
   const timeReduceLevel = Number(expertState?.timeReduce || 0);
   const staminaInput = document.getElementById('staminaInput');
   const savedStamina = (() => {
