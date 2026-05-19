@@ -5851,8 +5851,9 @@ function closeMinecraftLinkOnBackdrop(e) {
 function buildMinecraftDashboardPayload() {
   const record = lastAlchemyRecordSnapshot || loadAlchemyHistoryRecords()[0] || null;
   const counts = record && record.counts ? record.counts : {};
+  const minecraftFinalProducts = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'];
   const entries = Object.entries(counts)
-    .filter(([, count]) => Number(count) > 0)
+    .filter(([name, count]) => Number(count) > 0 && minecraftFinalProducts.includes(name))
     .sort((a, b) => Number(b[1]) - Number(a[1]));
   const topCraft = entries[0] || null;
   const directInputs = lastAlchemySummaryData && lastAlchemySummaryData.directInputs
