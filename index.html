@@ -5873,6 +5873,23 @@ function buildMinecraftProductGoalLine(productName, count, effects) {
   ].join('|');
 }
 
+function buildCraftTimeCatalogLines() {
+  const finals = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'];
+  const lines = [];
+  const seen = new Set();
+  const pushLine = (name) => {
+    if (!name || seen.has(name)) return;
+    seen.add(name);
+    const base = getBaseAlchemyTimeSec(name);
+    const station = finals.includes(name) ? 'precision' : 'alchemy';
+    lines.push(`${name}|${base}|${station}`);
+  };
+  Object.keys(data.materials || {}).forEach(pushLine);
+  (data.recipes || []).forEach((recipe) => pushLine(recipe.name));
+  finals.forEach(pushLine);
+  return lines;
+}
+
 function buildMinecraftDashboardPayload() {
   const record = lastAlchemyRecordSnapshot || loadAlchemyHistoryRecords()[0] || null;
   const counts = lastAlchemyPlanCountsByName || (record && record.counts ? record.counts : {});
@@ -5959,6 +5976,8 @@ function buildMinecraftDashboardPayload() {
     efficiencyResult: adjustedSec > 0 ? `예상 제작 시간 ${formatGuideDurationSec(adjustedSec)}` : '연금 효율 계산 대기',
     expectedProfit: profit > 0 ? `예상 수익 ${profit.toLocaleString()}G` : '예상 수익 없음',
     expertBonusLine: `물 흐르듯 술술 Lv.${timeReduceLevel} / 제작 시간 -${Number(eff.timeReduce || 0)}%`,
+    timeReducePercent: Number(eff.timeReduce || 0),
+    craftTimeCatalogLines: buildCraftTimeCatalogLines(),
     gatheringTargetCount,
     gatheringTargetStamina: staminaTarget,
     staminaPerGather: STAMINA_PER_GATHER,
