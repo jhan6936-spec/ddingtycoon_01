@@ -5903,6 +5903,18 @@ function buildMinecraftDashboardPayload() {
     const have = Number(inventory[name] || 0);
     return `${name} ${have.toLocaleString()} / ${Number(count || 0).toLocaleString()}`;
   });
+  const goalMaterialBundleLines = entries.map(([productName, productCount]) => {
+    const inputs = aggregatePlanDirectInputs([[productName, productCount]]);
+    const materialPart = Object.entries(inputs)
+      .filter(([, count]) => Number(count) > 0)
+      .sort((a, b) => Number(b[1]) - Number(a[1]))
+      .map(([name, count]) => {
+        const have = Number(inventory[name] || 0);
+        return `${name} ${have.toLocaleString()} / ${Number(count || 0).toLocaleString()}`;
+      })
+      .join(';');
+    return `${productName}|${materialPart}`;
+  });
   const routeLines = materialEntries.slice(0, 3).map(([name]) => `${name} 확보 추천 → 효율 파밍 루트 확인`);
   const goalLines = entries.slice(0, 15).map(([name, count]) => {
     const percent = 0;
@@ -5941,6 +5953,7 @@ function buildMinecraftDashboardPayload() {
     completionLog: ['띵타이쿤 웹에서 마인크래프트 항해일지로 전송됨'],
     resourceLines,
     goalMaterialLines,
+    goalMaterialBundleLines,
     routeLines,
     activityLines,
     goalLines,
