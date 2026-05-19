@@ -5942,17 +5942,9 @@ function buildMinecraftDashboardPayload() {
     return `${productName}|${materialPart}`;
   });
   const routeLines = materialEntries.slice(0, 3).map(([name]) => `${name} 확보 추천 → 효율 파밍 루트 확인`);
-  const goalLines = entries.slice(0, 15).map(([name, count]) => {
-    const percent = 0;
-    return [
-      name,
-      `${name} x${Number(count).toLocaleString()} 제작 추천`,
-      adjustedSec > 0 ? `예상 제작 시간 ${formatGuideDurationSec(adjustedSec)}` : '제작 시간 계산 대기',
-      profit > 0 ? `예상 수익 ${profit.toLocaleString()}G` : '예상 수익 없음',
-      `물 흐르듯 술술 Lv.${timeReduceLevel} / 제작 시간 -${Number(eff.timeReduce || 0)}%`,
-      String(percent)
-    ].join('|');
-  });
+  const goalLines = minecraftFinalProducts.map((name) =>
+    buildMinecraftProductGoalLine(name, counts[name] || 0, eff)
+  );
   const activityLines = [
     topCraft ? `제작 계획: ${topCraft[0]} x${Number(topCraft[1]).toLocaleString()}` : '제작 계획 없음',
     profit > 0 ? `예상 수익 ${profit.toLocaleString()}G` : '예상 수익 계산 대기',
