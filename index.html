@@ -4271,6 +4271,15 @@
             <button class="btn danger" type="button" onclick="resetAllWarehouse()">전체 초기화</button>
             <button class="btn" type="button" id="warehouseSetDisplayToggle" onclick="toggleWarehouseSetDisplayMode()">갯수/세트 변환</button>
           </div>
+          <div class="warehouse-toolbar-row warehouse-toolbar-row--calc-mode">
+            <div class="toggle-wrap warehouse-toggle-inline">
+              <span class="warehouse-vanilla-label-text">계산모드</span>
+              <label class="toggle-switch" title="켜짐: 수량 칸 클릭 시 계산기 / 꺼짐: 숫자 직접 입력">
+                <input id="warehouseCalcModeToggle" type="checkbox">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -4723,6 +4732,7 @@ const STORAGE_KEY_SAGE_ROD = 'thingta_sage_rod_v1';
 const STORAGE_KEY_SAGE_ENGRAVINGS = 'thingta_sage_engraving_v1';
 const STORAGE_KEY_STAMINA = 'thingta_stamina_v1';
 const STORAGE_KEY_WAREHOUSE_SET_VIEW = 'thingta_warehouse_set_view_v1';
+const STORAGE_KEY_WAREHOUSE_CALC_MODE = 'thingta_warehouse_calc_mode_v1';
 const STORAGE_KEY_ALCHEMY_SUMMARY_QTY = 'thingta_alchemy_summary_qty_mode_v1';
 const STORAGE_KEY_ALCHEMY_MAT_PANEL = 'thingta_alchemy_mat_panel_v1';
 const STORAGE_KEY_ALCHEMY_HISTORY = 'thingta_alchemy_production_history_v1';
@@ -5130,6 +5140,7 @@ function ensureCalcPopup() {
       </div>
 
       <div class="calc-actions">
+        <button class="action-btn primary" type="button" id="calcDoneBtn">완료</button>
         <button class="action-btn danger" type="button" id="calcResetBtn">초기화</button>
       </div>
     </div>
@@ -5176,7 +5187,11 @@ function ensureCalcPopup() {
     handleCalcKey(key);
   });
 
-  // 초기화만 (적용·추가는 적용모드/추가모드 + 엔터)
+  popup.querySelector('#calcDoneBtn').addEventListener('click', () => {
+    const ok = commitCalcValue(calcState.commitMode === 'add' ? 'add' : 'apply');
+    if (ok) closeCalculator();
+  });
+
   popup.querySelector('#calcResetBtn').addEventListener('click', () => commitCalcValue('reset'));
 
   popup.querySelectorAll('#calcCommitModes [data-commit]').forEach((btn) => {
@@ -5316,7 +5331,9 @@ function parkCalcPopupOnBody() {
 }
 
 function openCalculatorForInput(inputEl) {
-  if (warehouseSetViewEnabled() && inputEl && inputEl.closest && inputEl.closest('#warehouseContainer')) {
+  const isWarehouseInput = !!(inputEl && inputEl.closest && inputEl.closest('#warehouseContainer'));
+  if (isWarehouseInput && !warehouseCalcModeEnabled()) return;
+  if (warehouseSetViewEnabled() && isWarehouseInput) {
     return;
   }
   ensureCalcPopup();
@@ -5793,17 +5810,23 @@ function stripMinecraftLinkCodeFromUrl() {
 }
 
 /** 마크에서 넘어온 URL ?minecraft_link_code= 만 처리 (일반 접속·새로고침에서는 모달 자동 오픈 안 함) */
-function handleMinecraftLinkCodeFromUrl() {
+async function handleMinecraftLinkCodeFromUrl() {
   const code = stripMinecraftLinkCodeFromUrl();
   if (!code) return;
   if (currentAuthUserId) {
+    const linkState = await fetchMinecraftLinkState();
+    if (linkState.linked) {
+      clearPendingMinecraftLinkCode();
+      refreshMinecraftLinkUi();
+      return;
+    }
     openMinecraftLinkModal(code, { autoOpen: true });
     return;
   }
   setPendingMinecraftLinkCode(code);
 }
 
-function openPendingMinecraftLinkAfterLogin() {
+async function openPendingMinecraftLinkAfterLogin() {
   if (!currentAuthUserId) return;
   const code = getPendingMinecraftLinkCode();
   if (!code) return;
@@ -5812,6 +5835,12 @@ function openPendingMinecraftLinkAfterLogin() {
   } catch (_) {}
   const modal = document.getElementById('minecraftLinkModal');
   if (modal && modal.classList.contains('open')) return;
+  const linkState = await fetchMinecraftLinkState();
+  if (linkState.linked) {
+    clearPendingMinecraftLinkCode();
+    refreshMinecraftLinkUi();
+    return;
+  }
   openMinecraftLinkModal(code, { autoOpen: true, fromPendingLogin: true });
 }
 
@@ -5874,14 +5903,8 @@ async function openMinecraftLinkModal(prefillCode, options) {
   const saveButton = document.querySelector('#minecraftLinkModal .profile-save-btn');
   const linkState = await fetchMinecraftLinkState();
   if (linkState.linked) {
-    const name = linkState.discordName || resolveDiscordDisplayNameForMinecraft() || 'Discord';
-    if (status) status.textContent = `${name} · 마인크래프트 연동됨`;
-    if (input) {
-      input.value = '';
-      input.disabled = true;
-    }
-    if (saveButton) saveButton.disabled = true;
-    if (modal) modal.classList.add('open');
+    clearPendingMinecraftLinkCode();
+    refreshMinecraftLinkUi();
     return;
   }
   if (input) {
