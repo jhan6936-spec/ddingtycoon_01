@@ -7776,7 +7776,7 @@ function changeExpertLevel(key, delta) {
   expertState[key] = next;
   saveExpertState();
   renderExperts();
-  analyzeEfficiency();
+  handleEfficiencyInputChanged();
   renderRecipes();
 }
 
@@ -8850,7 +8850,7 @@ function changeSageEngravingLevel(key, rawLevel) {
   saveSageEngravingState();
   renderSageRod();
   renderStaminaPlan();
-  analyzeEfficiency();
+  handleEfficiencyInputChanged();
 }
 
 function saveStaminaInputState() {
