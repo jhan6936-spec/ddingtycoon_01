@@ -4823,107 +4823,33 @@ function getAlchemyMaterialOutputCount(name) {
 }
 const STAR_PROBS = { s1: 0.6, s2: 0.3, s3: 0.1 };
 const STAMINA_PER_GATHER = 15;
-const IMAGE_FOLDERS = ['../재료', '재료 1', '재료1', '재료', '재료 2', '재료2'];
+const IMAGE_FOLDERS = ['재료', '재료 1', '재료1'];
+
+/** 표시 이름 → 재료/재료 1 폴더 PNG 파일명(확장자 제외) */
+const MATERIAL_IMAGE_ALIASES = {
+  '해구 파동의 코어': '해구의 파동 코어',
+  '조개껍데기': '깨진 조개껍데기'
+};
 
 function resolveImageFolder(folder) {
   const trimmed = String(folder || '').trim();
   if (trimmed === '재료1') return '재료 1';
-  if (trimmed === '재료2') return '재료 2';
   return trimmed;
+}
+
+function resolveMaterialImageBaseName(text) {
+  const t = String(text || '').trim().replace(/\s+/g, ' ');
+  const noStars = t.replace(/\s*★+/g, '').trim();
+  return MATERIAL_IMAGE_ALIASES[t] || MATERIAL_IMAGE_ALIASES[noStars] || noStars;
 }
 
 function getImagePathCandidates(text) {
   const t = String(text || '').trim().replace(/\s+/g, ' ');
-  // 재료 이름에 맞는 이미지 경로를 반환
-  const imageMap = {
-    '굴 ★': '재료/굴.png',
-    '소라 ★': '재료/소라.png',
-    '문어 ★': '재료/문어.png',
-    '미역 ★': '재료/미역.png',
-    '성게 ★': '재료/성게.png',
-    '수호의 정수 ★': '재료/수호의 정수.png',
-    '파동의 정수 ★': '재료/파동의 정수.png',
-    '혼란의 정수 ★': '재료/혼란의 정수.png',
-    '생명의 정수 ★': '재료/생명의 정수.png',
-    '부식의 정수 ★': '재료/부식의 정수.png',
-    '물결 수호의 핵 ★': '재료/물결 수호의 핵.png',
-    '파동 오염의 핵 ★': '재료/파동 오염의 핵.png',
-    '질서 파괴의 핵 ★': '재료/질서 파괴의 핵.png',
-    '활력 붕괴의 핵 ★': '재료/활력 붕괴의 핵.png',
-    '침식 방어의 핵 ★': '재료/침식 방어의 핵.png',
-    '수호 에센스 ★★': '재료/수호 에센스.png',
-    '파동 에센스 ★★': '재료/파동 에센스.png',
-    '혼란 에센스 ★★': '재료/혼란 에센스.png',
-    '생명 에센스 ★★': '재료/생명 에센스.png',
-    '부식 에센스 ★★': '재료/부식 에센스.png',
-    '활기 보존의 결정 ★★': '재료/활기 보존의 결정.png',
-    '파도 침식의 결정 ★★': '재료/파도 침식의 결정.png',
-    '방어 오염의 결정 ★★': '재료/방어 오염의 결정.png',
-    '격류 재생의 결정 ★★': '재료/격류 재생의 결정.png',
-    '맹독 혼란의 결정 ★★': '재료/맹독 혼란의 결정.png',
-    '수호의 엘릭서 ★★★': '재료/수호의 엘릭서.png',
-    '파동의 엘릭서 ★★★': '재료/파동의 엘릭서.png',
-    '혼란의 엘릭서 ★★★': '재료/혼란의 엘릭서.png',
-    '생명의 엘릭서 ★★★': '재료/생명의 엘릭서.png',
-    '부식의 엘릭서 ★★★': '재료/부식의 엘릭서.png',
-    '불멸 재생의 영약 ★★★': '재료/불멸 재생의 영약.png',
-    '파동 장벽의 영약 ★★★': '재료/파동 장벽의 영약.png',
-    '타락 침식의 영약 ★★★': '재료/타락 침식의 영약.png',
-    '생명 광란의 영약 ★★★': '재료/생명 광란의 영약.png',
-    '맹독 파동의 영약 ★★★': '재료/맹독 파동의 영약.png',
-    '영생의 아쿠티스': '재료/영생의 아쿠티스.png',
-    '크라켄의 광란체': '재료/크라켄의 광란체.png',
-    '리바이던의 깃털': '재료/리바이던의 깃털.png',
-    '해구 파동의 코어': '재료/해구의 파동 코어.png',
-    '침묵의 심해 비약': '재료/침묵의 심해 비약.png',
-    '청해룡의 날개': '재료/청해룡의 날개.png',
-    '아쿠아 펄스 파편': '재료/아쿠아 펄스 파편.png',
-    '나우틸러스의 손': '재료/나우틸러스의 손.png',
-    '무저의 척추': '재료/무저의 척추.png',
-    '추출된 희석액': '재료/추출된 희석액.png',
-    '깐 새우': '재료/깐 새우.png',
-    '도미 회': '재료/도미 회.png',
-    '청어 회': '재료/청어 회.png',
-    '금붕어 회': '재료/금붕어 회.png',
-    '농어 회': '재료/농어 회.png',
-    '깨진 조개껍데기': '재료/깨진 조개껍데기.png',
-    '노란빛 진주': '재료/노란빛 진주.png',
-    '푸른빛 진주': '재료/푸른빛 진주.png',
-    '청록빛 진주': '재료/청록빛 진주.png',
-    '분홍빛 진주': '재료/분홍빛 진주.png',
-    '보라빛 진주': '재료/보라빛 진주.png',
-    '흑진주': '재료/흑진주.png',
-    '금속 재활용품': '재료/금속 재활용품.png',
-    '합성수지 재활용품': '재료/합성수지 재활용품.png',
-    '플라스틱 재활용품': '재료/플라스틱 재활용품.png',
-    '합금 재활용품': '재료/합금 재활용품.png',
-    '섬유 재활용품': '재료/섬유 재활용품.png',
-    '거미줄': '재료/거미줄.png',
-    '양동이': '재료/양동이.png',
-    '유리판': '재료/유리판.png',
-    '대나무': '재료/대나무.png',
-    '분홍 꽃잎': '재료/분홍 꽃잎.png',
-    '분홍꽃잎': '재료/분홍 꽃잎.png',
-    '분홓 꽃잎': '재료/분홍 꽃잎.png',
-    '막대기': '재료/막대기.png',
-    '자수정 조각': '재료/자수정 조각.png',
-    '흑요석': '재료/흑요석.png',
-    '시계': '재료/시계.png',
-    '조개껍데기 브로치': '재료/조개껍데기 브로치.png',
-    '푸른 향수병': '재료/푸른 향수병.png',
-    '자개 손거울': '재료/자개 손거울.png',
-    '분홍 헤어핀': '재료/분홍 헤어핀.png',
-    '자개 부채': '재료/자개 부채.png',
-    '흑진주 시계': '재료/흑진주 시계.png'
-  };
-  const mapped = imageMap[t] || '';
-  const noStars = t.replace(/\s*★+/g, '').trim();
-  const mappedFile = mapped ? mapped.split('/').pop() : '';
-  const baseFile = `${noStars}.png`;
+  const baseName = resolveMaterialImageBaseName(t);
+  const baseFile = `${baseName}.png`;
   const candidates = [];
   IMAGE_FOLDERS.forEach((folder) => {
     const resolved = resolveImageFolder(folder);
-    if (mappedFile) candidates.push(`${resolved}/${mappedFile}`);
     candidates.push(`${resolved}/${baseFile}`);
   });
   return Array.from(new Set(candidates.filter(Boolean)));
