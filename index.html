@@ -7266,7 +7266,50 @@ function renderWarehouse() {
     input.addEventListener('click', () => openCalculatorForInput(input));
   });
 
+  updateWarehouseCalcInputMode();
   updateVanillaInputState();
+}
+
+// ===== 창고 계산모드 =====
+function warehouseCalcModeEnabled() {
+  const toggle = document.getElementById('warehouseCalcModeToggle');
+  return toggle ? toggle.checked : false;
+}
+
+function loadWarehouseCalcModeState() {
+  try {
+    const toggle = document.getElementById('warehouseCalcModeToggle');
+    if (!toggle) return;
+    toggle.checked = localStorage.getItem(STORAGE_KEY_WAREHOUSE_CALC_MODE) === '1';
+  } catch (_) {}
+}
+
+function saveWarehouseCalcModeState() {
+  try {
+    localStorage.setItem(
+      STORAGE_KEY_WAREHOUSE_CALC_MODE,
+      warehouseCalcModeEnabled() ? '1' : '0'
+    );
+  } catch (_) {}
+}
+
+function updateWarehouseCalcInputMode() {
+  const calcOn = warehouseCalcModeEnabled();
+  document.querySelectorAll('#warehouseContainer input[data-material]').forEach((input) => {
+    if (calcOn) {
+      input.setAttribute('readonly', 'readonly');
+      input.classList.add('warehouse-input--calc-mode');
+    } else {
+      input.removeAttribute('readonly');
+      input.classList.remove('warehouse-input--calc-mode');
+    }
+  });
+  if (!calcOn) closeCalculator();
+}
+
+function handleWarehouseCalcModeToggle() {
+  saveWarehouseCalcModeState();
+  updateWarehouseCalcInputMode();
 }
 
 // ===== 창고 세트(64) 표시 모드 =====
@@ -9879,6 +9922,7 @@ window.addEventListener('DOMContentLoaded', function() {
   renderRecipes();
   runWhenIdle(() => renderMainCreditsInline());
   loadWarehouseSetViewState();
+  loadWarehouseCalcModeState();
   loadAlchemySummaryQtyMode();
   loadAlchemyMatPanelMode();
   renderWarehouse();
@@ -9900,6 +9944,10 @@ window.addEventListener('DOMContentLoaded', function() {
       updateVanillaInputState();
       handleEfficiencyInputChanged();
     });
+  }
+  const warehouseCalcModeToggle = document.getElementById('warehouseCalcModeToggle');
+  if (warehouseCalcModeToggle) {
+    warehouseCalcModeToggle.addEventListener('change', handleWarehouseCalcModeToggle);
   }
   showSettingsSub(settingsSub);
   showEfficiencySub(efficiencySub);
