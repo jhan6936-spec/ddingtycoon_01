@@ -472,8 +472,6 @@ function sanitizeExpertState(state) {
 }
 
 /** 인게임 픽셀 아이콘 (assets/experts/*.png) */
-const EXPERT_ICON_BRANCH_DEEP = 'branch-deep.png';
-
 const EXPERT_ICON_FILES = {
   treasureHunter: 'treasureHunter.png',
   oceanOrder: 'oceanOrder.png',
@@ -484,19 +482,20 @@ const EXPERT_ICON_FILES = {
   baitScatter: 'baitScatter.png',
   moonEpic: 'moonEpic.png',
   doubleCatch: 'doubleCatch.png',
-  oceanBasics: 'oceanBasics.png',
-  deepCollector: EXPERT_ICON_BRANCH_DEEP,
-  craftPrice: EXPERT_ICON_BRANCH_DEEP,
-  alchemyPrice: EXPERT_ICON_BRANCH_DEEP,
-  timeReduce: EXPERT_ICON_BRANCH_DEEP,
-  starshell: EXPERT_ICON_BRANCH_DEEP,
-  shellRefill: EXPERT_ICON_BRANCH_DEEP,
-  alchemySlots: EXPERT_ICON_BRANCH_DEEP,
-  precisionAlchemySlots: EXPERT_ICON_BRANCH_DEEP,
-  craftSlots: 'craftSlots.png'
+  oceanBasics: 'oceanBasics.png'
 };
 
-const EXPERT_ICON_EMOJI = {};
+const EXPERT_ICON_EMOJI = {
+  deepCollector: '⚓',
+  craftPrice: '🐚',
+  alchemyPrice: '💎',
+  timeReduce: '⏱️',
+  starshell: '⭐',
+  shellRefill: '🦪',
+  craftSlots: '🏭',
+  alchemySlots: '⚗️',
+  precisionAlchemySlots: '🔬'
+};
 
 function getExpertIconSrc(key) {
   const file = EXPERT_ICON_FILES[key];
