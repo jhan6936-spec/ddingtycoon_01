@@ -471,27 +471,47 @@ function sanitizeExpertState(state) {
   return next;
 }
 
-const EXPERT_ICONS = {
-  oceanBasics: '📖',
-  doubleCatch: '🎣',
+/** 인게임 픽셀 아이콘 (assets/experts/*.png) */
+const EXPERT_ICON_FILES = {
+  treasureHunter: 'treasureHunter.png',
+  oceanOrder: 'oceanOrder.png',
+  stormFisher: 'stormFisher.png',
+  tropicalFish: 'tropicalFish.png',
+  keyHook: 'keyHook.png',
+  fishPrice: 'fishPrice.png',
+  baitScatter: 'baitScatter.png',
+  moonEpic: 'moonEpic.png',
+  doubleCatch: 'doubleCatch.png',
+  oceanBasics: 'oceanBasics.png'
+};
+
+const EXPERT_ICON_EMOJI = {
   deepCollector: '⚓',
-  moonEpic: '🌙',
-  baitScatter: '🪱',
   craftPrice: '🐚',
   alchemyPrice: '💎',
-  fishPrice: '🐟',
-  tropicalFish: '🐠',
   timeReduce: '⏱️',
   starshell: '⭐',
-  keyHook: '🔑',
-  stormFisher: '⛈️',
   shellRefill: '🦪',
   craftSlots: '🏭',
-  oceanOrder: '📦',
-  treasureHunter: '📜',
   alchemySlots: '⚗️',
   precisionAlchemySlots: '🔬'
 };
+
+function getExpertIconSrc(key) {
+  const file = EXPERT_ICON_FILES[key];
+  if (file) return `assets/experts/${file}`;
+  return null;
+}
+
+function renderExpertIconMarkup(key, altText) {
+  const src = getExpertIconSrc(key);
+  const alt = altText || expertMeta[key]?.name || '';
+  if (src) {
+    return `<img src="${src}" alt="" class="expert-tree-node-img" width="44" height="44" draggable="false" decoding="async" />`;
+  }
+  const emoji = EXPERT_ICON_EMOJI[key] || '✦';
+  return `<span class="expert-tree-node-emoji" aria-hidden="true">${emoji}</span>`;
+}
 
 function sumExpertLevelCosts(meta, fromLv, toLv) {
   let gold = 0;
