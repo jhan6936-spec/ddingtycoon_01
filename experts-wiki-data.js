@@ -322,7 +322,7 @@ const expertMeta = {
       { lv: 1, effect: 5, sp: 15, gold: 10000, stone: 30 },
       { lv: 2, effect: 6, sp: 35, gold: 700000, stone: 70 },
       { lv: 3, effect: 7, sp: 50, gold: 1500000, stone: 100 },
-      { lv: 4, effect: 8, sp: 70, gold: 20000000, stone: 140 },
+      { lv: 4, effect: 8, sp: 70, gold: 2000000, stone: 140 },
       { lv: 5, effect: 9, sp: 120, gold: 3000000, stone: 240 }
     ]
   }
