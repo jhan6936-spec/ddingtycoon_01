@@ -4902,17 +4902,34 @@
         </div>
       </div>
       <div id="settingsSageRodPane" class="mini-pane">
-        <div class="panel-card">
-          <div class="expert-name">세이지 낚싯대</div>
-          <div class="expert-desc">강화 단계에 따라 어패류 채집 효율이 달라집니다</div>
-          <div class="rod-visual" id="sageRodVisual" aria-label="세이지 낚싯대 외형"></div>
-          <div class="expert-controls" style="margin-bottom:10px;">
-            <button class="expert-btn" type="button" onclick="changeSageRodLevel(-1)">−</button>
-            <div class="expert-level" id="sageRodLevel">0강</div>
-            <button class="expert-btn" type="button" onclick="changeSageRodLevel(1)">+</button>
+        <div class="sage-rod-app">
+          <div class="sage-rod-layout">
+            <div class="sage-rod-main expert-tree-main">
+              <div class="expert-tree-head">
+                <h2 class="expert-tree-title"><span class="expert-tree-title-icon" aria-hidden="true">◆</span> 세이지 낚싯대</h2>
+                <span class="sage-rod-head-hint">0 ~ 15강</span>
+              </div>
+              <div class="sage-rod-hero">
+                <div class="rod-visual sage-rod-visual-wrap" id="sageRodVisual" aria-label="세이지 낚싯대 외형"></div>
+                <div class="sage-rod-level-panel">
+                  <div class="sage-rod-level-label">강화 단계</div>
+                  <div class="sage-rod-level-value" id="sageRodLevel">0강</div>
+                  <div class="sage-rod-level-controls">
+                    <button type="button" class="expert-tree-btn" id="sageRodLevelMinus" aria-label="강화 단계 내리기" onclick="changeSageRodLevel(-1)">−</button>
+                    <button type="button" class="expert-tree-btn" id="sageRodLevelPlus" aria-label="강화 단계 올리기" onclick="changeSageRodLevel(1)">+</button>
+                  </div>
+                </div>
+              </div>
+              <div id="sageRodStats" class="sage-rod-stats-grid" aria-label="낚싯대 스탯"></div>
+            </div>
+            <aside class="sage-rod-sidebar expert-tree-sidebar" aria-label="각인 및 추가 효과">
+              <section class="expert-tree-panel sage-rod-summary-panel">
+                <h3 class="expert-tree-panel-title"><span class="expert-tree-check" aria-hidden="true">✓</span> 각인 합산 효과</h3>
+                <div id="sageRodSummary"></div>
+              </section>
+              <div id="sageRodEngravings" class="sage-rod-engrave-wrap"></div>
+            </aside>
           </div>
-          <div id="sageRodStats"></div>
-          <div id="sageRodEngravings" style="margin-top:14px;"></div>
         </div>
       </div>
     </div>
