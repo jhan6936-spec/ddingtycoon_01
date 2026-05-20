@@ -3734,13 +3734,15 @@
       font-size: 11px;
       font-weight: 700;
       color: #8ab4f8;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       user-select: none;
       pointer-events: none;
+      flex-shrink: 0;
     }
     .expert-tree-node-icon-outer {
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       pointer-events: none;
+      flex-shrink: 0;
     }
     .expert-tree-node-icon-frame {
       width: 58px;
@@ -3776,12 +3778,13 @@
       font-weight: 700;
       color: #e8e8e8;
       text-align: center;
-      line-height: 1.35;
-      min-height: 28px;
-      margin-bottom: 6px;
+      line-height: 1.4;
+      min-height: 30px;
+      margin-bottom: 10px;
       word-break: keep-all;
       user-select: none;
       pointer-events: none;
+      flex-shrink: 0;
     }
     .expert-tree-node-lock {
       position: absolute;
@@ -3794,21 +3797,29 @@
     }
     .expert-tree-node-controls {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       width: 100%;
       justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 5;
+      margin-top: auto;
+      padding-top: 2px;
     }
     .expert-tree-btn {
-      flex: 1;
-      max-width: 44px;
-      height: 28px;
-      border: 1px solid #3a3a3a;
+      width: 38px;
+      min-width: 38px;
+      height: 34px;
+      border: 1px solid #4a4a4a;
       border-radius: 8px;
-      background: #1a1a1a;
+      background: #222;
       color: #eee;
       font-weight: 900;
-      font-size: 14px;
+      font-size: 16px;
       cursor: pointer;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 6;
     }
     .expert-tree-btn:hover:not(:disabled) {
       border-color: #555;
