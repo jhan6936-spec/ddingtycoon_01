@@ -366,7 +366,30 @@ function renderExpertWikiLevels(meta) {
   return `<details class="expert-wiki-details"><summary>위키 레벨·비용</summary><table class="expert-wiki-table"><thead><tr><th>LV</th><th>효과</th><th>포인트</th><th>골드</th><th>스톤</th></tr></thead><tbody>${rows}</tbody></table></details>`;
 }
 
-/** 인게임 스킬 트리 배치 (위→아래 6단, 4열 그리드) */
+/** 인게임 스킬 트리 좌표 (8열 × 6행 단일 그리드) */
+const EXPERT_TREE_LAYOUT = {
+  oceanBasics: { row: 1, col: 4, colSpan: 2 },
+  doubleCatch: { row: 2, col: 2 },
+  deepCollector: { row: 2, col: 7 },
+  moonEpic: { row: 3, col: 1 },
+  baitScatter: { row: 3, col: 3 },
+  craftPrice: { row: 3, col: 6 },
+  alchemyPrice: { row: 3, col: 8 },
+  fishPrice: { row: 4, col: 1 },
+  tropicalFish: { row: 4, col: 3 },
+  timeReduce: { row: 4, col: 6 },
+  starshell: { row: 4, col: 8 },
+  keyHook: { row: 5, col: 1 },
+  stormFisher: { row: 5, col: 3 },
+  craftSlots: { row: 5, col: 6 },
+  shellRefill: { row: 5, col: 8 },
+  oceanOrder: { row: 6, col: 7 },
+  treasureHunter: { row: 6, col: 3 },
+  alchemySlots: { row: 6, col: 8 },
+  precisionAlchemySlots: { row: 6, col: 6 }
+};
+
+/** @deprecated 렌더 순서용 */
 const EXPERT_TREE_TIERS = [
   ['oceanBasics'],
   ['doubleCatch', 'deepCollector'],
@@ -375,29 +398,6 @@ const EXPERT_TREE_TIERS = [
   ['keyHook', 'stormFisher', 'shellRefill', 'craftSlots'],
   ['oceanOrder', 'treasureHunter', 'alchemySlots', 'precisionAlchemySlots']
 ];
-
-/** 4열 그리드 상 위치 (1~4) */
-const EXPERT_TREE_COLUMNS = {
-  oceanBasics: 2,
-  doubleCatch: 1,
-  deepCollector: 4,
-  moonEpic: 1,
-  baitScatter: 2,
-  craftPrice: 3,
-  alchemyPrice: 4,
-  fishPrice: 1,
-  tropicalFish: 2,
-  timeReduce: 3,
-  starshell: 4,
-  keyHook: 1,
-  stormFisher: 2,
-  shellRefill: 4,
-  craftSlots: 3,
-  oceanOrder: 4,
-  treasureHunter: 2,
-  alchemySlots: 4,
-  precisionAlchemySlots: 3
-};
 
 /** 직계 선행 스킬 (선행 Lv.0이면 잠금) */
 const EXPERT_TREE_PARENTS = {

@@ -33,13 +33,14 @@ function renderExpertTreeNode(meta) {
   const active = unlocked && lv > 0;
   const icon = EXPERT_ICONS[meta.key] || '✦';
   const lockHint = unlocked ? '' : getExpertLockHint(meta.key);
-  const col = getExpertGridColumn(meta.key);
-  const colStyle = meta.key === 'oceanBasics' ? '' : ` style="grid-column:${col}"`;
+  const layout = getExpertTreeLayout(meta.key);
+  const spanPart = layout.colSpan ? ` / span ${layout.colSpan}` : '';
+  const gridStyle = `grid-row:${layout.row};grid-column:${layout.col}${spanPart}`;
   const canIncrease = unlocked && lv < meta.maxLevel;
   const canDecrease = lv > 0;
 
   return `
-    <div class="expert-tree-node-slot"${colStyle}>
+    <div class="expert-tree-node-slot" style="${gridStyle}">
       <div class="expert-tree-node${dirty ? ' is-dirty' : ''}${unlocked ? '' : ' is-locked'}${active ? ' is-active' : ''}" data-expert-key="${meta.key}"${lockHint ? ` title="${lockHint}"` : ''}>
         <div class="expert-tree-node-lv">${lv}/${meta.maxLevel}</div>
         <div class="expert-tree-node-icon-outer" aria-hidden="true">
