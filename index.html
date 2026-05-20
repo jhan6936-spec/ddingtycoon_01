@@ -9335,7 +9335,24 @@ function renderCraftPricePanel(effects) {
 }
 
 // ===== 효율성 분석 =====
-function analyzeEfficiency() {
+function renderAlchemyManualCalculateNotice() {
+  const al = document.getElementById('efficiencyContainerAlchemy');
+  if (!al) return;
+  al.innerHTML = '<div class="no-result">재고/설정이 바뀌었습니다. 위 <strong>계산하기</strong> 버튼을 눌러 연금품 계산을 실행해 주세요.</div>';
+}
+
+function handleEfficiencyInputChanged() {
+  alchemyNeedsManualCalculate = true;
+  analyzeEfficiency();
+}
+
+function runAlchemyCalculation() {
+  alchemyNeedsManualCalculate = false;
+  analyzeEfficiency({ forceAlchemy: true });
+}
+
+function analyzeEfficiency(options = {}) {
+  const opts = options || {};
   const inventory = getWarehouseInventory();
   const effects = getExpertEffects();
   const vanillaToggle = document.getElementById('vanillaCalcToggle');
@@ -9352,6 +9369,16 @@ function analyzeEfficiency() {
     renderStaminaPlan();
     return;
   }
+
+  if (alchemyNeedsManualCalculate && !opts.forceAlchemy) {
+    if (efficiencySub === 'alchemy') {
+      renderAlchemyManualCalculateNotice();
+    }
+    renderCraftPricePanel(effects);
+    renderStaminaPlan();
+    return;
+  }
+  alchemyNeedsManualCalculate = false;
 
   if (!isVanillaCalcOn) {
     infiniteVanillaMaterials.forEach(name => {
