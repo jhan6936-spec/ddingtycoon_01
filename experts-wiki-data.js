@@ -519,7 +519,7 @@ function renderExpertIconMarkup(key, altText) {
 
 function renderExpertCostIconMarkup(kind) {
   const file = EXPERT_COST_ICON_FILES[kind];
-  if (!file) return '<span class="expert-cost-icon-emoji" aria-hidden="true">🪙</span>';
+  if (!file) return '<span class="expert-cost-icon-emoji" aria-hidden="true">·</span>';
   return `<img src="assets/experts/${file}" alt="" class="expert-cost-icon-img" width="22" height="22" draggable="false" decoding="async" />`;
 }
 
