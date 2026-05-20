@@ -4697,6 +4697,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/javascript-lp-solver@0.4.24/prod/solver.js"></script>
+<script src="experts-wiki-data.js"></script>
 <script>
 // ===== 데이터 =====
 const data = {
@@ -4905,39 +4906,8 @@ let alchemyMatPanelMode = 'summary';
 let craftSalesCalcPanelOpen = false;
 const craftSalesInputState = {};
 
-const expertMeta = {
-  craftPrice: {
-    key: 'craftPrice',
-    name: '조개 좀 사조개',
-    maxLevel: 8,
-    values: [0, 5, 7, 10, 15, 20, 30, 40, 50],
-    desc: '공예품 판매가 증가'
-  },
-  alchemyPrice: {
-    key: 'alchemyPrice',
-    name: '프리미엄 한정가',
-    maxLevel: 8,
-    values: [0, 5, 7, 9, 12, 15, 20, 25, 30],
-    desc: '연금품 판매가 증가'
-  },
-  timeReduce: {
-    key: 'timeReduce',
-    name: '물 흐르듯 술술',
-    maxLevel: 7,
-    values: [0, 10, 20, 30, 50, 70, 70, 70],
-    desc: '해양 제작/연금 제작 시간 감소'
-  },
-  deepCollector: { key: 'deepCollector', name: '심해 채집꾼', maxLevel: 5, values: [0, 5, 7, 10, 15, 20], desc: '어패류 추가 드롭 확률 증가' },
-  starshell: { key: 'starshell', name: '별별별!', maxLevel: 6, values: [0, 1, 3, 5, 7, 10, 15], desc: '3성 어패류 등장 확률 증가' },
-  shellRefill: { key: 'shellRefill', name: '조개 무한리필', maxLevel: 10, values: [0, 1,2,3,4,5,6,7,8,9,10], desc: '조개 등장 확률 증가' },
-  // 요청된 7개만 유지
-};
-
-let expertState = {
-  craftPrice: 0,
-  alchemyPrice: 0,
-  timeReduce: 0
-};
+// expertMeta · createDefaultExpertState 등 → experts-wiki-data.js (공식 위키 반영)
+let expertState = createDefaultExpertState();
 const sageRodStats = {
   timeReduce: [0,6,10,14,18,23,27,31,35,39,44,49,53,56,58,60],
   shellChance: [1,1,1,2,2,2,3,3,3,5,5,7,7,9,9,15],
@@ -8252,19 +8222,19 @@ function renderExperts() {
 
   Object.values(expertMeta).forEach((meta) => {
     const lv = expertState[meta.key] || 0;
-    const value = meta.values[lv] || 0;
-    const unit = (meta.key === 'timeReduce') ? '% 감소'
-      : ((meta.key.includes('Slots') || meta.key === 'oceanOrder') ? '' : '%');
+    const effectLabel = formatExpertEffectLabel(meta, lv);
     const card = document.createElement('div');
     card.className = 'expert-card';
     card.innerHTML = `
+      <span class="expert-tag">[${meta.tag}]</span>
       <div class="expert-name">${meta.name}</div>
       <div class="expert-desc">${meta.desc}</div>
       <div class="expert-controls">
         <button class="expert-btn" type="button" data-expert="${meta.key}" data-delta="-1">−</button>
-        <div class="expert-level">Lv.${lv} (${value}${unit})</div>
+        <div class="expert-level">Lv.${lv} (${effectLabel})</div>
         <button class="expert-btn" type="button" data-expert="${meta.key}" data-delta="1">+</button>
       </div>
+      ${renderExpertWikiLevels(meta)}
     `;
     container.appendChild(card);
   });
@@ -8290,11 +8260,34 @@ function changeExpertLevel(key, delta) {
   renderRecipes();
 }
 
+function getExpertLevelValue(key) {
+  const meta = expertMeta[key];
+  if (!meta) return 0;
+  return meta.values[expertState[key] || 0] ?? 0;
+}
+
 function getExpertEffects() {
-  const craftPriceBoost = expertMeta.craftPrice.values[expertState.craftPrice] || 0;
-  const alchemyPriceBoost = expertMeta.alchemyPrice.values[expertState.alchemyPrice] || 0;
-  const timeReduce = expertMeta.timeReduce.values[expertState.timeReduce] || 0;
-  return { craftPriceBoost, alchemyPriceBoost, timeReduce };
+  return {
+    craftPriceBoost: getExpertLevelValue('craftPrice'),
+    alchemyPriceBoost: getExpertLevelValue('alchemyPrice'),
+    timeReduce: getExpertLevelValue('timeReduce'),
+    deepCollector: getExpertLevelValue('deepCollector'),
+    starshell: getExpertLevelValue('starshell'),
+    shellRefill: getExpertLevelValue('shellRefill'),
+    fishPriceBoost: getExpertLevelValue('fishPrice'),
+    oceanBasicsExp: getExpertLevelValue('oceanBasics'),
+    doubleCatch: getExpertLevelValue('doubleCatch'),
+    moonEpic: getExpertLevelValue('moonEpic'),
+    baitBiteReduce: getExpertLevelValue('baitScatter'),
+    tropicalFish: getExpertLevelValue('tropicalFish'),
+    keyHook: getExpertLevelValue('keyHook'),
+    stormFisher: getExpertLevelValue('stormFisher'),
+    craftSlots: getExpertLevelValue('craftSlots'),
+    oceanOrderLimit: getExpertLevelValue('oceanOrder'),
+    treasureHunter: getExpertLevelValue('treasureHunter'),
+    alchemySlots: getExpertLevelValue('alchemySlots'),
+    precisionAlchemySlots: getExpertLevelValue('precisionAlchemySlots')
+  };
 }
 
 /** 연금품 판매가(전문가 보너스 적용) — 효율 분석과 동일 판별 */
