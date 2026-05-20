@@ -8340,46 +8340,71 @@ function optimizeAlchemyPlanBalanced(inv) {
   const invCopy = { ...inv };
   const finalNames = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3];
   const counts = Object.fromEntries(finalNames.map((name) => [name, 0]));
-  const recipeByName = new Map(
-    finalNames
-      .map((name) => [name, data.recipes.find((r) => r.name === name)])
-      .filter(([, recipe]) => !!recipe)
-  );
+  const recipeByName = new Map(finalNames.map((name) => [name, data.recipes.find((r) => r.name === name)]));
+
+  const baseWeight = {};
+  let totalWeight = 0;
+  finalNames.forEach((name) => {
+    const recipe = recipeByName.get(name);
+    const unitGold = Math.max(1, Number(getAlchemyBoostedSellPriceGold(recipe)) || 0);
+    const eff = Math.max(0.001, unitAlchemyEfficiency(recipe, effects));
+    const w = unitGold * 0.85 + eff * 0.15;
+    baseWeight[name] = w;
+    totalWeight += w;
+  });
+  if (totalWeight <= 0) {
+    finalNames.forEach((name) => { baseWeight[name] = 1; });
+    totalWeight = finalNames.length;
+  }
+
   const guard = 30000;
   let iter = 0;
+  let totalMade = 0;
 
-  // 실시간 계산을 위해, 매 스텝에서 "현재 최소 생산량 그룹"만 후보로 두고
-  // 그 안에서 판매가/분당 효율이 가장 높은 레시피를 선택한다.
+  // 실시간 계산용 분산-수익 절충:
+  // - 모든 최종품을 가능한 범위에서 계속 생산
+  // - 가격/효율이 높은 품목이 더 많이 나오되, 과도한 몰빵은 억제
   while (iter++ < guard) {
     const craftable = [];
-    let minCount = Infinity;
     for (const name of finalNames) {
       const recipe = recipeByName.get(name);
       if (!recipe) continue;
-      const currentCount = counts[name] || 0;
-      if (currentCount < minCount) minCount = currentCount;
       if (calculateMaxCraft(recipe, invCopy, {}, craftOpts) < 1) continue;
       craftable.push({
         name,
         recipe,
-        count: currentCount,
+        count: counts[name] || 0,
         unitGold: Math.max(0, Number(getAlchemyBoostedSellPriceGold(recipe)) || 0),
         efficiency: unitAlchemyEfficiency(recipe, effects)
       });
     }
     if (!craftable.length) break;
 
-    const leastProduced = craftable.filter((c) => c.count <= minCount);
-    if (!leastProduced.length) break;
-    leastProduced.sort((a, b) => {
-      if (b.unitGold !== a.unitGold) return b.unitGold - a.unitGold;
-      if (b.efficiency !== a.efficiency) return b.efficiency - a.efficiency;
-      return a.name.localeCompare(b.name, 'ko');
-    });
-
-    const pick = leastProduced[0];
+    let best = null;
+    let bestScore = -Infinity;
+    for (const c of craftable) {
+      const weight = baseWeight[c.name] || 1;
+      const targetCount = ((totalMade + 1) * weight) / totalWeight;
+      const gap = targetCount - c.count;
+      const gapNorm = gap / Math.max(1, targetCount);
+      const balanceBoost = 1 + 0.55 * gapNorm;
+      const zeroBonus = c.count === 0 ? c.unitGold * 0.12 : 0;
+      const score = c.unitGold * balanceBoost + c.efficiency * 0.08 + zeroBonus;
+      if (
+        best === null ||
+        score > bestScore ||
+        (score === bestScore && (c.efficiency > best.efficiency ||
+          (c.efficiency === best.efficiency && c.name.localeCompare(best.name, 'ko') < 0)))
+      ) {
+        best = c;
+        bestScore = score;
+      }
+    }
+    if (!best) break;
+    const pick = best;
     deductFinalRecipe(pick.recipe, invCopy, craftOpts);
     counts[pick.name] = (counts[pick.name] || 0) + 1;
+    totalMade += 1;
   }
 
   let diluentCount = 0;
