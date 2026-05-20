@@ -9513,10 +9513,12 @@ function renderStaminaPlan() {
   const gathers = Math.floor(stamina / STAMINA_PER_GATHER);
   if (rawStr === '') {
     result.innerHTML = '<div class="no-result">스태미나를 입력하면 추천 분배를 계산합니다</div>';
+    scheduleMinecraftDashboardSync();
     return;
   }
   if (gathers <= 0) {
     result.innerHTML = '<div class="no-result">스태미나가 부족합니다 (어패류 1회 채집에 15 소모). 채집에는 15의 배수만 반영됩니다.</div>';
+    scheduleMinecraftDashboardSync();
     return;
   }
   const inventory = getWarehouseInventory();
