@@ -64,12 +64,12 @@ function renderExpertTreeSidebar() {
   const effects = listActiveExpertEffects(expertDraftState);
 
   const effectsHtml = effects.length
-    ? effects.map((e) => `
+    ? `<ul class="expert-effect-list">${effects.map((e) => `
         <li class="expert-effect-item">
           <span class="expert-effect-name">[${e.tag}] ${e.name}</span>
           <span class="expert-effect-val">Lv.${e.lv} · ${e.label}</span>
         </li>
-      `).join('')
+      `).join('')}</ul>`
     : '<p class="expert-effect-empty">활성화된 스킬이 없습니다.</p>';
 
   sidebar.innerHTML = `
@@ -101,21 +101,23 @@ function renderExpertTreeSidebar() {
       <h3 class="expert-tree-panel-title">
         <span class="expert-tree-check" aria-hidden="true">✓</span> 활성 효과 요약
       </h3>
-      <div class="expert-effect-list-wrap">
-        <ul class="expert-effect-list">${effectsHtml}</ul>
-      </div>
+      <div class="expert-effect-list-wrap">${effectsHtml}</div>
     </section>
   `;
 
+}
+
+function bindExpertTreeSaveBtn() {
   const saveBtn = document.getElementById('expertTreeSaveBtn');
-  if (saveBtn) {
-    saveBtn.addEventListener('click', handleExpertTreeSave);
-  }
+  if (!saveBtn || saveBtn.dataset.bound) return;
+  saveBtn.dataset.bound = '1';
+  saveBtn.addEventListener('click', handleExpertTreeSave);
 }
 
 function renderExpertSkillTree() {
   renderExpertTreeBoard();
   renderExpertTreeSidebar();
+  bindExpertTreeSaveBtn();
 }
 
 function changeExpertDraftLevel(key, delta) {
