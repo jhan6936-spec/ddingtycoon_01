@@ -9902,9 +9902,9 @@ async function loadLiveNpcMarketPrices() {
 }
 
 window.addEventListener('DOMContentLoaded', function() {
-  initSupabaseAuth().then(() => {
+  initSupabaseAuth().then(async () => {
     try {
-      handleMinecraftLinkCodeFromUrl();
+      await handleMinecraftLinkCodeFromUrl();
     } catch (_) {}
   });
 
