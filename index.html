@@ -6378,7 +6378,19 @@ async function syncMinecraftDashboardSnapshot() {
       },
       body: JSON.stringify({ dashboard })
     });
-    if (response.ok) lastMinecraftDashboardSyncAt = Date.now();
+    const body = await response.json().catch(() => ({}));
+    if (response.ok) {
+      lastMinecraftDashboardSyncAt = Date.now();
+    } else {
+      console.warn('[minecraft/dashboard] snapshot sync failed:', response.status, body);
+      if (response.status === 401) {
+        const badge = document.getElementById('minecraftLinkBadge');
+        if (badge) {
+          badge.hidden = false;
+          badge.textContent = '마크 연동 만료 — 모드에서 새 코드 발급 후 웹에서 다시 연동하세요';
+        }
+      }
+    }
   } catch (e) {
     console.warn('[minecraft/dashboard] snapshot sync failed:', e);
   } finally {

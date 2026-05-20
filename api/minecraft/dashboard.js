@@ -1,4 +1,12 @@
-const { handleCors, sendJson, readJson, supabaseRest, getSupabaseUser, hashToken } = require('../_supabase');
+const {
+  handleCors,
+  sendJson,
+  readJson,
+  supabaseRest,
+  getSupabaseUser,
+  hashToken,
+  classifySupabaseError
+} = require('../_supabase');
 
 const fallbackDashboard = {
   craftingQueueTitle: '웹 연동 대기',
@@ -74,6 +82,11 @@ module.exports = async function handler(req, res) {
     return sendJson(res, 200, row && row.dashboard ? row.dashboard : fallbackDashboard);
   } catch (error) {
     console.error('[minecraft/dashboard]', error);
-    return sendJson(res, 500, { error: 'dashboard_fetch_failed' });
+    const detail = classifySupabaseError(error);
+    return sendJson(res, 500, {
+      error: 'dashboard_fetch_failed',
+      code: detail.code,
+      hint: detail.hint
+    });
   }
 };
