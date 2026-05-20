@@ -90,12 +90,16 @@ function hashToken(token) {
 }
 
 function siteOrigin(req) {
-  return (
-    process.env.PUBLIC_SITE_URL ||
-    process.env.VERCEL_PROJECT_PRODUCTION_URL && `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` ||
-    req.headers.origin ||
-    'https://ddingtycoon-01.vercel.app'
-  ).replace(/\/$/, '');
+  if (process.env.PUBLIC_SITE_URL) {
+    return String(process.env.PUBLIC_SITE_URL).replace(/\/$/, '');
+  }
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`.replace(/\/$/, '');
+  }
+  if (req.headers.origin) {
+    return String(req.headers.origin).replace(/\/$/, '');
+  }
+  return 'https://ddingtycoon-01.vercel.app';
 }
 
 module.exports = {

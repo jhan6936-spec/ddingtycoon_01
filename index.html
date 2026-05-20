@@ -5973,7 +5973,16 @@ function buildCraftTimeCatalogLines() {
   return lines;
 }
 
+function resolveDiscordDisplayNameForMinecraft() {
+  if (!cachedAuthUserForProfile) return '';
+  const saved = currentAuthUserId ? loadStoredUserProfile(currentAuthUserId) : null;
+  const profileName = saved && saved.displayName ? String(saved.displayName).trim() : '';
+  if (profileName) return profileName;
+  return extractDiscordProfile(cachedAuthUserForProfile).name || '';
+}
+
 function buildMinecraftDashboardPayload() {
+  const discordCaptainName = resolveDiscordDisplayNameForMinecraft();
   const record = lastAlchemyRecordSnapshot || loadAlchemyHistoryRecords()[0] || null;
   const counts = lastAlchemyPlanCountsByName || (record && record.counts ? record.counts : {});
   const minecraftFinalProducts = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'];
