@@ -2295,7 +2295,7 @@
       transform: translateY(0);
     }
     .warehouse-input--setview {
-      cursor: default;
+      cursor: text;
       color: var(--t-accent-muted);
       font-weight: 700;
     }
@@ -5333,7 +5333,7 @@ function parkCalcPopupOnBody() {
 function openCalculatorForInput(inputEl) {
   const isWarehouseInput = !!(inputEl && inputEl.closest && inputEl.closest('#warehouseContainer'));
   if (isWarehouseInput && !warehouseCalcModeEnabled()) return;
-  if (warehouseSetViewEnabled() && isWarehouseInput) {
+  if (isWarehouseInput && warehouseSetViewEnabled() && !warehouseCalcModeEnabled()) {
     return;
   }
   ensureCalcPopup();
@@ -7253,14 +7253,26 @@ function renderWarehouse() {
   const inputs = document.querySelectorAll('#warehouseContainer input[data-material]');
   inputs.forEach(input => {
     input.addEventListener('change', () => {
+      if (warehouseSetViewEnabled()) {
+        commitWarehouseSetViewInput(input);
+        return;
+      }
       syncWarehouseInputRawAttribute(input);
       saveWarehouseInventory();
       handleEfficiencyInputChanged();
     });
     input.addEventListener('input', () => {
+      if (warehouseSetViewEnabled()) {
+        handleWarehouseSetViewInputEvent(input);
+        return;
+      }
       syncWarehouseInputRawAttribute(input);
       saveWarehouseInventory();
       handleEfficiencyInputChanged();
+    });
+    input.addEventListener('keydown', handleWarehouseSetViewKeydown);
+    input.addEventListener('blur', () => {
+      if (warehouseSetViewEnabled()) commitWarehouseSetViewInput(input);
     });
     input.addEventListener('focus', () => openCalculatorForInput(input));
     input.addEventListener('click', () => openCalculatorForInput(input));
@@ -7339,6 +7351,145 @@ function formatWarehouseStackCount(total) {
   if (sets === 0) return `${rem}개`;
   if (rem === 0) return `${sets}세트`;
   return `${sets}세트 ${rem}개`;
+}
+
+function parseWarehouseSetDisplayValue(text) {
+  const s = String(text || '').trim();
+  if (!s) return 0;
+
+  let sets = 0;
+  let rem = 0;
+  let matched = false;
+
+  const setPart = s.match(/(\d+)\s*세트/);
+  const remPart = s.match(/(\d+)\s*개/);
+  if (setPart) {
+    sets = parseInt(setPart[1], 10) || 0;
+    matched = true;
+  }
+  if (remPart) {
+    rem = parseInt(remPart[1], 10) || 0;
+    matched = true;
+  }
+  if (!matched) {
+    const digits = s.replace(/\D/g, '');
+    if (digits) return Math.max(0, parseInt(digits, 10) || 0);
+    return 0;
+  }
+  if (rem >= SET_SIZE) {
+    sets += Math.floor(rem / SET_SIZE);
+    rem = rem % SET_SIZE;
+  }
+  return Math.max(0, sets * SET_SIZE + rem);
+}
+
+function getWarehouseSetDisplayLayout(text) {
+  const s = String(text || '');
+  const layout = { setStart: -1, setEnd: -1, remStart: -1, remEnd: -1, hasSet: false, hasRem: false };
+
+  const setMatch = s.match(/^(\d*)세트/);
+  if (setMatch) {
+    layout.hasSet = true;
+    layout.setStart = 0;
+    layout.setEnd = setMatch[1].length;
+  }
+
+  const remIdx = s.lastIndexOf('개');
+  if (remIdx >= 0) {
+    const remDigits = s.slice(0, remIdx).match(/(\d+)\s*$/);
+    if (remDigits) {
+      layout.hasRem = true;
+      layout.remEnd = remIdx;
+      layout.remStart = remIdx - remDigits[1].length;
+    }
+  }
+
+  return layout;
+}
+
+function isWarehouseSetDisplayEditablePos(pos, layout) {
+  if (!layout) return false;
+  const inSet = layout.hasSet && pos >= layout.setStart && pos <= layout.setEnd;
+  const inRem = layout.hasRem && pos >= layout.remStart && pos <= layout.remEnd;
+  return inSet || inRem;
+}
+
+function detectWarehouseSetDisplaySlot(value, cursor) {
+  const layout = getWarehouseSetDisplayLayout(value);
+  if (!layout) return 'rem';
+  if (layout.hasSet && cursor <= layout.setEnd) return 'set';
+  if (layout.hasRem && cursor >= layout.remStart) return 'rem';
+  if (layout.hasSet) return 'set';
+  return 'rem';
+}
+
+function restoreWarehouseSetDisplayCursor(input, slot) {
+  const layout = getWarehouseSetDisplayLayout(input.value);
+  if (!layout) return;
+  if (slot === 'set' && layout.hasSet) {
+    input.setSelectionRange(layout.setEnd, layout.setEnd);
+    return;
+  }
+  if (slot === 'rem' && layout.hasRem) {
+    input.setSelectionRange(layout.remEnd, layout.remEnd);
+  }
+}
+
+function handleWarehouseSetViewKeydown(e) {
+  if (!warehouseSetViewEnabled()) return;
+  const input = e.currentTarget;
+  if (input.disabled || input.readOnly) return;
+
+  const layout = getWarehouseSetDisplayLayout(input.value);
+  const start = input.selectionStart ?? 0;
+  const end = input.selectionEnd ?? start;
+  const navKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Tab', 'Home', 'End'];
+  if (navKeys.includes(e.key)) return;
+
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    input.blur();
+    return;
+  }
+
+  if (e.key === 'Backspace' || e.key === 'Delete') {
+    if (!layout) {
+      e.preventDefault();
+      return;
+    }
+    const probe = e.key === 'Backspace' ? Math.max(0, start - 1) : start;
+    if (!isWarehouseSetDisplayEditablePos(probe, layout) && start === end) {
+      e.preventDefault();
+    }
+    return;
+  }
+
+  if (/^\d$/.test(e.key)) {
+    if (!layout || !isWarehouseSetDisplayEditablePos(start, layout)) {
+      e.preventDefault();
+    }
+    return;
+  }
+
+  e.preventDefault();
+}
+
+function handleWarehouseSetViewInputEvent(input) {
+  const slot = detectWarehouseSetDisplaySlot(input.value, input.selectionStart ?? 0);
+  const raw = parseWarehouseSetDisplayValue(input.value);
+  input.setAttribute('data-warehouse-count', String(raw));
+  saveWarehouseInventory();
+  handleEfficiencyInputChanged();
+  requestAnimationFrame(() => restoreWarehouseSetDisplayCursor(input, slot));
+}
+
+function commitWarehouseSetViewInput(input) {
+  if (!input) return;
+  const raw = parseWarehouseSetDisplayValue(input.value);
+  input.setAttribute('data-warehouse-count', String(raw));
+  input.value = formatWarehouseStackCount(raw);
+  saveWarehouseInventory();
+  handleEfficiencyInputChanged();
 }
 
 function formatAlchemySummaryBoxSetPiece(total) {
@@ -7711,25 +7862,28 @@ function applyWarehouseSetDisplayMode() {
   document.querySelectorAll('#warehouseContainer input[data-material]').forEach((input) => {
     let raw = parseInt(input.getAttribute('data-warehouse-count'), 10);
     if (!Number.isFinite(raw)) {
-      raw = Math.max(0, parseInt(input.value, 10) || 0);
+      raw = setMode
+        ? parseWarehouseSetDisplayValue(input.value)
+        : Math.max(0, parseInt(input.value, 10) || 0);
     } else {
       raw = Math.max(0, raw);
     }
     input.setAttribute('data-warehouse-count', String(raw));
     if (setMode) {
       input.type = 'text';
-      input.readOnly = true;
+      input.inputMode = 'numeric';
+      input.autocomplete = 'off';
       input.removeAttribute('min');
       input.value = formatWarehouseStackCount(raw);
       input.classList.add('warehouse-input--setview');
     } else {
       input.type = 'number';
       input.min = '0';
-      input.readOnly = false;
       input.value = String(raw);
       input.classList.remove('warehouse-input--setview');
     }
   });
+  updateWarehouseCalcInputMode();
   const btn = document.getElementById('warehouseSetDisplayToggle');
   if (btn) {
     btn.textContent = setMode ? '개수(전체)로 보기' : '갯수/세트 변환';
@@ -7741,6 +7895,11 @@ function toggleWarehouseSetDisplayMode() {
   if (!warehouseSetViewEnabled()) {
     document.querySelectorAll('#warehouseContainer input[data-material]').forEach((input) => {
       const raw = Math.max(0, parseInt(input.value, 10) || 0);
+      input.setAttribute('data-warehouse-count', String(raw));
+    });
+  } else {
+    document.querySelectorAll('#warehouseContainer input[data-material]').forEach((input) => {
+      const raw = parseWarehouseSetDisplayValue(input.value);
       input.setAttribute('data-warehouse-count', String(raw));
     });
   }
