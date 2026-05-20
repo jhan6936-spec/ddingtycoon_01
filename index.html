@@ -7558,21 +7558,6 @@ function formatWarehouseStackCount(total) {
   return `${sets}세트 ${rem}개`;
 }
 
-function isWarehouseSetDisplayCanonical(value) {
-  return /^(\d+)세트\s+(\d+)개$/.test(String(value || '').trim());
-}
-
-function ensureWarehouseSetDisplayInput(input) {
-  if (!input || input.disabled) return;
-  let raw = parseInt(input.getAttribute('data-warehouse-count'), 10);
-  if (!Number.isFinite(raw)) raw = parseWarehouseSetDisplayValue(input.value);
-  raw = Math.max(0, raw);
-  if (!input.value.trim() || !isWarehouseSetDisplayCanonical(input.value)) {
-    input.value = formatWarehouseStackCount(raw);
-  }
-  input.setAttribute('data-warehouse-count', String(raw));
-}
-
 function parseWarehouseSetDisplayValue(text) {
   const s = String(text || '').trim();
   if (!s) return 0;
@@ -7596,120 +7581,7 @@ function parseWarehouseSetDisplayValue(text) {
     if (digits) return Math.max(0, parseInt(digits, 10) || 0);
     return 0;
   }
-  if (rem >= SET_SIZE) {
-    sets += Math.floor(rem / SET_SIZE);
-    rem = rem % SET_SIZE;
-  }
-  return Math.max(0, sets * SET_SIZE + rem);
-}
-
-function getWarehouseSetDisplayLayout(text) {
-  const s = String(text || '');
-  const layout = { setStart: -1, setEnd: -1, remStart: -1, remEnd: -1, hasSet: false, hasRem: false };
-
-  const setMatch = s.match(/^(\d*)세트/);
-  if (setMatch) {
-    layout.hasSet = true;
-    layout.setStart = 0;
-    layout.setEnd = setMatch[1].length;
-  }
-
-  const remIdx = s.lastIndexOf('개');
-  if (remIdx >= 0) {
-    const remDigits = s.slice(0, remIdx).match(/(\d+)\s*$/);
-    if (remDigits) {
-      layout.hasRem = true;
-      layout.remEnd = remIdx;
-      layout.remStart = remIdx - remDigits[1].length;
-    }
-  }
-
-  return layout;
-}
-
-function isWarehouseSetDisplayEditablePos(pos, layout) {
-  if (!layout) return false;
-  const inSet = layout.hasSet && pos >= layout.setStart && pos <= layout.setEnd;
-  const inRem = layout.hasRem && pos >= layout.remStart && pos <= layout.remEnd;
-  return inSet || inRem;
-}
-
-function detectWarehouseSetDisplaySlot(value, cursor) {
-  const layout = getWarehouseSetDisplayLayout(value);
-  if (!layout) return 'rem';
-  if (layout.hasSet && cursor <= layout.setEnd) return 'set';
-  if (layout.hasRem && cursor >= layout.remStart) return 'rem';
-  if (layout.hasSet) return 'set';
-  return 'rem';
-}
-
-function restoreWarehouseSetDisplayCursor(input, slot) {
-  const layout = getWarehouseSetDisplayLayout(input.value);
-  if (!layout) return;
-  if (slot === 'set' && layout.hasSet) {
-    input.setSelectionRange(layout.setEnd, layout.setEnd);
-    return;
-  }
-  if (slot === 'rem' && layout.hasRem) {
-    input.setSelectionRange(layout.remEnd, layout.remEnd);
-  }
-}
-
-function handleWarehouseSetViewKeydown(e) {
-  if (!warehouseSetViewEnabled()) return;
-  const input = e.currentTarget;
-  if (input.disabled || input.readOnly) return;
-
-  const layout = getWarehouseSetDisplayLayout(input.value);
-  const start = input.selectionStart ?? 0;
-  const end = input.selectionEnd ?? start;
-  const navKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Tab', 'Home', 'End'];
-  if (navKeys.includes(e.key)) return;
-
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    input.blur();
-    return;
-  }
-
-  if (e.key === 'Backspace' || e.key === 'Delete') {
-    if (!layout) {
-      e.preventDefault();
-      return;
-    }
-    const probe = e.key === 'Backspace' ? Math.max(0, start - 1) : start;
-    if (!isWarehouseSetDisplayEditablePos(probe, layout) && start === end) {
-      e.preventDefault();
-    }
-    return;
-  }
-
-  if (/^\d$/.test(e.key)) {
-    if (!layout || !isWarehouseSetDisplayEditablePos(start, layout)) {
-      e.preventDefault();
-    }
-    return;
-  }
-
-  e.preventDefault();
-}
-
-function handleWarehouseSetViewInputEvent(input) {
-  const slot = detectWarehouseSetDisplaySlot(input.value, input.selectionStart ?? 0);
-  const raw = parseWarehouseSetDisplayValue(input.value);
-  input.setAttribute('data-warehouse-count', String(raw));
-  saveWarehouseInventory();
-  handleEfficiencyInputChanged();
-  requestAnimationFrame(() => restoreWarehouseSetDisplayCursor(input, slot));
-}
-
-function commitWarehouseSetViewInput(input) {
-  if (!input) return;
-  const raw = parseWarehouseSetDisplayValue(input.value);
-  input.setAttribute('data-warehouse-count', String(raw));
-  input.value = formatWarehouseStackCount(raw);
-  saveWarehouseInventory();
-  handleEfficiencyInputChanged();
+  return normalizeWarehouseSetRemParts(sets, rem).total;
 }
 
 function formatAlchemySummaryBoxSetPiece(total) {
@@ -8079,30 +7951,18 @@ function syncWarehouseInputRawAttribute(input) {
 
 function applyWarehouseSetDisplayMode() {
   const setMode = warehouseSetViewEnabled();
-  document.querySelectorAll('#warehouseContainer input[data-material]').forEach((input) => {
-    let raw = parseInt(input.getAttribute('data-warehouse-count'), 10);
-    if (!Number.isFinite(raw)) {
-      raw = setMode
-        ? parseWarehouseSetDisplayValue(input.value)
-        : Math.max(0, parseInt(input.value, 10) || 0);
+  document.querySelectorAll('#warehouseContainer .warehouse-qty-field').forEach((field) => {
+    const primary = getWarehousePrimaryInput(field);
+    if (!primary) return;
+    const raw = warehouseFieldRawCount(field);
+    syncWarehouseFieldCount(field, raw);
+    if (!setMode) {
+      primary.type = 'number';
+      primary.min = '0';
+      if (!primary.disabled) primary.placeholder = '수량 입력';
+      primary.classList.remove('warehouse-input--setview');
     } else {
-      raw = Math.max(0, raw);
-    }
-    input.setAttribute('data-warehouse-count', String(raw));
-    if (setMode) {
-      input.type = 'text';
-      input.inputMode = 'numeric';
-      input.autocomplete = 'off';
-      input.removeAttribute('min');
-      input.value = formatWarehouseStackCount(raw);
-      if (!input.disabled) input.placeholder = WAREHOUSE_SET_DISPLAY_PLACEHOLDER;
-      input.classList.add('warehouse-input--setview');
-    } else {
-      input.type = 'number';
-      input.min = '0';
-      input.value = String(raw);
-      if (!input.disabled) input.placeholder = '수량 입력';
-      input.classList.remove('warehouse-input--setview');
+      primary.classList.add('warehouse-input--setview');
     }
   });
   updateWarehouseCalcInputMode();
@@ -8114,17 +7974,9 @@ function applyWarehouseSetDisplayMode() {
 }
 
 function toggleWarehouseSetDisplayMode() {
-  if (!warehouseSetViewEnabled()) {
-    document.querySelectorAll('#warehouseContainer input[data-material]').forEach((input) => {
-      const raw = Math.max(0, parseInt(input.value, 10) || 0);
-      input.setAttribute('data-warehouse-count', String(raw));
-    });
-  } else {
-    document.querySelectorAll('#warehouseContainer input[data-material]').forEach((input) => {
-      const raw = parseWarehouseSetDisplayValue(input.value);
-      input.setAttribute('data-warehouse-count', String(raw));
-    });
-  }
+  document.querySelectorAll('#warehouseContainer .warehouse-qty-field').forEach((field) => {
+    syncWarehouseFieldCount(field, warehouseFieldRawCount(field));
+  });
   document.documentElement.classList.toggle('warehouse-set-view');
   saveWarehouseSetViewState();
   applyWarehouseSetDisplayMode();
@@ -8133,17 +7985,11 @@ function toggleWarehouseSetDisplayMode() {
 // ===== 창고에서 현재 수량 가져오기 =====
 function getWarehouseInventory() {
   const inventory = {};
-  document.querySelectorAll('#warehouseContainer input[data-material]').forEach((input) => {
-    const material = input.getAttribute('data-material');
-    let raw;
-    if (warehouseSetViewEnabled()) {
-      raw = parseWarehouseSetDisplayValue(input.value);
-    } else {
-      raw = parseInt(input.getAttribute('data-warehouse-count'), 10);
-      if (!Number.isFinite(raw)) raw = Math.max(0, parseInt(input.value, 10) || 0);
-      else raw = Math.max(0, raw);
-    }
-    inventory[material] = Math.max(0, raw);
+  document.querySelectorAll('#warehouseContainer .warehouse-qty-field').forEach((field) => {
+    const primary = getWarehousePrimaryInput(field);
+    const material = primary?.getAttribute('data-material');
+    if (!material) return;
+    inventory[material] = warehouseFieldRawCount(field);
   });
   return inventory;
 }
@@ -8170,9 +8016,9 @@ function getVanillaMaterials() {
 function getInfiniteVanillaMaterials() {
   const isShellfishStar = (name) => /^(굴|소라|문어|미역|성게)\s+★+$/.test(name);
   const isAlchemyItem = (name) => /(희석액|정수|핵|에센스|결정|엘릭서|영약)/.test(name);
-  const inputs = Array.from(document.querySelectorAll('#warehouseContainer input[data-vanilla="1"]'));
-  const names = inputs
-    .map((i) => i.getAttribute('data-material') || '')
+  const fields = Array.from(document.querySelectorAll('#warehouseContainer .warehouse-qty-field[data-vanilla="1"]'));
+  const names = fields
+    .map((field) => getWarehousePrimaryInput(field)?.getAttribute('data-material') || '')
     .filter((n) => n && !isShellfishStar(n) && !isAlchemyItem(n));
   return Array.from(new Set(names));
 }
@@ -9674,22 +9520,27 @@ function updateVanillaInputState() {
   const toggle = document.getElementById('vanillaCalcToggle');
   const isVanillaCalcOn = toggle ? toggle.checked : true;
   const vanillaSections = document.querySelectorAll('[data-vanilla-section="1"]');
-  const vanillaInputs = document.querySelectorAll('#warehouseContainer input[data-vanilla="1"]');
+  const vanillaFields = document.querySelectorAll('#warehouseContainer .warehouse-qty-field[data-vanilla="1"]');
 
   vanillaSections.forEach((sec) => {
     sec.classList.toggle('vanilla-disabled', !isVanillaCalcOn);
     const sub = sec.querySelector('.warehouse-section-sub');
-    const nIn = sec.querySelectorAll('input[data-vanilla="1"]').length;
+    const nIn = sec.querySelectorAll('.warehouse-qty-field[data-vanilla="1"]').length;
     if (sub) sub.textContent = isVanillaCalcOn ? `${nIn}종` : '무한';
   });
 
-  vanillaInputs.forEach((input) => {
-    input.disabled = !isVanillaCalcOn;
-    if (warehouseSetViewEnabled() && isVanillaCalcOn) {
-      input.placeholder = WAREHOUSE_SET_DISPLAY_PLACEHOLDER;
-    } else {
-      input.placeholder = isVanillaCalcOn ? '수량 입력' : '무한';
-    }
+  vanillaFields.forEach((field) => {
+    const primary = getWarehousePrimaryInput(field);
+    const { sets, rem } = getWarehouseSetPair(field);
+    [primary, sets, rem].forEach((input) => {
+      if (!input) return;
+      input.disabled = !isVanillaCalcOn;
+      if (warehouseSetViewEnabled() && isVanillaCalcOn) {
+        input.removeAttribute('placeholder');
+      } else {
+        input.placeholder = isVanillaCalcOn ? '수량 입력' : '무한';
+      }
+    });
   });
 
   applyWarehouseSetDisplayMode();
