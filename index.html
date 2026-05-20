@@ -4429,6 +4429,7 @@
       <input type="text" id="profileDisplayNameInput" class="profile-field-input" maxlength="80" autocomplete="nickname" placeholder="이름">
       <label class="profile-field-label" for="profileBioInput">소개</label>
       <textarea id="profileBioInput" class="profile-field-textarea" maxlength="500" placeholder="간단한 소개를 적어 주세요"></textarea>
+      <div id="minecraftLinkBadge" class="minecraft-link-badge" hidden aria-live="polite"></div>
       <div class="profile-settings-actions">
         <button type="button" class="profile-save-btn" onclick="saveProfileSettings()">저장</button>
         <button type="button" class="minecraft-link-btn" onclick="openMinecraftLinkModal()">마크 연동</button>
@@ -5782,6 +5783,7 @@ function updateAuthUI(user) {
       }
     }
     requestAnimationFrame(openPendingMinecraftLinkAfterLogin);
+    refreshMinecraftLinkUi();
   } else {
     if (bar) bar.hidden = false;
     if (trigger) trigger.hidden = true;
@@ -5789,6 +5791,7 @@ function updateAuthUI(user) {
       avatarImg.removeAttribute('src');
       avatarImg.alt = '';
     }
+    refreshMinecraftLinkUi();
   }
 }
 
@@ -5888,6 +5891,7 @@ function openProfileSettingsModal() {
   }
   if (nameIn) nameIn.value = saved.displayName || name || '';
   if (bioIn) bioIn.value = saved.bio || '';
+  refreshMinecraftLinkUi();
   if (modal) modal.classList.add('open');
 }
 
@@ -5910,7 +5914,7 @@ function saveProfileSettings() {
   closeProfileSettingsModal();
 }
 
-function openMinecraftLinkModal(prefillCode, options) {
+async function openMinecraftLinkModal(prefillCode, options) {
   const opts = options || {};
   const normalized = normalizeMinecraftLinkCode(prefillCode);
   if (!currentAuthUserId) {
@@ -5922,7 +5926,24 @@ function openMinecraftLinkModal(prefillCode, options) {
   const modal = document.getElementById('minecraftLinkModal');
   const input = document.getElementById('minecraftLinkCodeInput');
   const status = document.getElementById('minecraftLinkStatus');
-  if (input && normalized) input.value = normalized;
+  const saveButton = document.querySelector('#minecraftLinkModal .profile-save-btn');
+  const linkState = await fetchMinecraftLinkState();
+  if (linkState.linked) {
+    const name = linkState.discordName || resolveDiscordDisplayNameForMinecraft() || 'Discord';
+    if (status) status.textContent = `${name} · 마인크래프트 연동됨`;
+    if (input) {
+      input.value = '';
+      input.disabled = true;
+    }
+    if (saveButton) saveButton.disabled = true;
+    if (modal) modal.classList.add('open');
+    return;
+  }
+  if (input) {
+    if (normalized) input.value = normalized;
+    input.disabled = false;
+  }
+  if (saveButton) saveButton.disabled = false;
   if (status) status.textContent = '';
   if (modal) modal.classList.add('open');
   if (input) input.focus();
