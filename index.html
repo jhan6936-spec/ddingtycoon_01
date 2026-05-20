@@ -6004,8 +6004,10 @@ function buildMinecraftDashboardPayload() {
     const have = Number(inventory[name] || 0);
     return `${name} ${have.toLocaleString()} / ${Number(count || 0).toLocaleString()}`;
   });
-  const goalMaterialBundleLines = entries.map(([productName, productCount]) => {
-    const inputs = aggregatePlanDirectInputs([[productName, productCount]]);
+  const goalMaterialBundleLines = minecraftFinalProducts.map((productName) => {
+    const productCount = Math.max(0, Number(counts[productName] || 0));
+    const calcCount = productCount > 0 ? productCount : 1;
+    const inputs = aggregatePlanDirectInputs([[productName, calcCount]]);
     const materialPart = Object.entries(inputs)
       .filter(([, count]) => Number(count) > 0)
       .sort((a, b) => Number(b[1]) - Number(a[1]))
