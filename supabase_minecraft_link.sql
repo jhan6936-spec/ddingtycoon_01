@@ -25,8 +25,14 @@ create table if not exists public.minecraft_dashboard_snapshots (
   updated_at timestamptz not null default now()
 );
 
-alter table public.minecraft_link_codes enable row level security;
+-- link_codes: Vercel API(service_role)만 접근. RLS를 켜면 anon 키 오설정 시 INSERT가 막혀 연동 코드 발급이 500으로 실패합니다.
+alter table public.minecraft_link_codes disable row level security;
+
 alter table public.minecraft_dashboard_snapshots enable row level security;
+
+grant usage on schema public to postgres, anon, authenticated, service_role;
+grant all on table public.minecraft_link_codes to service_role;
+grant all on table public.minecraft_dashboard_snapshots to service_role;
 
 drop policy if exists "minecraft dashboard owner read" on public.minecraft_dashboard_snapshots;
 create policy "minecraft dashboard owner read"

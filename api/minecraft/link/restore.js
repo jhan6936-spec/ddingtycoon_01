@@ -2,7 +2,8 @@ const {
   handleCors,
   sendJson,
   readJson,
-  supabaseRest
+  supabaseRest,
+  classifySupabaseError
 } = require('../../_supabase');
 
 module.exports = async function handler(req, res) {
@@ -21,7 +22,7 @@ module.exports = async function handler(req, res) {
         + `?minecraft_uuid=eq.${encodeURIComponent(minecraftUuid)}`
         + '&user_id=not.is.null'
         + '&access_token=not.is.null'
-        + '&order=claimed_at.desc.nullslast,created_at.desc'
+        + '&order=claimed_at.desc,created_at.desc'
         + '&limit=1'
         + '&select=access_token,user_id,claimed_at'
     );
@@ -33,6 +34,12 @@ module.exports = async function handler(req, res) {
     return sendJson(res, 200, { linked: true, accessToken: row.access_token });
   } catch (error) {
     console.error('[minecraft/link/restore]', error);
-    return sendJson(res, 500, { linked: false, error: 'link_restore_failed' });
+    const detail = classifySupabaseError(error);
+    return sendJson(res, 500, {
+      linked: false,
+      error: 'link_restore_failed',
+      code: detail.code,
+      hint: detail.hint
+    });
   }
 };

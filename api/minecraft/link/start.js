@@ -14,6 +14,21 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return sendJson(res, 405, { error: 'method_not_allowed' });
 
   try {
+    const config = getSupabaseConfigStatus();
+    if (!config.ok) {
+      return sendJson(res, 503, {
+        error: 'config_missing',
+        missing: config.missing,
+        hint: 'Vercel 환경 변수 SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY 를 설정하세요.'
+      });
+    }
+    if (config.serviceKeyRole === 'anon') {
+      return sendJson(res, 503, {
+        error: 'service_key_is_anon',
+        hint: 'SUPABASE_SERVICE_ROLE_KEY 에 service_role secret 이 아닌 anon 키가 설정되어 있습니다.'
+      });
+    }
+
     const body = await readJson(req);
     const minecraftUuid = String(body.minecraftUuid || '').trim();
     const minecraftName = String(body.minecraftName || '').trim();
@@ -46,6 +61,11 @@ module.exports = async function handler(req, res) {
     return sendJson(res, 200, { code, url });
   } catch (error) {
     console.error('[minecraft/link/start]', error);
-    return sendJson(res, 500, { error: 'link_start_failed' });
+    const detail = classifySupabaseError(error);
+    return sendJson(res, 500, {
+      error: 'link_start_failed',
+      code: detail.code,
+      hint: detail.hint
+    });
   }
 };
