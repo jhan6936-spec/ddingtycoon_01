@@ -7512,7 +7512,7 @@ function commitWarehouseSetPartField(field) {
 function bindWarehouseQtyFieldEvents() {
   document.querySelectorAll('#warehouseContainer .warehouse-qty-field').forEach((field) => {
     const primary = getWarehousePrimaryInput(field);
-    const { sets, rem } = getWarehouseSetPair(field);
+    const { wrap, sets, rem } = getWarehouseSetPair(field);
     if (!primary) return;
 
     const handleCountChange = () => {
@@ -7548,6 +7548,15 @@ function bindWarehouseQtyFieldEvents() {
         if (warehouseCalcModeEnabled()) openCalculatorForInput(primary);
       });
     });
+
+    if (wrap) {
+      wrap.addEventListener('click', (e) => {
+        if (!warehouseSetViewEnabled() || !warehouseCalcModeEnabled() || primary?.disabled) return;
+        if (e.target === wrap || e.target.classList.contains('warehouse-qty-unit')) {
+          openCalculatorForInput(primary);
+        }
+      });
+    }
   });
 }
 
@@ -7578,7 +7587,7 @@ function updateWarehouseCalcInputMode() {
   const calcOn = warehouseCalcModeEnabled();
   document.querySelectorAll('#warehouseContainer .warehouse-qty-field').forEach((field) => {
     const primary = getWarehousePrimaryInput(field);
-    const { sets, rem } = getWarehouseSetPair(field);
+    const { wrap, sets, rem } = getWarehouseSetPair(field);
     [primary, sets, rem].forEach((input) => {
       if (!input || input.disabled) return;
       if (calcOn) {
@@ -7589,6 +7598,7 @@ function updateWarehouseCalcInputMode() {
         input.classList.remove('warehouse-input--calc-mode');
       }
     });
+    if (wrap) wrap.classList.toggle('warehouse-input--calc-mode', calcOn && !primary?.disabled);
   });
   if (!calcOn) closeCalculator();
 }
