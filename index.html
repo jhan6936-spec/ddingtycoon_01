@@ -7359,11 +7359,8 @@ function warehouseSetViewEnabled() {
 
 function formatWarehouseStackCount(total) {
   const n = Math.max(0, Math.floor(Number(total) || 0));
-  if (n === 0) return '0개';
   const sets = Math.floor(n / SET_SIZE);
   const rem = n % SET_SIZE;
-  if (sets === 0) return `${rem}개`;
-  if (rem === 0) return `${sets}세트`;
   return `${sets}세트 ${rem}개`;
 }
 
