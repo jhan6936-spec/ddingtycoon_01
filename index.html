@@ -5333,9 +5333,6 @@ function parkCalcPopupOnBody() {
 function openCalculatorForInput(inputEl) {
   const isWarehouseInput = !!(inputEl && inputEl.closest && inputEl.closest('#warehouseContainer'));
   if (isWarehouseInput && !warehouseCalcModeEnabled()) return;
-  if (isWarehouseInput && warehouseSetViewEnabled() && !warehouseCalcModeEnabled()) {
-    return;
-  }
   ensureCalcPopup();
 
   const popup = document.getElementById('calcPopup');
@@ -7915,11 +7912,15 @@ function getWarehouseInventory() {
     const material = input.getAttribute('data-material');
     let raw = parseInt(input.getAttribute('data-warehouse-count'), 10);
     if (!Number.isFinite(raw)) {
-      raw = Math.max(0, parseInt(input.value, 10) || 0);
+      raw = warehouseSetViewEnabled()
+        ? parseWarehouseSetDisplayValue(input.value)
+        : Math.max(0, parseInt(input.value, 10) || 0);
+    } else if (warehouseSetViewEnabled()) {
+      raw = parseWarehouseSetDisplayValue(input.value);
     } else {
       raw = Math.max(0, raw);
     }
-    inventory[material] = raw;
+    inventory[material] = Math.max(0, raw);
   });
   return inventory;
 }
