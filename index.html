@@ -4823,7 +4823,7 @@ function getAlchemyMaterialOutputCount(name) {
 }
 const STAR_PROBS = { s1: 0.6, s2: 0.3, s3: 0.1 };
 const STAMINA_PER_GATHER = 15;
-const IMAGE_FOLDERS = ['../재료', '재료', '재료1', '재료 1', '재료2', '재료 2'];
+const IMAGE_FOLDERS = ['../재료', '재료 1', '재료1', '재료', '재료 2', '재료2'];
 
 function resolveImageFolder(folder) {
   const trimmed = String(folder || '').trim();
@@ -4922,8 +4922,9 @@ function getImagePathCandidates(text) {
   const baseFile = `${noStars}.png`;
   const candidates = [];
   IMAGE_FOLDERS.forEach((folder) => {
-    if (mappedFile) candidates.push(`${folder}/${mappedFile}`);
-    candidates.push(`${folder}/${baseFile}`);
+    const resolved = resolveImageFolder(folder);
+    if (mappedFile) candidates.push(`${resolved}/${mappedFile}`);
+    candidates.push(`${resolved}/${baseFile}`);
   });
   return Array.from(new Set(candidates.filter(Boolean)));
 }
