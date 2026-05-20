@@ -510,12 +510,17 @@ function getExpertIconSrc(key) {
 
 function renderExpertIconMarkup(key, altText) {
   const src = getExpertIconSrc(key);
-  const alt = altText || expertMeta[key]?.name || '';
   if (src) {
     return `<img src="${src}" alt="" class="expert-tree-node-img" width="44" height="44" draggable="false" decoding="async" />`;
   }
   const emoji = EXPERT_ICON_EMOJI[key] || '✦';
   return `<span class="expert-tree-node-emoji" aria-hidden="true">${emoji}</span>`;
+}
+
+function renderExpertCostIconMarkup(kind) {
+  const file = EXPERT_COST_ICON_FILES[kind];
+  if (!file) return '<span class="expert-cost-icon-emoji" aria-hidden="true">🪙</span>';
+  return `<img src="assets/experts/${file}" alt="" class="expert-cost-icon-img" width="22" height="22" draggable="false" decoding="async" />`;
 }
 
 function sumExpertLevelCosts(meta, fromLv, toLv) {

@@ -164,17 +164,17 @@ function renderExpertTreeSidebar() {
       <p class="expert-tree-panel-sub">마지막 「설정 저장」 이후 새로 올린 레벨에 필요한 비용</p>
       <ul class="expert-cost-list">
         <li class="expert-cost-row">
-          <span class="expert-cost-icon expert-cost-icon-gold" aria-hidden="true">🪙</span>
+          <span class="expert-cost-icon" aria-hidden="true">${renderExpertCostIconMarkup('gold')}</span>
           <span class="expert-cost-label">필요 골드</span>
           <span class="expert-cost-value">${formatExpertCostValue(costs.gold)}</span>
         </li>
         <li class="expert-cost-row">
-          <span class="expert-cost-icon expert-cost-icon-stone" aria-hidden="true">💠</span>
+          <span class="expert-cost-icon" aria-hidden="true">${renderExpertCostIconMarkup('stone')}</span>
           <span class="expert-cost-label">어빌리티 스톤</span>
           <span class="expert-cost-value">${formatExpertCostValue(costs.stone)}</span>
         </li>
         <li class="expert-cost-row">
-          <span class="expert-cost-icon expert-cost-icon-sp" aria-hidden="true">🛡️</span>
+          <span class="expert-cost-icon" aria-hidden="true">${renderExpertCostIconMarkup('sp')}</span>
           <span class="expert-cost-label">스킬 포인트</span>
           <span class="expert-cost-value">${formatExpertCostValue(costs.sp)}</span>
         </li>
