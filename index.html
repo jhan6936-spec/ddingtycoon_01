@@ -7268,11 +7268,28 @@ function renderWarehouse() {
       handleEfficiencyInputChanged();
     });
     input.addEventListener('keydown', handleWarehouseSetViewKeydown);
+    input.addEventListener('paste', (e) => {
+      if (warehouseSetViewEnabled() && !input.readOnly && !input.disabled) e.preventDefault();
+    });
     input.addEventListener('blur', () => {
       if (warehouseSetViewEnabled()) commitWarehouseSetViewInput(input);
     });
-    input.addEventListener('focus', () => openCalculatorForInput(input));
-    input.addEventListener('click', () => openCalculatorForInput(input));
+    input.addEventListener('focus', () => {
+      if (warehouseSetViewEnabled() && !warehouseCalcModeEnabled() && !input.readOnly && !input.disabled) {
+        const slot = detectWarehouseSetDisplaySlot(input.value, input.selectionStart ?? 0);
+        requestAnimationFrame(() => restoreWarehouseSetDisplayCursor(input, slot));
+        return;
+      }
+      openCalculatorForInput(input);
+    });
+    input.addEventListener('click', (e) => {
+      if (warehouseSetViewEnabled() && !warehouseCalcModeEnabled() && !input.readOnly && !input.disabled) {
+        const slot = detectWarehouseSetDisplaySlot(input.value, input.selectionStart ?? 0);
+        requestAnimationFrame(() => restoreWarehouseSetDisplayCursor(input, slot));
+        return;
+      }
+      openCalculatorForInput(input);
+    });
   });
 
   updateWarehouseCalcInputMode();
@@ -7910,15 +7927,13 @@ function getWarehouseInventory() {
   const inventory = {};
   document.querySelectorAll('#warehouseContainer input[data-material]').forEach((input) => {
     const material = input.getAttribute('data-material');
-    let raw = parseInt(input.getAttribute('data-warehouse-count'), 10);
-    if (!Number.isFinite(raw)) {
-      raw = warehouseSetViewEnabled()
-        ? parseWarehouseSetDisplayValue(input.value)
-        : Math.max(0, parseInt(input.value, 10) || 0);
-    } else if (warehouseSetViewEnabled()) {
+    let raw;
+    if (warehouseSetViewEnabled()) {
       raw = parseWarehouseSetDisplayValue(input.value);
     } else {
-      raw = Math.max(0, raw);
+      raw = parseInt(input.getAttribute('data-warehouse-count'), 10);
+      if (!Number.isFinite(raw)) raw = Math.max(0, parseInt(input.value, 10) || 0);
+      else raw = Math.max(0, raw);
     }
     inventory[material] = Math.max(0, raw);
   });
