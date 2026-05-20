@@ -4768,7 +4768,18 @@
       </div>
       <div id="settingsExpertsPane" class="mini-pane active">
         <a class="experts-wiki-link" href="https://wiki.ddingtycoon.kr/ko/articles/%ED%95%B4%EC%96%91-%EC%A0%84%EB%AC%B8%EA%B0%80-8f880ed1" target="_blank" rel="noopener noreferrer">해양 전문가 공식 위키 ↗</a>
-        <div id="expertsContainer" class="experts-grid"></div>
+        <div id="expertsSkillTreeApp" class="expert-tree-app">
+          <div class="expert-tree-layout">
+            <div class="expert-tree-main">
+              <div class="expert-tree-head">
+                <h2 class="expert-tree-title"><span class="expert-tree-title-icon" aria-hidden="true">◆</span> 해양 전문가 스킬</h2>
+                <button type="button" class="expert-tree-reset" id="expertTreeResetBtn">트리 초기화</button>
+              </div>
+              <div id="expertTreeBoard" class="expert-tree-board" role="group" aria-label="해양 전문가 스킬 트리"></div>
+            </div>
+            <aside id="expertTreeSidebar" class="expert-tree-sidebar" aria-label="스킬 비용 및 효과 요약"></aside>
+          </div>
+        </div>
       </div>
       <div id="settingsSageRodPane" class="mini-pane">
         <div class="panel-card">
@@ -4965,6 +4976,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/javascript-lp-solver@0.4.24/prod/solver.js"></script>
 <script src="experts-wiki-data.js"></script>
+<script src="experts-tree-ui.js"></script>
 <script>
 // ===== 데이터 =====
 const data = {
@@ -8464,9 +8476,15 @@ function loadExpertState() {
   expertState = createDefaultExpertState();
   try {
     const raw = localStorage.getItem(STORAGE_KEY_EXPERTS);
-    if (!raw) return;
+    if (!raw) {
+      syncExpertDraftFromSaved();
+      return;
+    }
     const parsed = JSON.parse(raw);
-    if (!parsed || typeof parsed !== 'object') return;
+    if (!parsed || typeof parsed !== 'object') {
+      syncExpertDraftFromSaved();
+      return;
+    }
     Object.keys(expertMeta).forEach((k) => {
       if (!(k in parsed)) return;
       const v = parseInt(parsed[k], 10);
@@ -8475,6 +8493,7 @@ function loadExpertState() {
       }
     });
   } catch (_) {}
+  syncExpertDraftFromSaved();
 }
 
 function saveExpertState() {
@@ -8482,51 +8501,6 @@ function saveExpertState() {
     localStorage.setItem(STORAGE_KEY_EXPERTS, JSON.stringify(expertState));
   } catch (_) {}
   scheduleMinecraftDashboardSync();
-}
-
-function renderExperts() {
-  const container = document.getElementById('expertsContainer');
-  if (!container) return;
-  container.innerHTML = '';
-
-  Object.values(expertMeta).forEach((meta) => {
-    const lv = expertState[meta.key] || 0;
-    const effectLabel = formatExpertEffectLabel(meta, lv);
-    const card = document.createElement('div');
-    card.className = 'expert-card';
-    card.innerHTML = `
-      <span class="expert-tag">[${meta.tag}]</span>
-      <div class="expert-name">${meta.name}</div>
-      <div class="expert-desc">${meta.desc}</div>
-      <div class="expert-controls">
-        <button class="expert-btn" type="button" data-expert="${meta.key}" data-delta="-1">−</button>
-        <div class="expert-level">Lv.${lv} (${effectLabel})</div>
-        <button class="expert-btn" type="button" data-expert="${meta.key}" data-delta="1">+</button>
-      </div>
-      ${renderExpertWikiLevels(meta)}
-    `;
-    container.appendChild(card);
-  });
-
-  container.querySelectorAll('button[data-expert]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const key = btn.getAttribute('data-expert');
-      const delta = parseInt(btn.getAttribute('data-delta'), 10) || 0;
-      changeExpertLevel(key, delta);
-    });
-  });
-}
-
-function changeExpertLevel(key, delta) {
-  const meta = expertMeta[key];
-  if (!meta) return;
-  const next = Math.max(0, Math.min(meta.maxLevel, (expertState[key] || 0) + delta));
-  if (next === expertState[key]) return;
-  expertState[key] = next;
-  saveExpertState();
-  renderExperts();
-  handleEfficiencyInputChanged();
-  renderRecipes();
 }
 
 function getExpertLevelValue(key) {
