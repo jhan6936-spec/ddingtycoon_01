@@ -5754,9 +5754,20 @@ function updateAuthUI(user) {
   }
 }
 
+function normalizeMinecraftLinkCode(raw) {
+  return String(raw || '').trim().toUpperCase();
+}
+
 function getPendingMinecraftLinkCode() {
   try {
-    return localStorage.getItem(MINECRAFT_PENDING_LINK_CODE_KEY) || '';
+    const code = localStorage.getItem(MINECRAFT_PENDING_LINK_CODE_KEY) || '';
+    if (!code) return '';
+    const savedAt = Number(localStorage.getItem(MINECRAFT_PENDING_LINK_AT_KEY) || '0');
+    if (savedAt && Date.now() - savedAt > MINECRAFT_PENDING_LINK_TTL_MS) {
+      clearPendingMinecraftLinkCode();
+      return '';
+    }
+    return code;
   } catch (_) {
     return '';
   }
@@ -5764,23 +5775,58 @@ function getPendingMinecraftLinkCode() {
 
 function setPendingMinecraftLinkCode(code) {
   try {
-    if (code) localStorage.setItem(MINECRAFT_PENDING_LINK_CODE_KEY, code);
+    const normalized = normalizeMinecraftLinkCode(code);
+    if (!normalized) return;
+    localStorage.setItem(MINECRAFT_PENDING_LINK_CODE_KEY, normalized);
+    localStorage.setItem(MINECRAFT_PENDING_LINK_AT_KEY, String(Date.now()));
+    sessionStorage.removeItem(MINECRAFT_PENDING_LINK_OPENED_KEY);
   } catch (_) {}
 }
 
 function clearPendingMinecraftLinkCode() {
   try {
     localStorage.removeItem(MINECRAFT_PENDING_LINK_CODE_KEY);
+    localStorage.removeItem(MINECRAFT_PENDING_LINK_AT_KEY);
+    sessionStorage.removeItem(MINECRAFT_PENDING_LINK_OPENED_KEY);
   } catch (_) {}
+}
+
+function stripMinecraftLinkCodeFromUrl() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has('minecraft_link_code')) return '';
+    const code = normalizeMinecraftLinkCode(params.get('minecraft_link_code'));
+    params.delete('minecraft_link_code');
+    const nextQuery = params.toString();
+    const nextUrl = window.location.pathname + (nextQuery ? `?${nextQuery}` : '') + window.location.hash;
+    window.history.replaceState({}, '', nextUrl);
+    return code;
+  } catch (_) {
+    return '';
+  }
+}
+
+/** 마크에서 넘어온 URL ?minecraft_link_code= 만 처리 (일반 접속·새로고침에서는 모달 자동 오픈 안 함) */
+function handleMinecraftLinkCodeFromUrl() {
+  const code = stripMinecraftLinkCodeFromUrl();
+  if (!code) return;
+  if (currentAuthUserId) {
+    openMinecraftLinkModal(code, { autoOpen: true });
+    return;
+  }
+  setPendingMinecraftLinkCode(code);
 }
 
 function openPendingMinecraftLinkAfterLogin() {
   if (!currentAuthUserId) return;
   const code = getPendingMinecraftLinkCode();
   if (!code) return;
+  try {
+    if (sessionStorage.getItem(MINECRAFT_PENDING_LINK_OPENED_KEY) === code) return;
+  } catch (_) {}
   const modal = document.getElementById('minecraftLinkModal');
   if (modal && modal.classList.contains('open')) return;
-  openMinecraftLinkModal(code);
+  openMinecraftLinkModal(code, { autoOpen: true, fromPendingLogin: true });
 }
 
 function openProfileSettingsModal() {
