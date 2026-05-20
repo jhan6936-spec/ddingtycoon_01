@@ -253,3 +253,87 @@ function renderExperts() {
   bindExpertTreeControlsOnce();
   renderExpertSkillTree();
 }
+
+let expertScreenshotPrepRestore = null;
+
+function prepareExpertTreeForScreenshot(expand) {
+  const pane = document.getElementById('expertTreeScreenshotPane');
+  const wrap = document.getElementById('expertTreeBoardWrap');
+  if (!pane || !wrap) return;
+  if (expand) {
+    expertScreenshotPrepRestore = {
+      wrapOverflow: wrap.style.overflow,
+      wrapHeight: wrap.style.height,
+      wrapMinHeight: wrap.style.minHeight,
+      paneOverflow: pane.style.overflow
+    };
+    wrap.style.overflow = 'visible';
+    wrap.style.height = `${wrap.scrollHeight}px`;
+    wrap.style.minHeight = '0';
+    pane.style.overflow = 'visible';
+    drawExpertTreeConnectors();
+    return;
+  }
+  if (!expertScreenshotPrepRestore) return;
+  wrap.style.overflow = expertScreenshotPrepRestore.wrapOverflow;
+  wrap.style.height = expertScreenshotPrepRestore.wrapHeight;
+  wrap.style.minHeight = expertScreenshotPrepRestore.wrapMinHeight;
+  pane.style.overflow = expertScreenshotPrepRestore.paneOverflow;
+  expertScreenshotPrepRestore = null;
+  drawExpertTreeConnectors();
+}
+
+async function downloadExpertTreeScreenshot() {
+  const pane = document.getElementById('expertTreeScreenshotPane');
+  if (!pane) return;
+  if (typeof html2canvas !== 'function') {
+    alert('이미지 생성 라이브러리를 불러오지 못했습니다. 인터넷 연결 후 다시 시도해 주세요.');
+    return;
+  }
+  const btn = document.getElementById('expertScreenshotBtn');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = '생성 중…';
+  }
+  try {
+    prepareExpertTreeForScreenshot(true);
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    const canvas = await html2canvas(pane, {
+      scale: Math.min(2, window.devicePixelRatio || 2),
+      backgroundColor: '#121212',
+      useCORS: true,
+      allowTaint: true,
+      logging: false,
+      width: pane.scrollWidth,
+      height: pane.scrollHeight,
+      ignoreElements: (node) => !!(node.classList && node.classList.contains('expert-screenshot-exclude'))
+    });
+    await new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          resolve();
+          return;
+        }
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `띵타해_해양전문가스킬_${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.png`;
+        a.rel = 'noopener';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        resolve();
+      }, 'image/png');
+    });
+  } catch (e) {
+    console.error(e);
+    alert('이미지를 만들지 못했습니다. 잠시 후 다시 시도해 주세요.');
+  } finally {
+    prepareExpertTreeForScreenshot(false);
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = '사진으로 다운';
+    }
+  }
+}
