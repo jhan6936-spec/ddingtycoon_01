@@ -8211,7 +8211,7 @@ function optimizeAlchemyPlanGreedy(inv) {
   return best;
 }
 
-function optimizeAlchemyPlanILP(inv) {
+function optimizeAlchemyPlanILP(inv, options = {}) {
   _lpMatKeys.clear();
   _lpMatSeq = 0;
   const products = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'];
@@ -8287,6 +8287,26 @@ function optimizeAlchemyPlanILP(inv) {
     constraints[c3] = { max: s3 };
   });
 
+  const finalProductNames = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3];
+  const minPerFinal = Math.max(0, Math.floor(Number(options.minPerFinal) || 0));
+  const maxPerFinalRaw = options.maxPerFinal;
+  const maxPerFinal = Number.isFinite(Number(maxPerFinalRaw)) ? Math.max(0, Math.floor(Number(maxPerFinalRaw))) : null;
+  finalProductNames.forEach((name) => {
+    const idx = products.indexOf(name);
+    if (idx < 0) return;
+    const vid = varIds[idx];
+    if (minPerFinal > 0) {
+      const minKey = `final_min_${idx}`;
+      constraints[minKey] = { min: minPerFinal };
+      variables[vid][minKey] = 1;
+    }
+    if (maxPerFinal !== null) {
+      const maxKey = `final_max_${idx}`;
+      constraints[maxKey] = { max: maxPerFinal };
+      variables[vid][maxKey] = 1;
+    }
+  });
+
   if (typeof solver === 'undefined' || !solver || typeof solver.Solve !== 'function') {
     return null;
   }
@@ -8315,73 +8335,45 @@ function optimizeAlchemyPlanILP(inv) {
 }
 
 function optimizeAlchemyPlanBalanced(inv) {
-  const effects = getExpertEffects()
-  const craftOpts = { skipShellfishTierConvert: true }
-  const invCopy = { ...inv }
-  const finalNames = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3]
-  const counts = Object.fromEntries(finalNames.map((name) => [name, 0]))
-  const nameToRecipe = new Map(
-    finalNames
-      .map((name) => [name, data.recipes.find((r) => r.name === name)])
-      .filter(([, recipe]) => !!recipe)
-  )
-
-  const guard = 200000
-  let iter = 0
-  while (iter++ < guard) {
-    const craftable = []
-    for (const name of finalNames) {
-      const recipe = nameToRecipe.get(name)
-      if (!recipe) continue
-      if (calculateMaxCraft(recipe, invCopy, {}, craftOpts) < 1) continue
-      const unitGold = Math.max(0, Number(getAlchemyBoostedSellPriceGold(recipe)) || 0)
-      const eff = unitAlchemyEfficiency(recipe, effects)
-      craftable.push({ name, recipe, count: counts[name] || 0, unitGold, eff })
-    }
-    if (!craftable.length) break
-
-    // 1) 생산량이 가장 적은 최종품을 우선 제작해 분배를 최대한 균등하게 유지
-    let minCount = Infinity
-    craftable.forEach((c) => {
-      if (c.count < minCount) minCount = c.count
-    })
-    const leastProduced = craftable.filter((c) => c.count === minCount)
-
-    // 2) 동률이면 판매가, 3) 다시 동률이면 분당 효율, 4) 이름 순으로 결정
-    leastProduced.sort((a, b) => {
-      if (b.unitGold !== a.unitGold) return b.unitGold - a.unitGold
-      if (b.eff !== a.eff) return b.eff - a.eff
-      return a.name.localeCompare(b.name, 'ko')
-    })
-
-    const pick = leastProduced[0]
-    if (!pick || !pick.recipe) break
-    deductFinalRecipe(pick.recipe, invCopy, craftOpts)
-    counts[pick.name] = (counts[pick.name] || 0) + 1
+  if (typeof solver === 'undefined' || !solver || typeof solver.Solve !== 'function') {
+    return optimizeAlchemyPlanGreedy(inv);
   }
 
-  let diluentCount = 0
-  const diluentRecipe = data.recipes.find((r) => r.name === '추출된 희석액')
-  if (diluentRecipe) {
-    let safety = 0
-    while (safety++ < guard) {
-      if (calculateMaxCraft(diluentRecipe, invCopy, {}, craftOpts) < 1) break
-      deductFinalRecipe(diluentRecipe, invCopy, craftOpts)
-      diluentCount += 1
-    }
+  // 1) 9종 최종 연금품의 "최소 제작 개수"를 최대화하는 분산 기준치를 찾는다.
+  const feasibleAt = (m) => !!optimizeAlchemyPlanILP(inv, { minPerFinal: m });
+  let lo = 0;
+  let hi = 1;
+  const hardCap = 1 << 14;
+  while (hi <= hardCap && feasibleAt(hi)) hi *= 2;
+  while (lo < hi) {
+    const mid = Math.floor((lo + hi + 1) / 2);
+    if (feasibleAt(mid)) lo = mid;
+    else hi = mid - 1;
   }
+  const bestMinPerFinal = lo;
 
-  return packAlchemyPlanResult({ ...counts, '추출된 희석액': diluentCount })
+  // 2) 위 분산 기준을 만족하는 조합 중, 매출이 가장 높은 조합을 선택한다.
+  //    상한을 min+1로 제한해 과도한 몰빵을 방지한다.
+  const tightBalanced = optimizeAlchemyPlanILP(inv, {
+    minPerFinal: bestMinPerFinal,
+    maxPerFinal: bestMinPerFinal + 1
+  });
+  if (tightBalanced) return tightBalanced;
+
+  const looseBalanced = optimizeAlchemyPlanILP(inv, { minPerFinal: bestMinPerFinal });
+  if (looseBalanced) return looseBalanced;
+
+  return optimizeAlchemyPlanGreedy(inv);
 }
 
 function optimizeAlchemyPlan(inv, effects) {
-  const balanced = optimizeAlchemyPlanBalanced(inv)
-  if (balanced) return balanced
-  const ilp = optimizeAlchemyPlanILP(inv)
-  const greedy = optimizeAlchemyPlanGreedy(inv)
-  if (!ilp) return greedy
-  if (!greedy) return ilp
-  return alchemyPlanTotalGold(ilp, effects) >= alchemyPlanTotalGold(greedy, effects) ? ilp : greedy
+  const balanced = optimizeAlchemyPlanBalanced(inv);
+  if (balanced) return balanced;
+  const ilp = optimizeAlchemyPlanILP(inv);
+  const greedy = optimizeAlchemyPlanGreedy(inv);
+  if (!ilp) return greedy;
+  if (!greedy) return ilp;
+  return alchemyPlanTotalGold(ilp, effects) >= alchemyPlanTotalGold(greedy, effects) ? ilp : greedy;
 }
 
 function renderTriFinalPlan(title, orderedNames, counts, tierGold) {
