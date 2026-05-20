@@ -495,6 +495,7 @@ const EXPERT_ICON_FILES = {
 };
 
 const EXPERT_COST_ICON_FILES = {
+  gold: 'gold.png',
   stone: 'ability_stone.png',
   sp: 'skill_point.png'
 };
