@@ -10050,7 +10050,6 @@ function analyzeEfficiency() {
     adjustedSec: totalAdjustedTimeSec,
     counts: { ...lastAlchemyPlanCountsByName },
   };
-  scheduleMinecraftDashboardSync();
   if (planEntries.length > 0) {
     const alchemyTitle = document.createElement('div');
     alchemyTitle.style.fontSize = '14px';
