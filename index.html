@@ -6168,18 +6168,25 @@ function buildMinecraftDashboardPayload() {
   const timeReduceLevel = Number(expertState?.timeReduce || 0);
   const staminaInput = document.getElementById('staminaInput');
   const savedStamina = (() => {
-    const direct = parseInt(staminaInput?.value || '0', 10);
-    if (Number.isFinite(direct) && direct > 0) return direct;
     try {
       const stored = parseInt(localStorage.getItem(STORAGE_KEY_STAMINA) || '0', 10);
-      return Number.isFinite(stored) ? Math.max(0, stored) : 0;
-    } catch (_) {
-      return 0;
-    }
+      if (Number.isFinite(stored) && stored > 0) return stored;
+    } catch (_) {}
+    return 0;
   })();
-  const staminaTarget = savedStamina > 0 ? savedStamina - (savedStamina % STAMINA_PER_GATHER) : 600;
+  const staminaRawLive = (() => {
+    const raw = String(staminaInput?.value ?? '').trim();
+    if (raw) {
+      const direct = parseInt(raw, 10);
+      if (Number.isFinite(direct) && direct >= 0) return direct;
+    }
+    return savedStamina;
+  })();
+  const staminaTarget = staminaRawLive > 0
+    ? staminaRawLive - (staminaRawLive % STAMINA_PER_GATHER)
+    : 0;
   const gatheringTargetCount = Math.max(0, Math.floor(staminaTarget / STAMINA_PER_GATHER));
-  const gatheringPlanLines = buildMinecraftGatheringPlanLines(savedStamina, inventory);
+  const gatheringPlanLines = buildMinecraftGatheringPlanLines(staminaTarget, inventory);
   const resourceLines = materialEntries.map(([name, count]) => {
     const have = Number(inventory[name] || 0);
     return `${name} ${have.toLocaleString()} / ${Number(count || 0).toLocaleString()}`;
