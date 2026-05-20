@@ -111,20 +111,21 @@ function drawExpertTreeConnectors() {
     const p = parentEl.getBoundingClientRect();
     const c = childEl.getBoundingClientRect();
     const x1 = p.left + p.width / 2 - wrapRect.left + scrollLeft;
-    const y1 = p.bottom - wrapRect.top + scrollTop;
+    const y1 = p.bottom - wrapRect.top + scrollTop + 2;
     const x2 = c.left + c.width / 2 - wrapRect.left + scrollLeft;
-    const y2 = c.top - wrapRect.top + scrollTop;
-    const midY = y1 + (y2 - y1) * 0.45;
+    const y2 = c.top - wrapRect.top + scrollTop - 2;
+    const sameColumn = Math.abs(x1 - x2) < 12;
+    const midY = y1 + (y2 - y1) * 0.5;
+    const pathD = sameColumn
+      ? `M ${x1} ${y1} L ${x2} ${y2}`
+      : `M ${x1} ${y1} L ${x1} ${midY} L ${x2} ${midY} L ${x2} ${y2}`;
 
     const parentLv = expertDraftState[parentKey] || 0;
-    const stroke = parentLv > 0 ? '#5a7a9a' : '#333';
-    const opacity = parentLv > 0 ? '0.85' : '0.35';
+    const stroke = parentLv > 0 ? '#5a8ab5' : '#383838';
+    const opacity = parentLv > 0 ? '0.9' : '0.4';
 
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute(
-      'd',
-      `M ${x1} ${y1} L ${x1} ${midY} L ${x2} ${midY} L ${x2} ${y2}`
-    );
+    path.setAttribute('d', pathD);
     path.setAttribute('fill', 'none');
     path.setAttribute('stroke', stroke);
     path.setAttribute('stroke-width', '1.5');
