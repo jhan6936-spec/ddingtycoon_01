@@ -429,16 +429,29 @@ function getExpertGridColumn(key) {
 }
 
 function isExpertSkillUnlocked(key, state) {
-  const parentKey = getExpertParentKey(key);
-  if (!parentKey) return true;
   const src = state || (typeof expertDraftState !== 'undefined' ? expertDraftState : expertState);
-  return (src[parentKey] || 0) > 0;
+  let cur = getExpertParentKey(key);
+  while (cur) {
+    if ((src[cur] || 0) <= 0) return false;
+    cur = getExpertParentKey(cur);
+  }
+  return true;
 }
 
 function getExpertLockHint(key) {
   const parentKey = getExpertParentKey(key);
   if (!parentKey || !expertMeta[parentKey]) return '';
   return `${expertMeta[parentKey].name} Lv.1 이상 필요`;
+}
+
+function getExpertAncestorKeys(key) {
+  const chain = [];
+  let cur = getExpertParentKey(key);
+  while (cur) {
+    chain.push(cur);
+    cur = getExpertParentKey(cur);
+  }
+  return chain;
 }
 
 function sanitizeExpertState(state) {
