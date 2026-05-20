@@ -366,7 +366,7 @@ function renderExpertWikiLevels(meta) {
   return `<details class="expert-wiki-details"><summary>위키 레벨·비용</summary><table class="expert-wiki-table"><thead><tr><th>LV</th><th>효과</th><th>포인트</th><th>골드</th><th>스톤</th></tr></thead><tbody>${rows}</tbody></table></details>`;
 }
 
-/** 인게임 스킬 트리 배치 (위→아래 6단) */
+/** 인게임 스킬 트리 배치 (위→아래 6단, 4열 그리드) */
 const EXPERT_TREE_TIERS = [
   ['oceanBasics'],
   ['doubleCatch', 'deepCollector'],
@@ -375,6 +375,72 @@ const EXPERT_TREE_TIERS = [
   ['keyHook', 'stormFisher', 'shellRefill', 'craftSlots'],
   ['oceanOrder', 'treasureHunter', 'alchemySlots', 'precisionAlchemySlots']
 ];
+
+/** 4열 그리드 상 위치 (1~4) */
+const EXPERT_TREE_COLUMNS = {
+  oceanBasics: 2,
+  doubleCatch: 1,
+  deepCollector: 4,
+  moonEpic: 1,
+  baitScatter: 2,
+  craftPrice: 3,
+  alchemyPrice: 4,
+  fishPrice: 1,
+  tropicalFish: 2,
+  timeReduce: 3,
+  starshell: 4,
+  keyHook: 1,
+  stormFisher: 2,
+  shellRefill: 4,
+  craftSlots: 3,
+  oceanOrder: 4,
+  treasureHunter: 2,
+  alchemySlots: 4,
+  precisionAlchemySlots: 3
+};
+
+/** 직계 선행 스킬 (선행 Lv.0이면 잠금) */
+const EXPERT_TREE_PARENTS = {
+  doubleCatch: 'oceanBasics',
+  deepCollector: 'oceanBasics',
+  moonEpic: 'doubleCatch',
+  baitScatter: 'doubleCatch',
+  craftPrice: 'deepCollector',
+  alchemyPrice: 'deepCollector',
+  fishPrice: 'moonEpic',
+  tropicalFish: 'baitScatter',
+  timeReduce: 'craftPrice',
+  starshell: 'alchemyPrice',
+  keyHook: 'fishPrice',
+  stormFisher: 'tropicalFish',
+  shellRefill: 'starshell',
+  craftSlots: 'timeReduce',
+  oceanOrder: 'deepCollector',
+  treasureHunter: 'stormFisher',
+  alchemySlots: 'alchemyPrice',
+  precisionAlchemySlots: 'timeReduce'
+};
+
+function getExpertParentKey(key) {
+  return EXPERT_TREE_PARENTS[key] || null;
+}
+
+function getExpertGridColumn(key) {
+  return EXPERT_TREE_COLUMNS[key] || 1;
+}
+
+function isExpertSkillUnlocked(key, state) {
+  const parentKey = getExpertParentKey(key);
+  if (!parentKey) return true;
+  const src = state || (typeof expertDraftState !== 'undefined' ? expertDraftState : expertState);
+  return (src[parentKey] || 0) > 0;
+}
+
+function getExpertLockHint(key) {
+  const parentKey = getExpertParentKey(key);
+  if (!parentKey || !expertMeta[parentKey]) return '';
+  return `${expertMeta[parentKey].name} Lv.1 이상 필요`;
+}
 
 const EXPERT_ICONS = {
   oceanBasics: '📖',
