@@ -1,5 +1,6 @@
 /** 해양 전문가 스킬 트리 UI (draft → 저장) */
 let expertDraftState = createDefaultExpertState();
+let expertTreeResizeTimer = null;
 
 function syncExpertDraftFromSaved() {
   expertDraftState = { ...expertState };
@@ -16,19 +17,41 @@ function formatExpertCostValue(n) {
   return `${prefix}${v.toLocaleString()}`;
 }
 
+function cascadeResetExpertDescendants(parentKey, state) {
+  Object.keys(EXPERT_TREE_PARENTS).forEach((childKey) => {
+    if (EXPERT_TREE_PARENTS[childKey] !== parentKey) return;
+    state[childKey] = 0;
+    cascadeResetExpertDescendants(childKey, state);
+  });
+}
+
 function renderExpertTreeNode(meta) {
   const lv = expertDraftState[meta.key] || 0;
   const savedLv = expertState[meta.key] || 0;
   const dirty = lv !== savedLv;
+  const unlocked = isExpertSkillUnlocked(meta.key, expertDraftState);
+  const active = unlocked && lv > 0;
   const icon = EXPERT_ICONS[meta.key] || '✦';
+  const lockHint = unlocked ? '' : getExpertLockHint(meta.key);
+  const col = getExpertGridColumn(meta.key);
+  const canIncrease = unlocked && lv < meta.maxLevel;
+  const canDecrease = lv > 0;
+
   return `
-    <div class="expert-tree-node${dirty ? ' is-dirty' : ''}" data-expert-key="${meta.key}">
-      <div class="expert-tree-node-lv">${lv}/${meta.maxLevel}</div>
-      <div class="expert-tree-node-icon" aria-hidden="true">${icon}</div>
-      <div class="expert-tree-node-name">[${meta.tag}] ${meta.name}</div>
-      <div class="expert-tree-node-controls">
-        <button type="button" class="expert-tree-btn" data-expert="${meta.key}" data-delta="-1" aria-label="${meta.name} 레벨 내리기" ${lv <= 0 ? 'disabled' : ''}>−</button>
-        <button type="button" class="expert-tree-btn" data-expert="${meta.key}" data-delta="1" aria-label="${meta.name} 레벨 올리기" ${lv >= meta.maxLevel ? 'disabled' : ''}>+</button>
+    <div class="expert-tree-node-slot" style="grid-column:${col}">
+      <div class="expert-tree-node${dirty ? ' is-dirty' : ''}${unlocked ? '' : ' is-locked'}${active ? ' is-active' : ''}" data-expert-key="${meta.key}"${lockHint ? ` title="${lockHint}"` : ''}>
+        <div class="expert-tree-node-lv">${lv}/${meta.maxLevel}</div>
+        <div class="expert-tree-node-icon-outer" aria-hidden="true">
+          <div class="expert-tree-node-icon-frame">
+            <div class="expert-tree-node-icon">${icon}</div>
+          </div>
+        </div>
+        <div class="expert-tree-node-name">[${meta.tag}] ${meta.name}</div>
+        ${!unlocked ? '<div class="expert-tree-node-lock" aria-hidden="true">🔒</div>' : ''}
+        <div class="expert-tree-node-controls">
+          <button type="button" class="expert-tree-btn" data-expert="${meta.key}" data-delta="-1" aria-label="${meta.name} 레벨 내리기" ${canDecrease ? '' : 'disabled'}>−</button>
+          <button type="button" class="expert-tree-btn" data-expert="${meta.key}" data-delta="1" aria-label="${meta.name} 레벨 올리기" ${canIncrease ? '' : 'disabled'}>+</button>
+        </div>
       </div>
     </div>
   `;
@@ -37,14 +60,18 @@ function renderExpertTreeNode(meta) {
 function renderExpertTreeBoard() {
   const board = document.getElementById('expertTreeBoard');
   if (!board) return;
-  board.innerHTML = EXPERT_TREE_TIERS.map((tier, tierIdx) => {
+
+  const tiersHtml = EXPERT_TREE_TIERS.map((tier, tierIdx) => {
     const nodes = tier
       .map((key) => expertMeta[key])
       .filter(Boolean)
       .map((meta) => renderExpertTreeNode(meta))
       .join('');
-    return `<div class="expert-tree-tier" data-tier="${tierIdx}">${nodes}</div>`;
+    const spanClass = tier.length === 1 ? ' expert-tree-tier--root' : '';
+    return `<div class="expert-tree-tier${spanClass}" data-tier="${tierIdx}">${nodes}</div>`;
   }).join('');
+
+  board.innerHTML = tiersHtml;
 
   board.querySelectorAll('button[data-expert]').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -53,6 +80,64 @@ function renderExpertTreeBoard() {
       changeExpertDraftLevel(key, delta);
     });
   });
+
+  requestAnimationFrame(() => {
+    drawExpertTreeConnectors();
+  });
+}
+
+function drawExpertTreeConnectors() {
+  const wrap = document.getElementById('expertTreeBoardWrap');
+  const svg = document.getElementById('expertTreeConnectorsSvg');
+  if (!wrap || !svg) return;
+
+  const w = wrap.scrollWidth;
+  const h = wrap.scrollHeight;
+  svg.setAttribute('width', String(w));
+  svg.setAttribute('height', String(h));
+  svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+  svg.innerHTML = '';
+
+  const wrapRect = wrap.getBoundingClientRect();
+  const scrollLeft = wrap.scrollLeft;
+  const scrollTop = wrap.scrollTop;
+
+  Object.entries(EXPERT_TREE_PARENTS).forEach(([childKey, parentKey]) => {
+    const parentEl = wrap.querySelector(`[data-expert-key="${parentKey}"] .expert-tree-node-icon-frame`);
+    const childEl = wrap.querySelector(`[data-expert-key="${childKey}"] .expert-tree-node-icon-frame`);
+    if (!parentEl || !childEl) return;
+
+    const p = parentEl.getBoundingClientRect();
+    const c = childEl.getBoundingClientRect();
+    const x1 = p.left + p.width / 2 - wrapRect.left + scrollLeft;
+    const y1 = p.bottom - wrapRect.top + scrollTop;
+    const x2 = c.left + c.width / 2 - wrapRect.left + scrollLeft;
+    const y2 = c.top - wrapRect.top + scrollTop;
+    const midY = y1 + (y2 - y1) * 0.45;
+
+    const parentLv = expertDraftState[parentKey] || 0;
+    const stroke = parentLv > 0 ? '#5a7a9a' : '#333';
+    const opacity = parentLv > 0 ? '0.85' : '0.35';
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute(
+      'd',
+      `M ${x1} ${y1} L ${x1} ${midY} L ${x2} ${midY} L ${x2} ${y2}`
+    );
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', stroke);
+    path.setAttribute('stroke-width', '1.5');
+    path.setAttribute('stroke-linecap', 'round');
+    path.setAttribute('stroke-linejoin', 'round');
+    path.setAttribute('opacity', opacity);
+    path.setAttribute('class', 'expert-tree-connector');
+    svg.appendChild(path);
+  });
+}
+
+function scheduleExpertTreeConnectorRedraw() {
+  if (expertTreeResizeTimer) clearTimeout(expertTreeResizeTimer);
+  expertTreeResizeTimer = setTimeout(() => drawExpertTreeConnectors(), 80);
 }
 
 function renderExpertTreeSidebar() {
@@ -61,7 +146,7 @@ function renderExpertTreeSidebar() {
 
   const costs = computeExpertDraftCosts(expertState, expertDraftState);
   const dirty = isExpertDraftDirty();
-  const effects = listActiveExpertEffects(expertDraftState);
+  const effects = listActiveExpertEffects(expertDraftState).filter((e) => isExpertSkillUnlocked(e.key, expertDraftState));
 
   const effectsHtml = effects.length
     ? `<ul class="expert-effect-list">${effects.map((e) => `
@@ -104,7 +189,6 @@ function renderExpertTreeSidebar() {
       <div class="expert-effect-list-wrap">${effectsHtml}</div>
     </section>
   `;
-
 }
 
 function bindExpertTreeSaveBtn() {
@@ -123,9 +207,12 @@ function renderExpertSkillTree() {
 function changeExpertDraftLevel(key, delta) {
   const meta = expertMeta[key];
   if (!meta) return;
-  const next = Math.max(0, Math.min(meta.maxLevel, (expertDraftState[key] || 0) + delta));
-  if (next === expertDraftState[key]) return;
+  const cur = expertDraftState[key] || 0;
+  if (delta > 0 && !isExpertSkillUnlocked(key, expertDraftState)) return;
+  const next = Math.max(0, Math.min(meta.maxLevel, cur + delta));
+  if (next === cur) return;
   expertDraftState[key] = next;
+  if (next === 0) cascadeResetExpertDescendants(key, expertDraftState);
   renderExpertSkillTree();
 }
 
@@ -152,6 +239,11 @@ function bindExpertTreeControlsOnce() {
   if (resetBtn) {
     resetBtn.addEventListener('click', handleExpertTreeReset);
   }
+  const wrap = document.getElementById('expertTreeBoardWrap');
+  if (wrap) {
+    wrap.addEventListener('scroll', scheduleExpertTreeConnectorRedraw);
+  }
+  window.addEventListener('resize', scheduleExpertTreeConnectorRedraw);
 }
 
 function renderExperts() {
