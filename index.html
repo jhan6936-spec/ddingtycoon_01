@@ -1567,6 +1567,17 @@
       line-height: 1.5;
       white-space: pre-wrap;
     }
+    .minecraft-link-badge {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(45, 92, 34, 0.22);
+      border: 1px solid rgba(93, 168, 74, 0.45);
+      color: #b8f0a8;
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 600;
+    }
     @media (max-width: 520px) {
       .site-auth-bar {
         margin-top: 0;
@@ -6089,13 +6100,50 @@ function buildMinecraftDashboardPayload() {
     crewWebsite: '웹사이트 연결됨',
     crewSync: '제작 목표 동기화 완료',
     crewApi: 'API 정상',
-    crewPlayer: 'Discord 선장',
-    crewContract: '항해 계약 활성화',
+    crewPlayer: discordCaptainName,
+    crewContract: '연동됨',
     durability: 100,
     fuel: 100,
     food: '0일',
     sailingState: '웹 연동 완료'
   };
+}
+
+async function fetchMinecraftLinkState() {
+  const sb = getSupabaseClient();
+  if (!sb) return { linked: false };
+  const { data: sessionData } = await sb.auth.getSession().catch(() => ({ data: null }));
+  const token = sessionData?.session?.access_token;
+  if (!token) return { linked: false };
+  try {
+    const response = await fetch('/api/minecraft/link/me', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) return { linked: false };
+    return body;
+  } catch (_) {
+    return { linked: false };
+  }
+}
+
+async function refreshMinecraftLinkUi() {
+  const badge = document.getElementById('minecraftLinkBadge');
+  if (!badge) return;
+  if (!currentAuthUserId) {
+    badge.hidden = true;
+    badge.textContent = '';
+    return;
+  }
+  const state = await fetchMinecraftLinkState();
+  if (state.linked) {
+    const name = state.discordName || resolveDiscordDisplayNameForMinecraft() || 'Discord';
+    badge.hidden = false;
+    badge.textContent = `${name} · 마인크래프트 연동됨`;
+    return;
+  }
+  badge.hidden = true;
+  badge.textContent = '';
 }
 
 function buildMinecraftGatheringPlanLines(staminaRaw, inventory) {
