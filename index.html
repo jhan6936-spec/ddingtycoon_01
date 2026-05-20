@@ -5410,16 +5410,14 @@ function openCalculatorForInput(inputEl) {
   calcState.materialName = inputEl.getAttribute('data-material') || '수량 입력';
 
   const useSetCalcMode = isWarehouseInput && warehouseSetViewEnabled();
+  const field = getWarehouseQtyFieldFromNode(inputEl);
   let raw = 0;
-  if (inputEl) {
+  if (field) {
+    raw = warehouseFieldRawCount(field);
+  } else if (inputEl) {
     raw = parseInt(inputEl.getAttribute('data-warehouse-count'), 10);
-    if (!Number.isFinite(raw)) {
-      raw = useSetCalcMode
-        ? parseWarehouseSetDisplayValue(inputEl.value)
-        : Math.max(0, parseInt(inputEl.value, 10) || 0);
-    } else {
-      raw = Math.max(0, raw);
-    }
+    if (!Number.isFinite(raw)) raw = Math.max(0, parseInt(inputEl.value, 10) || 0);
+    else raw = Math.max(0, raw);
   }
 
   if (useSetCalcMode) {
@@ -7345,56 +7343,146 @@ function renderWarehouse() {
   if (vb.leaves.length > 0) createSection('나무 잎', vb.leaves, '', { isVanillaSection: true, appendTo: vanillaContainer, vanillaDense: true });
   if (vb.other.length > 0) createSection('기타 바닐라', vb.other, '', { isVanillaSection: true, appendTo: vanillaContainer, vanillaDense: true });
   
-  // 입력 필드에 이벤트 리스너 추가
-  const inputs = document.querySelectorAll('#warehouseContainer input[data-material]');
-  inputs.forEach(input => {
-    input.addEventListener('change', () => {
-      if (warehouseSetViewEnabled()) {
-        commitWarehouseSetViewInput(input);
-        return;
-      }
-      syncWarehouseInputRawAttribute(input);
-      saveWarehouseInventory();
-      handleEfficiencyInputChanged();
-    });
-    input.addEventListener('input', () => {
-      if (warehouseSetViewEnabled()) {
-        handleWarehouseSetViewInputEvent(input);
-        return;
-      }
-      syncWarehouseInputRawAttribute(input);
-      saveWarehouseInventory();
-      handleEfficiencyInputChanged();
-    });
-    input.addEventListener('keydown', handleWarehouseSetViewKeydown);
-    input.addEventListener('paste', (e) => {
-      if (warehouseSetViewEnabled() && !input.readOnly && !input.disabled) e.preventDefault();
-    });
-    input.addEventListener('blur', () => {
-      if (warehouseSetViewEnabled()) commitWarehouseSetViewInput(input);
-    });
-    input.addEventListener('focus', () => {
-      if (warehouseSetViewEnabled() && !warehouseCalcModeEnabled() && !input.readOnly && !input.disabled) {
-        ensureWarehouseSetDisplayInput(input);
-        const slot = detectWarehouseSetDisplaySlot(input.value, input.selectionStart ?? 0);
-        requestAnimationFrame(() => restoreWarehouseSetDisplayCursor(input, slot));
-        return;
-      }
-      openCalculatorForInput(input);
-    });
-    input.addEventListener('click', () => {
-      if (warehouseSetViewEnabled() && !warehouseCalcModeEnabled() && !input.readOnly && !input.disabled) {
-        ensureWarehouseSetDisplayInput(input);
-        const slot = detectWarehouseSetDisplaySlot(input.value, input.selectionStart ?? 0);
-        requestAnimationFrame(() => restoreWarehouseSetDisplayCursor(input, slot));
-        return;
-      }
-      openCalculatorForInput(input);
-    });
-  });
+  bindWarehouseQtyFieldEvents();
 
   updateWarehouseCalcInputMode();
   updateVanillaInputState();
+}
+
+function getWarehouseQtyFieldFromNode(node) {
+  return node && node.closest ? node.closest('.warehouse-qty-field') : null;
+}
+
+function getWarehousePrimaryInput(field) {
+  return field ? field.querySelector('.warehouse-qty-count') : null;
+}
+
+function getWarehouseSetPair(field) {
+  if (!field) return { wrap: null, sets: null, rem: null };
+  return {
+    wrap: field.querySelector('.warehouse-qty-setpair'),
+    sets: field.querySelector('.warehouse-qty-sets'),
+    rem: field.querySelector('.warehouse-qty-rem')
+  };
+}
+
+function normalizeWarehouseSetRemParts(setsRaw, remRaw) {
+  let sets = Math.max(0, Math.floor(Number(setsRaw) || 0));
+  let rem = Math.max(0, Math.floor(Number(remRaw) || 0));
+  if (rem >= SET_SIZE) {
+    sets += Math.floor(rem / SET_SIZE);
+    rem = rem % SET_SIZE;
+  }
+  return { sets, rem, total: sets * SET_SIZE + rem };
+}
+
+function warehouseFieldRawCount(field) {
+  const primary = getWarehousePrimaryInput(field);
+  if (!primary) return 0;
+  if (warehouseSetViewEnabled()) {
+    const { sets, rem } = getWarehouseSetPair(field);
+    return normalizeWarehouseSetRemParts(sets?.value, rem?.value).total;
+  }
+  const raw = parseInt(primary.getAttribute('data-warehouse-count'), 10);
+  if (Number.isFinite(raw)) return Math.max(0, raw);
+  return Math.max(0, parseInt(primary.value, 10) || 0);
+}
+
+function syncWarehouseFieldCount(field, total) {
+  const primary = getWarehousePrimaryInput(field);
+  if (!primary) return;
+  const n = Math.max(0, Math.floor(Number(total) || 0));
+  const sets = Math.floor(n / SET_SIZE);
+  const rem = n % SET_SIZE;
+  primary.value = String(n);
+  primary.setAttribute('data-warehouse-count', String(n));
+  const pair = getWarehouseSetPair(field);
+  if (pair.sets) pair.sets.value = String(sets);
+  if (pair.rem) pair.rem.value = String(rem);
+}
+
+function sanitizeWarehouseSetPartDigits(value) {
+  return String(value || '').replace(/\D/g, '');
+}
+
+function handleWarehouseSetPartKeydown(e) {
+  if (!warehouseSetViewEnabled()) return;
+  const input = e.currentTarget;
+  if (input.disabled || input.readOnly) return;
+  const allowed = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Tab', 'Home', 'End', 'Backspace', 'Delete'];
+  if (allowed.includes(e.key)) return;
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    input.blur();
+    return;
+  }
+  if (!/^\d$/.test(e.key)) e.preventDefault();
+}
+
+function handleWarehouseSetPartInput(field) {
+  const pair = getWarehouseSetPair(field);
+  if (!pair.sets || !pair.rem) return;
+  pair.sets.value = sanitizeWarehouseSetPartDigits(pair.sets.value);
+  pair.rem.value = sanitizeWarehouseSetPartDigits(pair.rem.value);
+  const normalized = normalizeWarehouseSetRemParts(pair.sets.value, pair.rem.value);
+  pair.sets.value = String(normalized.sets);
+  pair.rem.value = String(normalized.rem);
+  syncWarehouseFieldCount(field, normalized.total);
+  saveWarehouseInventory();
+  handleEfficiencyInputChanged();
+}
+
+function commitWarehouseSetPartField(field) {
+  const pair = getWarehouseSetPair(field);
+  if (!pair.sets || !pair.rem) return;
+  if (!pair.sets.value.trim()) pair.sets.value = '0';
+  if (!pair.rem.value.trim()) pair.rem.value = '0';
+  const normalized = normalizeWarehouseSetRemParts(pair.sets.value, pair.rem.value);
+  syncWarehouseFieldCount(field, normalized.total);
+  saveWarehouseInventory();
+  handleEfficiencyInputChanged();
+}
+
+function bindWarehouseQtyFieldEvents() {
+  document.querySelectorAll('#warehouseContainer .warehouse-qty-field').forEach((field) => {
+    const primary = getWarehousePrimaryInput(field);
+    const { sets, rem } = getWarehouseSetPair(field);
+    if (!primary) return;
+
+    const handleCountChange = () => {
+      if (warehouseSetViewEnabled()) return;
+      syncWarehouseInputRawAttribute(primary);
+      saveWarehouseInventory();
+      handleEfficiencyInputChanged();
+    };
+    primary.addEventListener('change', handleCountChange);
+    primary.addEventListener('input', handleCountChange);
+    primary.addEventListener('focus', () => {
+      if (warehouseSetViewEnabled() && warehouseCalcModeEnabled()) openCalculatorForInput(primary);
+    });
+    primary.addEventListener('click', () => {
+      if (warehouseSetViewEnabled() && warehouseCalcModeEnabled()) openCalculatorForInput(primary);
+    });
+
+    [sets, rem].forEach((partInput) => {
+      if (!partInput) return;
+      partInput.addEventListener('keydown', handleWarehouseSetPartKeydown);
+      partInput.addEventListener('paste', (e) => e.preventDefault());
+      partInput.addEventListener('input', () => handleWarehouseSetPartInput(field));
+      partInput.addEventListener('change', () => commitWarehouseSetPartField(field));
+      partInput.addEventListener('blur', () => commitWarehouseSetPartField(field));
+      partInput.addEventListener('focus', () => {
+        if (warehouseCalcModeEnabled()) {
+          openCalculatorForInput(primary);
+          return;
+        }
+        if (!partInput.value.trim()) partInput.value = '0';
+      });
+      partInput.addEventListener('click', () => {
+        if (warehouseCalcModeEnabled()) openCalculatorForInput(primary);
+      });
+    });
+  });
 }
 
 // ===== 창고 계산모드 =====
@@ -7422,14 +7510,19 @@ function saveWarehouseCalcModeState() {
 
 function updateWarehouseCalcInputMode() {
   const calcOn = warehouseCalcModeEnabled();
-  document.querySelectorAll('#warehouseContainer input[data-material]').forEach((input) => {
-    if (calcOn) {
-      input.setAttribute('readonly', 'readonly');
-      input.classList.add('warehouse-input--calc-mode');
-    } else {
-      input.removeAttribute('readonly');
-      input.classList.remove('warehouse-input--calc-mode');
-    }
+  document.querySelectorAll('#warehouseContainer .warehouse-qty-field').forEach((field) => {
+    const primary = getWarehousePrimaryInput(field);
+    const { sets, rem } = getWarehouseSetPair(field);
+    [primary, sets, rem].forEach((input) => {
+      if (!input || input.disabled) return;
+      if (calcOn) {
+        input.setAttribute('readonly', 'readonly');
+        input.classList.add('warehouse-input--calc-mode');
+      } else {
+        input.removeAttribute('readonly');
+        input.classList.remove('warehouse-input--calc-mode');
+      }
+    });
   });
   if (!calcOn) closeCalculator();
 }
