@@ -365,3 +365,92 @@ function renderExpertWikiLevels(meta) {
   }).join('');
   return `<details class="expert-wiki-details"><summary>위키 레벨·비용</summary><table class="expert-wiki-table"><thead><tr><th>LV</th><th>효과</th><th>포인트</th><th>골드</th><th>스톤</th></tr></thead><tbody>${rows}</tbody></table></details>`;
 }
+
+/** 인게임 스킬 트리 배치 (위→아래 6단) */
+const EXPERT_TREE_TIERS = [
+  ['oceanBasics'],
+  ['doubleCatch', 'deepCollector'],
+  ['moonEpic', 'baitScatter', 'craftPrice', 'alchemyPrice'],
+  ['fishPrice', 'tropicalFish', 'timeReduce', 'starshell'],
+  ['keyHook', 'stormFisher', 'shellRefill', 'craftSlots'],
+  ['oceanOrder', 'treasureHunter', 'alchemySlots', 'precisionAlchemySlots']
+];
+
+const EXPERT_ICONS = {
+  oceanBasics: '📖',
+  doubleCatch: '🎣',
+  deepCollector: '⚓',
+  moonEpic: '🌙',
+  baitScatter: '🪱',
+  craftPrice: '🐚',
+  alchemyPrice: '💎',
+  fishPrice: '🐟',
+  tropicalFish: '🐠',
+  timeReduce: '⏱️',
+  starshell: '⭐',
+  keyHook: '🔑',
+  stormFisher: '⛈️',
+  shellRefill: '🦪',
+  craftSlots: '🏭',
+  oceanOrder: '📦',
+  treasureHunter: '📜',
+  alchemySlots: '⚗️',
+  precisionAlchemySlots: '🔬'
+};
+
+function sumExpertLevelCosts(meta, fromLv, toLv) {
+  let gold = 0;
+  let sp = 0;
+  let stone = 0;
+  if (!meta?.levels?.length) return { gold, sp, stone };
+  if (toLv > fromLv) {
+    for (let lv = fromLv + 1; lv <= toLv; lv += 1) {
+      const row = meta.levels.find((r) => r.lv === lv);
+      if (!row) continue;
+      gold += row.gold;
+      sp += row.sp;
+      stone += row.stone;
+    }
+  } else if (toLv < fromLv) {
+    for (let lv = toLv + 1; lv <= fromLv; lv += 1) {
+      const row = meta.levels.find((r) => r.lv === lv);
+      if (!row) continue;
+      gold -= row.gold;
+      sp -= row.sp;
+      stone -= row.stone;
+    }
+  }
+  return { gold, sp, stone };
+}
+
+function computeExpertDraftCosts(savedState, draftState) {
+  let gold = 0;
+  let sp = 0;
+  let stone = 0;
+  Object.keys(expertMeta).forEach((key) => {
+    const meta = expertMeta[key];
+    const savedLv = savedState[key] || 0;
+    const draftLv = draftState[key] || 0;
+    const part = sumExpertLevelCosts(meta, savedLv, draftLv);
+    gold += part.gold;
+    sp += part.sp;
+    stone += part.stone;
+  });
+  return { gold, sp, stone };
+}
+
+function listActiveExpertEffects(state) {
+  const items = [];
+  Object.values(expertMeta).forEach((meta) => {
+    const lv = state[meta.key] || 0;
+    if (lv <= 0) return;
+    items.push({
+      key: meta.key,
+      tag: meta.tag,
+      name: meta.name,
+      lv,
+      label: formatExpertEffectLabel(meta, lv)
+    });
+  });
+  return items;
+}
