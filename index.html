@@ -5582,7 +5582,7 @@ function commitCalcValue(action) {
   }
 
   saveWarehouseInventory();
-  analyzeEfficiency();
+  handleEfficiencyInputChanged();
   return true;
 }
 
@@ -5593,7 +5593,7 @@ function resetAllWarehouse() {
   });
   applyWarehouseSetDisplayMode();
   saveWarehouseInventory();
-  analyzeEfficiency();
+  handleEfficiencyInputChanged();
   closeCalculator();
 }
 
