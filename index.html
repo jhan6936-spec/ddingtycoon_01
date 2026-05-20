@@ -5881,9 +5881,6 @@ function openMinecraftLinkModal(prefillCode, options) {
     alert('Discord 로그인 후 마인크래프트 연동을 진행할 수 있습니다.');
     return;
   }
-  if (!opts.autoOpen && !normalized) {
-    return;
-  }
   closeProfileSettingsModal();
   const modal = document.getElementById('minecraftLinkModal');
   const input = document.getElementById('minecraftLinkCodeInput');
@@ -9675,8 +9672,7 @@ async function loadLiveNpcMarketPrices() {
 window.addEventListener('DOMContentLoaded', function() {
   initSupabaseAuth().then(() => {
     try {
-      const code = new URLSearchParams(window.location.search).get('minecraft_link_code');
-      if (code) openMinecraftLinkModal(code);
+      handleMinecraftLinkCodeFromUrl();
     } catch (_) {}
   });
 

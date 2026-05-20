@@ -18,11 +18,27 @@
   function goHome() {
     window.location.replace('/');
   }
+  function formatOAuthFailMessage(error, description) {
+    var text = ((error || '') + ' ' + (description || '')).toLowerCase();
+    if (
+      text.indexOf('verify') >= 0 ||
+      text.indexOf('verification') >= 0 ||
+      text.indexOf('인증') >= 0 ||
+      text.indexOf('authenticate') >= 0
+    ) {
+      return 'Discord 이메일 인증이 필요합니다. Discord 설정 → 내 계정에서 인증 후 다시 로그인해 주세요.';
+    }
+    if (text.indexOf('access_denied') >= 0) {
+      return 'Discord 로그인이 취소되었습니다.';
+    }
+    return description || error || '로그인 오류';
+  }
+
   function fail(msg) {
     var el = document.getElementById('msg');
     if (el) el.textContent = msg || '오류 — 메인으로 이동합니다';
     console.error('[auth/callback]', msg);
-    setTimeout(goHome, 1200);
+    setTimeout(goHome, 2800);
   }
   var cfg = window.SUPABASE_CONFIG;
   var mod = window.supabase;
