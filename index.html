@@ -6327,10 +6327,11 @@ function buildMinecraftGatheringPlanLines(staminaRaw, inventory) {
 }
 
 let minecraftDashboardSyncTimer = 0;
+const MINECRAFT_DASHBOARD_SYNC_DEBOUNCE_MS = 350;
 
 function scheduleMinecraftDashboardSync() {
   clearTimeout(minecraftDashboardSyncTimer);
-  minecraftDashboardSyncTimer = setTimeout(syncMinecraftDashboardSnapshot, 700);
+  minecraftDashboardSyncTimer = setTimeout(syncMinecraftDashboardSnapshot, MINECRAFT_DASHBOARD_SYNC_DEBOUNCE_MS);
 }
 
 async function syncMinecraftDashboardSnapshot() {
@@ -9590,6 +9591,7 @@ function renderStaminaPlan() {
       ${rows.join('')}
     </div>
   `;
+  scheduleMinecraftDashboardSync();
 }
 
 function updateVanillaInputState() {
@@ -9894,6 +9896,7 @@ function analyzeEfficiency() {
     if (al) al.innerHTML = '<div class="no-result">재료 창고에 수량을 입력하면 연금품 계산이 표시됩니다</div>';
     renderCraftPricePanel(effects);
     renderStaminaPlan();
+    scheduleMinecraftDashboardSync();
     return;
   }
 
