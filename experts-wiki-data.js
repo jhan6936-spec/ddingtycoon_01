@@ -442,6 +442,23 @@ function getExpertLockHint(key) {
   return `${expertMeta[parentKey].name} Lv.1 이상 필요`;
 }
 
+function sanitizeExpertState(state) {
+  const next = { ...state };
+  let changed = true;
+  while (changed) {
+    changed = false;
+    Object.keys(EXPERT_TREE_PARENTS).forEach((childKey) => {
+      const parentKey = EXPERT_TREE_PARENTS[childKey];
+      if ((next[parentKey] || 0) > 0) return;
+      if ((next[childKey] || 0) !== 0) {
+        next[childKey] = 0;
+        changed = true;
+      }
+    });
+  }
+  return next;
+}
+
 const EXPERT_ICONS = {
   oceanBasics: '📖',
   doubleCatch: '🎣',

@@ -224,7 +224,8 @@ function handleExpertTreeReset() {
 
 function handleExpertTreeSave() {
   if (!isExpertDraftDirty()) return;
-  expertState = { ...expertDraftState };
+  expertState = sanitizeExpertState({ ...expertDraftState });
+  expertDraftState = { ...expertState };
   saveExpertState();
   renderExpertSkillTree();
   if (typeof handleEfficiencyInputChanged === 'function') handleEfficiencyInputChanged();
