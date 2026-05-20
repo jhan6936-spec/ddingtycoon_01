@@ -4831,7 +4831,11 @@
         <button class="tab-btn" type="button" data-settings-tab="sageRod" onclick="showSettingsSub('sageRod')">세이지 낚싯대</button>
       </div>
       <div id="settingsExpertsPane" class="mini-pane active">
-        <a class="experts-wiki-link" href="https://wiki.ddingtycoon.kr/ko/articles/%ED%95%B4%EC%96%91-%EC%A0%84%EB%AC%B8%EA%B0%80-8f880ed1" target="_blank" rel="noopener noreferrer">해양 전문가 공식 위키 ↗</a>
+        <div class="expert-settings-toolbar expert-screenshot-exclude">
+          <a class="experts-wiki-link" href="https://wiki.ddingtycoon.kr/ko/articles/%ED%95%B4%EC%96%91-%EC%A0%84%EB%AC%B8%EA%B0%80-8f880ed1" target="_blank" rel="noopener noreferrer">해양 전문가 공식 위키 ↗</a>
+          <button type="button" class="btn" id="expertScreenshotBtn" onclick="downloadExpertTreeScreenshot()">사진으로 다운</button>
+        </div>
+        <div id="expertTreeScreenshotPane" class="expert-tree-screenshot-pane">
         <div id="expertsSkillTreeApp" class="expert-tree-app">
           <div class="expert-tree-layout">
             <div class="expert-tree-main">
