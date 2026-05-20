@@ -8335,45 +8335,74 @@ function optimizeAlchemyPlanILP(inv, options = {}) {
 }
 
 function optimizeAlchemyPlanBalanced(inv) {
-  if (typeof solver === 'undefined' || !solver || typeof solver.Solve !== 'function') {
-    return optimizeAlchemyPlanGreedy(inv);
+  const effects = getExpertEffects();
+  const craftOpts = { skipShellfishTierConvert: true };
+  const invCopy = { ...inv };
+  const finalNames = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3];
+  const counts = Object.fromEntries(finalNames.map((name) => [name, 0]));
+  const recipeByName = new Map(
+    finalNames
+      .map((name) => [name, data.recipes.find((r) => r.name === name)])
+      .filter(([, recipe]) => !!recipe)
+  );
+  const guard = 30000;
+  let iter = 0;
+
+  // 실시간 계산을 위해, 매 스텝에서 "현재 최소 생산량 그룹"만 후보로 두고
+  // 그 안에서 판매가/분당 효율이 가장 높은 레시피를 선택한다.
+  while (iter++ < guard) {
+    const craftable = [];
+    let minCount = Infinity;
+    for (const name of finalNames) {
+      const recipe = recipeByName.get(name);
+      if (!recipe) continue;
+      const currentCount = counts[name] || 0;
+      if (currentCount < minCount) minCount = currentCount;
+      if (calculateMaxCraft(recipe, invCopy, {}, craftOpts) < 1) continue;
+      craftable.push({
+        name,
+        recipe,
+        count: currentCount,
+        unitGold: Math.max(0, Number(getAlchemyBoostedSellPriceGold(recipe)) || 0),
+        efficiency: unitAlchemyEfficiency(recipe, effects)
+      });
+    }
+    if (!craftable.length) break;
+
+    const leastProduced = craftable.filter((c) => c.count <= minCount);
+    if (!leastProduced.length) break;
+    leastProduced.sort((a, b) => {
+      if (b.unitGold !== a.unitGold) return b.unitGold - a.unitGold;
+      if (b.efficiency !== a.efficiency) return b.efficiency - a.efficiency;
+      return a.name.localeCompare(b.name, 'ko');
+    });
+
+    const pick = leastProduced[0];
+    deductFinalRecipe(pick.recipe, invCopy, craftOpts);
+    counts[pick.name] = (counts[pick.name] || 0) + 1;
   }
 
-  // 1) 9종 최종 연금품의 "최소 제작 개수"를 최대화하는 분산 기준치를 찾는다.
-  const feasibleAt = (m) => !!optimizeAlchemyPlanILP(inv, { minPerFinal: m });
-  let lo = 0;
-  let hi = 1;
-  const hardCap = 1 << 14;
-  while (hi <= hardCap && feasibleAt(hi)) hi *= 2;
-  while (lo < hi) {
-    const mid = Math.floor((lo + hi + 1) / 2);
-    if (feasibleAt(mid)) lo = mid;
-    else hi = mid - 1;
+  let diluentCount = 0;
+  const diluentRecipe = data.recipes.find((r) => r.name === '추출된 희석액');
+  if (diluentRecipe) {
+    let dIter = 0;
+    while (dIter++ < guard && calculateMaxCraft(diluentRecipe, invCopy, {}, craftOpts) >= 1) {
+      deductFinalRecipe(diluentRecipe, invCopy, craftOpts);
+      diluentCount += 1;
+    }
   }
-  const bestMinPerFinal = lo;
 
-  // 2) 위 분산 기준을 만족하는 조합 중, 매출이 가장 높은 조합을 선택한다.
-  //    상한을 min+1로 제한해 과도한 몰빵을 방지한다.
-  const tightBalanced = optimizeAlchemyPlanILP(inv, {
-    minPerFinal: bestMinPerFinal,
-    maxPerFinal: bestMinPerFinal + 1
-  });
-  if (tightBalanced) return tightBalanced;
-
-  const looseBalanced = optimizeAlchemyPlanILP(inv, { minPerFinal: bestMinPerFinal });
-  if (looseBalanced) return looseBalanced;
-
-  return optimizeAlchemyPlanGreedy(inv);
+  return packAlchemyPlanResult({ ...counts, '추출된 희석액': diluentCount });
 }
 
 function optimizeAlchemyPlan(inv, effects) {
   const balanced = optimizeAlchemyPlanBalanced(inv);
   if (balanced) return balanced;
-  const ilp = optimizeAlchemyPlanILP(inv);
   const greedy = optimizeAlchemyPlanGreedy(inv);
-  if (!ilp) return greedy;
-  if (!greedy) return ilp;
-  return alchemyPlanTotalGold(ilp, effects) >= alchemyPlanTotalGold(greedy, effects) ? ilp : greedy;
+  if (greedy) return greedy;
+  const ilp = optimizeAlchemyPlanILP(inv);
+  if (ilp) return ilp;
+  return packAlchemyPlanResult({});
 }
 
 function renderTriFinalPlan(title, orderedNames, counts, tierGold) {
