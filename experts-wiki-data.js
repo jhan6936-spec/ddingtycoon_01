@@ -482,19 +482,24 @@ const EXPERT_ICON_FILES = {
   baitScatter: 'baitScatter.png',
   moonEpic: 'moonEpic.png',
   doubleCatch: 'doubleCatch.png',
-  oceanBasics: 'oceanBasics.png'
+  oceanBasics: 'oceanBasics.png',
+  craftSlots: 'craftSlots.png',
+  alchemySlots: 'alchemySlots.png',
+  precisionAlchemySlots: 'precisionAlchemySlots.png',
+  starshell: 'starshell.png',
+  timeReduce: 'timeReduce.png',
+  alchemyPrice: 'alchemyPrice.png',
+  craftPrice: 'craftPrice.png',
+  shellRefill: 'shellRefill.png'
+};
+
+const EXPERT_COST_ICON_FILES = {
+  stone: 'ability_stone.png',
+  sp: 'skill_point.png'
 };
 
 const EXPERT_ICON_EMOJI = {
-  deepCollector: '⚓',
-  craftPrice: '🐚',
-  alchemyPrice: '💎',
-  timeReduce: '⏱️',
-  starshell: '⭐',
-  shellRefill: '🦪',
-  craftSlots: '🏭',
-  alchemySlots: '⚗️',
-  precisionAlchemySlots: '🔬'
+  deepCollector: '⚓'
 };
 
 function getExpertIconSrc(key) {
