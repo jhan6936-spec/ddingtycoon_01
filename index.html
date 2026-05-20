@@ -9422,16 +9422,10 @@ function renderCraftPricePanel(effects) {
 
 // ===== 효율성 분석 =====
 function handleEfficiencyInputChanged() {
-  alchemyNeedsManualCalculate = true;
-}
-
-function runAlchemyCalculation() {
-  alchemyNeedsManualCalculate = false;
-  analyzeEfficiency({ forceAlchemy: true });
+  analyzeEfficiency();
 }
 
 function analyzeEfficiency(options = {}) {
-  const opts = options || {};
   const inventory = getWarehouseInventory();
   const effects = getExpertEffects();
   const vanillaToggle = document.getElementById('vanillaCalcToggle');
@@ -9448,9 +9442,6 @@ function analyzeEfficiency(options = {}) {
     renderStaminaPlan();
     return;
   }
-
-  if (alchemyNeedsManualCalculate && !opts.forceAlchemy) return;
-  alchemyNeedsManualCalculate = false;
 
   if (!isVanillaCalcOn) {
     infiniteVanillaMaterials.forEach(name => {
