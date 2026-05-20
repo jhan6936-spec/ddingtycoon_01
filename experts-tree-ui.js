@@ -143,16 +143,18 @@ function handleExpertTreeSave() {
   if (typeof renderRecipes === 'function') renderRecipes();
 }
 
-function initExpertSkillTreeUi() {
-  syncExpertDraftFromSaved();
-  renderExpertSkillTree();
+let expertTreeUiBound = false;
+
+function bindExpertTreeControlsOnce() {
+  if (expertTreeUiBound) return;
+  expertTreeUiBound = true;
   const resetBtn = document.getElementById('expertTreeResetBtn');
-  if (resetBtn && !resetBtn.dataset.bound) {
-    resetBtn.dataset.bound = '1';
+  if (resetBtn) {
     resetBtn.addEventListener('click', handleExpertTreeReset);
   }
 }
 
 function renderExperts() {
-  initExpertSkillTreeUi();
+  bindExpertTreeControlsOnce();
+  renderExpertSkillTree();
 }
