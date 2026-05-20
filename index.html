@@ -9532,7 +9532,11 @@ function updateVanillaInputState() {
 
   vanillaInputs.forEach((input) => {
     input.disabled = !isVanillaCalcOn;
-    input.placeholder = isVanillaCalcOn ? '수량 입력' : '무한';
+    if (warehouseSetViewEnabled() && isVanillaCalcOn) {
+      input.placeholder = WAREHOUSE_SET_DISPLAY_PLACEHOLDER;
+    } else {
+      input.placeholder = isVanillaCalcOn ? '수량 입력' : '무한';
+    }
   });
 
   applyWarehouseSetDisplayMode();
