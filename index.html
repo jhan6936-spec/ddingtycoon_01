@@ -7180,12 +7180,12 @@ function renderWarehouse() {
     input.addEventListener('change', () => {
       syncWarehouseInputRawAttribute(input);
       saveWarehouseInventory();
-      analyzeEfficiency();
+      handleEfficiencyInputChanged();
     });
     input.addEventListener('input', () => {
       syncWarehouseInputRawAttribute(input);
       saveWarehouseInventory();
-      analyzeEfficiency();
+      handleEfficiencyInputChanged();
     });
     input.addEventListener('focus', () => openCalculatorForInput(input));
     input.addEventListener('click', () => openCalculatorForInput(input));
