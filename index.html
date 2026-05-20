@@ -1392,9 +1392,22 @@
       display: flex;
       align-items: center;
       flex-wrap: wrap;
-      gap: 10px;
-      justify-content: flex-end;
+      gap: 12px;
+      justify-content: space-between;
       width: 100%;
+    }
+    .auth-login-cta {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex: 0 0 auto;
+    }
+    .auth-hint-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1 1 340px;
+      min-width: 240px;
     }
     .btn-discord {
       display: inline-flex;
@@ -1435,7 +1448,7 @@
       font-size: 12px;
       color: #888;
       width: 100%;
-      text-align: right;
+      text-align: left;
       line-height: 1.45;
     }
     .auth-profile-trigger {
@@ -1563,6 +1576,15 @@
         justify-content: stretch;
       }
       .auth-state-guest {
+        width: 100%;
+        justify-content: stretch;
+      }
+      .auth-hint-stack {
+        order: 2;
+        min-width: 0;
+      }
+      .auth-login-cta {
+        order: 1;
         width: 100%;
         justify-content: stretch;
       }
