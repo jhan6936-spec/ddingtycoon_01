@@ -425,8 +425,12 @@ function getExpertParentKey(key) {
   return EXPERT_TREE_PARENTS[key] || null;
 }
 
+function getExpertTreeLayout(key) {
+  return EXPERT_TREE_LAYOUT[key] || { row: 1, col: 1 };
+}
+
 function getExpertGridColumn(key) {
-  return EXPERT_TREE_COLUMNS[key] || 1;
+  return getExpertTreeLayout(key).col || 1;
 }
 
 function isExpertSkillUnlocked(key, state) {

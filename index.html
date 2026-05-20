@@ -3679,27 +3679,22 @@
     .expert-tree-board {
       position: relative;
       z-index: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      padding: 4px 8px 8px;
-    }
-    .expert-tree-tier {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px 6px;
-      align-items: start;
-      padding: 10px 0 6px;
-      min-height: 118px;
-    }
-    .expert-tree-tier--root .expert-tree-node-slot {
-      grid-column: 2 / span 2;
-      justify-self: center;
+      grid-template-columns: repeat(8, 92px);
+      grid-template-rows: repeat(6, 108px);
+      justify-content: center;
+      column-gap: 6px;
+      row-gap: 4px;
+      padding: 8px 12px 12px;
+      margin: 0 auto;
     }
     .expert-tree-node-slot {
       display: flex;
       justify-content: center;
+      align-items: start;
       min-width: 0;
+      justify-self: center;
+      align-self: start;
     }
     .expert-tree-node {
       position: relative;

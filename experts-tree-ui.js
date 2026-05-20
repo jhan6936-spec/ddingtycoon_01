@@ -63,17 +63,16 @@ function renderExpertTreeBoard() {
   const board = document.getElementById('expertTreeBoard');
   if (!board) return;
 
-  const tiersHtml = EXPERT_TREE_TIERS.map((tier, tierIdx) => {
-    const nodes = tier
-      .map((key) => expertMeta[key])
-      .filter(Boolean)
-      .map((meta) => renderExpertTreeNode(meta))
-      .join('');
-    const spanClass = tier.length === 1 ? ' expert-tree-tier--root' : '';
-    return `<div class="expert-tree-tier${spanClass}" data-tier="${tierIdx}">${nodes}</div>`;
-  }).join('');
+  const nodesHtml = Object.values(expertMeta)
+    .sort((a, b) => {
+      const la = getExpertTreeLayout(a.key);
+      const lb = getExpertTreeLayout(b.key);
+      return la.row - lb.row || la.col - lb.col;
+    })
+    .map((meta) => renderExpertTreeNode(meta))
+    .join('');
 
-  board.innerHTML = tiersHtml;
+  board.innerHTML = nodesHtml;
 
   board.querySelectorAll('button[data-expert]').forEach((btn) => {
     btn.addEventListener('click', () => {
