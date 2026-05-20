@@ -3662,10 +3662,10 @@
     }
     .expert-tree-board-wrap {
       position: relative;
-      min-width: 820px;
-      min-height: 680px;
+      min-width: 860px;
+      min-height: 1120px;
       overflow: auto;
-      padding: 12px 8px 16px;
+      padding: 16px 12px 24px;
     }
     .expert-tree-connectors-svg {
       position: absolute;
@@ -3680,12 +3680,12 @@
       position: relative;
       z-index: 1;
       display: grid;
-      grid-template-columns: repeat(8, 92px);
-      grid-template-rows: repeat(6, 108px);
+      grid-template-columns: repeat(8, 100px);
+      grid-template-rows: repeat(6, 168px);
       justify-content: center;
-      column-gap: 6px;
-      row-gap: 4px;
-      padding: 8px 12px 12px;
+      column-gap: 10px;
+      row-gap: 16px;
+      padding: 12px 16px 20px;
       margin: 0 auto;
     }
     .expert-tree-node-slot {
@@ -3695,6 +3695,9 @@
       min-width: 0;
       justify-self: center;
       align-self: start;
+      padding-bottom: 10px;
+      position: relative;
+      z-index: 2;
     }
     .expert-tree-node {
       position: relative;
@@ -3702,7 +3705,8 @@
       flex-direction: column;
       align-items: center;
       width: 100%;
-      max-width: 132px;
+      max-width: 100px;
+      padding-bottom: 4px;
       user-select: none;
       -webkit-user-select: none;
       -moz-user-select: none;
