@@ -2299,6 +2299,56 @@
       color: var(--t-accent-muted);
       font-weight: 700;
     }
+    .warehouse-qty-field {
+      width: 100%;
+    }
+    .warehouse-qty-setpair {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      width: 100%;
+    }
+    html.warehouse-set-view .warehouse-qty-setpair {
+      display: flex;
+    }
+    html.warehouse-set-view .warehouse-qty-count {
+      display: none;
+    }
+    .warehouse-qty-sets,
+    .warehouse-qty-rem {
+      width: 44px;
+      min-width: 0;
+      flex: 0 0 auto;
+      padding: 8px 6px;
+      text-align: center;
+    }
+    .warehouse-qty-rem {
+      width: 36px;
+    }
+    .warehouse-qty-unit {
+      flex: 0 0 auto;
+      color: var(--t-accent-muted);
+      font-size: 13px;
+      font-weight: 700;
+      user-select: none;
+      pointer-events: none;
+    }
+    .warehouse-item.shellfish-compact-item .warehouse-qty-sets,
+    .warehouse-item.alchemy-compact-item .warehouse-qty-sets {
+      width: 36px;
+      padding: 6px 4px;
+      font-size: 12px;
+    }
+    .warehouse-item.shellfish-compact-item .warehouse-qty-rem,
+    .warehouse-item.alchemy-compact-item .warehouse-qty-rem {
+      width: 30px;
+      padding: 6px 4px;
+      font-size: 12px;
+    }
+    .warehouse-item.shellfish-compact-item .warehouse-qty-unit,
+    .warehouse-item.alchemy-compact-item .warehouse-qty-unit {
+      font-size: 11px;
+    }
     .craft-sales-toolbar {
       display: flex;
       justify-content: flex-end;
@@ -5589,25 +5639,26 @@ function commitCalcValue(action) {
   if (computed === null) return false;
 
   if (action === 'apply') {
-    inputEl.setAttribute('data-warehouse-count', String(computed));
-    if (warehouseSetViewEnabled()) {
-      inputEl.value = formatWarehouseStackCount(computed);
-    } else {
+    const field = getWarehouseQtyFieldFromNode(inputEl);
+    if (field) syncWarehouseFieldCount(field, computed);
+    else {
+      inputEl.setAttribute('data-warehouse-count', String(computed));
       inputEl.value = String(computed);
     }
   } else if (action === 'add') {
     const next = Math.max(0, current + computed);
-    inputEl.setAttribute('data-warehouse-count', String(next));
-    if (warehouseSetViewEnabled()) {
-      inputEl.value = formatWarehouseStackCount(next);
-    } else {
+    const field = getWarehouseQtyFieldFromNode(inputEl);
+    if (field) syncWarehouseFieldCount(field, next);
+    else {
+      inputEl.setAttribute('data-warehouse-count', String(next));
       inputEl.value = String(next);
     }
   } else if (action === 'reset') {
-    inputEl.value = '0';
-    inputEl.setAttribute('data-warehouse-count', '0');
-    if (warehouseSetViewEnabled()) {
-      inputEl.value = formatWarehouseStackCount(0);
+    const field = getWarehouseQtyFieldFromNode(inputEl);
+    if (field) syncWarehouseFieldCount(field, 0);
+    else {
+      inputEl.value = '0';
+      inputEl.setAttribute('data-warehouse-count', '0');
     }
     calcState.countExpr = '';
     calcState.setExpr = '';
@@ -5621,9 +5672,8 @@ function commitCalcValue(action) {
 }
 
 function resetAllWarehouse() {
-  document.querySelectorAll('#warehouseContainer input[data-material]').forEach((i) => {
-    i.setAttribute('data-warehouse-count', '0');
-    i.value = '0';
+  document.querySelectorAll('#warehouseContainer .warehouse-qty-field').forEach((field) => {
+    syncWarehouseFieldCount(field, 0);
   });
   applyWarehouseSetDisplayMode();
   saveWarehouseInventory();
@@ -7233,9 +7283,19 @@ function renderWarehouse() {
       item.className = 'warehouse-item' + (options.vanillaDense ? ' vanilla-item' : '') + (isShellfish ? ' shellfish-compact-item' : '') + (isAlchemy ? ' alchemy-compact-item' : '');
       const imageHTML = buildImageTag(material, material, 'height: 18px; margin-right: 4px; vertical-align: middle;');
       const cnt = savedInventory[material] ?? 0;
+      const setCnt = Math.floor(cnt / SET_SIZE);
+      const remCnt = cnt % SET_SIZE;
       item.innerHTML = `
         <div class="warehouse-item-name">${imageHTML}${material}</div>
-        <input type="number" min="0" value="${cnt}" data-warehouse-count="${cnt}" data-material="${material}" ${isVanillaSection ? 'data-vanilla="1"' : ''} placeholder="수량 입력">
+        <div class="warehouse-qty-field"${isVanillaSection ? ' data-vanilla="1"' : ''}>
+          <input type="number" class="warehouse-qty-count" min="0" value="${cnt}" data-warehouse-count="${cnt}" data-material="${material}" placeholder="수량 입력">
+          <div class="warehouse-qty-setpair" aria-label="세트·개 수량">
+            <input type="text" class="warehouse-qty-sets" inputmode="numeric" autocomplete="off" value="${setCnt}" aria-label="세트">
+            <span class="warehouse-qty-unit">세트</span>
+            <input type="text" class="warehouse-qty-rem" inputmode="numeric" autocomplete="off" value="${remCnt}" maxlength="2" aria-label="개">
+            <span class="warehouse-qty-unit">개</span>
+          </div>
+        </div>
       `;
       grid.appendChild(item);
     });
