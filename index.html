@@ -2189,6 +2189,17 @@
     .warehouse-toolbar-row--actions > .btn {
       flex: 0 0 auto;
     }
+    .warehouse-toolbar-row--calc-mode {
+      display: flex;
+      justify-content: flex-end;
+      width: 100%;
+    }
+    .warehouse-toolbar-row--calc-mode .toggle-wrap.warehouse-toggle-inline {
+      justify-content: flex-end;
+    }
+    #warehouseContainer input.warehouse-input--calc-mode {
+      cursor: pointer;
+    }
     .toggle-wrap.warehouse-toggle-inline {
       display: inline-flex;
       align-items: center;
@@ -3255,7 +3266,7 @@
     }
     .calc-actions {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 8px;
       margin-top: 10px;
     }
