@@ -5872,20 +5872,30 @@ function saveProfileSettings() {
   closeProfileSettingsModal();
 }
 
-function openMinecraftLinkModal(prefillCode) {
-  if (prefillCode) setPendingMinecraftLinkCode(prefillCode);
+function openMinecraftLinkModal(prefillCode, options) {
+  const opts = options || {};
+  const normalized = normalizeMinecraftLinkCode(prefillCode);
   if (!currentAuthUserId) {
+    if (normalized) setPendingMinecraftLinkCode(normalized);
     alert('Discord 로그인 후 마인크래프트 연동을 진행할 수 있습니다.');
+    return;
+  }
+  if (!opts.autoOpen && !normalized) {
     return;
   }
   closeProfileSettingsModal();
   const modal = document.getElementById('minecraftLinkModal');
   const input = document.getElementById('minecraftLinkCodeInput');
   const status = document.getElementById('minecraftLinkStatus');
-  if (input && prefillCode) input.value = prefillCode;
+  if (input && normalized) input.value = normalized;
   if (status) status.textContent = '';
   if (modal) modal.classList.add('open');
   if (input) input.focus();
+  if (opts.autoOpen && normalized) {
+    try {
+      sessionStorage.setItem(MINECRAFT_PENDING_LINK_OPENED_KEY, normalized);
+    } catch (_) {}
+  }
 }
 
 function closeMinecraftLinkModal() {
@@ -6244,6 +6254,29 @@ async function initSupabaseAuth() {
   }
 }
 
+function formatOAuthLoginErrorMessage(error, description) {
+  const text = `${error || ''} ${description || ''}`.toLowerCase();
+  if (
+    text.includes('verify') ||
+    text.includes('verification') ||
+    text.includes('인증') ||
+    text.includes('authenticate')
+  ) {
+    return [
+      'Discord 계정 인증이 필요합니다.',
+      '',
+      'Discord 앱 → 사용자 설정 → 내 계정에서 이메일 인증을 완료한 뒤,',
+      '다시 「Discord로 계속하기」를 눌러 주세요.',
+      '',
+      '(Discord에서 「이 작업을 수행하려면 계정을 인증해야 해요」가 뜨는 경우입니다.)'
+    ].join('\n');
+  }
+  if (text.includes('access_denied') || text.includes('cancel')) {
+    return 'Discord 로그인이 취소되었습니다. 다시 시도해 주세요.';
+  }
+  return description || error || 'Discord 로그인에 실패했습니다.';
+}
+
 async function authSignInDiscord() {
   const sb = getSupabaseClient();
   if (!sb) {
@@ -6272,6 +6305,7 @@ async function authSignInDiscord() {
   });
   if (error) {
     console.error('[Supabase Auth] signInWithOAuth 실패:', error.message, error);
+    alert(formatOAuthLoginErrorMessage(error.message, error.error_description || ''));
     return;
   }
   if (data?.url) console.debug('[Supabase Auth] OAuth 리다이렉트 URL 발급됨');
