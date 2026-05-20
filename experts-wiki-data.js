@@ -490,7 +490,8 @@ const EXPERT_ICON_FILES = {
   timeReduce: 'timeReduce.png',
   alchemyPrice: 'alchemyPrice.png',
   craftPrice: 'craftPrice.png',
-  shellRefill: 'shellRefill.png'
+  shellRefill: 'shellRefill.png',
+  deepCollector: 'deepCollector.png'
 };
 
 const EXPERT_COST_ICON_FILES = {
@@ -498,9 +499,7 @@ const EXPERT_COST_ICON_FILES = {
   sp: 'skill_point.png'
 };
 
-const EXPERT_ICON_EMOJI = {
-  deepCollector: '⚓'
-};
+const EXPERT_ICON_EMOJI = {};
 
 function getExpertIconSrc(key) {
   const file = EXPERT_ICON_FILES[key];
