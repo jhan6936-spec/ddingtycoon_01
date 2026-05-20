@@ -5067,6 +5067,7 @@ function withAlchemyImage(text, style = '') {
 
 // ===== 창고 계산기(팝업) 상태 =====
 const SET_SIZE = 64;
+const WAREHOUSE_SET_DISPLAY_PLACEHOLDER = '0세트 0개';
 /** 연금 합계: 1상자 = 54세트 = 54×64개 */
 const ALCHEMY_BOX_SETS = 54;
 const calcState = {
@@ -5330,6 +5331,22 @@ function parkCalcPopupOnBody() {
   document.body.appendChild(popup);
 }
 
+function syncCalcPopupModeUi(popup, mode) {
+  if (!popup) return;
+  calcState.mode = mode;
+  calcState.activePart = mode === 'count' ? 'count' : 'set';
+  popup.querySelectorAll('.mode-btn[data-mode]').forEach((b) => {
+    b.classList.toggle('active', b.getAttribute('data-mode') === mode);
+  });
+  const partModes = popup.querySelector('#calcPartModes');
+  if (partModes) partModes.style.display = mode === 'set' ? 'grid' : 'none';
+  if (mode === 'set' && partModes) {
+    partModes.querySelectorAll('.mode-btn').forEach((b) => {
+      b.classList.toggle('active', b.getAttribute('data-part') === calcState.activePart);
+    });
+  }
+}
+
 function openCalculatorForInput(inputEl) {
   const isWarehouseInput = !!(inputEl && inputEl.closest && inputEl.closest('#warehouseContainer'));
   if (isWarehouseInput && !warehouseCalcModeEnabled()) return;
@@ -5342,10 +5359,32 @@ function openCalculatorForInput(inputEl) {
   calcState.targetInput = inputEl;
   calcState.materialName = inputEl.getAttribute('data-material') || '수량 입력';
 
-  calcState.countExpr = '';
-  calcState.setExpr = '';
-  calcState.remExpr = '';
-  calcState.activePart = calcState.mode === 'count' ? 'count' : 'set';
+  const useSetCalcMode = isWarehouseInput && warehouseSetViewEnabled();
+  let raw = 0;
+  if (inputEl) {
+    raw = parseInt(inputEl.getAttribute('data-warehouse-count'), 10);
+    if (!Number.isFinite(raw)) {
+      raw = useSetCalcMode
+        ? parseWarehouseSetDisplayValue(inputEl.value)
+        : Math.max(0, parseInt(inputEl.value, 10) || 0);
+    } else {
+      raw = Math.max(0, raw);
+    }
+  }
+
+  if (useSetCalcMode) {
+    const sets = Math.floor(raw / SET_SIZE);
+    const rem = raw % SET_SIZE;
+    calcState.countExpr = '';
+    calcState.setExpr = String(sets);
+    calcState.remExpr = String(rem);
+    syncCalcPopupModeUi(popup, 'set');
+  } else {
+    calcState.countExpr = '';
+    calcState.setExpr = '';
+    calcState.remExpr = '';
+    syncCalcPopupModeUi(popup, 'count');
+  }
   syncCalcDisplay();
 
   const cm = calcState.commitMode === 'add' ? 'add' : 'apply';
@@ -7276,14 +7315,16 @@ function renderWarehouse() {
     });
     input.addEventListener('focus', () => {
       if (warehouseSetViewEnabled() && !warehouseCalcModeEnabled() && !input.readOnly && !input.disabled) {
+        ensureWarehouseSetDisplayInput(input);
         const slot = detectWarehouseSetDisplaySlot(input.value, input.selectionStart ?? 0);
         requestAnimationFrame(() => restoreWarehouseSetDisplayCursor(input, slot));
         return;
       }
       openCalculatorForInput(input);
     });
-    input.addEventListener('click', (e) => {
+    input.addEventListener('click', () => {
       if (warehouseSetViewEnabled() && !warehouseCalcModeEnabled() && !input.readOnly && !input.disabled) {
+        ensureWarehouseSetDisplayInput(input);
         const slot = detectWarehouseSetDisplaySlot(input.value, input.selectionStart ?? 0);
         requestAnimationFrame(() => restoreWarehouseSetDisplayCursor(input, slot));
         return;
@@ -7362,6 +7403,21 @@ function formatWarehouseStackCount(total) {
   const sets = Math.floor(n / SET_SIZE);
   const rem = n % SET_SIZE;
   return `${sets}세트 ${rem}개`;
+}
+
+function isWarehouseSetDisplayCanonical(value) {
+  return /^(\d+)세트\s+(\d+)개$/.test(String(value || '').trim());
+}
+
+function ensureWarehouseSetDisplayInput(input) {
+  if (!input || input.disabled) return;
+  let raw = parseInt(input.getAttribute('data-warehouse-count'), 10);
+  if (!Number.isFinite(raw)) raw = parseWarehouseSetDisplayValue(input.value);
+  raw = Math.max(0, raw);
+  if (!input.value.trim() || !isWarehouseSetDisplayCanonical(input.value)) {
+    input.value = formatWarehouseStackCount(raw);
+  }
+  input.setAttribute('data-warehouse-count', String(raw));
 }
 
 function parseWarehouseSetDisplayValue(text) {
@@ -7886,11 +7942,13 @@ function applyWarehouseSetDisplayMode() {
       input.autocomplete = 'off';
       input.removeAttribute('min');
       input.value = formatWarehouseStackCount(raw);
+      if (!input.disabled) input.placeholder = WAREHOUSE_SET_DISPLAY_PLACEHOLDER;
       input.classList.add('warehouse-input--setview');
     } else {
       input.type = 'number';
       input.min = '0';
       input.value = String(raw);
+      if (!input.disabled) input.placeholder = '수량 입력';
       input.classList.remove('warehouse-input--setview');
     }
   });
