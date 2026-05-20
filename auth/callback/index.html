@@ -50,7 +50,7 @@
   var oauthDesc = qs.get('error_description');
   if (oauthErr) {
     console.error('[auth/callback] OAuth error:', oauthErr, oauthDesc || '');
-    return fail(String(oauthDesc || oauthErr));
+    return fail(formatOAuthFailMessage(oauthErr, oauthDesc));
   }
 
   // detectSessionInUrl 과 exchangeCodeForSession 을 동시에 쓰면 PKCE 가 두 번 교환되어
