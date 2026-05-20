@@ -3605,6 +3605,273 @@
       font-size: 12px;
       color: #6fa8dc;
     }
+    .expert-tree-app {
+      margin-top: 4px;
+    }
+    .expert-tree-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 18px;
+      align-items: start;
+    }
+    @media (max-width: 1100px) {
+      .expert-tree-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+    .expert-tree-main {
+      background: #121212;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 16px 12px 20px;
+      overflow-x: auto;
+    }
+    .expert-tree-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      padding: 0 8px;
+    }
+    .expert-tree-title {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 800;
+      color: #f5a623;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .expert-tree-title-icon {
+      color: #f5a623;
+      font-size: 12px;
+    }
+    .expert-tree-reset {
+      border: none;
+      background: transparent;
+      color: #9a9a9a;
+      font-size: 12px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .expert-tree-reset:hover {
+      color: #ddd;
+      background: #222;
+    }
+    .expert-tree-board {
+      min-width: 720px;
+      padding: 8px 4px 4px;
+    }
+    .expert-tree-tier {
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-start;
+      gap: 8px;
+      position: relative;
+      padding: 28px 4px 4px;
+    }
+    .expert-tree-tier::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 8%;
+      right: 8%;
+      height: 1px;
+      background: #3a3a3a;
+    }
+    .expert-tree-tier:first-child {
+      padding-top: 4px;
+    }
+    .expert-tree-tier:first-child::before {
+      display: none;
+    }
+    .expert-tree-node {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 118px;
+      flex-shrink: 0;
+    }
+    .expert-tree-node::before {
+      content: '';
+      position: absolute;
+      top: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1px;
+      height: 28px;
+      background: #3a3a3a;
+    }
+    .expert-tree-tier:first-child .expert-tree-node::before {
+      display: none;
+    }
+    .expert-tree-node.is-dirty .expert-tree-node-lv {
+      color: #f5a623;
+    }
+    .expert-tree-node-lv {
+      font-size: 11px;
+      font-weight: 700;
+      color: #8ab4f8;
+      margin-bottom: 6px;
+    }
+    .expert-tree-node-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
+      background: #1e1e1e;
+      border: 1px solid #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      margin-bottom: 6px;
+    }
+    .expert-tree-node-name {
+      font-size: 10px;
+      font-weight: 700;
+      color: #e8e8e8;
+      text-align: center;
+      line-height: 1.35;
+      min-height: 28px;
+      margin-bottom: 8px;
+      word-break: keep-all;
+    }
+    .expert-tree-node-controls {
+      display: flex;
+      gap: 6px;
+      width: 100%;
+      justify-content: center;
+    }
+    .expert-tree-btn {
+      flex: 1;
+      max-width: 44px;
+      height: 28px;
+      border: 1px solid #3a3a3a;
+      border-radius: 8px;
+      background: #1a1a1a;
+      color: #eee;
+      font-weight: 900;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .expert-tree-btn:hover:not(:disabled) {
+      border-color: #555;
+      background: #252525;
+    }
+    .expert-tree-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .expert-tree-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .expert-tree-panel {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .expert-tree-panel-title {
+      margin: 0 0 4px;
+      font-size: 14px;
+      font-weight: 800;
+      color: #f1f1f1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .expert-tree-panel-sub {
+      margin: 0 0 12px;
+      font-size: 11px;
+      color: #888;
+    }
+    .expert-cost-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .expert-cost-row {
+      display: grid;
+      grid-template-columns: 28px 1fr auto;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+    .expert-cost-icon {
+      font-size: 18px;
+      text-align: center;
+    }
+    .expert-cost-label {
+      color: #aaa;
+    }
+    .expert-cost-value {
+      font-weight: 800;
+      color: #f1f1f1;
+      font-variant-numeric: tabular-nums;
+    }
+    .expert-tree-save-btn {
+      width: 100%;
+      padding: 14px 16px;
+      border: none;
+      border-radius: 12px;
+      background: #f5f5f5;
+      color: #111;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .expert-tree-save-btn:hover:not(:disabled) {
+      background: #fff;
+    }
+    .expert-tree-save-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .expert-tree-check {
+      color: #5cb85c;
+      font-weight: 900;
+    }
+    .expert-effect-list-wrap {
+      max-height: 280px;
+      overflow-y: auto;
+    }
+    .expert-effect-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .expert-effect-item {
+      padding: 8px 0;
+      border-bottom: 1px solid #2a2a2a;
+      font-size: 12px;
+    }
+    .expert-effect-item:last-child {
+      border-bottom: none;
+    }
+    .expert-effect-name {
+      display: block;
+      font-weight: 700;
+      color: #e0e0e0;
+      margin-bottom: 2px;
+    }
+    .expert-effect-val {
+      color: #8ab4f8;
+      font-weight: 600;
+    }
+    .expert-effect-empty {
+      margin: 8px 0 0;
+      color: #777;
+      font-size: 12px;
+    }
     .panel-card {
       background: #1a1a1a;
       border: 1px solid #2a2a2a;
