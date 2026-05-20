@@ -5636,6 +5636,9 @@ function getSupabaseClient() {
 let cachedAuthUserForProfile = null;
 let currentAuthUserId = null;
 const MINECRAFT_PENDING_LINK_CODE_KEY = 'ddingtae_pending_minecraft_link_code';
+const MINECRAFT_PENDING_LINK_AT_KEY = 'ddingtae_pending_minecraft_link_at';
+const MINECRAFT_PENDING_LINK_OPENED_KEY = 'ddingtae_pending_minecraft_link_opened';
+const MINECRAFT_PENDING_LINK_TTL_MS = 30 * 60 * 1000;
 /** 로그아웃 후 늦게 끝나는 fetchAuthUserForUI가 로그인 UI를 덮어쓰지 않게 함 */
 let authUiNonce = 0;
 
