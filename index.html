@@ -6334,30 +6334,59 @@ function buildMinecraftGatheringPlanLines(staminaRaw, inventory) {
 }
 
 let minecraftDashboardSyncTimer = 0;
-const MINECRAFT_DASHBOARD_SYNC_DEBOUNCE_MS = 350;
+let minecraftDashboardSyncInFlight = false;
+let minecraftDashboardSyncQueued = false;
+let lastMinecraftDashboardSyncAt = 0;
+const MINECRAFT_DASHBOARD_SYNC_DEBOUNCE_MS = 100;
+const MINECRAFT_DASHBOARD_SYNC_FORCE_GAP_MS = 900;
 
 function scheduleMinecraftDashboardSync() {
+  if (!currentAuthUserId) return;
+  const now = Date.now();
   clearTimeout(minecraftDashboardSyncTimer);
-  minecraftDashboardSyncTimer = setTimeout(syncMinecraftDashboardSnapshot, MINECRAFT_DASHBOARD_SYNC_DEBOUNCE_MS);
+  if (now - lastMinecraftDashboardSyncAt >= MINECRAFT_DASHBOARD_SYNC_FORCE_GAP_MS) {
+    void syncMinecraftDashboardSnapshot();
+    return;
+  }
+  minecraftDashboardSyncTimer = setTimeout(() => {
+    void syncMinecraftDashboardSnapshot();
+  }, MINECRAFT_DASHBOARD_SYNC_DEBOUNCE_MS);
 }
 
 async function syncMinecraftDashboardSnapshot() {
+  if (!currentAuthUserId) return;
+  if (minecraftDashboardSyncInFlight) {
+    minecraftDashboardSyncQueued = true;
+    return;
+  }
   const sb = getSupabaseClient();
   if (!sb) return;
   const { data: sessionData } = await sb.auth.getSession().catch(() => ({ data: null }));
   const token = sessionData?.session?.access_token;
   if (!token) return;
+
+  minecraftDashboardSyncInFlight = true;
+  const dashboard = buildMinecraftDashboardPayload();
+  dashboard.webRevision = Date.now();
+
   try {
-    await fetch('/api/minecraft/dashboard', {
+    const response = await fetch('/api/minecraft/dashboard', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`
       },
-      body: JSON.stringify({ dashboard: buildMinecraftDashboardPayload() })
+      body: JSON.stringify({ dashboard })
     });
+    if (response.ok) lastMinecraftDashboardSyncAt = Date.now();
   } catch (e) {
     console.warn('[minecraft/dashboard] snapshot sync failed:', e);
+  } finally {
+    minecraftDashboardSyncInFlight = false;
+    if (minecraftDashboardSyncQueued) {
+      minecraftDashboardSyncQueued = false;
+      scheduleMinecraftDashboardSync();
+    }
   }
 }
 
@@ -10259,7 +10288,17 @@ window.addEventListener('DOMContentLoaded', function() {
     initMarineGuideCarousel();
   const staminaInput = document.getElementById('staminaInput');
   if (staminaInput) {
-    staminaInput.addEventListener('input', renderStaminaPlan);
+    let staminaSaveTimer = 0;
+    staminaInput.addEventListener('input', () => {
+      renderStaminaPlan();
+      clearTimeout(staminaSaveTimer);
+      staminaSaveTimer = setTimeout(() => {
+        try {
+          const v = parseInt(staminaInput.value || '0', 10);
+          localStorage.setItem(STORAGE_KEY_STAMINA, String(Number.isFinite(v) ? Math.max(0, v) : 0));
+        } catch (_) {}
+      }, 200);
+    });
     staminaInput.addEventListener('blur', saveStaminaInputState);
     staminaInput.addEventListener('change', saveStaminaInputState);
   }
