@@ -4,7 +4,9 @@ const {
   readJson,
   supabaseRest,
   randomCode,
-  siteOrigin
+  siteOrigin,
+  classifySupabaseError,
+  getSupabaseConfigStatus
 } = require('../../_supabase');
 
 module.exports = async function handler(req, res) {
