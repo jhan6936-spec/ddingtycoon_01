@@ -366,60 +366,55 @@ function renderExpertWikiLevels(meta) {
   return `<details class="expert-wiki-details"><summary>위키 레벨·비용</summary><table class="expert-wiki-table"><thead><tr><th>LV</th><th>효과</th><th>포인트</th><th>골드</th><th>스톤</th></tr></thead><tbody>${rows}</tbody></table></details>`;
 }
 
-/** 인게임 스킬 트리 좌표 (8열 × 6행 단일 그리드) */
-const EXPERT_TREE_LAYOUT = {
-  oceanBasics: { row: 1, col: 4, colSpan: 2 },
-  doubleCatch: { row: 2, col: 2 },
-  deepCollector: { row: 2, col: 7 },
-  moonEpic: { row: 3, col: 1 },
-  baitScatter: { row: 3, col: 3 },
-  craftPrice: { row: 3, col: 6 },
-  alchemyPrice: { row: 3, col: 8 },
-  fishPrice: { row: 4, col: 1 },
-  tropicalFish: { row: 4, col: 3 },
-  timeReduce: { row: 4, col: 6 },
-  starshell: { row: 4, col: 8 },
-  keyHook: { row: 5, col: 1 },
-  stormFisher: { row: 5, col: 3 },
-  craftSlots: { row: 5, col: 6 },
-  shellRefill: { row: 5, col: 8 },
-  oceanOrder: { row: 6, col: 7 },
-  treasureHunter: { row: 6, col: 3 },
-  alchemySlots: { row: 6, col: 8 },
-  precisionAlchemySlots: { row: 6, col: 6 }
+/**
+ * 인게임 스킬 트리 (공식 UI·위키 구조)
+ * 해양학개론 → 일타쌍피/심해 채집꾼 → 각 2갈래 → 4개 세로 줄(각 4단)
+ */
+const EXPERT_TREE_BRANCHES = {
+  left: { row: 2, col: 2, fork: 'doubleCatch' },
+  right: { row: 2, col: 7, fork: 'deepCollector' }
 };
 
-/** @deprecated 렌더 순서용 */
+/** [열, 줄] = 부모 fork 아래 이어지는 4단 세로 체인 */
+const EXPERT_TREE_CHAINS = [
+  { col: 1, fork: 'doubleCatch', keys: ['moonEpic', 'fishPrice', 'keyHook', 'oceanOrder'] },
+  { col: 3, fork: 'doubleCatch', keys: ['baitScatter', 'tropicalFish', 'stormFisher', 'treasureHunter'] },
+  { col: 6, fork: 'deepCollector', keys: ['craftPrice', 'timeReduce', 'shellRefill', 'alchemySlots'] },
+  { col: 8, fork: 'deepCollector', keys: ['alchemyPrice', 'starshell', 'craftSlots', 'precisionAlchemySlots'] }
+];
+
+const EXPERT_TREE_LAYOUT = {
+  oceanBasics: { row: 1, col: 4, colSpan: 2 }
+};
+const EXPERT_TREE_PARENTS = {};
+
+EXPERT_TREE_LAYOUT[EXPERT_TREE_BRANCHES.left.fork] = {
+  row: EXPERT_TREE_BRANCHES.left.row,
+  col: EXPERT_TREE_BRANCHES.left.col
+};
+EXPERT_TREE_LAYOUT[EXPERT_TREE_BRANCHES.right.fork] = {
+  row: EXPERT_TREE_BRANCHES.right.row,
+  col: EXPERT_TREE_BRANCHES.right.col
+};
+EXPERT_TREE_PARENTS[EXPERT_TREE_BRANCHES.left.fork] = 'oceanBasics';
+EXPERT_TREE_PARENTS[EXPERT_TREE_BRANCHES.right.fork] = 'oceanBasics';
+
+EXPERT_TREE_CHAINS.forEach(({ col, fork, keys }) => {
+  keys.forEach((key, idx) => {
+    EXPERT_TREE_LAYOUT[key] = { row: 3 + idx, col };
+    EXPERT_TREE_PARENTS[key] = idx === 0 ? fork : keys[idx - 1];
+  });
+});
+
+/** 렌더·문서용 단계별 목록 */
 const EXPERT_TREE_TIERS = [
   ['oceanBasics'],
   ['doubleCatch', 'deepCollector'],
-  ['moonEpic', 'baitScatter', 'craftPrice', 'alchemyPrice'],
-  ['fishPrice', 'tropicalFish', 'timeReduce', 'starshell'],
-  ['keyHook', 'stormFisher', 'shellRefill', 'craftSlots'],
-  ['oceanOrder', 'treasureHunter', 'alchemySlots', 'precisionAlchemySlots']
+  EXPERT_TREE_CHAINS.map((c) => c.keys[0]),
+  EXPERT_TREE_CHAINS.map((c) => c.keys[1]),
+  EXPERT_TREE_CHAINS.map((c) => c.keys[2]),
+  EXPERT_TREE_CHAINS.map((c) => c.keys[3])
 ];
-
-/** 직계 선행 스킬 (선행 Lv.0이면 잠금) */
-const EXPERT_TREE_PARENTS = {
-  doubleCatch: 'oceanBasics',
-  deepCollector: 'oceanBasics',
-  moonEpic: 'doubleCatch',
-  baitScatter: 'doubleCatch',
-  craftPrice: 'deepCollector',
-  alchemyPrice: 'deepCollector',
-  fishPrice: 'moonEpic',
-  tropicalFish: 'baitScatter',
-  timeReduce: 'craftPrice',
-  starshell: 'alchemyPrice',
-  keyHook: 'fishPrice',
-  stormFisher: 'tropicalFish',
-  shellRefill: 'starshell',
-  craftSlots: 'timeReduce',
-  oceanOrder: 'deepCollector',
-  treasureHunter: 'stormFisher',
-  alchemySlots: 'alchemyPrice',
-  precisionAlchemySlots: 'timeReduce'
-};
 
 function getExpertParentKey(key) {
   return EXPERT_TREE_PARENTS[key] || null;
