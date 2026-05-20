@@ -3775,7 +3775,7 @@
       width: 44px;
       height: 44px;
       border-radius: 2px;
-      background: #222;
+      background: #1a1a1a;
       border: 1px solid #3d3d3d;
       display: flex;
       align-items: center;
@@ -3784,6 +3784,23 @@
       line-height: 1;
       user-select: none;
       pointer-events: none;
+      overflow: hidden;
+    }
+    .expert-tree-node-img {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    .expert-tree-node-emoji {
+      font-size: 24px;
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
     }
     .expert-tree-node-name {
       font-size: 10px;

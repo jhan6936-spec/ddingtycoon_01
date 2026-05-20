@@ -11,10 +11,9 @@ function isExpertDraftDirty() {
 }
 
 function formatExpertCostValue(n) {
-  const v = Number(n) || 0;
+  const v = Math.max(0, Number(n) || 0);
   if (v === 0) return '0';
-  const prefix = v > 0 ? '+' : '';
-  return `${prefix}${v.toLocaleString()}`;
+  return `+${v.toLocaleString()}`;
 }
 
 function cascadeResetExpertDescendants(parentKey, state) {
@@ -31,7 +30,7 @@ function renderExpertTreeNode(meta) {
   const dirty = lv !== savedLv;
   const unlocked = isExpertSkillUnlocked(meta.key, expertDraftState);
   const active = unlocked && lv > 0;
-  const icon = EXPERT_ICONS[meta.key] || '✦';
+  const iconMarkup = renderExpertIconMarkup(meta.key, meta.name);
   const lockHint = unlocked ? '' : getExpertLockHint(meta.key);
   const layout = getExpertTreeLayout(meta.key);
   const spanPart = layout.colSpan ? ` / span ${layout.colSpan}` : '';
@@ -45,7 +44,7 @@ function renderExpertTreeNode(meta) {
         <div class="expert-tree-node-lv">${lv}/${meta.maxLevel}</div>
         <div class="expert-tree-node-icon-outer" aria-hidden="true">
           <div class="expert-tree-node-icon-frame">
-            <div class="expert-tree-node-icon">${icon}</div>
+            <div class="expert-tree-node-icon">${iconMarkup}</div>
           </div>
         </div>
         <div class="expert-tree-node-name">[${meta.tag}] ${meta.name}</div>
@@ -161,8 +160,8 @@ function renderExpertTreeSidebar() {
 
   sidebar.innerHTML = `
     <section class="expert-tree-panel expert-tree-cost-panel">
-      <h3 class="expert-tree-panel-title">추가 요구 재화</h3>
-      <p class="expert-tree-panel-sub">저장 시점 대비 소모 예상 비용</p>
+      <h3 class="expert-tree-panel-title">추가 소모 재화</h3>
+      <p class="expert-tree-panel-sub">마지막 「설정 저장」 이후 새로 올린 레벨에 필요한 비용</p>
       <ul class="expert-cost-list">
         <li class="expert-cost-row">
           <span class="expert-cost-icon expert-cost-icon-gold" aria-hidden="true">🪙</span>

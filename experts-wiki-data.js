@@ -538,6 +538,7 @@ function sumExpertLevelCosts(meta, fromLv, toLv) {
   return { gold, sp, stone };
 }
 
+/** 마지막 저장 대비 새로 올린 레벨에만 드는 비용 (추가 소모) */
 function computeExpertDraftCosts(savedState, draftState) {
   let gold = 0;
   let sp = 0;
@@ -546,6 +547,7 @@ function computeExpertDraftCosts(savedState, draftState) {
     const meta = expertMeta[key];
     const savedLv = savedState[key] || 0;
     const draftLv = draftState[key] || 0;
+    if (draftLv <= savedLv) return;
     const part = sumExpertLevelCosts(meta, savedLv, draftLv);
     gold += part.gold;
     sp += part.sp;
