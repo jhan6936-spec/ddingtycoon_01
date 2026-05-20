@@ -16,6 +16,9 @@ create table if not exists public.minecraft_link_codes (
 create index if not exists minecraft_link_codes_token_hash_idx
   on public.minecraft_link_codes(access_token_hash);
 
+create index if not exists minecraft_link_codes_uuid_claimed_idx
+  on public.minecraft_link_codes(minecraft_uuid, claimed_at desc);
+
 create table if not exists public.minecraft_dashboard_snapshots (
   user_id uuid primary key references auth.users(id) on delete cascade,
   dashboard jsonb not null default '{}'::jsonb,
