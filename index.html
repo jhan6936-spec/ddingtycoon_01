@@ -5105,17 +5105,17 @@
       </div>
       <div id="settingsSageRodPane" class="mini-pane">
         <div class="sage-rod-app">
-          <div class="sage-rod-layout">
-            <div class="sage-rod-main expert-tree-main">
-              <div class="expert-tree-head">
-                <h2 class="expert-tree-title"><span class="expert-tree-title-icon" aria-hidden="true">◆</span> 세이지 낚싯대</h2>
-                <span class="sage-rod-head-hint">0 ~ 15강</span>
-              </div>
-              <div class="sage-rod-hero">
+          <div class="sage-rod-panel expert-tree-main">
+            <div class="expert-tree-head sage-rod-head">
+              <h2 class="expert-tree-title"><span class="expert-tree-title-icon" aria-hidden="true">◆</span> 세이지 낚싯대</h2>
+              <span class="sage-rod-head-hint">0 ~ 15강</span>
+            </div>
+            <div class="sage-rod-top-row">
+              <div class="sage-rod-hero-compact">
                 <div class="rod-visual sage-rod-visual-wrap" id="sageRodVisual" aria-label="세이지 낚싯대 외형"></div>
-                <div class="sage-rod-level-panel">
-                  <div class="sage-rod-level-label">강화 단계</div>
-                  <div class="sage-rod-level-value" id="sageRodLevel">0강</div>
+                <div class="sage-rod-level-inline">
+                  <span class="sage-rod-level-label">강화</span>
+                  <span class="sage-rod-level-value" id="sageRodLevel">0강</span>
                   <div class="sage-rod-level-controls">
                     <button type="button" class="expert-tree-btn" id="sageRodLevelMinus" aria-label="강화 단계 내리기" onclick="changeSageRodLevel(-1)">−</button>
                     <button type="button" class="expert-tree-btn" id="sageRodLevelPlus" aria-label="강화 단계 올리기" onclick="changeSageRodLevel(1)">+</button>
@@ -5124,13 +5124,11 @@
               </div>
               <div id="sageRodStats" class="sage-rod-stats-grid" aria-label="낚싯대 스탯"></div>
             </div>
-            <aside class="sage-rod-sidebar expert-tree-sidebar" aria-label="각인 및 추가 효과">
-              <section class="expert-tree-panel sage-rod-summary-panel">
-                <h3 class="expert-tree-panel-title"><span class="expert-tree-check" aria-hidden="true">✓</span> 각인 합산 효과</h3>
-                <div id="sageRodSummary"></div>
-              </section>
-              <div id="sageRodEngravings" class="sage-rod-engrave-wrap"></div>
-            </aside>
+            <div id="sageRodSummary" class="sage-rod-bonus-row" aria-label="각인 합산 효과"></div>
+            <section class="sage-rod-engrave-section" aria-label="각인 설정">
+              <h3 class="sage-rod-section-title">세이지 각인석</h3>
+              <div id="sageRodEngravings" class="sage-rod-engrave-matrix"></div>
+            </section>
           </div>
         </div>
       </div>
