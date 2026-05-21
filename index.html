@@ -6746,7 +6746,7 @@ function buildCraftTimeCatalogLines() {
   const pushLine = (name) => {
     if (!name || seen.has(name)) return;
     seen.add(name);
-    const base = getBaseAlchemyTimeSec(name);
+    const base = getAlchemyCraftOperationTimeSec(name);
     const station = finals.includes(name) ? 'precision' : 'alchemy';
     lines.push(`${name}|${base}|${station}`);
   };
@@ -8905,6 +8905,31 @@ function getBaseAlchemyTimeSec(name) {
   return 60;
 }
 
+/** 티어 기준 초 → 인게임 1회 제작 시간 (실측: 정수 73.5s @ 물 흐르듯 70%) */
+const ALCHEMY_GAME_TIME_FACTOR = 49;
+function getGameAlchemyTimeSec(name) {
+  return getBaseAlchemyTimeSec(name) * ALCHEMY_GAME_TIME_FACTOR;
+}
+
+/** 연금 1회 제작(클릭 1번) 기준 총 기본 초 — 하위 단계 합산 포함 */
+function getAlchemyCraftOperationTimeSec(name) {
+  const mat = data.materials[name];
+  const finalRecipe = data.recipes.find((r) => r.name === name);
+  const recipe =
+    mat && mat.inputs && mat.inputs.length
+      ? { name, inputs: mat.inputs }
+      : finalRecipe;
+  if (!recipe || !recipe.inputs || !recipe.inputs.length) {
+    return getGameAlchemyTimeSec(name);
+  }
+  const stagesRaw = alchemyGuideBuildStages(recipe, 1);
+  let totalSec = getGameAlchemyTimeSec(name);
+  for (let i = 0; i < stagesRaw.length - 1; i++) {
+    totalSec += alchemyGuideSumTierCraftSec(stagesRaw[i]) * ALCHEMY_GAME_TIME_FACTOR;
+  }
+  return totalSec;
+}
+
 const FINAL_GROUP1 = ['영생의 아쿠티스', '크라켄의 광란체', '리바이던의 깃털'];
 const FINAL_GROUP2 = ['해구 파동의 코어', '침묵의 심해 비약', '청해룡의 날개'];
 const FINAL_GROUP3 = ['아쿠아 펄스 파편', '나우틸러스의 손', '무저의 척추'];
@@ -9590,9 +9615,9 @@ function calculateAlchemyProductBaseTimeSec(finalName, copies) {
   const recipe = data.recipes.find((r) => r.name === finalName);
   if (!recipe || !recipe.inputs || !recipe.inputs.length) return 0;
   const stagesRaw = alchemyGuideBuildStages(recipe, n);
-  let totalSec = getBaseAlchemyTimeSec(finalName) * n;
+  let totalSec = getGameAlchemyTimeSec(finalName) * n;
   for (let i = 0; i < stagesRaw.length - 1; i++) {
-    totalSec += alchemyGuideSumTierCraftSec(stagesRaw[i]);
+    totalSec += alchemyGuideSumTierCraftSec(stagesRaw[i]) * ALCHEMY_GAME_TIME_FACTOR;
   }
   return totalSec;
 }
