@@ -6725,7 +6725,11 @@ function buildMinecraftProductGoalLine(productName, count, effects) {
   const unitProfit = recipe ? Math.round((recipe.price || 0) * mult) : 0;
   const totalProfit = unitProfit * n;
   const timeReduceLevel = Number(expertState?.timeReduce || 0);
-  const expertLine = `물 흐르듯 술술 Lv.${timeReduceLevel} / 제작 시간 -${Number(effects.timeReduce || 0)}%`;
+  const timeReducePct =
+    typeof getExpertTimeReduceEffect === 'function'
+      ? getExpertTimeReduceEffect(expertState)
+      : Number(effects.timeReduce || 0);
+  const expertLine = `물 흐르듯 술술 Lv.${timeReduceLevel} / 제작 시간 -${timeReducePct}%`;
   return [
     productName,
     n > 0 ? `${productName} x${n.toLocaleString()} 제작 추천` : `${productName} (웹 계획 0개 · 1개 기준 미리보기)`,
