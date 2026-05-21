@@ -9756,7 +9756,7 @@ function alchemyGuideSumTierCraftSec(layerMap) {
     if (!qty || qty <= 0) return;
     const mat = data.materials[name];
     if (mat && mat.inputs && mat.inputs.length) {
-      t += getGameAlchemyTimeSec(name) * (qty / getAlchemyMaterialOutputCount(name));
+      t += getBaseAlchemyTimeSec(name) * (qty / getAlchemyMaterialOutputCount(name));
     }
   });
   return t;
@@ -9815,7 +9815,7 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
   }
   const stagesRaw = alchemyGuideBuildStages(recipe, copies);
   const stages = alchemyGuideDedupeGuideStages(stagesRaw);
-  let totalSec = getGameAlchemyTimeSec(finalName) * copies;
+  let totalSec = getBaseAlchemyTimeSec(finalName) * copies;
   for (let i = 0; i < stagesRaw.length - 1; i++) {
     totalSec += alchemyGuideSumTierCraftSec(stagesRaw[i]);
   }
