@@ -1,0 +1,22 @@
+const { handleCors, sendJson, classifySupabaseError } = require('./_supabase')
+const { getCraftsCatalog } = require('../lib/crafts-store')
+
+let supabaseRest = null
+try {
+  supabaseRest = require('./_supabase').supabaseRest
+} catch (_) {}
+
+module.exports = async function handler(req, res) {
+  if (handleCors(req, res)) return
+  if (req.method !== 'GET') {
+    sendJson(res, 405, { error: 'Method not allowed' })
+    return
+  }
+  try {
+    const catalog = await getCraftsCatalog(supabaseRest)
+    sendJson(res, 200, catalog)
+  } catch (error) {
+    const info = classifySupabaseError(error)
+    sendJson(res, 500, { error: info.code, hint: info.hint, message: String(error.message || error) })
+  }
+}
