@@ -9797,7 +9797,7 @@ function renderOneAlchemyGuideBlock(finalName, copies) {
   }
   const stagesRaw = alchemyGuideBuildStages(recipe, copies);
   const stages = alchemyGuideDedupeGuideStages(stagesRaw);
-  let totalSec = getBaseAlchemyTimeSec(finalName) * copies;
+  let totalSec = getGameAlchemyTimeSec(finalName) * copies;
   for (let i = 0; i < stagesRaw.length - 1; i++) {
     totalSec += alchemyGuideSumTierCraftSec(stagesRaw[i]);
   }
@@ -10569,7 +10569,9 @@ function analyzeEfficiency() {
       const isCraft = recipe.group === 'craft';
       const priceMultiplier = isAlchemy ? (1 + effects.alchemyPriceBoost / 100) : (isCraft ? (1 + effects.craftPriceBoost / 100) : 1);
       const adjustedPrice = Math.round((recipe.price || 0) * priceMultiplier);
-      const baseTimeSec = isAlchemy ? getBaseAlchemyTimeSec(recipe.name) : Math.max(1, Math.round((recipe.time || 1) * 60));
+      const baseTimeSec = isAlchemy
+        ? getAlchemyCraftOperationTimeSec(recipe.name)
+        : Math.max(1, Math.round((recipe.time || 1) * 60));
       const adjustedTimeSec = Math.max(1, baseTimeSec * (1 - effects.timeReduce / 100));
       const adjustedTimeMin = adjustedTimeSec / 60;
       const kind = isAlchemy ? 'alchemy' : (isCraft ? 'craft' : 'other');
