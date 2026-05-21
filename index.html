@@ -10442,8 +10442,12 @@ function renderCraftPricePanel(effects) {
 
   craftItems.forEach((recipe) => {
     const recipePrice = recipe.price || 0;
-    const currentPrice = currentPriceMap[recipe.name] || recipePrice;
-    const maxPrice = maxPriceMap[recipe.name] || 0;
+    const currentPrice = (recipe.currentPrice != null && recipe.currentPrice > 0)
+      ? recipe.currentPrice
+      : (currentPriceMap[recipe.name] || recipePrice);
+    const maxPrice = (recipe.maxPrice != null && recipe.maxPrice > 0)
+      ? recipe.maxPrice
+      : (maxPriceMap[recipe.name] || 0);
     const ratio = maxPrice > 0 ? (currentPrice / maxPrice * 100) : 0;
     const ratioColor = ratio >= 80 ? '#4ade80' : ratio <= 50 ? '#f87171' : '#facc15';
     const boostedRecipePrice = Math.round(recipePrice * (1 + (effects.craftPriceBoost / 100)));
