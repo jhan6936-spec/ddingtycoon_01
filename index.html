@@ -8853,6 +8853,11 @@ function saveExpertState() {
 function getExpertLevelValue(key) {
   const meta = expertMeta[key];
   if (!meta) return 0;
+  if (key === 'timeReduce') {
+    return typeof getWikiTimeReducePercent === 'function'
+      ? getWikiTimeReducePercent(expertState[key] || 0)
+      : meta.values[expertState[key] || 0] ?? 0;
+  }
   return meta.values[expertState[key] || 0] ?? 0;
 }
 

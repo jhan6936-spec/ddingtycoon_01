@@ -328,6 +328,49 @@ const expertMeta = {
   }
 };
 
+/** 물 흐르듯 술술 — 공식 위키 Lv.0~5 (인덱스 = 저장 레벨) */
+const WIKI_TIME_REDUCE_PERCENTS = [0, 10, 20, 30, 50, 70];
+
+/** levels[].effect → values[] 동기화 (표·계산·모드 동기화 단일 출처) */
+function rebuildExpertMetaValuesFromLevels() {
+  Object.values(expertMeta).forEach((meta) => {
+    if (!meta.levels?.length) return;
+    const values = [0];
+    for (let i = 1; i <= meta.maxLevel; i += 1) {
+      const row = meta.levels.find((r) => r.lv === i);
+      values[i] = row != null ? row.effect : values[i - 1] ?? 0;
+    }
+    meta.values = values;
+  });
+}
+
+function getWikiTimeReducePercent(levelIndex) {
+  const lv = Math.max(0, Math.min(WIKI_TIME_REDUCE_PERCENTS.length - 1, Number(levelIndex) || 0));
+  return WIKI_TIME_REDUCE_PERCENTS[lv] ?? 0;
+}
+
+function getExpertTimeReduceEffect(state) {
+  const src = state || (typeof expertState !== 'undefined' ? expertState : {});
+  return getWikiTimeReducePercent(src.timeReduce || 0);
+}
+
+function clampExpertStateLevels(state) {
+  const next = { ...state };
+  Object.keys(expertMeta).forEach((key) => {
+    const meta = expertMeta[key];
+    if (!meta) return;
+    const v = parseInt(next[key], 10);
+    if (!Number.isFinite(v)) {
+      next[key] = 0;
+      return;
+    }
+    next[key] = Math.max(0, Math.min(meta.maxLevel, v));
+  });
+  return next;
+}
+
+rebuildExpertMetaValuesFromLevels();
+
 function createDefaultExpertState() {
   const state = {};
   Object.keys(expertMeta).forEach((key) => {
@@ -337,7 +380,8 @@ function createDefaultExpertState() {
 }
 
 function formatExpertEffectLabel(meta, level) {
-  const value = meta.values[level] ?? 0;
+  const value =
+    meta.key === 'timeReduce' ? getWikiTimeReducePercent(level) : meta.values[level] ?? 0;
   if (meta.unit === 'percentReduce') return `${value}% 감소`;
   if (meta.unit === 'percentBoost') return `${value}% 증가`;
   if (meta.unit === 'percent') return `${value}%`;
