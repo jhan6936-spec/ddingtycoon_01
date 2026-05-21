@@ -1,10 +1,8 @@
-const { handleCors, sendJson, classifySupabaseError } = require('./_supabase')
+const { handleCors, sendJson, classifySupabaseError, supabaseRest } = require('./_supabase')
 const { getCraftsCatalog } = require('../lib/crafts-store')
 
-let supabaseRest = null
-try {
-  supabaseRest = require('./_supabase').supabaseRest
-} catch (_) {}
+const supabaseRestOrNull =
+  process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY ? supabaseRest : null
 
 module.exports = async function handler(req, res) {
   if (handleCors(req, res)) return
@@ -13,7 +11,7 @@ module.exports = async function handler(req, res) {
     return
   }
   try {
-    const catalog = await getCraftsCatalog(supabaseRest)
+    const catalog = await getCraftsCatalog(supabaseRestOrNull)
     sendJson(res, 200, catalog)
   } catch (error) {
     const info = classifySupabaseError(error)
