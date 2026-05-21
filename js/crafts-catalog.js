@@ -1,21 +1,7 @@
 /**
- * 공예품(craft) 레시피를 /api/crafts 또는 data/crafts.json 에서 로드해 data.recipes 에 병합합니다.
+ * 공예품: 페이지 로드 시 Supabase craft_items 테이블에서 직접 조회 (실시간 반영)
  */
 const CRAFTS_BROADCAST_CHANNEL = 'ddingtahe-crafts-updated'
-
-const DEFAULT_CRAFTS_CATALOG = {
-  version: 1,
-  updatedAt: null,
-  source: 'embedded',
-  crafts: [
-    { name: '조개껍데기 브로치', price: 47682, currentPrice: 40624, maxPrice: 50178, timeMinutes: 1, group: 'craft', inputs: [{ name: '깨진 조개껍데기', count: 1 }, { name: '노란빛 진주', count: 1 }, { name: '금속 재활용품', count: 1 }, { name: '거미줄', count: 4 }] },
-    { name: '푸른 향수병', price: 89700, currentPrice: 133645, maxPrice: 150163, timeMinutes: 1, group: 'craft', inputs: [{ name: '깨진 조개껍데기', count: 2 }, { name: '푸른빛 진주', count: 1 }, { name: '합성수지 재활용품', count: 1 }, { name: '플라스틱 재활용품', count: 1 }, { name: '양동이', count: 8 }] },
-    { name: '자개 손거울', price: 257671, currentPrice: 144554, maxPrice: 301154, timeMinutes: 1, group: 'craft', inputs: [{ name: '깨진 조개껍데기', count: 3 }, { name: '청록빛 진주', count: 1 }, { name: '합금 재활용품', count: 2 }, { name: '플라스틱 재활용품', count: 2 }, { name: '유리판', count: 16 }] },
-    { name: '분홍 헤어핀', price: 456177, currentPrice: 94420, maxPrice: 496947, timeMinutes: 1, group: 'craft', inputs: [{ name: '깨진 조개껍데기', count: 4 }, { name: '분홍빛 진주', count: 1 }, { name: '합성수지 재활용품', count: 3 }, { name: '섬유 재활용품', count: 3 }, { name: '대나무', count: 64 }, { name: '분홍 꽃잎', count: 16 }] },
-    { name: '자개 부채', price: 90580, currentPrice: 630402, maxPrice: 700447, timeMinutes: 1, group: 'craft', inputs: [{ name: '깨진 조개껍데기', count: 5 }, { name: '보라빛 진주', count: 1 }, { name: '합금 재활용품', count: 5 }, { name: '합성수지 재활용품', count: 5 }, { name: '막대기', count: 64 }, { name: '자수정 조각', count: 16 }] },
-    { name: '흑진주 시계', price: 735064, currentPrice: 631626, maxPrice: 1002581, timeMinutes: 1, group: 'craft', inputs: [{ name: '깨진 조개껍데기', count: 7 }, { name: '흑진주', count: 1 }, { name: '금속 재활용품', count: 7 }, { name: '합금 재활용품', count: 7 }, { name: '섬유 재활용품', count: 7 }, { name: '흑요석', count: 16 }, { name: '시계', count: 8 }] }
-  ]
-}
 
 const CraftsCatalog = {
   loaded: false,
@@ -32,6 +18,100 @@ const CraftsCatalog = {
     if (item.currentPrice != null) recipe.currentPrice = Math.max(0, Number(item.currentPrice) || 0)
     if (item.maxPrice != null) recipe.maxPrice = Math.max(0, Number(item.maxPrice) || 0)
     return recipe
+  },
+
+  rowsToCatalog(rows) {
+    const crafts = (Array.isArray(rows) ? rows : [])
+      .map((row) => {
+        if (!row || !row.name) return null
+        const craft = {
+          name: row.name,
+          price: Number(row.price) || 0,
+          timeMinutes: Number(row.time_minutes) || 1,
+          time: Number(row.time_minutes) || 1,
+          inputs: Array.isArray(row.inputs) ? row.inputs : [],
+          group: 'craft'
+        }
+        if (row.current_price != null) craft.currentPrice = Number(row.current_price) || 0
+        if (row.max_price != null) craft.maxPrice = Number(row.max_price) || 0
+        return craft
+      })
+      .filter(Boolean)
+
+    let updatedAt = null
+    for (const row of rows || []) {
+      if (row.updated_at && (!updatedAt || row.updated_at > updatedAt)) {
+        updatedAt = row.updated_at
+      }
+    }
+
+    return {
+      version: 1,
+      updatedAt: updatedAt || new Date().toISOString(),
+      source: 'supabase-direct',
+      crafts
+    }
+  },
+
+  async fetchFromSupabaseDirect() {
+    const cfg = window.SUPABASE_CONFIG
+    if (!cfg || !cfg.url || !cfg.anonKey) {
+      console.warn('[crafts-catalog] SUPABASE_CONFIG 없음 — /api/crafts 로 폴백')
+      return null
+    }
+    const base = String(cfg.url).replace(/\/$/, '')
+    const url =
+      base +
+      '/rest/v1/craft_items?select=name,price,current_price,max_price,time_minutes,inputs,sort_order,updated_at&order=sort_order.asc,name.asc'
+
+    const response = await fetch(url, {
+      cache: 'no-store',
+      headers: {
+        apikey: cfg.anonKey,
+        Authorization: 'Bearer ' + cfg.anonKey,
+        Accept: 'application/json'
+      }
+    })
+
+    if (!response.ok) {
+      const text = await response.text()
+      throw new Error('Supabase craft_items 조회 실패: ' + response.status + ' ' + text.slice(0, 200))
+    }
+
+    const rows = await response.json()
+    const catalog = this.rowsToCatalog(rows)
+    if (!catalog.crafts.length) {
+      throw new Error('craft_items 테이블에 데이터가 없습니다. supabase_craft_items.sql 을 실행하세요.')
+    }
+    return catalog
+  },
+
+  async fetchCatalogViaApi() {
+    const response = await fetch('/api/crafts', { cache: 'no-store' })
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}))
+      throw new Error(body.message || body.error || 'API crafts 조회 실패')
+    }
+    const catalog = await response.json()
+    if (!catalog || !Array.isArray(catalog.crafts) || !catalog.crafts.length) {
+      throw new Error('공예품 카탈로그가 비어 있습니다.')
+    }
+    catalog.source = catalog.source || 'supabase-api'
+    return catalog
+  },
+
+  async fetchCatalog() {
+    try {
+      return await this.fetchFromSupabaseDirect()
+    } catch (directErr) {
+      console.warn('[crafts-catalog] direct Supabase failed:', directErr)
+    }
+    try {
+      return await this.fetchCatalogViaApi()
+    } catch (apiErr) {
+      console.warn('[crafts-catalog] API fallback failed:', apiErr)
+      throw apiErr
+    }
   },
 
   mergeIntoRecipes(data, catalog) {
@@ -63,25 +143,10 @@ const CraftsCatalog = {
     this.loaded = true
     this.meta = {
       updatedAt: catalog.updatedAt || null,
-      source: catalog.source || 'unknown',
+      source: catalog.source || 'supabase',
       count: craftRecipes.length
     }
     return true
-  },
-
-  async fetchCatalog() {
-    const endpoints = ['/api/crafts', '/data/crafts.json']
-    for (const url of endpoints) {
-      try {
-        const response = await fetch(url, { cache: 'no-store' })
-        if (!response.ok) continue
-        const catalog = await response.json()
-        if (catalog && Array.isArray(catalog.crafts) && catalog.crafts.length) return catalog
-      } catch (error) {
-        console.warn('[crafts-catalog] fetch failed:', url, error)
-      }
-    }
-    return { ...DEFAULT_CRAFTS_CATALOG, source: 'embedded' }
   },
 
   async loadIntoData(data) {
@@ -97,12 +162,16 @@ const CraftsCatalog = {
     let lastKey = this.meta && this.meta.updatedAt ? String(this.meta.updatedAt) : ''
     const tick = async (force) => {
       const prev = lastKey
-      const ok = await this.loadIntoData(data)
-      if (!ok) return
-      const next = this.meta && this.meta.updatedAt ? String(this.meta.updatedAt) : ''
-      if (force || (next && next !== prev)) {
-        lastKey = next
-        if (typeof onUpdated === 'function') onUpdated(this.meta)
+      try {
+        const ok = await this.loadIntoData(data)
+        if (!ok) return
+        const next = this.meta && this.meta.updatedAt ? String(this.meta.updatedAt) : ''
+        if (force || (next && next !== prev)) {
+          lastKey = next
+          if (typeof onUpdated === 'function') onUpdated(this.meta)
+        }
+      } catch (err) {
+        console.warn('[crafts-catalog] refresh failed:', err)
       }
     }
     try {

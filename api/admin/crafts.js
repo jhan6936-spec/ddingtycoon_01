@@ -1,8 +1,7 @@
 const { handleCors, sendJson, readJson, supabaseRest, classifySupabaseError } = require('../_supabase')
 const {
   getCraftsCatalog,
-  saveCraftsCatalog,
-  writeStaticCraftsFile,
+  upsertCraftItems,
   verifyAdminSecret,
   normalizeCraftsPayload
 } = require('../../lib/crafts-store')
@@ -36,24 +35,12 @@ module.exports = async function handler(req, res) {
         return
       }
 
-      let saved = normalized
-      const hasSupabase =
-        process.env.SUPABASE_URL &&
-        process.env.SUPABASE_SERVICE_ROLE_KEY
-
-      if (hasSupabase) {
-        saved = await saveCraftsCatalog(supabaseRest, normalized)
-      }
-
-      if (process.env.CRAFTS_WRITE_STATIC === '1') {
-        writeStaticCraftsFile(saved)
-      }
-
+      const saved = await upsertCraftItems(supabaseRest, normalized)
       sendJson(res, 200, {
         ok: true,
         catalog: saved,
-        persistedTo: hasSupabase ? 'supabase' : 'memory',
-        staticWritten: process.env.CRAFTS_WRITE_STATIC === '1'
+        persistedTo: 'supabase',
+        table: 'craft_items'
       })
     } catch (error) {
       const info = classifySupabaseError(error)

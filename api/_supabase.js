@@ -66,7 +66,7 @@ function classifySupabaseError(error) {
   if (message.includes('PGRST205') || message.includes('does not exist')) {
     return {
       code: 'table_missing',
-      hint: 'Supabase SQL Editor에서 supabase_minecraft_link.sql 을 실행하세요.'
+      hint: 'Supabase SQL Editor에서 supabase_minecraft_link.sql 또는 supabase_craft_items.sql 을 실행하세요.'
     };
   }
   if (message.includes('42501') || message.toLowerCase().includes('permission denied')) {
