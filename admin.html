@@ -35,7 +35,8 @@
 
     <section class="grid gap-6 lg:grid-cols-2">
       <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-3">
-        <h2 class="text-sm font-medium text-slate-300">1. 이미지 업로드</h2>
+        <h2 class="text-sm font-medium text-slate-300">1. 사진 업로드 (자동 적용)</h2>
+        <div class="relative">
         <div
           id="dropZone"
           tabindex="0"
@@ -43,17 +44,24 @@
           aria-label="이미지 업로드 영역"
           class="flex min-h-[200px] cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-slate-600 bg-slate-950/80 px-4 py-8 text-center text-sm text-slate-400 hover:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
         >
-          <p>게임 공예 UI 스크린샷을 드래그하거나 클릭</p>
-          <p class="text-xs mt-2 text-slate-500">PNG / JPG</p>
+          <p>공예 UI 스크린샷을 드래그하거나 클릭</p>
+          <p class="text-xs mt-2 text-slate-500">업로드 즉시 분석 → 저장 → index.html 반영</p>
+        </div>
+        <div id="pipelineOverlay" class="hidden absolute inset-0 flex items-center justify-center rounded-lg bg-slate-950/90">
+          <div class="text-center px-4">
+            <p class="text-sm text-sky-300 font-medium">자동 처리 중…</p>
+            <p id="pipelineStep" class="text-xs text-slate-400 mt-2"></p>
+          </div>
+        </div>
         </div>
         <input id="imageInput" type="file" accept="image/*" class="hidden" aria-hidden="true" />
         <img id="imagePreview" alt="업로드 미리보기" class="hidden max-h-64 w-full rounded-lg object-contain border border-slate-700" />
         <button
           id="analyzeBtn"
           type="button"
-          class="w-full rounded-lg bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-500 disabled:opacity-50"
+          class="w-full rounded-lg border border-slate-600 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 disabled:opacity-50"
         >
-          이미지 분석 (GPT Vision)
+          수동: 분석만 다시 실행
         </button>
       </div>
 
@@ -90,7 +98,7 @@
         type="button"
         class="w-full rounded-lg bg-emerald-600 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50"
       >
-        crafts.json 저장 (API → Supabase, 사이트 자동 반영)
+        수동: 편집 내용만 다시 저장
       </button>
       <p id="statusMessage" class="text-sm text-slate-400" aria-live="polite"></p>
     </section>
