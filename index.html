@@ -5533,8 +5533,9 @@ const craftSalesInputState = {};
 
 // expertMeta · createDefaultExpertState 등 → experts-wiki-data.js (공식 위키 반영)
 let expertState = createDefaultExpertState();
+/** 세이지 낚싯대 전용(해양 전문가 「물 흐르듯 술술」과 별개) */
 const sageRodStats = {
-  timeReduce: [0,6,10,14,18,23,27,31,35,39,44,49,53,56,58,60],
+  sageRodTimeReduce: [0, 6, 10, 14, 18, 23, 27, 31, 35, 39, 44, 49, 53, 56, 58, 60],
   shellChance: [1,1,1,2,2,2,3,3,3,5,5,7,7,9,9,15],
   shellDrop: [2,2,2,3,3,3,4,4,4,5,5,5,6,6,7,10],
   power: [15,17,20,22,25,30,35,45,50,57,65,78,90,100,110,150]
@@ -6859,8 +6860,12 @@ function buildMinecraftDashboardPayload() {
     materialTarget,
     efficiencyResult: adjustedSec > 0 ? `예상 제작 시간 ${formatGuideDurationSec(adjustedSec)}` : '연금 효율 계산 대기',
     expectedProfit: profit > 0 ? `예상 수익 ${profit.toLocaleString()}G` : '예상 수익 없음',
-    expertBonusLine: `물 흐르듯 술술 Lv.${timeReduceLevel} / 제작 시간 -${Number(eff.timeReduce || 0)}%`,
-    timeReducePercent: Number(eff.timeReduce || 0),
+    expertBonusLine: `물 흐르듯 술술 Lv.${timeReduceLevel} / 제작 시간 -${Number(
+      typeof getExpertTimeReduceEffect === 'function' ? getExpertTimeReduceEffect(expertState) : eff.timeReduce || 0
+    )}%`,
+    timeReducePercent: Number(
+      typeof getExpertTimeReduceEffect === 'function' ? getExpertTimeReduceEffect(expertState) : eff.timeReduce || 0
+    ),
     craftTimeCatalogLines: buildCraftTimeCatalogLines(),
     gatheringTargetCount,
     gatheringTargetStamina: staminaTarget,

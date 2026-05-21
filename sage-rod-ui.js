@@ -65,7 +65,7 @@ function renderSageRod() {
   const finalPower = Math.round(basePower * (1 + engraving.fishingPowerBoost / 100));
   const finalShellChance = baseShell + engraving.shellSearchChance;
   const shellDrop = sageRodStats.shellDrop[sageRodLevel] || 0;
-  const timeReduce = sageRodStats.timeReduce[sageRodLevel] || 0;
+  const timeReduce = sageRodStats.sageRodTimeReduce[sageRodLevel] || 0;
 
   lvEl.textContent = `${sageRodLevel}강`;
   visEl.innerHTML = `<img class="sage-rod-visual-img" src="${sageRodVisualSrc(sageRodLevel)}" alt="세이지 낚싯대 ${sageRodLevel}강" loading="lazy" decoding="async" draggable="false">`;

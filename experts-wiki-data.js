@@ -499,7 +499,7 @@ function getExpertAncestorKeys(key) {
 }
 
 function sanitizeExpertState(state) {
-  const next = { ...state };
+  const next = clampExpertStateLevels(state);
   let changed = true;
   while (changed) {
     changed = false;
