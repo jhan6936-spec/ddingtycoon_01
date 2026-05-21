@@ -8919,7 +8919,12 @@ function getBaseAlchemyTimeSec(name) {
   return 60;
 }
 
-/** 연금 1회 제작(클릭 1번) 기준 총 기본 초 — 하위 단계 합산 포함 */
+/** 인게임·모드 HUD 1회 제작(해당 티어 클릭 1번) 기준 초 — 하위 재료는 이미 갖춘 상태 */
+function getAlchemyCraftHudBaseSec(name) {
+  return getBaseAlchemyTimeSec(name);
+}
+
+/** 연금 플랜·가이드용 합산 초(하위 단계 제작 시간 포함) */
 function getAlchemyCraftOperationTimeSec(name) {
   const mat = data.materials[name];
   const finalRecipe = data.recipes.find((r) => r.name === name);
@@ -8943,7 +8948,7 @@ function getAlchemyCraftDurationSec(productName, outputQuantity, timeReducePerce
   const qty = Math.max(1, Math.floor(Number(outputQuantity) || 0));
   const outputCount = ALCHEMY_DOUBLE_OUTPUT_MATERIALS.has(productName) ? 2 : 1;
   const craftOps = Math.ceil(qty / outputCount);
-  const baseSec = getAlchemyCraftOperationTimeSec(productName);
+  const baseSec = getAlchemyCraftHudBaseSec(productName);
   const reduce = Math.max(0, Math.min(70, Number(timeReducePercent) || 0));
   return Math.max(1, Math.round(baseSec * craftOps * (1 - reduce / 100)));
 }
