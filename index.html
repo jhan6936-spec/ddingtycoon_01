@@ -6751,7 +6751,7 @@ function buildCraftTimeCatalogLines() {
   const pushLine = (name) => {
     if (!name || seen.has(name)) return;
     seen.add(name);
-    const base = getAlchemyCraftOperationTimeSec(name);
+    const base = getAlchemyCraftHudBaseSec(name);
     const station = finals.includes(name) ? 'precision' : 'alchemy';
     lines.push(`${name}|${base}|${station}`);
   };
