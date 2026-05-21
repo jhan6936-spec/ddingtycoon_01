@@ -8925,7 +8925,7 @@ function getAlchemyCraftOperationTimeSec(name) {
   const stagesRaw = alchemyGuideBuildStages(recipe, 1);
   let totalSec = getGameAlchemyTimeSec(name);
   for (let i = 0; i < stagesRaw.length - 1; i++) {
-    totalSec += alchemyGuideSumTierCraftSec(stagesRaw[i]) * ALCHEMY_GAME_TIME_FACTOR;
+    totalSec += alchemyGuideSumTierCraftSec(stagesRaw[i]);
   }
   return totalSec;
 }
@@ -9109,7 +9109,7 @@ function deductFinalRecipe(recipe, inv, options = {}) {
 function unitAlchemyEfficiency(recipe, effects) {
   const priceMultiplier = 1 + (effects.alchemyPriceBoost / 100);
   const adjustedPrice = Math.round((recipe.price || 0) * priceMultiplier);
-  const baseTimeSec = getBaseAlchemyTimeSec(recipe.name);
+  const baseTimeSec = getAlchemyCraftOperationTimeSec(recipe.name);
   const adjustedTimeSec = Math.max(1, baseTimeSec * (1 - effects.timeReduce / 100));
   const adjustedTimeMin = adjustedTimeSec / 60;
   return adjustedTimeMin > 0 ? adjustedPrice / adjustedTimeMin : 0;
