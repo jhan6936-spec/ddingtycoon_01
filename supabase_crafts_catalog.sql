@@ -1,3 +1,4 @@
+-- [구버전] JSON blob 저장 — craft_items 테이블로 대체됨. supabase_craft_items.sql 사용
 -- 공예품 crafts.json 카탈로그 (Vercel admin 저장용)
 create table if not exists public.site_catalog (
   id text primary key,

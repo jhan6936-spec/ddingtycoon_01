@@ -4,6 +4,6 @@
   "scripts": {
     "build": "node scripts/generate-env.js",
     "env:generate": "node scripts/generate-env.js",
-    "crafts:save-local": "node scripts/save-crafts-local.js"
+    "crafts:seed": "node scripts/seed-craft-items.js"
   }
 }
