@@ -8,6 +8,8 @@ Return ONLY valid JSON (no markdown) in this shape:
     {
       "name": "item name in Korean",
       "price": 12345,
+      "currentPrice": 12345,
+      "maxPrice": 15000,
       "timeMinutes": 1,
       "inputs": [{ "name": "material", "count": 1 }]
     }
@@ -15,8 +17,11 @@ Return ONLY valid JSON (no markdown) in this shape:
 }
 Rules:
 - "group" is always craft (공예품).
-- price is integer gold (G, 골드).
+- price is base craft sale price (제작 판매가) in gold.
+- currentPrice is NPC market current price (현재 가격) if shown.
+- maxPrice is NPC market highest price (최고가) if shown.
 - timeMinutes is craft duration in minutes (제작 시간).
+- Use exact official names: 조개껍데기 브로치, 푸른 향수병, 자개 손거울, 분홍 헤어핀, 자개 부채, 흑진주 시계.
 - Include every craft recipe visible in the image.
 - Use exact Korean names from the image.`
 
