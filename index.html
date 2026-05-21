@@ -5438,48 +5438,7 @@ const data = {
       group: "group3"
     },
 
-    {
-      name: "조개껍데기 브로치",
-      inputs: [{ name: "깨진 조개껍데기", count: 1 }, { name: "노란빛 진주", count: 1 }, { name: "금속 재활용품", count: 1 }, { name: "거미줄", count: 4 }],
-      time: 1,
-      price: 47682,
-      group: "craft"
-    },
-    {
-      name: "푸른 향수병",
-      inputs: [{ name: "깨진 조개껍데기", count: 2 }, { name: "푸른빛 진주", count: 1 }, { name: "합성수지 재활용품", count: 1 }, { name: "플라스틱 재활용품", count: 1 }, { name: "양동이", count: 8 }],
-      time: 1,
-      price: 89700,
-      group: "craft"
-    },
-    {
-      name: "자개 손거울",
-      inputs: [{ name: "깨진 조개껍데기", count: 3 }, { name: "청록빛 진주", count: 1 }, { name: "합금 재활용품", count: 2 }, { name: "플라스틱 재활용품", count: 2 }, { name: "유리판", count: 16 }],
-      time: 1,
-      price: 257671,
-      group: "craft"
-    },
-    {
-      name: "분홍 헤어핀",
-      inputs: [{ name: "깨진 조개껍데기", count: 4 }, { name: "분홍빛 진주", count: 1 }, { name: "합성수지 재활용품", count: 3 }, { name: "섬유 재활용품", count: 3 }, { name: "대나무", count: 64 }, { name: "분홍 꽃잎", count: 16 }],
-      time: 1,
-      price: 456177,
-      group: "craft"
-    },
-    {
-      name: "자개 부채",
-      inputs: [{ name: "깨진 조개껍데기", count: 5 }, { name: "보라빛 진주", count: 1 }, { name: "합금 재활용품", count: 5 }, { name: "합성수지 재활용품", count: 5 }, { name: "막대기", count: 64 }, { name: "자수정 조각", count: 16 }],
-      time: 1,
-      price: 90580,
-      group: "craft"
-    },
-    {
-      name: "흑진주 시계",
-      inputs: [{ name: "깨진 조개껍데기", count: 7 }, { name: "흑진주", count: 1 }, { name: "금속 재활용품", count: 7 }, { name: "합금 재활용품", count: 7 }, { name: "섬유 재활용품", count: 7 }, { name: "흑요석", count: 16 }, { name: "시계", count: 8 }],
-      time: 1,
-      price: 735064,
-      group: "craft"
-    },
+    /* 공예품(craft) 레시피는 js/crafts-catalog.js → /api/crafts 또는 data/crafts.json 에서 로드 */
     {
       name: "추출된 희석액",
       inputs: [
@@ -10894,12 +10853,26 @@ async function loadLiveNpcMarketPrices() {
   }
 }
 
-window.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('DOMContentLoaded', async function() {
   initSupabaseAuth().then(async () => {
     try {
       await handleMinecraftLinkCodeFromUrl();
     } catch (_) {}
   });
+
+  try {
+    if (window.CraftsCatalog) {
+      await CraftsCatalog.loadIntoData(data);
+      CraftsCatalog.startAutoRefresh(data, function() {
+        try { renderRecipes() } catch (_) {}
+        try {
+          renderCraftPricePanel(typeof getExpertEffects === 'function' ? getExpertEffects() : { craftPriceBoost: 0 });
+        } catch (_) {}
+      });
+    }
+  } catch (craftLoadErr) {
+    console.warn('[crafts-catalog] load failed:', craftLoadErr);
+  }
 
   loadLiveNpcMarketPrices().then(() => {
     try {

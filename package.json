@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build": "node scripts/generate-env.js",
-    "env:generate": "node scripts/generate-env.js"
+    "env:generate": "node scripts/generate-env.js",
+    "crafts:save-local": "node scripts/save-crafts-local.js"
   }
 }
