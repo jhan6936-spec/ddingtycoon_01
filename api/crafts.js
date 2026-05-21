@@ -1,9 +1,6 @@
 const { handleCors, sendJson, classifySupabaseError, supabaseRest } = require('./_supabase')
 const { getCraftsCatalog } = require('../lib/crafts-store')
 
-const supabaseRestOrNull =
-  process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY ? supabaseRest : null
-
 module.exports = async function handler(req, res) {
   if (handleCors(req, res)) return
   if (req.method !== 'GET') {
@@ -11,10 +8,14 @@ module.exports = async function handler(req, res) {
     return
   }
   try {
-    const catalog = await getCraftsCatalog(supabaseRestOrNull)
+    const catalog = await getCraftsCatalog(supabaseRest)
     sendJson(res, 200, catalog)
   } catch (error) {
     const info = classifySupabaseError(error)
-    sendJson(res, 500, { error: info.code, hint: info.hint, message: String(error.message || error) })
+    const hint =
+      info.code === 'table_missing'
+        ? 'Supabase SQL Editor에서 supabase_craft_items.sql 을 실행하세요.'
+        : info.hint
+    sendJson(res, 500, { error: info.code, hint, message: String(error.message || error) })
   }
 }
