@@ -10867,12 +10867,18 @@ window.addEventListener('DOMContentLoaded', async function() {
   try {
     if (window.CraftsCatalog) {
       await CraftsCatalog.loadIntoData(data);
+      if (!CraftsCatalog.hasCraftRecipes(data)) {
+        await CraftsCatalog.loadIntoData(data);
+      }
       CraftsCatalog.startAutoRefresh(data, function() {
         try { renderRecipes() } catch (_) {}
         try {
           renderCraftPricePanel(typeof getExpertEffects === 'function' ? getExpertEffects() : { craftPriceBoost: 0 });
         } catch (_) {}
       });
+      try {
+        renderCraftPricePanel(typeof getExpertEffects === 'function' ? getExpertEffects() : { craftPriceBoost: 0 });
+      } catch (_) {}
     }
   } catch (craftLoadErr) {
     console.warn('[crafts-catalog] load failed:', craftLoadErr);
