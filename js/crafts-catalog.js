@@ -1,6 +1,8 @@
 /**
  * 공예품(craft) 레시피를 /api/crafts 또는 data/crafts.json 에서 로드해 data.recipes 에 병합합니다.
  */
+const CRAFTS_BROADCAST_CHANNEL = 'ddingtahe-crafts-updated'
+
 const CraftsCatalog = {
   loaded: false,
   meta: null,
@@ -69,23 +71,27 @@ const CraftsCatalog = {
 
   startAutoRefresh(data, onUpdated) {
     let lastKey = this.meta && this.meta.updatedAt ? String(this.meta.updatedAt) : ''
-    const tick = async () => {
+    const tick = async (force) => {
       const prev = lastKey
       const ok = await this.loadIntoData(data)
       if (!ok) return
       const next = this.meta && this.meta.updatedAt ? String(this.meta.updatedAt) : ''
-      if (next && next !== prev) {
+      if (force || (next && next !== prev)) {
         lastKey = next
         if (typeof onUpdated === 'function') onUpdated(this.meta)
       }
     }
-    window.addEventListener('focus', tick)
+    try {
+      const channel = new BroadcastChannel(CRAFTS_BROADCAST_CHANNEL)
+      channel.onmessage = () => tick(true)
+    } catch (_) {}
+    window.addEventListener('focus', () => tick(false))
     document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) tick()
+      if (!document.hidden) tick(false)
     })
     setInterval(() => {
-      if (!document.hidden) tick()
-    }, 60000)
+      if (!document.hidden) tick(false)
+    }, 15000)
   }
 }
 

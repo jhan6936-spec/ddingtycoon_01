@@ -1,11 +1,11 @@
 const STORAGE_ADMIN_SECRET = 'ddingtahe_admin_secret'
+const CRAFTS_BROADCAST_CHANNEL = 'ddingtahe-crafts-updated'
 
 const state = {
   catalog: { version: 1, updatedAt: null, crafts: [] },
   imageBase64: '',
   mimeType: 'image/png',
-  analyzing: false,
-  saving: false
+  pipelineRunning: false
 }
 
 const el = (id) => document.getElementById(id)
@@ -45,6 +45,52 @@ const fileToBase64 = (file) =>
     reader.onerror = () => reject(reader.error)
     reader.readAsDataURL(file)
   })
+
+const mergeCraftsByName = (baseCatalog, incomingCatalog) => {
+  const byName = new Map()
+  ;(baseCatalog.crafts || []).forEach((craft) => {
+    if (craft && craft.name) byName.set(craft.name, craft)
+  })
+  ;(incomingCatalog.crafts || []).forEach((craft) => {
+    if (craft && craft.name) {
+      byName.set(craft.name, {
+        ...byName.get(craft.name),
+        ...craft,
+        group: 'craft'
+      })
+    }
+  })
+  return {
+    version: baseCatalog.version || incomingCatalog.version || 1,
+    updatedAt: new Date().toISOString(),
+    crafts: Array.from(byName.values())
+  }
+}
+
+const notifyMainSiteCraftsUpdated = (updatedAt) => {
+  try {
+    const channel = new BroadcastChannel(CRAFTS_BROADCAST_CHANNEL)
+    channel.postMessage({ updatedAt: updatedAt || new Date().toISOString() })
+    channel.close()
+  } catch (_) {}
+}
+
+const setPipelineBusy = (busy) => {
+  state.pipelineRunning = busy
+  const dropZone = el('dropZone')
+  const fileInput = el('imageInput')
+  const overlay = el('pipelineOverlay')
+  if (dropZone) {
+    dropZone.classList.toggle('pointer-events-none', busy)
+    dropZone.classList.toggle('opacity-60', busy)
+  }
+  if (fileInput) fileInput.disabled = busy
+  if (overlay) overlay.classList.toggle('hidden', !busy)
+  ;['analyzeBtn', 'saveBtn', 'loadBtn', 'addRowBtn', 'downloadBtn'].forEach((id) => {
+    const btn = el(id)
+    if (btn) btn.disabled = busy
+  })
+}
 
 const renderCraftTable = () => {
   const tbody = el('craftTableBody')
@@ -123,19 +169,106 @@ const setStatus = (message, isError) => {
     : 'text-sm text-emerald-400'
 }
 
-const handleFileSelected = async (file) => {
+const setPipelineStep = (text) => {
+  const step = el('pipelineStep')
+  if (step) step.textContent = text || ''
+}
+
+const runAnalyzeApi = async () => {
+  const response = await fetch('/api/admin/analyze', {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({
+      imageBase64: state.imageBase64,
+      mimeType: state.mimeType
+    })
+  })
+  const body = await response.json()
+  if (!response.ok) throw new Error(body.error || body.detail || '분석 실패')
+  return body.catalog || { crafts: [] }
+}
+
+const runSaveApi = async () => {
+  syncCraftFromTable()
+  state.catalog.updatedAt = new Date().toISOString()
+  const response = await fetch('/api/admin/crafts', {
+    method: 'PUT',
+    headers: authHeaders(),
+    body: JSON.stringify(state.catalog)
+  })
+  const body = await response.json()
+  if (!response.ok) throw new Error(body.error || body.message || '저장 실패')
+  return body
+}
+
+const runAutoPipeline = async (file) => {
+  if (state.pipelineRunning) return
   if (!file || !file.type.startsWith('image/')) {
     setStatus('이미지 파일만 업로드할 수 있습니다.', true)
     return
   }
-  state.mimeType = file.type || 'image/png'
-  state.imageBase64 = await fileToBase64(file)
-  const preview = el('imagePreview')
-  if (preview) {
-    preview.src = URL.createObjectURL(file)
-    preview.classList.remove('hidden')
+
+  persistAdminSecret()
+  const secret = getAdminSecret()
+  if (!secret) {
+    setStatus('먼저 ADMIN_SECRET을 입력한 뒤 다시 업로드하세요.', true)
+    return
   }
-  setStatus(`이미지 준비됨: ${file.name}`, false)
+
+  state.pipelineRunning = true
+  setPipelineBusy(true)
+
+  try {
+    setPipelineStep('① 이미지 읽는 중…')
+    setStatus('자동 처리 시작…', false)
+    state.mimeType = file.type || 'image/png'
+    state.imageBase64 = await fileToBase64(file)
+
+    const preview = el('imagePreview')
+    if (preview) {
+      preview.src = URL.createObjectURL(file)
+      preview.classList.remove('hidden')
+    }
+
+    const baseBeforeAnalyze = {
+      version: state.catalog.version,
+      crafts: (state.catalog.crafts || []).map((c) => ({ ...c }))
+    }
+
+    setPipelineStep('② GPT Vision으로 공예품 추출 중…')
+    const extracted = await runAnalyzeApi()
+    if (!extracted.crafts || !extracted.crafts.length) {
+      throw new Error('이미지에서 공예품을 찾지 못했습니다. 더 넓은 UI 스크린샷을 올려주세요.')
+    }
+
+    state.catalog = mergeCraftsByName(baseBeforeAnalyze, extracted)
+    renderCraftTable()
+
+    setPipelineStep('③ 띵타해 웹에 저장 중…')
+    const saveResult = await runSaveApi()
+    state.catalog = saveResult.catalog || state.catalog
+    updateJsonPreview()
+
+    notifyMainSiteCraftsUpdated(state.catalog.updatedAt)
+
+    setPipelineStep('')
+    setStatus(
+      `완료! 공예품 ${extracted.crafts.length}건 반영 → 메인 사이트(index.html)에 적용됨. 열린 탭은 즉시 갱신됩니다.`,
+      false
+    )
+  } catch (error) {
+    setPipelineStep('')
+    setStatus(String(error.message || error), true)
+  } finally {
+    state.pipelineRunning = false
+    setPipelineBusy(false)
+    const fileInput = el('imageInput')
+    if (fileInput) fileInput.value = ''
+  }
+}
+
+const handleFileSelected = async (file) => {
+  await runAutoPipeline(file)
 }
 
 const handleAnalyze = async () => {
@@ -144,48 +277,27 @@ const handleAnalyze = async () => {
     return
   }
   persistAdminSecret()
-  const secret = getAdminSecret()
-  if (!secret) {
+  if (!getAdminSecret()) {
     setStatus('관리자 비밀키(ADMIN_SECRET)를 입력하세요.', true)
     return
   }
-  state.analyzing = true
-  const btn = el('analyzeBtn')
-  if (btn) {
-    btn.disabled = true
-    btn.textContent = '분석 중…'
-  }
+  setPipelineBusy(true)
   setStatus('GPT Vision으로 레시피 추출 중…', false)
   try {
-    const response = await fetch('/api/admin/analyze', {
-      method: 'POST',
-      headers: authHeaders(),
-      body: JSON.stringify({
-        imageBase64: state.imageBase64,
-        mimeType: state.mimeType
-      })
-    })
-    const body = await response.json()
-    if (!response.ok) throw new Error(body.error || body.detail || '분석 실패')
-    state.catalog = body.catalog || state.catalog
+    const extracted = await runAnalyzeApi()
+    state.catalog = mergeCraftsByName(state.catalog, extracted)
     renderCraftTable()
-    setStatus(`추출 완료 (${state.catalog.crafts.length}개 공예품)`, false)
+    setStatus(`추출 완료 (${extracted.crafts.length}개 병합)`, false)
   } catch (error) {
     setStatus(String(error.message || error), true)
   } finally {
-    state.analyzing = false
-    if (btn) {
-      btn.disabled = false
-      btn.textContent = '이미지 분석 (GPT Vision)'
-    }
+    setPipelineBusy(false)
   }
 }
 
 const handleSave = async () => {
-  syncCraftFromTable()
   persistAdminSecret()
-  const secret = getAdminSecret()
-  if (!secret) {
+  if (!getAdminSecret()) {
     setStatus('관리자 비밀키를 입력하세요.', true)
     return
   }
@@ -193,35 +305,18 @@ const handleSave = async () => {
     setStatus('저장할 공예품 데이터가 없습니다.', true)
     return
   }
-  state.catalog.updatedAt = new Date().toISOString()
-  state.saving = true
-  const btn = el('saveBtn')
-  if (btn) {
-    btn.disabled = true
-    btn.textContent = '저장 중…'
-  }
+  setPipelineBusy(true)
+  setStatus('저장 중…', false)
   try {
-    const response = await fetch('/api/admin/crafts', {
-      method: 'PUT',
-      headers: authHeaders(),
-      body: JSON.stringify(state.catalog)
-    })
-    const body = await response.json()
-    if (!response.ok) throw new Error(body.error || body.message || '저장 실패')
+    const body = await runSaveApi()
     state.catalog = body.catalog || state.catalog
     updateJsonPreview()
-    setStatus(
-      `저장 완료 (${body.persistedTo || 'ok'}). 메인 사이트는 자동으로 반영됩니다.`,
-      false
-    )
+    notifyMainSiteCraftsUpdated(state.catalog.updatedAt)
+    setStatus('저장 완료. 메인 사이트에 반영됨.', false)
   } catch (error) {
     setStatus(String(error.message || error), true)
   } finally {
-    state.saving = false
-    if (btn) {
-      btn.disabled = false
-      btn.textContent = 'crafts.json 저장 (API)'
-    }
+    setPipelineBusy(false)
   }
 }
 
@@ -237,7 +332,7 @@ const handleDownloadJson = () => {
   a.download = 'crafts.json'
   a.click()
   URL.revokeObjectURL(url)
-  setStatus('crafts.json 파일을 다운로드했습니다. data/crafts.json 에 덮어쓴 뒤 Git push 하세요.', false)
+  setStatus('crafts.json 파일을 다운로드했습니다.', false)
 }
 
 const handleLoadCurrent = async () => {
@@ -285,7 +380,7 @@ const bindEvents = () => {
   if (dropZone) {
     dropZone.addEventListener('dragover', (e) => {
       e.preventDefault()
-      dropZone.classList.add('ring-2', 'ring-sky-400')
+      if (!state.pipelineRunning) dropZone.classList.add('ring-2', 'ring-sky-400')
     })
     dropZone.addEventListener('dragleave', () => {
       dropZone.classList.remove('ring-2', 'ring-sky-400')
@@ -293,14 +388,17 @@ const bindEvents = () => {
     dropZone.addEventListener('drop', (e) => {
       e.preventDefault()
       dropZone.classList.remove('ring-2', 'ring-sky-400')
+      if (state.pipelineRunning) return
       const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]
       if (file) handleFileSelected(file)
     })
-    dropZone.addEventListener('click', () => fileInput && fileInput.click())
+    dropZone.addEventListener('click', () => {
+      if (!state.pipelineRunning && fileInput) fileInput.click()
+    })
     dropZone.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault()
-        fileInput && fileInput.click()
+        if (!state.pipelineRunning && fileInput) fileInput.click()
       }
     })
   }
