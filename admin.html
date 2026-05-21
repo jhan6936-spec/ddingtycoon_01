@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>띵타해 | 공예품 데이터 관리</title>
+  <link rel="icon" href="assets/favicon/favicon-32x32.png" type="image/png">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100">
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur">
+    <div class="mx-auto max-w-6xl px-4 py-4 flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h1 class="text-lg font-semibold text-sky-300">공예품 데이터 관리</h1>
+        <p class="text-xs text-slate-400 mt-1">스크린샷 → GPT Vision 추출 → crafts.json 저장 (Supabase + 정적 파일)</p>
+      </div>
+      <a href="index.html" class="text-sm text-sky-400 hover:text-sky-300 underline">← 메인 계산기</a>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-6xl px-4 py-6 space-y-6">
+    <section class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-3">
+      <h2 class="text-sm font-medium text-slate-300">관리자 인증</h2>
+      <label class="block text-xs text-slate-400" for="adminSecret">ADMIN_SECRET (Vercel 환경 변수와 동일)</label>
+      <input
+        id="adminSecret"
+        type="password"
+        autocomplete="off"
+        class="w-full max-w-md rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm"
+        placeholder="Bearer 토큰"
+        aria-label="관리자 비밀키"
+      />
+      <p class="text-xs text-slate-500">로컬: <code class="text-slate-400">vercel dev</code> + .env.local · 프로덕션: Vercel에 OPENAI_API_KEY, ADMIN_SECRET, Supabase 키 설정</p>
+    </section>
+
+    <section class="grid gap-6 lg:grid-cols-2">
+      <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-3">
+        <h2 class="text-sm font-medium text-slate-300">1. 이미지 업로드</h2>
+        <div
+          id="dropZone"
+          tabindex="0"
+          role="button"
+          aria-label="이미지 업로드 영역"
+          class="flex min-h-[200px] cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-slate-600 bg-slate-950/80 px-4 py-8 text-center text-sm text-slate-400 hover:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
+        >
+          <p>게임 공예 UI 스크린샷을 드래그하거나 클릭</p>
+          <p class="text-xs mt-2 text-slate-500">PNG / JPG</p>
+        </div>
+        <input id="imageInput" type="file" accept="image/*" class="hidden" aria-hidden="true" />
+        <img id="imagePreview" alt="업로드 미리보기" class="hidden max-h-64 w-full rounded-lg object-contain border border-slate-700" />
+        <button
+          id="analyzeBtn"
+          type="button"
+          class="w-full rounded-lg bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-500 disabled:opacity-50"
+        >
+          이미지 분석 (GPT Vision)
+        </button>
+      </div>
+
+      <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-3">
+        <h2 class="text-sm font-medium text-slate-300">2. crafts.json 미리보기</h2>
+        <pre id="jsonPreview" class="max-h-[320px] overflow-auto rounded-lg bg-slate-950 border border-slate-700 p-3 text-xs text-slate-300"></pre>
+        <div class="flex flex-wrap gap-2">
+          <button id="loadBtn" type="button" class="rounded-lg border border-slate-600 px-3 py-2 text-xs hover:bg-slate-800">현재 데이터 불러오기</button>
+          <button id="addRowBtn" type="button" class="rounded-lg border border-slate-600 px-3 py-2 text-xs hover:bg-slate-800">행 추가</button>
+          <button id="downloadBtn" type="button" class="rounded-lg border border-slate-600 px-3 py-2 text-xs hover:bg-slate-800">JSON 다운로드 (Git용)</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-3 overflow-x-auto">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 class="text-sm font-medium text-slate-300">3. 추출 데이터 편집</h2>
+        <p class="text-xs text-slate-500">재료 형식: <span class="text-slate-400">깨진 조개껍데기 x1, 노란빛 진주 x1</span></p>
+      </div>
+      <table class="w-full min-w-[640px] text-left text-sm">
+        <thead class="text-xs text-slate-400 border-b border-slate-700">
+          <tr>
+            <th class="px-2 py-2">이름</th>
+            <th class="px-2 py-2">가격</th>
+            <th class="px-2 py-2">시간(분)</th>
+            <th class="px-2 py-2">재료</th>
+            <th class="px-2 py-2 w-16"></th>
+          </tr>
+        </thead>
+        <tbody id="craftTableBody"></tbody>
+      </table>
+      <button
+        id="saveBtn"
+        type="button"
+        class="w-full rounded-lg bg-emerald-600 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50"
+      >
+        crafts.json 저장 (API → Supabase, 사이트 자동 반영)
+      </button>
+      <p id="statusMessage" class="text-sm text-slate-400" aria-live="polite"></p>
+    </section>
+
+    <section class="rounded-xl border border-slate-800 bg-slate-900/40 p-4 text-xs text-slate-500 space-y-2">
+      <h2 class="text-slate-400 font-medium">배포 구조</h2>
+      <ul class="list-disc pl-5 space-y-1">
+        <li><strong>읽기</strong>: index.html → <code>/api/crafts</code> (Supabase 우선, 없으면 <code>data/crafts.json</code>)</li>
+        <li><strong>쓰기</strong>: admin → <code>PUT /api/admin/crafts</code> → Supabase <code>site_catalog</code></li>
+        <li><strong>Git 반영</strong>: JSON 다운로드 후 <code>data/crafts.json</code> 커밋 (정적 폴백·오프라인)</li>
+        <li>Supabase SQL: <code>supabase_crafts_catalog.sql</code> 실행 후 재배포</li>
+      </ul>
+    </section>
+  </main>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>
