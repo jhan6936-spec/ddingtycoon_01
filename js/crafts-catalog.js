@@ -21,14 +21,19 @@ const CraftsCatalog = {
     }
     const recipes = data.recipes
     const craftRecipes = catalog.crafts.map((c) => this.mapCraftRecipe(c)).filter((c) => c.name)
-    const firstCraftIdx = recipes.findIndex((r) => r && r.group === 'craft')
     const nonCraft = recipes.filter((r) => !r || r.group !== 'craft')
+    const firstCraftIdx = recipes.findIndex((r) => r && r.group === 'craft')
+    const alchemyAnchorIdx = recipes.findIndex((r) => r && r.name === '추출된 희석액')
     if (firstCraftIdx >= 0) {
       data.recipes = [
         ...nonCraft.slice(0, firstCraftIdx),
         ...craftRecipes,
         ...nonCraft.slice(firstCraftIdx)
       ]
+    } else if (alchemyAnchorIdx >= 0) {
+      const head = recipes.slice(0, alchemyAnchorIdx).filter((r) => !r || r.group !== 'craft')
+      const tail = recipes.slice(alchemyAnchorIdx)
+      data.recipes = head.concat(craftRecipes, tail)
     } else {
       data.recipes = nonCraft.concat(craftRecipes)
     }
