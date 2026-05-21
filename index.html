@@ -9617,7 +9617,7 @@ function calculateAlchemyProductBaseTimeSec(finalName, copies) {
   const stagesRaw = alchemyGuideBuildStages(recipe, n);
   let totalSec = getGameAlchemyTimeSec(finalName) * n;
   for (let i = 0; i < stagesRaw.length - 1; i++) {
-    totalSec += alchemyGuideSumTierCraftSec(stagesRaw[i]) * ALCHEMY_GAME_TIME_FACTOR;
+    totalSec += alchemyGuideSumTierCraftSec(stagesRaw[i]);
   }
   return totalSec;
 }
@@ -9738,7 +9738,7 @@ function alchemyGuideSumTierCraftSec(layerMap) {
     if (!qty || qty <= 0) return;
     const mat = data.materials[name];
     if (mat && mat.inputs && mat.inputs.length) {
-      t += getBaseAlchemyTimeSec(name) * (qty / getAlchemyMaterialOutputCount(name));
+      t += getGameAlchemyTimeSec(name) * (qty / getAlchemyMaterialOutputCount(name));
     }
   });
   return t;
