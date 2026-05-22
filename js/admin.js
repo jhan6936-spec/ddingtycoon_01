@@ -365,7 +365,7 @@ const handleDailySave = async () => {
 
 const handleClearHistory = async () => {
   if (!state.authenticated) return
-  if (!window.confirm('공예품 가격 이력(그래프)을 모두 삭제할까요?')) return
+  if (!window.confirm('그래프 이력(craft_price_history)만 삭제할까요?\n(현재 시세·메인 표시는 유지됩니다)')) return
   try {
     const res = await fetch('/api/admin/crafts?action=clear-history', {
       method: 'POST',
@@ -374,9 +374,55 @@ const handleClearHistory = async () => {
     })
     const body = await res.json().catch(() => ({}))
     if (!res.ok) throw new Error(body.message || body.error || '삭제 실패')
-    setStatus(body.message || '그래프 이력을 초기화했습니다.', false)
+    setStatus(body.message || '그래프 이력만 삭제했습니다.', false)
   } catch (err) {
     setStatus(String(err.message || err), true)
+  }
+}
+
+const handleResetMarket = async () => {
+  if (!state.authenticated) return
+  const ok = window.confirm(
+    '공예품 시세·이력을 모두 초기화할까요?\n\n' +
+      '· craft_items: 현재 시세·변동 삭제\n' +
+      '· craft_price_history: 전체 삭제\n' +
+      '· 레시피·제작 판매가는 유지\n\n' +
+      '이후 Supabase에 과거 이력을 넣고, 마지막에 오늘 시세를 저장하세요.'
+  )
+  if (!ok) return
+
+  const btn = el('resetMarketBtn')
+  if (btn) {
+    btn.disabled = true
+    btn.textContent = '초기화 중…'
+  }
+  setStatus('시세·이력 초기화 중…', false)
+
+  try {
+    const res = await fetch('/api/admin/crafts?action=reset-market', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: '{}'
+    })
+    const body = await res.json().catch(() => ({}))
+    if (!res.ok) throw new Error(body.message || body.error || body.hint || '초기화 실패')
+
+    state.catalog = body.catalog || state.catalog
+    state.previousPrices = {}
+    renderPriceTable(state.catalog)
+    notifyMainSiteCraftsUpdated(state.catalog)
+    setStatus(
+      body.message ||
+        '초기화 완료. 과거 이력 INSERT 후 오늘 시세를 저장하세요. index.html을 새로고침하세요.',
+      false
+    )
+  } catch (err) {
+    setStatus(String(err.message || err), true)
+  } finally {
+    if (btn) {
+      btn.disabled = false
+      btn.textContent = '공예품 시세·이력 전체 초기화'
+    }
   }
 }
 
@@ -406,6 +452,7 @@ document.addEventListener('DOMContentLoaded', () => {
   el('dailySaveBtn')?.addEventListener('click', handleDailySave)
   el('fixRecipesBtn')?.addEventListener('click', handleFixRecipes)
   el('clearHistoryBtn')?.addEventListener('click', handleClearHistory)
+  el('resetMarketBtn')?.addEventListener('click', handleResetMarket)
   el('adminSecret')?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') handleLogin()
   })
