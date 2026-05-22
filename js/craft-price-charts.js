@@ -260,10 +260,12 @@ const CraftPriceCharts = {
                 padding: 18,
                 font: { size: 12, lineHeight: 1.65 },
                 usePointStyle: true,
-                pointStyleWidth: 10
+                pointStyleWidth: 10,
+                filter: (item) => Boolean(item.text)
               }
             },
             tooltip: {
+              filter: (item) => Boolean(item.dataset.label),
               callbacks: {
                 title: (items) => {
                   if (!items.length) return ''
