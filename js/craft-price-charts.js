@@ -48,12 +48,15 @@ const CRAFT_CHART_STYLES = {
     pointBorderColor: '#ddd6fe'
   },
   '흑진주 시계': {
-    borderColor: '#0f172a',
-    backgroundColor: 'rgba(15, 23, 42, 0.35)',
-    pointBackgroundColor: '#020617',
-    pointBorderColor: '#e2e8f0',
+    borderColor: '#334155',
+    backgroundColor: 'rgba(51, 65, 85, 0.25)',
+    pointBackgroundColor: '#1e293b',
+    pointBorderColor: '#f8fafc',
     borderWidth: 2.5,
-    pointBorderWidth: 2
+    pointBorderWidth: 2.5,
+    pointRadius: 5,
+    outlineColor: 'rgba(241, 245, 249, 0.92)',
+    outlineWidth: 6
   }
 }
 
@@ -175,7 +178,9 @@ const CraftPriceCharts = {
       if (point) byName.get(name).push(point)
     })
 
-    return CRAFT_CHART_NAMES.map((name) => {
+    const datasets = []
+
+    CRAFT_CHART_NAMES.forEach((name) => {
       const style = CRAFT_CHART_STYLES[name] || {
         borderColor: '#94a3b8',
         backgroundColor: 'rgba(148, 163, 184, 0.2)',
@@ -183,7 +188,24 @@ const CraftPriceCharts = {
         pointBorderColor: '#e2e8f0'
       }
       const data = byName.get(name) || []
-      return {
+      if (!data.length) return
+
+      if (style.outlineColor) {
+        datasets.push({
+          label: '',
+          data: [...data],
+          borderColor: style.outlineColor,
+          backgroundColor: 'transparent',
+          borderWidth: style.outlineWidth || 5,
+          pointRadius: 0,
+          pointHoverRadius: 0,
+          tension: 0.25,
+          spanGaps: true,
+          order: 0
+        })
+      }
+
+      datasets.push({
         label: name,
         data,
         borderColor: style.borderColor,
@@ -193,11 +215,14 @@ const CraftPriceCharts = {
         borderWidth: style.borderWidth || 2,
         pointBorderWidth: style.pointBorderWidth || 1,
         tension: 0.25,
-        pointRadius: 4,
+        pointRadius: style.pointRadius || 4,
         pointHoverRadius: 6,
-        spanGaps: true
-      }
-    }).filter((ds) => ds.data.length > 0)
+        spanGaps: true,
+        order: style.outlineColor ? 1 : 0
+      })
+    })
+
+    return datasets
   },
 
   async render(container) {
