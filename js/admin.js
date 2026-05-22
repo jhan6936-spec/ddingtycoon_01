@@ -33,16 +33,19 @@ const getCraftPercent = (name, currentPrice) => {
 const formatPreviewChange = (name, currentPrice) => {
   const prev = state.previousPrices[name]
   if (prev == null || prev < 500) {
-    return '<span class="text-slate-500">첫 입력 (표시 안 함)</span>'
+    return '<span class="text-slate-500" title="DB에 저장된 이전 시세 없음">—</span>'
   }
   const cur = Number(currentPrice) || 0
   if (!cur) return '<span class="text-slate-500">—</span>'
   const delta = cur - prev
-  if (!delta) return '<span class="text-slate-500">변동 없음</span>'
+  const prevLabel = prev.toLocaleString() + 'G'
+  if (!delta) {
+    return `<span class="text-slate-500" title="이전 저장 ${prevLabel}">변동 없음</span>`
+  }
   const abs = Math.abs(delta).toLocaleString()
   return delta > 0
-    ? `<span class="text-rose-400">▲ ${abs}G</span>`
-    : `<span class="text-sky-400">▼ ${abs}G</span>`
+    ? `<span class="text-rose-400" title="이전 저장 ${prevLabel}">▲ ${abs}G</span>`
+    : `<span class="text-sky-400" title="이전 저장 ${prevLabel}">▼ ${abs}G</span>`
 }
 
 const formatRecipeList = (inputs) =>
@@ -88,7 +91,6 @@ const renderPriceTable = (catalog) => {
     if (typeof window.applyFixedCraftRecipe === 'function') {
       craft = window.applyFixedCraftRecipe(craft)
     }
-    const fixedPrice = defaults ? defaults.price : Number(craft.price) || 0
     const current = Number(craft.currentPrice) || 0
     const pct = getCraftPercent(name, current)
     const maxFixed =
@@ -102,7 +104,6 @@ const renderPriceTable = (catalog) => {
         <div class="font-medium">${name}</div>
         <div class="text-[10px] text-slate-500 mt-1 leading-snug">${recipeText}</div>
       </td>
-      <td class="px-2 py-2 text-slate-400 text-sm whitespace-nowrap">${fixedPrice.toLocaleString()}G</td>
       <td class="px-2 py-2">
         <input
           data-index="${index}"
