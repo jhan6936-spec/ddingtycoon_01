@@ -20,18 +20,8 @@ const MATERIAL_HINTS = [
   '거미줄', '양동이', '유리판', '대나무', '분홍 꽃잎', '막대기', '자수정 조각', '흑요석', '시계'
 ]
 
-const getDefaultCraft = (name) => {
-  const d = CRAFT_RECIPE_DEFAULTS[name]
-  if (!d) return null
-  return {
-    name,
-    price: d.price,
-    timeMinutes: d.timeMinutes,
-    time: d.timeMinutes,
-    inputs: d.inputs.map((i) => ({ ...i })),
-    group: 'craft'
-  }
-}
+const getDefaultCraft = (name) =>
+  typeof window.getDefaultCraftRecipe === 'function' ? window.getDefaultCraftRecipe(name) : null
 
 const parseGoldNumber = (raw) => {
   const digits = String(raw || '').replace(/[^\d]/g, '')
@@ -256,7 +246,6 @@ const runTesseractOnFile = async (file, onProgress) => {
 
 window.CraftOcr = {
   CRAFT_NAME_ORDER,
-  CRAFT_RECIPE_DEFAULTS,
   getDefaultCraft,
   parseCraftsFromOcrText,
   mergeParsedWithDefaults,

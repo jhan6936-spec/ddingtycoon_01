@@ -23,6 +23,9 @@ const CraftsCatalog = {
     }
     if (item.currentPrice != null) recipe.currentPrice = Math.max(0, Number(item.currentPrice) || 0)
     if (item.maxPrice != null) recipe.maxPrice = Math.max(0, Number(item.maxPrice) || 0)
+    if (typeof window.applyFixedCraftRecipe === 'function') {
+      return window.applyFixedCraftRecipe(recipe)
+    }
     return recipe
   },
 
