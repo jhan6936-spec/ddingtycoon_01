@@ -148,7 +148,14 @@ const CraftPriceCharts = {
           plugins: {
             legend: {
               position: 'bottom',
-              labels: { color: '#bbb', boxWidth: 12, font: { size: 11 } }
+              labels: {
+                color: '#c8d0d8',
+                boxWidth: 14,
+                padding: 14,
+                font: { size: 12, lineHeight: 1.5 },
+                usePointStyle: true,
+                pointStyleWidth: 10
+              }
             },
             tooltip: {
               callbacks: {
@@ -166,12 +173,19 @@ const CraftPriceCharts = {
                 tooltipFormat: 'yyyy-MM-dd HH:mm',
                 displayFormats: { day: 'MM/dd', week: 'MM/dd', month: 'yyyy-MM' }
               },
-              ticks: { color: '#888', maxRotation: 0 },
+              ticks: {
+                color: '#9aa8b8',
+                maxRotation: 0,
+                padding: 8,
+                font: { size: 11 }
+              },
               grid: { color: 'rgba(255,255,255,0.06)' }
             },
             y: {
               ticks: {
-                color: '#888',
+                color: '#9aa8b8',
+                padding: 10,
+                font: { size: 11 },
                 callback: (v) => Number(v).toLocaleString() + 'G'
               },
               grid: { color: 'rgba(255,255,255,0.06)' }
