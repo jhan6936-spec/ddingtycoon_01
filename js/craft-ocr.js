@@ -1,5 +1,7 @@
 /**
- * 브라우저 Tesseract OCR → 공예품 데이터 파싱 (OpenAI 불필요)
+ * 브라우저 Tesseract OCR → 공예품 파싱
+ * - 시세 변동 화면: 현재가·최고가만 갱신 (레시피·제작 판매가 고정)
+ * - 제작 화면: 재료 OCR (선택)
  */
 const CRAFT_NAME_ORDER = [
   '조개껍데기 브로치',
@@ -10,11 +12,97 @@ const CRAFT_NAME_ORDER = [
   '흑진주 시계'
 ]
 
+/** 레시피·제작 판매가 — OCR로 덮어쓰지 않음 */
+const CRAFT_RECIPE_DEFAULTS = {
+  '조개껍데기 브로치': {
+    price: 47682,
+    timeMinutes: 1,
+    inputs: [
+      { name: '깨진 조개껍데기', count: 1 },
+      { name: '노란빛 진주', count: 1 },
+      { name: '금속 재활용품', count: 1 },
+      { name: '거미줄', count: 4 }
+    ]
+  },
+  '푸른 향수병': {
+    price: 89700,
+    timeMinutes: 1,
+    inputs: [
+      { name: '깨진 조개껍데기', count: 2 },
+      { name: '푸른빛 진주', count: 1 },
+      { name: '합성수지 재활용품', count: 1 },
+      { name: '플라스틱 재활용품', count: 1 },
+      { name: '양동이', count: 8 }
+    ]
+  },
+  '자개 손거울': {
+    price: 257671,
+    timeMinutes: 1,
+    inputs: [
+      { name: '깨진 조개껍데기', count: 3 },
+      { name: '청록빛 진주', count: 1 },
+      { name: '합금 재활용품', count: 2 },
+      { name: '플라스틱 재활용품', count: 2 },
+      { name: '유리판', count: 16 }
+    ]
+  },
+  '분홍 헤어핀': {
+    price: 456177,
+    timeMinutes: 1,
+    inputs: [
+      { name: '깨진 조개껍데기', count: 4 },
+      { name: '분홍빛 진주', count: 1 },
+      { name: '합성수지 재활용품', count: 3 },
+      { name: '섬유 재활용품', count: 3 },
+      { name: '대나무', count: 64 },
+      { name: '분홍 꽃잎', count: 16 }
+    ]
+  },
+  '자개 부채': {
+    price: 90580,
+    timeMinutes: 1,
+    inputs: [
+      { name: '깨진 조개껍데기', count: 5 },
+      { name: '보라빛 진주', count: 1 },
+      { name: '합금 재활용품', count: 5 },
+      { name: '합성수지 재활용품', count: 5 },
+      { name: '막대기', count: 64 },
+      { name: '자수정 조각', count: 16 }
+    ]
+  },
+  '흑진주 시계': {
+    price: 735064,
+    timeMinutes: 1,
+    inputs: [
+      { name: '깨진 조개껍데기', count: 7 },
+      { name: '흑진주', count: 1 },
+      { name: '금속 재활용품', count: 7 },
+      { name: '합금 재활용품', count: 7 },
+      { name: '섬유 재활용품', count: 7 },
+      { name: '흑요석', count: 16 },
+      { name: '시계', count: 8 }
+    ]
+  }
+}
+
 const MATERIAL_HINTS = [
   '깨진 조개껍데기', '노란빛 진주', '푸른빛 진주', '청록빛 진주', '분홍빛 진주', '보라빛 진주', '흑진주',
   '금속 재활용품', '합금 재활용품', '합성수지 재활용품', '플라스틱 재활용품', '섬유 재활용품',
   '거미줄', '양동이', '유리판', '대나무', '분홍 꽃잎', '막대기', '자수정 조각', '흑요석', '시계'
 ]
+
+const getDefaultCraft = (name) => {
+  const d = CRAFT_RECIPE_DEFAULTS[name]
+  if (!d) return null
+  return {
+    name,
+    price: d.price,
+    timeMinutes: d.timeMinutes,
+    time: d.timeMinutes,
+    inputs: d.inputs.map((i) => ({ ...i })),
+    group: 'craft'
+  }
+}
 
 const parseGoldNumber = (raw) => {
   const digits = String(raw || '').replace(/[^\d]/g, '')
@@ -35,33 +123,74 @@ const fuzzyIncludes = (haystack, needle) => {
   return h.includes(n)
 }
 
-const extractNumbersFromSegment = (segment) => {
-  const matches = String(segment || '').match(/\d[\d,.\s]{1,12}\d|\d{4,}/g) || []
-  const nums = matches.map(parseGoldNumber).filter((n) => n >= 100)
-  return [...new Set(nums)]
+const findNameIndex = (text, name, fromIndex) => {
+  const direct = text.indexOf(name, fromIndex)
+  if (direct >= 0) return direct
+  const compact = text.replace(/\s/g, '')
+  const compactName = name.replace(/\s/g, '')
+  const pos = compact.indexOf(compactName, Math.floor(fromIndex / 2))
+  if (pos < 0) return -1
+  return Math.max(0, pos - 10)
 }
 
-const pickPricesFromNumbers = (nums, existing) => {
-  const sorted = [...nums].sort((a, b) => a - b)
-  let currentPrice = existing?.currentPrice || 0
-  let maxPrice = existing?.maxPrice || 0
-  let price = existing?.price || 0
+const splitSegmentsByCraftOrder = (fullText) => {
+  const segments = {}
+  let searchFrom = 0
+  for (let i = 0; i < CRAFT_NAME_ORDER.length; i++) {
+    const name = CRAFT_NAME_ORDER[i]
+    const nextName = CRAFT_NAME_ORDER[i + 1]
+    const start = findNameIndex(fullText, name, searchFrom)
+    if (start < 0) continue
+    const end = nextName ? findNameIndex(fullText, nextName, start + name.length) : fullText.length
+    segments[name] = fullText.slice(start, end < 0 ? fullText.length : end)
+    searchFrom = start + name.length
+  }
+  return segments
+}
 
-  if (sorted.length >= 2) {
-    currentPrice = sorted[0]
-    maxPrice = sorted[sorted.length - 1]
-    if (maxPrice < currentPrice) {
-      const t = currentPrice
-      currentPrice = maxPrice
-      maxPrice = t
-    }
-  } else if (sorted.length === 1) {
-    currentPrice = sorted[0]
-    maxPrice = existing?.maxPrice || sorted[0]
+const detectScreenType = (text) => {
+  const t = String(text || '')
+  if (/시세|변동|최고가의|최고가\s*의/i.test(t)) return 'market'
+  const matHits = MATERIAL_HINTS.filter((m) => fuzzyIncludes(t, m)).length
+  if (matHits >= 4) return 'recipe'
+  return 'market'
+}
+
+const extractPercentFromSegment = (segment) => {
+  const labeled = segment.match(/최고가\s*의?\s*(\d{1,3})\s*%/i)
+  if (labeled) return Math.min(100, Math.max(1, parseInt(labeled[1], 10)))
+  const percents = []
+  const re = /(\d{1,3})\s*%/g
+  let m
+  while ((m = re.exec(segment))) {
+    const p = parseInt(m[1], 10)
+    if (p >= 1 && p <= 100) percents.push(p)
+  }
+  return percents.length ? percents[percents.length - 1] : 0
+}
+
+const extractMarketPrices = (segment) => {
+  const rawNums =
+    String(segment || '').match(/\d{1,3}(?:[,\s]\d{3})+|\d{4,7}/g)?.map(parseGoldNumber) || []
+  const big = rawNums.filter((n) => n >= 5000)
+  const small = rawNums.filter((n) => n >= 1 && n <= 100)
+
+  let currentPrice = 0
+  if (big.length) {
+    currentPrice = Math.max(...big)
   }
 
-  if (!price && currentPrice) price = currentPrice
-  return { price, currentPrice, maxPrice }
+  let percent = extractPercentFromSegment(segment)
+  if (!percent && small.length) {
+    percent = small[small.length - 1]
+  }
+
+  let maxPrice = 0
+  if (currentPrice > 0 && percent > 0) {
+    maxPrice = Math.round(currentPrice / (percent / 100))
+  }
+
+  return { currentPrice, maxPrice, percent }
 }
 
 const parseInputsNear = (segment) => {
@@ -69,68 +198,108 @@ const parseInputsNear = (segment) => {
   for (const mat of MATERIAL_HINTS) {
     if (!fuzzyIncludes(segment, mat)) continue
     const escaped = mat.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    const countMatch = segment.match(new RegExp(escaped + '\\s*[x×X\\*]?\\s*(\\d+)', 'i'))
+    const countMatch = segment.match(new RegExp(escaped + '\\s*[x×X*]?\\s*(\\d+)', 'i'))
     const count = countMatch ? Math.max(1, parseInt(countMatch[1], 10)) : 1
+    if (count > 500) continue
     inputs.push({ name: mat, count })
   }
   return inputs
 }
 
-const parseCraftsFromOcrText = (text, baseCatalog) => {
-  const baseMap = new Map((baseCatalog?.crafts || []).map((c) => [c.name, c]))
-  const lines = String(text || '')
-    .split(/\r?\n/)
-    .map(normalizeOcrLine)
-    .filter(Boolean)
-  const fullText = lines.join('\n')
+const buildCraftFromDefaults = (name, overrides) => {
+  const base = getDefaultCraft(name)
+  if (!base) return null
+  return {
+    ...base,
+    ...overrides,
+    name,
+    inputs: base.inputs,
+    price: base.price,
+    group: 'craft'
+  }
+}
 
+const parseMarketScreen = (text, baseCatalog) => {
+  const baseMap = new Map((baseCatalog?.crafts || []).map((c) => [c.name, c]))
+  const segments = splitSegmentsByCraftOrder(text)
   const crafts = []
 
   for (const name of CRAFT_NAME_ORDER) {
-    let lineIdx = lines.findIndex((line) => fuzzyIncludes(line, name) || line.includes(name))
-    let segment = ''
-    if (lineIdx >= 0) {
-      segment = lines.slice(lineIdx, lineIdx + 8).join(' ')
-    } else if (fuzzyIncludes(fullText, name)) {
-      const compact = fullText.replace(/\s/g, '')
-      const compactName = name.replace(/\s/g, '')
-      const pos = compact.indexOf(compactName)
-      if (pos >= 0) {
-        segment = fullText.slice(Math.max(0, pos - 20), pos + 220)
-      }
-    }
-
+    const segment = segments[name]
     if (!segment) continue
 
+    const { currentPrice, maxPrice } = extractMarketPrices(segment)
+    if (!currentPrice) continue
+
     const existing = baseMap.get(name) || {}
-    const nums = extractNumbersFromSegment(segment)
-    const labeledCurrent = segment.match(/현재[^0-9]*(\d[\d,.\s]*\d|\d{3,})/i)
-    const labeledMax = segment.match(/최고[^0-9]*(\d[\d,.\s]*\d|\d{3,})/i)
-
-    let currentPrice = labeledCurrent ? parseGoldNumber(labeledCurrent[1]) : 0
-    let maxPrice = labeledMax ? parseGoldNumber(labeledMax[1]) : 0
-    const picked = pickPricesFromNumbers(nums, existing)
-
-    if (!currentPrice) currentPrice = picked.currentPrice
-    if (!maxPrice) maxPrice = picked.maxPrice
-    const price = picked.price || existing.price || currentPrice || 0
-
-    const inputs = parseInputsNear(segment)
-    const craft = {
-      name,
-      price: price || 0,
-      timeMinutes: existing.timeMinutes || existing.time || 1,
-      time: existing.timeMinutes || existing.time || 1,
-      group: 'craft',
-      inputs: inputs.length ? inputs : existing.inputs || []
-    }
-    if (currentPrice) craft.currentPrice = currentPrice
-    if (maxPrice) craft.maxPrice = maxPrice
-
-    crafts.push(craft)
+    const craft = buildCraftFromDefaults(name, {
+      currentPrice,
+      maxPrice: maxPrice || existing.maxPrice || 0,
+      timeMinutes: existing.timeMinutes || 1,
+      time: existing.time || 1
+    })
+    if (craft) crafts.push(craft)
   }
 
-  return { crafts }
+  return { crafts, screenType: 'market' }
+}
+
+const parseRecipeScreen = (text, baseCatalog) => {
+  const baseMap = new Map((baseCatalog?.crafts || []).map((c) => [c.name, c]))
+  const segments = splitSegmentsByCraftOrder(text)
+  const crafts = []
+
+  for (const name of CRAFT_NAME_ORDER) {
+    const segment = segments[name]
+    if (!segment) continue
+
+    const inputs = parseInputsNear(segment)
+    if (inputs.length < 2) continue
+
+    const existing = baseMap.get(name) || {}
+    const bigNums = (segment.match(/\d{4,7}/g) || []).map(parseGoldNumber).filter((n) => n >= 1000)
+    const price = bigNums.length ? Math.max(...bigNums) : existing.price || getDefaultCraft(name)?.price
+
+    crafts.push(
+      buildCraftFromDefaults(name, {
+        inputs,
+        price: price || getDefaultCraft(name)?.price,
+        currentPrice: existing.currentPrice,
+        maxPrice: existing.maxPrice,
+        timeMinutes: existing.timeMinutes || 1,
+        time: existing.time || 1
+      })
+    )
+  }
+
+  return { crafts, screenType: 'recipe' }
+}
+
+const parseCraftsFromOcrText = (text, baseCatalog) => {
+  const fullText = String(text || '')
+  const screenType = detectScreenType(fullText)
+
+  if (screenType === 'recipe') {
+    return parseRecipeScreen(fullText, baseCatalog)
+  }
+  return parseMarketScreen(fullText, baseCatalog)
+}
+
+const mergeParsedWithDefaults = (parsedCrafts) => {
+  return (parsedCrafts || []).map((craft) => {
+    const base = getDefaultCraft(craft.name)
+    if (!base) return craft
+    return {
+      name: craft.name,
+      price: base.price,
+      inputs: base.inputs.map((i) => ({ ...i })),
+      timeMinutes: craft.timeMinutes || base.timeMinutes,
+      time: craft.time || base.timeMinutes,
+      group: 'craft',
+      currentPrice: craft.currentPrice != null ? craft.currentPrice : undefined,
+      maxPrice: craft.maxPrice != null ? craft.maxPrice : undefined
+    }
+  })
 }
 
 const runTesseractOnFile = async (file, onProgress) => {
@@ -158,6 +327,9 @@ const runTesseractOnFile = async (file, onProgress) => {
 
 window.CraftOcr = {
   CRAFT_NAME_ORDER,
+  CRAFT_RECIPE_DEFAULTS,
+  getDefaultCraft,
   parseCraftsFromOcrText,
+  mergeParsedWithDefaults,
   runTesseractOnFile
 }

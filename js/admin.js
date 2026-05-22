@@ -24,16 +24,39 @@ const authHeaders = () => ({
 const mergeCraftsByName = (baseCatalog, incomingCatalog) => {
   const byName = new Map()
   ;(baseCatalog.crafts || []).forEach((craft) => {
-    if (craft && craft.name) byName.set(craft.name, craft)
+    if (craft && craft.name) byName.set(craft.name, { ...craft })
   })
   ;(incomingCatalog.crafts || []).forEach((craft) => {
-    if (craft && craft.name) {
-      byName.set(craft.name, {
-        ...byName.get(craft.name),
-        ...craft,
-        group: 'craft'
-      })
+    if (!craft || !craft.name) return
+    const defaults =
+      window.CraftOcr && typeof window.CraftOcr.getDefaultCraft === 'function'
+        ? window.CraftOcr.getDefaultCraft(craft.name)
+        : null
+    const prev = byName.get(craft.name) || {}
+    const merged = {
+      ...prev,
+      name: craft.name,
+      group: 'craft',
+      price: defaults ? defaults.price : prev.price || craft.price,
+      inputs: defaults
+        ? defaults.inputs.map((i) => ({ ...i }))
+        : prev.inputs && prev.inputs.length
+          ? prev.inputs
+          : craft.inputs || [],
+      timeMinutes: prev.timeMinutes || craft.timeMinutes || 1,
+      time: prev.time || craft.time || 1
     }
+    if (craft.currentPrice != null && craft.currentPrice > 0) {
+      merged.currentPrice = craft.currentPrice
+    } else if (prev.currentPrice) {
+      merged.currentPrice = prev.currentPrice
+    }
+    if (craft.maxPrice != null && craft.maxPrice > 0) {
+      merged.maxPrice = craft.maxPrice
+    } else if (prev.maxPrice) {
+      merged.maxPrice = prev.maxPrice
+    }
+    byName.set(craft.name, merged)
   })
   return {
     version: baseCatalog.version || incomingCatalog.version || 1,
@@ -97,14 +120,20 @@ const setPipelineStep = (text) => {
   if (step) step.textContent = text || ''
 }
 
-const setOcrPreview = (text, crafts) => {
+const setOcrPreview = (text, crafts, screenType) => {
   const pre = el('ocrTextPreview')
   const summary = el('ocrParseSummary')
   if (pre) pre.textContent = text || '(인식된 텍스트 없음)'
   if (summary) {
+    const mode =
+      screenType === 'market'
+        ? '시세 변동 화면 — 현재가·최고가만 갱신 (레시피 고정)'
+        : screenType === 'recipe'
+          ? '제작 화면 — 재료 인식'
+          : ''
     summary.textContent = crafts.length
-      ? `인식된 공예품: ${crafts.map((c) => c.name).join(', ')}`
-      : '공예품 이름을 찾지 못했습니다. 아래에서 수동 입력 후 저장하세요.'
+      ? `${mode} · ${crafts.map((c) => c.name).join(', ')}`
+      : '공예품 이름을 찾지 못했습니다. 시세 변동 전체 화면을 올리거나 아래에서 수동 입력하세요.'
   }
 }
 
