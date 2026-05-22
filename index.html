@@ -10999,6 +10999,12 @@ function renderCraftPricePanel(effects) {
     const ingredient = target.getAttribute('data-ingredient');
     if (!ingredient || !window.CraftSellPrice) return;
     window.CraftSellPrice.setCraftIngredientPriceOverride(ingredient, target.value);
+    const lookup = window.CraftSellPrice.buildNpcPriceLookup(data);
+    const unit = window.CraftSellPrice.getCraftIngredientUnitPrice(ingredient, lookup);
+    const unitStr = unit > 0 ? String(unit) : '';
+    list.querySelectorAll(`.craft-ingredient-price-input[data-ingredient="${ingredient.replace(/"/g, '\\"')}"]`).forEach((inp) => {
+      if (inp !== target) inp.value = unitStr;
+    });
     window.CraftSellPrice.refreshCraftSellPriceDisplays(data, effects);
   });
 

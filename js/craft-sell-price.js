@@ -102,12 +102,7 @@ const refreshCraftSellPriceDisplays = (data, effects) => {
   const lookup = buildNpcPriceLookup(data)
   const eff = effects || (typeof getExpertEffects === 'function' ? getExpertEffects() : { craftPriceBoost: 0 })
   const boost = eff.craftPriceBoost || 0
-  const order =
-    typeof window.CRAFT_NAME_ORDER !== 'undefined'
-      ? window.CRAFT_NAME_ORDER
-      : typeof CRAFT_PRICE_ITEM_ORDER !== 'undefined'
-        ? CRAFT_PRICE_ITEM_ORDER
-        : []
+  const order = Array.isArray(window.CRAFT_NAME_ORDER) ? window.CRAFT_NAME_ORDER : []
 
   order.forEach((name) => {
     const recipe = (data?.recipes || []).find((r) => r && r.name === name && r.group === 'craft')
