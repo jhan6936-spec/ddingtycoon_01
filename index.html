@@ -7034,7 +7034,7 @@ async function claimMinecraftLinkCode() {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 15000);
   try {
-    const response = await fetch('/api/minecraft/link/claim', {
+    const response = await fetch('/api/minecraft/link?action=claim', {
       method: 'POST',
       signal: controller.signal,
       headers: {
