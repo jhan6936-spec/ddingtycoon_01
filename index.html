@@ -6733,6 +6733,25 @@ function resolveDiscordDisplayNameForMinecraft() {
   return extractDiscordProfile(cachedAuthUserForProfile).name || '';
 }
 
+/** 모드 동기화용 스태미나 (입력값·localStorage 중 큰 값) */
+function getStaminaForDashboardSync() {
+  const input = document.getElementById('staminaInput');
+  let fromInput = 0;
+  if (input) {
+    const raw = String(input.value ?? '').trim();
+    if (raw) {
+      const n = parseInt(raw, 10);
+      if (Number.isFinite(n) && n >= 0) fromInput = n;
+    }
+  }
+  let fromStorage = 0;
+  try {
+    const n = parseInt(localStorage.getItem(STORAGE_KEY_STAMINA) || '0', 10);
+    if (Number.isFinite(n) && n > 0) fromStorage = n;
+  } catch (_) {}
+  return Math.max(fromInput, fromStorage);
+}
+
 function buildMinecraftDashboardPayload() {
   const discordCaptainName = resolveDiscordDisplayNameForMinecraft();
   const record = lastAlchemyRecordSnapshot || loadAlchemyHistoryRecords()[0] || null;
@@ -6768,22 +6787,7 @@ function buildMinecraftDashboardPayload() {
   const profit = Number(record?.totalBoosted || 0);
   const adjustedSec = Number(record?.adjustedSec || 0);
   const timeReduceLevel = Number(expertState?.timeReduce || 0);
-  const staminaInput = document.getElementById('staminaInput');
-  const savedStamina = (() => {
-    try {
-      const stored = parseInt(localStorage.getItem(STORAGE_KEY_STAMINA) || '0', 10);
-      if (Number.isFinite(stored) && stored > 0) return stored;
-    } catch (_) {}
-    return 0;
-  })();
-  const staminaRawLive = (() => {
-    const raw = String(staminaInput?.value ?? '').trim();
-    if (raw) {
-      const direct = parseInt(raw, 10);
-      if (Number.isFinite(direct) && direct >= 0) return direct;
-    }
-    return savedStamina;
-  })();
+  const staminaRawLive = getStaminaForDashboardSync();
   const staminaTarget = staminaRawLive > 0
     ? staminaRawLive - (staminaRawLive % STAMINA_PER_GATHER)
     : 0;
