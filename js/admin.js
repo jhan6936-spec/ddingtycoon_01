@@ -145,12 +145,14 @@ const renderManualTable = (catalog) => {
   const map = new Map((catalog.crafts || []).map((c) => [c.name, c]))
 
   names.forEach((name, index) => {
-    const craft = map.get(name) || { name, price: 0, currentPrice: 0, maxPrice: 0, timeMinutes: 1, inputs: [] }
+    const defaults = window.CraftOcr.getDefaultCraft(name)
+    const craft = map.get(name) || defaults || { name, price: 0, currentPrice: 0, maxPrice: 0 }
+    const fixedPrice = defaults ? defaults.price : Number(craft.price) || 0
     const tr = document.createElement('tr')
     tr.className = 'border-b border-slate-700/60'
     tr.innerHTML = `
       <td class="px-2 py-2 text-slate-300">${name}</td>
-      <td class="px-2 py-2"><input data-field="price" data-index="${index}" type="number" class="w-full rounded bg-slate-900 border border-slate-600 px-2 py-1 text-sm" value="${Number(craft.price) || 0}" /></td>
+      <td class="px-2 py-2 text-slate-400 text-sm">${fixedPrice.toLocaleString()} <span class="text-xs text-slate-600">(고정)</span></td>
       <td class="px-2 py-2"><input data-field="currentPrice" data-index="${index}" type="number" class="w-full rounded bg-slate-900 border border-slate-600 px-2 py-1 text-sm" value="${Number(craft.currentPrice) || 0}" /></td>
       <td class="px-2 py-2"><input data-field="maxPrice" data-index="${index}" type="number" class="w-full rounded bg-slate-900 border border-slate-600 px-2 py-1 text-sm" value="${Number(craft.maxPrice) || 0}" /></td>
     `
@@ -170,9 +172,15 @@ const syncManualTableToCatalog = () => {
     const field = input.getAttribute('data-field')
     const name = names[index]
     if (!name) return
-    const craft = byName.get(name) || { name, group: 'craft', inputs: [], timeMinutes: 1, time: 1 }
-    craft[field] = Math.max(0, parseInt(input.value || '0', 10))
-    if (field === 'price' && !craft.currentPrice) craft.currentPrice = craft.price
+    const defaults = window.CraftOcr.getDefaultCraft(name)
+    const craft = byName.get(name) || defaults || { name, group: 'craft', inputs: [], timeMinutes: 1, time: 1 }
+    if (field === 'currentPrice' || field === 'maxPrice') {
+      craft[field] = Math.max(0, parseInt(input.value || '0', 10))
+    }
+    if (defaults) {
+      craft.price = defaults.price
+      craft.inputs = defaults.inputs.map((i) => ({ ...i }))
+    }
     craft.group = 'craft'
     byName.set(name, craft)
   })
@@ -207,6 +215,7 @@ const runClientOcr = async (file) => {
   })
   state.lastOcrText = text
   const parsed = window.CraftOcr.parseCraftsFromOcrText(text, state.catalog)
+  parsed.crafts = window.CraftOcr.mergeParsedWithDefaults(parsed.crafts || [])
   return parsed
 }
 
@@ -319,9 +328,9 @@ const runAutoPipeline = async (file) => {
       crafts: (state.catalog.crafts || []).map((c) => ({ ...c }))
     }
 
-    setPipelineStep('② OCR 인식 중… (한글, 무료)')
+    setPipelineStep('② OCR 인식 중… (시세 변동 화면 권장)')
     const extracted = await runClientOcr(file)
-    setOcrPreview(state.lastOcrText, extracted.crafts || [])
+    setOcrPreview(state.lastOcrText, extracted.crafts || [], extracted.screenType)
 
     if (!extracted.crafts || !extracted.crafts.length) {
       renderManualTable(state.catalog)
