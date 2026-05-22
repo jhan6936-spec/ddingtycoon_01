@@ -146,6 +146,9 @@ const CraftsCatalog = {
         if (row.price_change != null && row.price_change !== '') {
           craft.priceChange = Number(row.price_change)
         }
+        return typeof window.applyFixedCraftRecipe === 'function'
+          ? window.applyFixedCraftRecipe(craft)
+          : craft
       })
       .filter(Boolean)
 
