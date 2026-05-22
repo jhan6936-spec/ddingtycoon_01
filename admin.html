@@ -69,6 +69,14 @@
       <input id="imageInput" type="file" accept="image/*" class="hidden" aria-hidden="true" disabled />
       <img id="imagePreview" alt="업로드 미리보기" class="hidden max-h-80 w-full rounded-lg object-contain border border-slate-700" />
       <p id="statusMessage" class="text-sm text-slate-400" aria-live="polite"></p>
+      <button
+        id="fixRecipesBtn"
+        type="button"
+        disabled
+        class="rounded-lg border border-amber-600/60 px-4 py-2 text-sm text-amber-200 hover:bg-amber-950/40 disabled:opacity-40"
+      >
+        레시피 위키 기준 복구 (시세는 유지·보정)
+      </button>
       <details class="rounded-lg border border-slate-700/80 bg-slate-950/50 p-3 text-xs">
         <summary class="cursor-pointer text-slate-400">OCR 인식 텍스트 보기</summary>
         <p id="ocrParseSummary" class="text-slate-500 mt-2 mb-2"></p>

@@ -84,6 +84,42 @@ window.getDefaultCraftRecipe = (name) => {
   }
 }
 
+const sanitizeCraftMarketFields = (out, fixed) => {
+  if (!out) return out
+  let current = Math.floor(Number(out.currentPrice) || 0)
+  let max = Math.floor(Number(out.maxPrice) || 0)
+  let change = Math.floor(Number(out.priceChange) || 0)
+  const base = fixed && fixed.price ? fixed.price : 0
+
+  if (max >= 1 && max <= 100 && current > 5000) {
+    out.maxPricePercent = max
+    max = Math.round(current / (max / 100))
+  }
+
+  if (current > 0 && base > 20000 && current < base * 0.45) {
+    current = base
+  }
+
+  if (change && current && Math.abs(current - Math.abs(change)) < 500 && base > current * 1.15) {
+    current = base
+  }
+
+  if (max > 0 && max < 1000 && current > 5000) max = 0
+  if (max > 0 && current > 0 && max < current * 0.5) max = 0
+
+  if (current >= 5000) out.currentPrice = current
+  else delete out.currentPrice
+  if (max >= (out.currentPrice || 0) * 0.5) out.maxPrice = max
+  else delete out.maxPrice
+  if (change !== 0) out.priceChange = change
+  else delete out.priceChange
+
+  if (out.maxPricePercent && out.currentPrice && !out.maxPrice) {
+    out.maxPrice = Math.round(out.currentPrice / (out.maxPricePercent / 100))
+  }
+  return out
+}
+
 window.applyFixedCraftRecipe = (recipe) => {
   if (!recipe || !recipe.name) return recipe
   const fixed = window.getDefaultCraftRecipe(recipe.name)
@@ -98,6 +134,7 @@ window.applyFixedCraftRecipe = (recipe) => {
   }
   if (recipe.currentPrice != null && recipe.currentPrice > 0) out.currentPrice = recipe.currentPrice
   if (recipe.maxPrice != null && recipe.maxPrice > 0) out.maxPrice = recipe.maxPrice
+  if (recipe.maxPricePercent != null) out.maxPricePercent = recipe.maxPricePercent
   if (recipe.priceChange != null && recipe.priceChange !== 0) out.priceChange = recipe.priceChange
-  return out
+  return sanitizeCraftMarketFields(out, fixed)
 }

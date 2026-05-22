@@ -61,7 +61,16 @@ const mergeCraftsByName = (baseCatalog, incomingCatalog) => {
     } else if (prev.maxPrice) {
       merged.maxPrice = prev.maxPrice
     }
-    byName.set(craft.name, merged)
+    if (craft.maxPricePercent != null && craft.maxPricePercent > 0) {
+      merged.maxPricePercent = craft.maxPricePercent
+    } else if (prev.maxPricePercent) {
+      merged.maxPricePercent = prev.maxPricePercent
+    }
+    if (typeof window.applyFixedCraftRecipe === 'function') {
+      byName.set(craft.name, window.applyFixedCraftRecipe(merged))
+    } else {
+      byName.set(craft.name, merged)
+    }
   })
   return {
     version: baseCatalog.version || incomingCatalog.version || 1,
@@ -401,8 +410,31 @@ const handleFileSelected = async (file) => {
   await runAutoPipeline(file)
 }
 
+const handleFixRecipes = async () => {
+  if (!state.authenticated) {
+    setStatus('먼저 로그인하세요.', true)
+    return
+  }
+  try {
+    setStatus('위키 레시피 복구 중…', false)
+    const res = await fetch('/api/admin/fix-recipes', {
+      method: 'POST',
+      headers: authHeaders()
+    })
+    const body = await res.json().catch(() => ({}))
+    if (!res.ok) throw new Error(body.message || body.error || '복구 실패')
+    await loadCatalogFromApi()
+    renderManualTable(state.catalog)
+    notifyMainSiteCraftsUpdated(body.catalog && body.catalog.updatedAt)
+    setStatus(body.message || '레시피 복구 완료', false)
+  } catch (err) {
+    setStatus(String(err.message || err), true)
+  }
+}
+
 const bindEvents = () => {
   el('loginBtn')?.addEventListener('click', handleLogin)
+  el('fixRecipesBtn')?.addEventListener('click', handleFixRecipes)
   el('adminSecret')?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') handleLogin()
   })

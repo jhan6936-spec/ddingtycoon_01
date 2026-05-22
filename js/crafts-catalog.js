@@ -26,15 +26,7 @@ const CraftsCatalog = {
     if (item.priceChange != null) recipe.priceChange = Math.floor(Number(item.priceChange) || 0)
     if (item.maxPricePercent != null) recipe.maxPricePercent = Math.floor(Number(item.maxPricePercent) || 0)
     if (typeof window.applyFixedCraftRecipe === 'function') {
-      const fixed = window.applyFixedCraftRecipe(recipe)
-      if (fixed.maxPrice && fixed.currentPrice && fixed.maxPrice < 1000 && fixed.currentPrice > 5000) {
-        if (fixed.maxPricePercent >= 1 && fixed.maxPricePercent <= 100) {
-          fixed.maxPrice = Math.round(fixed.currentPrice / (fixed.maxPricePercent / 100))
-        } else {
-          delete fixed.maxPrice
-        }
-      }
-      return fixed
+      return window.applyFixedCraftRecipe(recipe)
     }
     return recipe
   },

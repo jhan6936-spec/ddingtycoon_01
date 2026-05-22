@@ -10449,9 +10449,15 @@ function renderCraftPricePanel(effects) {
     const currentPrice = (recipe.currentPrice != null && recipe.currentPrice > 0)
       ? recipe.currentPrice
       : (currentPriceMap[recipe.name] || recipePrice);
-    const maxPrice = (recipe.maxPrice != null && recipe.maxPrice > 0)
+    let maxPrice = (recipe.maxPrice != null && recipe.maxPrice > 0)
       ? recipe.maxPrice
       : (maxPriceMap[recipe.name] || 0);
+    if (maxPrice > 0 && maxPrice < 1000 && currentPrice > 5000) {
+      maxPrice = maxPriceMap[recipe.name] || 0;
+    }
+    if (maxPrice > 0 && currentPrice > 0 && maxPrice < currentPrice * 0.5) {
+      maxPrice = maxPriceMap[recipe.name] || 0;
+    }
     const priceChange = Number(recipe.priceChange) || 0;
     const changeAbs = Math.abs(priceChange).toLocaleString();
     const changeHtml = priceChange > 0
