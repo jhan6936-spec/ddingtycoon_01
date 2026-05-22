@@ -10754,6 +10754,10 @@ function toggleCraftSalesCalcPanel() {
 function updateCraftSalesCalcTotals() {
   const effects = getExpertEffects();
   const boost = effects.craftPriceBoost || 0;
+  const lookup =
+    window.CraftSellPrice && typeof window.CraftSellPrice.buildNpcPriceLookup === 'function'
+      ? window.CraftSellPrice.buildNpcPriceLookup(data)
+      : null;
   const craftMap = new Map(data.recipes.filter(r => r.group === 'craft').map(r => [r.name, r]));
   let totalBase = 0;
   let totalAdj = 0;
@@ -10762,8 +10766,16 @@ function updateCraftSalesCalcTotals() {
     const cnt = Math.max(0, parseInt(inp && inp.value, 10) || 0);
     craftSalesInputState[name] = cnt;
     const recipe = craftMap.get(name);
-    const baseUnit = recipe ? (recipe.price || 0) : 0;
-    const adjUnit = Math.round(baseUnit * (1 + boost / 100));
+    const baseUnit =
+      recipe && lookup && window.CraftSellPrice
+        ? window.CraftSellPrice.computeCraftBaseSellPrice(recipe, lookup)
+        : recipe
+          ? recipe.price || 0
+          : 0;
+    const adjUnit =
+      recipe && lookup && window.CraftSellPrice
+        ? window.CraftSellPrice.computeCraftBoostedSellPrice(recipe, effects, lookup)
+        : Math.round(baseUnit * (1 + boost / 100));
     const lineBase = baseUnit * cnt;
     const lineAdj = adjUnit * cnt;
     totalBase += lineBase;
@@ -10842,9 +10854,18 @@ function renderCraftPricePanel(effects) {
 
   const list = document.createElement('div');
   list.className = 'craft-price-grid';
+  list.id = 'craftPriceCardList';
+
+  const priceLookup =
+    window.CraftSellPrice && typeof window.CraftSellPrice.buildNpcPriceLookup === 'function'
+      ? window.CraftSellPrice.buildNpcPriceLookup(data)
+      : new Map();
 
   craftItems.forEach((recipe) => {
-    const recipePrice = recipe.price || 0;
+    const recipePrice =
+      window.CraftSellPrice && typeof window.CraftSellPrice.computeCraftBaseSellPrice === 'function'
+        ? window.CraftSellPrice.computeCraftBaseSellPrice(recipe, priceLookup)
+        : recipe.price || 0;
     const ceiling = typeof getCraftMaxPrice === 'function' ? getCraftMaxPrice(recipe.name) : 0;
     let currentPrice = Number(recipe.currentPrice) || 0;
     if (typeof repairCraftCurrentPrice === 'function') {
