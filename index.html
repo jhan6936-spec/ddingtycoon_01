@@ -10438,12 +10438,13 @@ function renderCraftPricePanel(effects) {
     const hasPriceChange = recipe.priceChange != null && Number.isFinite(Number(recipe.priceChange));
     const priceChange = hasPriceChange ? Number(recipe.priceChange) : 0;
     const changeAbs = Math.abs(priceChange).toLocaleString();
+    const changeInlineStyle = 'display:inline-flex;align-items:center;gap:3px;white-space:nowrap;font-weight:800;';
     const changeHtml = !hasPriceChange
       ? `<span style="color:#666;">—</span>`
       : priceChange > 0
-        ? `<span style="color:#f87171;font-weight:800;">▲ ${changeAbs}G</span>`
+        ? `<span style="${changeInlineStyle}color:#f87171;"><span aria-hidden="true">▲</span><span>${changeAbs}G</span></span>`
         : priceChange < 0
-          ? `<span style="color:#60a5fa;font-weight:800;">▼ ${changeAbs}G</span>`
+          ? `<span style="${changeInlineStyle}color:#60a5fa;"><span aria-hidden="true">▼</span><span>${changeAbs}G</span></span>`
           : `<span style="color:#777;">변동 없음</span>`;
     let ratio = 0;
     if (maxPrice > 0 && currentPrice > 0) {
