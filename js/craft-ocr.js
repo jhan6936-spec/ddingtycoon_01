@@ -1,5 +1,9 @@
 /**
- * 공예품 시세 변동 OCR — 6종 항상 반환, 레시피는 위키 고정값만
+ * 공예품 시세 변동 OCR
+ * - Gold 앞 숫자 = 현재 시세 (1만 미만도 허용)
+ * - ▲/▼ = 변동폭
+ * - 최고가의 N% = 도달률 (최고가 = 현재 ÷ N% × 100)
+ * - 레시피는 OCR/DB 무시, 위키 고정값만
  */
 const CRAFT_NAME_ORDER = window.CRAFT_NAME_ORDER || [
   '조개껍데기 브로치',
@@ -74,24 +78,22 @@ const extractMaxPricePercent = (segment) => {
   return p
 }
 
+const extractOrderedNumbers = (text) => {
+  const ordered = []
+  const re = /\d{1,3}(?:[,\s]\d{3})+|\d{4,7}/g
+  let m
+  while ((m = re.exec(String(text || '')))) {
+    ordered.push({ n: parseGoldNumber(m[0]), index: m.index })
+  }
+  return ordered
+}
+
 const extractMarketPrices = (segment) => {
   const text = String(segment || '')
 
-  let currentPrice = 0
-  const goldMatch = text.match(/(\d{1,3}(?:[,\s]\d{3})+|\d{4,7})\s*(?:Gold|GOLD|gold|골드|G\b)/i)
-  if (goldMatch) {
-    currentPrice = parseGoldNumber(goldMatch[1])
-  }
-
-  if (!currentPrice) {
-    const nums = (text.match(/\d{1,3}(?:[,\s]\d{3})+|\d{4,7}/g) || []).map(parseGoldNumber)
-    const big = nums.filter((n) => n >= 10000)
-    if (big.length) currentPrice = Math.max(...big)
-  }
-
   let priceChange = 0
-  const upMatch = text.match(/(?:▲|△|↑|\+)\s*(\d[\d,.\s]{2,})/)
-  const downMatch = text.match(/(?:▼|▽|↓|-)\s*(\d[\d,.\s]{2,})/)
+  const upMatch = text.match(/(?:▲|△|↑)\s*(\d[\d,.\s]{2,})/)
+  const downMatch = text.match(/(?:▼|▽|↓)\s*(\d[\d,.\s]{2,})/)
   if (upMatch) {
     priceChange = parseGoldNumber(upMatch[1])
   } else if (downMatch) {
@@ -99,6 +101,29 @@ const extractMarketPrices = (segment) => {
   }
 
   const maxPricePercent = extractMaxPricePercent(text)
+  const changeAbs = Math.abs(priceChange)
+
+  let currentPrice = 0
+  const goldRe = /(\d{1,3}(?:[,\s]\d{3})+|\d{3,7})\s*(?:Gold|GOLD|gold|골드)/gi
+  const goldHits = []
+  let gm
+  while ((gm = goldRe.exec(text))) {
+    goldHits.push(parseGoldNumber(gm[1]))
+  }
+  if (goldHits.length) {
+    currentPrice = goldHits[0]
+  }
+
+  if (!currentPrice) {
+    for (const { n } of extractOrderedNumbers(text)) {
+      if (n < 1000) continue
+      if (changeAbs && n === changeAbs) continue
+      if (maxPricePercent >= 1 && maxPricePercent <= 100 && n === maxPricePercent) continue
+      if (n <= 100) continue
+      currentPrice = n
+      break
+    }
+  }
 
   let maxPrice = 0
   if (currentPrice > 0 && maxPricePercent > 0) {
@@ -118,8 +143,9 @@ const parseMarketScreenByPercentBlocks = (text) => {
   if (markers.length < 5) return null
 
   return markers.slice(0, CRAFT_NAME_ORDER.length).map((marker, i) => {
-    const prevIdx = i > 0 ? markers[i - 1].index : 0
-    const chunk = text.slice(Math.max(0, prevIdx - 30), marker.index + 40)
+    const start = i === 0 ? 0 : markers[i - 1].index
+    const end = marker.index + 60
+    const chunk = text.slice(start, end)
     const prices = extractMarketPrices(chunk)
     if (!prices.maxPricePercent) prices.maxPricePercent = marker.percent
     if (!prices.maxPrice && prices.currentPrice && prices.maxPricePercent) {
@@ -148,15 +174,31 @@ const buildCraftFromDefaults = (name, overrides, prev) => {
     time: base.timeMinutes,
     group: 'craft'
   }
-  const cur = o.currentPrice > 0 ? o.currentPrice : p.currentPrice > 0 ? p.currentPrice : 0
+
+  const ocrCurrent = o.currentPrice > 0 ? o.currentPrice : 0
+  const cur = ocrCurrent > 0 ? ocrCurrent : p.currentPrice > 0 ? p.currentPrice : 0
   if (cur > 0) craft.currentPrice = cur
-  const ch = o.priceChange !== 0 ? o.priceChange : p.priceChange
-  if (ch) craft.priceChange = ch
-  const max = o.maxPrice > 0 ? o.maxPrice : p.maxPrice > 0 ? p.maxPrice : 0
-  if (max > 0) craft.maxPrice = max
+
+  if (o.priceChange !== 0) craft.priceChange = o.priceChange
+  else if (p.priceChange) craft.priceChange = p.priceChange
+
   const pct = o.maxPricePercent > 0 ? o.maxPricePercent : p.maxPricePercent > 0 ? p.maxPricePercent : 0
   if (pct > 0) craft.maxPricePercent = pct
-  return craft
+
+  let max = o.maxPrice > 0 ? o.maxPrice : 0
+  if (max >= 1 && max <= 100 && craft.currentPrice > 1000) {
+    craft.maxPricePercent = max
+    max = Math.round(craft.currentPrice / (max / 100))
+  }
+  if (!max && craft.maxPricePercent && craft.currentPrice) {
+    max = Math.round(craft.currentPrice / (craft.maxPricePercent / 100))
+  }
+  if (!max && p.maxPrice > 0 && p.maxPrice > 1000) max = p.maxPrice
+  if (max > 0) craft.maxPrice = max
+
+  return typeof window.applyFixedCraftRecipe === 'function'
+    ? window.applyFixedCraftRecipe(craft)
+    : craft
 }
 
 const parseMarketScreen = (text, baseCatalog) => {
@@ -183,7 +225,7 @@ const parseMarketScreen = (text, baseCatalog) => {
       prices = extractMarketPrices(segments[name])
     }
 
-    if (prices.currentPrice >= 5000) priceUpdated += 1
+    if (prices.currentPrice >= 1000) priceUpdated += 1
 
     const craft = buildCraftFromDefaults(name, prices, prev)
     if (craft) crafts.push(craft)
@@ -193,30 +235,6 @@ const parseMarketScreen = (text, baseCatalog) => {
 }
 
 const parseCraftsFromOcrText = (text, baseCatalog) => parseMarketScreen(text, baseCatalog)
-
-const mergeParsedWithDefaults = (parsedCrafts) => {
-  const byName = new Map((parsedCrafts || []).map((c) => [c.name, c]))
-  return CRAFT_NAME_ORDER.map((name) => {
-    const craft = byName.get(name)
-    const base = getDefaultCraft(name)
-    if (!base) return craft
-    const out = {
-      name: craft?.name || name,
-      price: base.price,
-      inputs: base.inputs.map((i) => ({ ...i })),
-      timeMinutes: base.timeMinutes,
-      time: base.timeMinutes,
-      group: 'craft'
-    }
-    if (craft?.currentPrice > 0) out.currentPrice = craft.currentPrice
-    if (craft?.priceChange) out.priceChange = craft.priceChange
-    if (craft?.maxPrice > 0) out.maxPrice = craft.maxPrice
-    if (craft?.maxPricePercent > 0) out.maxPricePercent = craft.maxPricePercent
-    return typeof window.applyFixedCraftRecipe === 'function'
-      ? window.applyFixedCraftRecipe(out)
-      : out
-  }).filter(Boolean)
-}
 
 const runTesseractOnFile = async (file, onProgress) => {
   if (!window.Tesseract) {
@@ -245,7 +263,6 @@ window.CraftOcr = {
   CRAFT_NAME_ORDER,
   getDefaultCraft,
   parseCraftsFromOcrText,
-  mergeParsedWithDefaults,
   runTesseractOnFile,
   extractMarketPrices
 }
