@@ -48,7 +48,32 @@ module.exports = async function handler(req, res) {
       await clearCraftPriceHistory(supabaseRest)
       sendJson(res, 200, {
         ok: true,
-        message: '공예품 가격 이력을 초기화했습니다. index.html을 새로고침하세요.'
+        message: '그래프 이력(craft_price_history)만 삭제했습니다.'
+      })
+    } catch (error) {
+      const info = classifySupabaseError(error)
+      sendJson(res, 500, { error: info.code, hint: info.hint, message: String(error.message || error) })
+    }
+    return
+  }
+
+  if (action === 'reset-market') {
+    const auth = verifyAdminSecret(req)
+    if (!auth.ok) {
+      sendJson(res, 401, { error: auth.error })
+      return
+    }
+    if (req.method !== 'POST') {
+      sendJson(res, 405, { error: 'Method not allowed' })
+      return
+    }
+    try {
+      const catalog = await resetCraftMarketData(supabaseRest)
+      sendJson(res, 200, {
+        ok: true,
+        message:
+          '공예품 시세·이력을 초기화했습니다. 과거 이력을 넣은 뒤, 마지막에 오늘 시세를 저장하세요.',
+        catalog
       })
     } catch (error) {
       const info = classifySupabaseError(error)
