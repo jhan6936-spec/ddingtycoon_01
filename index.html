@@ -10848,7 +10848,7 @@ function renderCraftPricePanel(effects) {
   headerRow.className = 'craft-price-header';
   headerRow.innerHTML = `
     <div class="craft-price-header-title">공예품 가격</div>
-    <div class="craft-price-header-hint">현재 시세·최고가 대비 % 자동 표시. 두 번째 시세부터 전회 대비 변동(▲▼) 표시.</div>
+    <div class="craft-price-header-hint">재료 단가를 입력하면 기본·전문가 제작 판매가가 자동 합산됩니다. NPC 시세가 있으면 먼저 채워집니다.</div>
   `;
   containerCraftPrice.appendChild(headerRow);
 
@@ -10945,9 +10945,9 @@ function renderCraftPricePanel(effects) {
       </div>
       <div class="craft-price-sell-grid">
         <div class="craft-price-sell-label">기본 제작 판매가</div>
-        <div class="craft-price-sell-value">${recipePrice.toLocaleString()}G</div>
+        <div class="craft-price-sell-value" data-craft-base="${recipe.name}">${recipePrice.toLocaleString()}G</div>
         <div class="craft-price-sell-label">전문가 적용 판매가</div>
-        <div class="craft-price-sell-value" style="color:${hasCraftBoost ? '#8fd5ff' : '#9a9a9a'};">${boostedRecipePrice.toLocaleString()}G${hasCraftBoost ? ` ( +${effects.craftPriceBoost}% )` : ''}</div>
+        <div class="craft-price-sell-value" data-craft-boosted="${recipe.name}" style="color:${hasCraftBoost ? '#8fd5ff' : '#9a9a9a'};">${boostedRecipePrice.toLocaleString()}G${hasCraftBoost ? ` ( +${effects.craftPriceBoost}% )` : ''}</div>
       </div>
       <div class="craft-price-ingredients">
         ${ingredientsHTML}
@@ -10973,6 +10973,15 @@ function renderCraftPricePanel(effects) {
   }
 
   containerCraftPrice.appendChild(list);
+
+  list.addEventListener('input', (ev) => {
+    const target = ev.target;
+    if (!target || !target.classList || !target.classList.contains('craft-ingredient-price-input')) return;
+    const ingredient = target.getAttribute('data-ingredient');
+    if (!ingredient || !window.CraftSellPrice) return;
+    window.CraftSellPrice.setCraftIngredientPriceOverride(ingredient, target.value);
+    window.CraftSellPrice.refreshCraftSellPriceDisplays(data, effects);
+  });
 
   if (window.CraftPriceCharts) {
     window.CraftPriceCharts.mount(containerCraftPrice);
