@@ -32,7 +32,7 @@ module.exports = async function handler(req, res) {
       })
     })
 
-    const saved = await upsertCraftItems(supabaseRest, { crafts }, { source: 'wiki-fix' })
+    const saved = await upsertCraftItems(supabaseRest, { crafts, updatedAt: new Date().toISOString() }, { source: 'wiki-fix' })
 
     sendJson(res, 200, {
       ok: true,

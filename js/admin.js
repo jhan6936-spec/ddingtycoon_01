@@ -274,8 +274,18 @@ const loadCatalogFromApi = async () => {
     throw new Error(body.message || body.error || '공예품 데이터 로드 실패')
   }
   state.catalog = await response.json()
-  if (typeof window.applyFixedCraftRecipe === 'function' && state.catalog.crafts) {
-    state.catalog.crafts = state.catalog.crafts.map((c) => window.applyFixedCraftRecipe(c))
+  const order = window.CRAFT_NAME_ORDER || []
+  if (order.length && state.catalog.crafts) {
+    const byName = new Map(state.catalog.crafts.map((c) => [c.name, c]))
+    state.catalog.crafts = order
+      .map((name) => {
+        const item = byName.get(name) || (typeof window.getDefaultCraftRecipe === 'function' ? window.getDefaultCraftRecipe(name) : null)
+        if (!item) return null
+        return typeof window.applyFixedCraftRecipe === 'function'
+          ? window.applyFixedCraftRecipe(item)
+          : item
+      })
+      .filter(Boolean)
   }
   renderManualTable(state.catalog)
 }
