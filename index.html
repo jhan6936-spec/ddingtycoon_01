@@ -2492,6 +2492,165 @@
       border-color: #4a8fd9;
       box-shadow: 0 0 0 2px rgba(74, 143, 217, 0.25);
     }
+    .craft-price-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 12px 20px;
+      margin-bottom: 18px;
+      letter-spacing: 0.02em;
+      line-height: 1.5;
+    }
+    .craft-price-header-title {
+      font-size: 15px;
+      font-weight: 900;
+      color: #e8e8e8;
+    }
+    .craft-price-header-hint {
+      font-size: 12px;
+      color: #e8945a;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      line-height: 1.55;
+      max-width: 520px;
+    }
+    .craft-price-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 16px;
+    }
+    .craft-price-card.panel-card {
+      margin-bottom: 0;
+      padding: 16px 18px;
+    }
+    .craft-price-card-title {
+      margin-bottom: 14px;
+      letter-spacing: 0.02em;
+      line-height: 1.45;
+    }
+    .craft-price-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px 16px;
+      padding: 12px 14px;
+      background: #151515;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      margin-bottom: 14px;
+    }
+    .craft-price-metric-label {
+      font-size: 11px;
+      color: #9a9a9a;
+      letter-spacing: 0.04em;
+      margin-bottom: 5px;
+      line-height: 1.4;
+    }
+    .craft-price-metric-value {
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      line-height: 1.35;
+      word-break: keep-all;
+    }
+    .craft-price-change {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+    .craft-price-sell-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 16px;
+      padding: 0 4px 14px;
+      letter-spacing: 0.02em;
+      line-height: 1.5;
+    }
+    .craft-price-sell-label {
+      font-size: 12px;
+      color: #a8a8a8;
+    }
+    .craft-price-sell-value {
+      font-size: 12px;
+      color: #e0e0e0;
+      text-align: right;
+    }
+    .craft-price-ingredients {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px 18px;
+      padding-top: 12px;
+      border-top: 1px solid #2a2a2a;
+      letter-spacing: 0.02em;
+      line-height: 1.5;
+    }
+    .craft-price-ingredient {
+      font-size: 12px;
+      color: #c4c4c4;
+      padding: 4px 0;
+      white-space: nowrap;
+    }
+    #craftPriceHistoryWrap {
+      margin-top: 40px;
+      padding: 22px 20px 24px;
+      border-top: 1px solid #2e3a48;
+    }
+    .craft-price-chart-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px 20px;
+      margin-bottom: 16px;
+      letter-spacing: 0.02em;
+    }
+    .craft-price-chart-title {
+      font-size: 15px;
+      font-weight: 900;
+      color: #e8e8e8;
+      line-height: 1.45;
+    }
+    .craft-price-chart-period {
+      font-size: 13px;
+      color: #a8b4c4;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: 0.03em;
+    }
+    .craft-price-chart-period select {
+      background: #151515;
+      border: 1px solid #3a4555;
+      color: #e0e0e0;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 13px;
+      letter-spacing: 0.02em;
+    }
+    #craftPriceHistoryNote {
+      font-size: 12px;
+      color: #9aa8b8;
+      margin-bottom: 16px;
+      line-height: 1.55;
+      letter-spacing: 0.02em;
+    }
+    .craft-price-chart-canvas-wrap {
+      position: relative;
+      height: 380px;
+      width: 100%;
+      margin-top: 4px;
+    }
+    @media (max-width: 720px) {
+      .craft-price-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .craft-price-grid {
+        grid-template-columns: 1fr;
+      }
+    }
     .calc-commit-modes {
       margin: 12px 0 4px 0;
     }
@@ -10647,17 +10806,15 @@ function renderCraftPricePanel(effects) {
   updateCraftSalesCalcTotals();
 
   const headerRow = document.createElement('div');
-  headerRow.style.cssText = 'display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;flex-wrap:wrap;gap:8px;';
+  headerRow.className = 'craft-price-header';
   headerRow.innerHTML = `
-    <div style="font-size:14px;font-weight:900;color:#e5e5e5;">공예품 가격</div>
-    <div style="font-size:11px;color:#e8945a;font-weight:600;">현재 시세·최고가 대비 % 자동 표시. 두 번째 시세부터 전회 대비 변동(▲▼) 표시.</div>
+    <div class="craft-price-header-title">공예품 가격</div>
+    <div class="craft-price-header-hint">현재 시세·최고가 대비 % 자동 표시. 두 번째 시세부터 전회 대비 변동(▲▼) 표시.</div>
   `;
   containerCraftPrice.appendChild(headerRow);
 
   const list = document.createElement('div');
-  list.style.display = 'grid';
-  list.style.gridTemplateColumns = 'repeat(auto-fill, minmax(340px, 1fr))';
-  list.style.gap = '12px';
+  list.className = 'craft-price-grid';
 
   craftItems.forEach((recipe) => {
     const recipePrice = recipe.price || 0;
