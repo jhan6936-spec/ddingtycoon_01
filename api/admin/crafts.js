@@ -181,12 +181,23 @@ module.exports = async function handler(req, res) {
         return
       }
       const source = body.source === 'manual' ? 'manual' : body.source === 'ocr' ? 'ocr' : 'admin'
-      const saved = await upsertCraftItems(supabaseRest, normalized, { source })
+      const historyDate =
+        body.historyDate != null
+          ? String(body.historyDate).trim()
+          : body.recordedAtDate != null
+            ? String(body.recordedAtDate).trim()
+            : ''
+      const saved = await upsertCraftItems(supabaseRest, normalized, {
+        source,
+        historyDate: historyDate || undefined
+      })
       sendJson(res, 200, {
         ok: true,
         catalog: saved,
         persistedTo: 'supabase',
-        table: 'craft_items'
+        table: 'craft_items',
+        historyDate: historyDate || null,
+        recordedAt: saved.lastRecordedAt || null
       })
     } catch (error) {
       const info = classifySupabaseError(error)
