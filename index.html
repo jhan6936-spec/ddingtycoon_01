@@ -10827,14 +10827,13 @@ function renderCraftPricePanel(effects) {
     const hasPriceChange = recipe.priceChange != null && Number.isFinite(Number(recipe.priceChange));
     const priceChange = hasPriceChange ? Number(recipe.priceChange) : 0;
     const changeAbs = Math.abs(priceChange).toLocaleString();
-    const changeInlineStyle = 'display:inline-flex;align-items:center;gap:3px;white-space:nowrap;font-weight:800;';
     const changeHtml = !hasPriceChange
       ? `<span style="color:#666;">—</span>`
       : priceChange > 0
-        ? `<span style="${changeInlineStyle}color:#f87171;"><span aria-hidden="true">▲</span><span>${changeAbs}G</span></span>`
+        ? `<span class="craft-price-change" style="color:#f87171;"><span aria-hidden="true">▲</span><span>${changeAbs}G</span></span>`
         : priceChange < 0
-          ? `<span style="${changeInlineStyle}color:#60a5fa;"><span aria-hidden="true">▼</span><span>${changeAbs}G</span></span>`
-          : `<span style="color:#777;">변동 없음</span>`;
+          ? `<span class="craft-price-change" style="color:#60a5fa;"><span aria-hidden="true">▼</span><span>${changeAbs}G</span></span>`
+          : `<span style="color:#888;letter-spacing:0.02em;">변동 없음</span>`;
     let ratio = 0;
     if (maxPrice > 0 && currentPrice > 0) {
       ratio = recipe.maxPricePercent >= 1 && recipe.maxPricePercent <= 100
@@ -10847,43 +10846,42 @@ function renderCraftPricePanel(effects) {
     const titleImgHTML = buildImageTag(recipe.name, recipe.name, 'height:22px; margin-right:6px; vertical-align:middle;');
     const titleHTML = titleImgHTML ? `${titleImgHTML}${recipe.name}` : recipe.name;
     const ingredientsHTML = (recipe.inputs || []).map((i) => {
-      const imgHTML = buildImageTag(i.name, i.name, 'height:16px; margin-right:4px; vertical-align:middle;');
+      const imgHTML = buildImageTag(i.name, i.name, 'height:18px; margin-right:6px; vertical-align:middle;');
       const label = imgHTML ? `${imgHTML}${i.name}` : i.name;
-      return `<div style="font-size:12px;color:#bbb;padding:3px 0;white-space:nowrap;">${label} x${i.count}</div>`;
+      return `<div class="craft-price-ingredient">${label} x${i.count}</div>`;
     }).join('');
 
     const card = document.createElement('div');
-    card.className = 'panel-card';
-    card.style.marginBottom = '0';
+    card.className = 'panel-card craft-price-card';
     card.innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <div class="craft-price-card-title">
         <div class="expert-name" style="margin-bottom:0;">${titleHTML}</div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:8px 10px;background:#151515;border:1px solid #2a2a2a;border-radius:8px;margin-bottom:10px;">
+      <div class="craft-price-metrics">
         <div>
-          <div style="font-size:10px;color:#8a8a8a;">현재 시세</div>
-          <div style="font-size:14px;font-weight:900;color:#8fd5ff;">${currentPrice.toLocaleString()}G</div>
+          <div class="craft-price-metric-label">현재 시세</div>
+          <div class="craft-price-metric-value" style="color:#8fd5ff;">${currentPrice.toLocaleString()}G</div>
         </div>
         <div>
-          <div style="font-size:10px;color:#8a8a8a;">전회 대비 변동</div>
-          <div style="font-size:14px;font-weight:900;">${changeHtml}</div>
+          <div class="craft-price-metric-label">전회 대비 변동</div>
+          <div class="craft-price-metric-value">${changeHtml}</div>
         </div>
         <div>
-          <div style="font-size:10px;color:#8a8a8a;">최고가</div>
-          <div style="font-size:14px;font-weight:900;color:#f6c15a;">${maxPrice.toLocaleString()}G</div>
+          <div class="craft-price-metric-label">최고가</div>
+          <div class="craft-price-metric-value" style="color:#f6c15a;">${maxPrice.toLocaleString()}G</div>
         </div>
         <div>
-          <div style="font-size:10px;color:#8a8a8a;">최고가 대비</div>
-          <div style="font-size:14px;font-weight:900;color:${ratioColor};">${ratio.toFixed(1)}%</div>
+          <div class="craft-price-metric-label">최고가 대비</div>
+          <div class="craft-price-metric-value" style="color:${ratioColor};">${ratio.toFixed(1)}%</div>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:0 2px 10px;">
-        <div style="font-size:11px;color:#9d9d9d;">기본 제작 판매가</div>
-        <div style="font-size:11px;color:#ddd;text-align:right;">${recipePrice.toLocaleString()}G</div>
-        <div style="font-size:11px;color:#9d9d9d;">전문가 적용 판매가</div>
-        <div style="font-size:11px;color:${hasCraftBoost ? '#8fd5ff' : '#777'};text-align:right;">${boostedRecipePrice.toLocaleString()}G${hasCraftBoost ? ` ( +${effects.craftPriceBoost}% )` : ''}</div>
+      <div class="craft-price-sell-grid">
+        <div class="craft-price-sell-label">기본 제작 판매가</div>
+        <div class="craft-price-sell-value">${recipePrice.toLocaleString()}G</div>
+        <div class="craft-price-sell-label">전문가 적용 판매가</div>
+        <div class="craft-price-sell-value" style="color:${hasCraftBoost ? '#8fd5ff' : '#9a9a9a'};">${boostedRecipePrice.toLocaleString()}G${hasCraftBoost ? ` ( +${effects.craftPriceBoost}% )` : ''}</div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:2px 12px;padding-top:8px;border-top:1px solid #2a2a2a;">
+      <div class="craft-price-ingredients">
         ${ingredientsHTML}
       </div>
     `;
