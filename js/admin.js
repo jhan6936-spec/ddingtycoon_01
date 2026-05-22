@@ -196,11 +196,17 @@ const setOcrPreview = (text, extracted) => {
 
   if (pre) pre.textContent = text || '(인식된 텍스트 없음)'
   if (summary) {
-    if (crafts.length >= 6) {
-      summary.textContent = `시세 변동 OCR · 최고가의 N% 마커 ${markerCount ?? 6}개 · 아래 표와 수동 입력란을 확인하세요`
+    const issues = extracted?.validationIssues || []
+    if (crafts.length >= 6 && extracted?.confidenceOk) {
+      summary.textContent = `검증 통과 · 최고가의 N% 마커 ${markerCount ?? 6}개 · 저장 가능`
+      summary.className = 'text-[11px] text-emerald-400/90 mb-2'
+    } else if (crafts.length >= 6) {
+      summary.textContent = `검증 실패 — ${issues.join(' · ') || '시세·% 불일치'} · 수동 수정 후 「수동 저장」`
+      summary.className = 'text-[11px] text-rose-400/90 mb-2'
     } else {
       summary.textContent =
         `「최고가의 N%」가 6개 보이지 않습니다 (인식 ${markerCount ?? 0}개). 시세 변동 전체 화면을 올리거나 수동 입력 후 저장하세요.`
+      summary.className = 'text-[11px] text-slate-500 mb-2'
     }
   }
   renderOcrResultTable(crafts)
