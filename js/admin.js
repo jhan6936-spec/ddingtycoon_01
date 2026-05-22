@@ -196,27 +196,70 @@ const setOcrPreview = (text, crafts, screenType) => {
   }
 }
 
+const getCraftPercent = (craft) => {
+  if (!craft) return 0
+  let pct = Number(craft.maxPricePercent) || 0
+  if (pct >= 1 && pct <= 100) return pct
+  const max = Number(craft.maxPrice) || 0
+  if (max >= 1 && max <= 100) return max
+  return 0
+}
+
+const calcMaxFromPercent = (current, pct) => {
+  if (!current || !pct) return 0
+  return Math.round(current / (pct / 100))
+}
+
+const formatRecipeList = (inputs) =>
+  (inputs || [])
+    .map((i) => `${i.name}×${i.count}`)
+    .join(', ')
+
 const renderManualTable = (catalog) => {
   const tbody = el('manualTableBody')
-  if (!tbody || !window.CraftOcr) return
+  if (!tbody) return
   tbody.innerHTML = ''
-  const names = window.CraftOcr.CRAFT_NAME_ORDER
+  const names = window.CRAFT_NAME_ORDER || window.CraftOcr?.CRAFT_NAME_ORDER || []
   const map = new Map((catalog.crafts || []).map((c) => [c.name, c]))
 
   names.forEach((name, index) => {
-    const defaults = window.CraftOcr.getDefaultCraft(name)
-    const craft = map.get(name) || defaults || { name, price: 0, currentPrice: 0, maxPrice: 0 }
+    const defaults =
+      typeof window.getDefaultCraftRecipe === 'function' ? window.getDefaultCraftRecipe(name) : null
+    let craft = map.get(name) || defaults || { name }
+    if (typeof window.applyFixedCraftRecipe === 'function') {
+      craft = window.applyFixedCraftRecipe(craft)
+    }
     const fixedPrice = defaults ? defaults.price : Number(craft.price) || 0
+    const pct = getCraftPercent(craft)
+    const current = Number(craft.currentPrice) || 0
+    const maxCalc = craft.maxPrice > 1000 ? craft.maxPrice : calcMaxFromPercent(current, pct)
+    const recipeText = formatRecipeList(defaults?.inputs || craft.inputs)
     const tr = document.createElement('tr')
     tr.className = 'border-b border-slate-700/60'
     tr.innerHTML = `
-      <td class="px-2 py-2 text-slate-300">${name}</td>
-      <td class="px-2 py-2 text-slate-400 text-sm">${fixedPrice.toLocaleString()} <span class="text-xs text-slate-600">(고정)</span></td>
-      <td class="px-2 py-2"><input data-field="currentPrice" data-index="${index}" type="number" class="w-full rounded bg-slate-900 border border-slate-600 px-2 py-1 text-sm" value="${Number(craft.currentPrice) || 0}" title="NPC 현재 시세" /></td>
-      <td class="px-2 py-2"><input data-field="priceChange" data-index="${index}" type="number" class="w-full rounded bg-slate-900 border border-slate-600 px-2 py-1 text-sm" value="${Number(craft.priceChange) || 0}" title="▲ 양수, ▼ 음수" /></td>
-      <td class="px-2 py-2"><input data-field="maxPrice" data-index="${index}" type="number" class="w-full rounded bg-slate-900 border border-slate-600 px-2 py-1 text-sm" value="${Number(craft.maxPrice) || 0}" /></td>
+      <td class="px-2 py-2 text-slate-300">
+        <div class="font-medium">${name}</div>
+        <div class="text-[10px] text-slate-500 mt-1 leading-snug">${recipeText}</div>
+      </td>
+      <td class="px-2 py-2 text-slate-400 text-sm whitespace-nowrap">${fixedPrice.toLocaleString()}G</td>
+      <td class="px-2 py-2"><input data-field="currentPrice" data-index="${index}" type="number" class="w-full min-w-[88px] rounded bg-slate-900 border border-slate-600 px-2 py-1 text-sm" value="${current}" title="노란색 Gold 숫자" /></td>
+      <td class="px-2 py-2"><input data-field="priceChange" data-index="${index}" type="number" class="w-full min-w-[88px] rounded bg-slate-900 border border-slate-600 px-2 py-1 text-sm" value="${Number(craft.priceChange) || 0}" title="▲ 양수, ▼ 음수" /></td>
+      <td class="px-2 py-2"><input data-field="maxPricePercent" data-index="${index}" type="number" min="1" max="100" class="w-full min-w-[56px] rounded bg-slate-900 border border-slate-600 px-2 py-1 text-sm" value="${pct}" title="최고가의 N%" /></td>
+      <td class="px-2 py-2 text-amber-200/90 text-sm whitespace-nowrap" data-calc-max="${index}">${maxCalc > 0 ? maxCalc.toLocaleString() + 'G' : '—'}</td>
     `
     tbody.appendChild(tr)
+  })
+
+  tbody.querySelectorAll('input[data-field="currentPrice"], input[data-field="maxPricePercent"]').forEach((inp) => {
+    inp.addEventListener('input', () => {
+      const idx = inp.getAttribute('data-index')
+      const row = tbody.querySelector(`[data-calc-max="${idx}"]`)
+      const curInp = tbody.querySelector(`input[data-field="currentPrice"][data-index="${idx}"]`)
+      const pctInp = tbody.querySelector(`input[data-field="maxPricePercent"][data-index="${idx}"]`)
+      if (!row || !curInp || !pctInp) return
+      const m = calcMaxFromPercent(Number(curInp.value) || 0, Number(pctInp.value) || 0)
+      row.textContent = m > 0 ? m.toLocaleString() + 'G' : '—'
+    })
   })
 }
 
@@ -234,8 +277,15 @@ const syncManualTableToCatalog = () => {
     if (!name) return
     const defaults = window.CraftOcr.getDefaultCraft(name)
     const craft = byName.get(name) || defaults || { name, group: 'craft', inputs: [], timeMinutes: 1, time: 1 }
-    if (field === 'currentPrice' || field === 'maxPrice') {
-      craft[field] = Math.max(0, parseInt(input.value || '0', 10))
+    if (field === 'currentPrice') {
+      craft.currentPrice = Math.max(0, parseInt(input.value || '0', 10))
+    }
+    if (field === 'maxPricePercent') {
+      craft.maxPricePercent = Math.min(100, Math.max(0, parseInt(input.value || '0', 10)))
+      delete craft.maxPrice
+      if (craft.currentPrice && craft.maxPricePercent) {
+        craft.maxPrice = calcMaxFromPercent(craft.currentPrice, craft.maxPricePercent)
+      }
     }
     if (field === 'priceChange') {
       craft.priceChange = parseInt(input.value || '0', 10)
