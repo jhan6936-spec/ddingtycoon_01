@@ -10855,10 +10855,10 @@ function renderCraftPricePanel(effects) {
     const ratioColor = ratio >= 80 ? '#4ade80' : ratio <= 50 ? '#f87171' : '#facc15';
     const boostedRecipePrice = Math.round(recipePrice * (1 + (effects.craftPriceBoost / 100)));
     const hasCraftBoost = effects.craftPriceBoost > 0;
-    const titleImgHTML = buildImageTag(recipe.name, recipe.name, 'height:24px; margin-right:10px; vertical-align:middle;');
+    const titleImgHTML = buildImageTag(recipe.name, recipe.name, 'height:22px; margin-right:8px; vertical-align:middle;');
     const titleHTML = titleImgHTML ? `${titleImgHTML}${recipe.name}` : recipe.name;
     const ingredientsHTML = (recipe.inputs || []).map((i) => {
-      const imgHTML = buildImageTag(i.name, i.name, 'height:20px; margin-right:10px; vertical-align:middle;');
+      const imgHTML = buildImageTag(i.name, i.name, 'height:16px; margin-right:6px; vertical-align:middle;');
       const label = imgHTML ? `${imgHTML}${i.name}` : i.name;
       return `<div class="craft-price-ingredient">${label} x${i.count}</div>`;
     }).join('');
@@ -10869,37 +10869,30 @@ function renderCraftPricePanel(effects) {
       <div class="craft-price-card-title">
         <div class="expert-name" style="margin-bottom:0;">${titleHTML}</div>
       </div>
-      <div class="craft-price-section-label">시세</div>
       <div class="craft-price-metrics">
-        <div class="craft-price-metric-row">
-          <span class="craft-price-metric-label">현재 시세</span>
-          <span class="craft-price-metric-value" style="color:#8fd5ff;">${currentPrice.toLocaleString()}G</span>
+        <div>
+          <div class="craft-price-metric-label">현재 시세</div>
+          <div class="craft-price-metric-value" style="color:#8fd5ff;">${currentPrice.toLocaleString()}G</div>
         </div>
-        <div class="craft-price-metric-row">
-          <span class="craft-price-metric-label">전회 대비 변동</span>
-          <span class="craft-price-metric-value">${changeHtml}</span>
+        <div>
+          <div class="craft-price-metric-label">전회 대비 변동</div>
+          <div class="craft-price-metric-value">${changeHtml}</div>
         </div>
-        <div class="craft-price-metric-row">
-          <span class="craft-price-metric-label">최고가</span>
-          <span class="craft-price-metric-value" style="color:#f6c15a;">${maxPrice.toLocaleString()}G</span>
+        <div>
+          <div class="craft-price-metric-label">최고가</div>
+          <div class="craft-price-metric-value" style="color:#f6c15a;">${maxPrice.toLocaleString()}G</div>
         </div>
-        <div class="craft-price-metric-row">
-          <span class="craft-price-metric-label">최고가 대비</span>
-          <span class="craft-price-metric-value" style="color:${ratioColor};">${ratio.toFixed(1)}%</span>
-        </div>
-      </div>
-      <div class="craft-price-section-label">제작 판매가</div>
-      <div class="craft-price-sell-block">
-        <div class="craft-price-sell-row">
-          <span class="craft-price-sell-label">기본 제작 판매가</span>
-          <span class="craft-price-sell-value">${recipePrice.toLocaleString()}G</span>
-        </div>
-        <div class="craft-price-sell-row">
-          <span class="craft-price-sell-label">전문가 적용 판매가</span>
-          <span class="craft-price-sell-value" style="color:${hasCraftBoost ? '#8fd5ff' : '#9a9a9a'};">${boostedRecipePrice.toLocaleString()}G${hasCraftBoost ? ` (+${effects.craftPriceBoost}%)` : ''}</span>
+        <div>
+          <div class="craft-price-metric-label">최고가 대비</div>
+          <div class="craft-price-metric-value" style="color:${ratioColor};">${ratio.toFixed(1)}%</div>
         </div>
       </div>
-      <div class="craft-price-section-label">필요 재료</div>
+      <div class="craft-price-sell-grid">
+        <div class="craft-price-sell-label">기본 제작 판매가</div>
+        <div class="craft-price-sell-value">${recipePrice.toLocaleString()}G</div>
+        <div class="craft-price-sell-label">전문가 적용 판매가</div>
+        <div class="craft-price-sell-value" style="color:${hasCraftBoost ? '#8fd5ff' : '#9a9a9a'};">${boostedRecipePrice.toLocaleString()}G${hasCraftBoost ? ` ( +${effects.craftPriceBoost}% )` : ''}</div>
+      </div>
       <div class="craft-price-ingredients">
         ${ingredientsHTML}
       </div>
