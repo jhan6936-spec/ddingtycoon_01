@@ -1,7 +1,9 @@
 /**
- * 브라우저 Tesseract OCR → 공예품 파싱
- * - 시세 변동 화면: 현재가·최고가만 갱신 (레시피·제작 판매가 고정)
- * - 제작 화면: 재료 OCR (선택)
+ * 공예품 시세 변동 OCR 파싱
+ * - 노란 숫자+Gold = 현재 시세 (OCR: 큰 숫자 Gold 앞)
+ * - ▲/▼ 뒤 숫자 = 전회 대비 변동
+ * - 최고가의 N% = 최고가 도달률 (최고가 = 현재시세 / N% * 100)
+ * 레시피는 craft-recipe-defaults.js 고정값만 사용
  */
 const CRAFT_NAME_ORDER = [
   '조개껍데기 브로치',
@@ -11,15 +13,6 @@ const CRAFT_NAME_ORDER = [
   '자개 부채',
   '흑진주 시계'
 ]
-
-const MATERIAL_HINTS = [
-  '깨진 조개껍데기', '노란빛 진주', '푸른빛 진주', '청록빛 진주', '분홍빛 진주', '보라빛 진주', '흑진주',
-  '금속 재활용품', '합금 재활용품', '합성수지 재활용품', '플라스틱 재활용품', '섬유 재활용품',
-  '거미줄', '양동이', '유리판', '대나무', '분홍 꽃잎', '막대기', '자수정 조각', '흑요석', '시계'
-]
-
-const getDefaultCraft = (name) =>
-  typeof window.getDefaultCraftRecipe === 'function' ? window.getDefaultCraftRecipe(name) : null
 
 const parseGoldNumber = (raw) => {
   const digits = String(raw || '').replace(/[^\d]/g, '')
@@ -45,7 +38,7 @@ const findNameIndex = (text, name, fromIndex) => {
   if (direct >= 0) return direct
   const compact = text.replace(/\s/g, '')
   const compactName = name.replace(/\s/g, '')
-  const pos = compact.indexOf(compactName, Math.floor(fromIndex / 2))
+  const pos = compact.indexOf(compactName, Math.max(0, Math.floor(fromIndex / 2)))
   if (pos < 0) return -1
   return Math.max(0, pos - 10)
 }
@@ -65,86 +58,69 @@ const splitSegmentsByCraftOrder = (fullText) => {
   return segments
 }
 
-const detectScreenType = (text) => {
-  const t = String(text || '')
-  if (/시세|변동|최고가의|최고가\s*의/i.test(t)) return 'market'
-  const matHits = MATERIAL_HINTS.filter((m) => fuzzyIncludes(t, m)).length
-  if (matHits >= 4) return 'recipe'
-  return 'market'
-}
-
-const extractPercentFromSegment = (segment) => {
-  const labeled = segment.match(/최고가\s*의?\s*(\d{1,3})\s*%/i)
-  if (labeled) return Math.min(100, Math.max(1, parseInt(labeled[1], 10)))
-  const percents = []
-  const re = /(\d{1,3})\s*%/g
-  let m
-  while ((m = re.exec(segment))) {
-    const p = parseInt(m[1], 10)
-    if (p >= 1 && p <= 100) percents.push(p)
-  }
-  return percents.length ? percents[percents.length - 1] : 0
+const extractMaxPricePercent = (segment) => {
+  const m = String(segment || '').match(/최고\s*가\s*의?\s*(\d{1,3})\s*%/i)
+  if (!m) return 0
+  const p = parseInt(m[1], 10)
+  if (!Number.isFinite(p) || p < 1 || p > 100) return 0
+  return p
 }
 
 const extractMarketPrices = (segment) => {
-  const rawNums =
-    String(segment || '').match(/\d{1,3}(?:[,\s]\d{3})+|\d{4,7}/g)?.map(parseGoldNumber) || []
-  const sortedBig = [...new Set(rawNums.filter((n) => n >= 5000))].sort((a, b) => b - a)
+  const text = String(segment || '')
 
-  let currentPrice = sortedBig[0] || 0
+  let currentPrice = 0
+  const goldMatch = text.match(/(\d{1,3}(?:[,\s]\d{3})+|\d{4,7})\s*(?:Gold|GOLD|gold|골드)/i)
+  if (goldMatch) {
+    currentPrice = parseGoldNumber(goldMatch[1])
+  }
+
+  if (!currentPrice) {
+    const nums = (text.match(/\d{1,3}(?:[,\s]\d{3})+|\d{4,7}/g) || []).map(parseGoldNumber)
+    const big = nums.filter((n) => n >= 10000)
+    if (big.length) currentPrice = Math.max(...big)
+  }
+
   let priceChange = 0
-
-  const upMatch = segment.match(/(?:▲|△|↑|상승)\s*[:\s]*(\d[\d,.\s]{2,})/i)
-  const downMatch = segment.match(/(?:▼|▽|↓|하락)\s*[:\s]*(\d[\d,.\s]{2,})/i)
+  const upMatch = text.match(/(?:▲|△|↑)\s*(\d[\d,.\s]{2,})/)
+  const downMatch = text.match(/(?:▼|▽|↓)\s*(\d[\d,.\s]{2,})/)
   if (upMatch) {
     priceChange = parseGoldNumber(upMatch[1])
   } else if (downMatch) {
     priceChange = -parseGoldNumber(downMatch[1])
-  } else if (sortedBig.length >= 2) {
-    const changeAbs = sortedBig[1]
-    if (changeAbs < currentPrice * 3) {
-      priceChange = /[▼▽↓]|하락/i.test(segment) ? -changeAbs : changeAbs
-    }
   }
 
-  let percent = extractPercentFromSegment(segment)
+  const maxPricePercent = extractMaxPricePercent(text)
 
   let maxPrice = 0
-  if (currentPrice > 0 && percent > 0) {
-    maxPrice = Math.round(currentPrice / (percent / 100))
+  if (currentPrice > 0 && maxPricePercent > 0) {
+    maxPrice = Math.round(currentPrice / (maxPricePercent / 100))
   }
 
-  return { currentPrice, priceChange, maxPrice, percent }
+  return { currentPrice, priceChange, maxPrice, maxPricePercent }
 }
 
-const parseInputsNear = (segment) => {
-  const inputs = []
-  for (const mat of MATERIAL_HINTS) {
-    if (!fuzzyIncludes(segment, mat)) continue
-    const escaped = mat.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    const countMatch = segment.match(new RegExp(escaped + '\\s*[x×X*]?\\s*(\\d+)', 'i'))
-    const count = countMatch ? Math.max(1, parseInt(countMatch[1], 10)) : 1
-    if (count > 500) continue
-    inputs.push({ name: mat, count })
-  }
-  return inputs
-}
+const getDefaultCraft = (name) =>
+  typeof window.getDefaultCraftRecipe === 'function' ? window.getDefaultCraftRecipe(name) : null
 
 const buildCraftFromDefaults = (name, overrides) => {
   const base = getDefaultCraft(name)
   if (!base) return null
   return {
-    ...base,
-    ...overrides,
-    name,
-    inputs: base.inputs,
+    name: base.name,
     price: base.price,
-    group: 'craft'
+    inputs: base.inputs.map((i) => ({ ...i })),
+    timeMinutes: base.timeMinutes,
+    time: base.timeMinutes,
+    group: 'craft',
+    currentPrice: overrides.currentPrice,
+    priceChange: overrides.priceChange,
+    maxPrice: overrides.maxPrice,
+    maxPricePercent: overrides.maxPricePercent
   }
 }
 
 const parseMarketScreen = (text, baseCatalog) => {
-  const baseMap = new Map((baseCatalog?.crafts || []).map((c) => [c.name, c]))
   const segments = splitSegmentsByCraftOrder(text)
   const crafts = []
 
@@ -152,16 +128,14 @@ const parseMarketScreen = (text, baseCatalog) => {
     const segment = segments[name]
     if (!segment) continue
 
-    const { currentPrice, priceChange, maxPrice } = extractMarketPrices(segment)
-    if (!currentPrice) continue
+    const { currentPrice, priceChange, maxPrice, maxPricePercent } = extractMarketPrices(segment)
+    if (!currentPrice || currentPrice < 5000) continue
 
-    const existing = baseMap.get(name) || {}
     const craft = buildCraftFromDefaults(name, {
       currentPrice,
       priceChange: priceChange || 0,
-      maxPrice: maxPrice || existing.maxPrice || 0,
-      timeMinutes: existing.timeMinutes || 1,
-      time: existing.time || 1
+      maxPrice: maxPrice || 0,
+      maxPricePercent: maxPricePercent || 0
     })
     if (craft) crafts.push(craft)
   }
@@ -169,18 +143,8 @@ const parseMarketScreen = (text, baseCatalog) => {
   return { crafts, screenType: 'market' }
 }
 
-const parseRecipeScreen = (text, baseCatalog) => {
-  return parseMarketScreen(text, baseCatalog)
-}
-
 const parseCraftsFromOcrText = (text, baseCatalog) => {
-  const fullText = String(text || '')
-  const screenType = detectScreenType(fullText)
-
-  if (screenType === 'recipe') {
-    return parseRecipeScreen(fullText, baseCatalog)
-  }
-  return parseMarketScreen(fullText, baseCatalog)
+  return parseMarketScreen(text, baseCatalog)
 }
 
 const mergeParsedWithDefaults = (parsedCrafts) => {
@@ -191,13 +155,14 @@ const mergeParsedWithDefaults = (parsedCrafts) => {
       name: craft.name,
       price: base.price,
       inputs: base.inputs.map((i) => ({ ...i })),
-      timeMinutes: craft.timeMinutes || base.timeMinutes,
-      time: craft.time || base.timeMinutes,
+      timeMinutes: base.timeMinutes,
+      time: base.timeMinutes,
       group: 'craft'
     }
-    if (craft.currentPrice != null && craft.currentPrice > 0) out.currentPrice = craft.currentPrice
-    if (craft.maxPrice != null && craft.maxPrice > 0) out.maxPrice = craft.maxPrice
-    if (craft.priceChange != null && craft.priceChange !== 0) out.priceChange = craft.priceChange
+    if (craft.currentPrice > 0) out.currentPrice = craft.currentPrice
+    if (craft.priceChange) out.priceChange = craft.priceChange
+    if (craft.maxPrice > 0) out.maxPrice = craft.maxPrice
+    if (craft.maxPricePercent > 0) out.maxPricePercent = craft.maxPricePercent
     return out
   })
 }
@@ -230,5 +195,6 @@ window.CraftOcr = {
   getDefaultCraft,
   parseCraftsFromOcrText,
   mergeParsedWithDefaults,
-  runTesseractOnFile
+  runTesseractOnFile,
+  extractMarketPrices
 }
