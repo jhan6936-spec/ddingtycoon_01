@@ -1,7 +1,8 @@
 /**
- * 공예품: 페이지 로드 시 Supabase craft_items 테이블에서 직접 조회 (실시간 반영)
+ * 공예품 6종: 위키 레시피 고정 + Supabase/localStorage 에서 시세만 갱신
  */
 const CRAFTS_BROADCAST_CHANNEL = 'ddingtahe-crafts-updated'
+const CRAFT_CACHE_KEY = 'ddingtahe_craft_catalog_v1'
 
 const refreshCraftPriceCharts = () => {
   try {
@@ -9,9 +10,106 @@ const refreshCraftPriceCharts = () => {
   } catch (_) {}
 }
 
+const getCraftNameOrder = () =>
+  window.CRAFT_NAME_ORDER || [
+    '조개껍데기 브로치',
+    '푸른 향수병',
+    '자개 손거울',
+    '분홍 헤어핀',
+    '자개 부채',
+    '흑진주 시계'
+  ]
+
 const CraftsCatalog = {
   loaded: false,
   meta: null,
+
+  saveLocalCache(catalog) {
+    try {
+      if (!catalog || !Array.isArray(catalog.crafts)) return
+      localStorage.setItem(
+        CRAFT_CACHE_KEY,
+        JSON.stringify({
+          updatedAt: catalog.updatedAt || new Date().toISOString(),
+          crafts: catalog.crafts
+        })
+      )
+    } catch (_) {}
+  },
+
+  loadLocalCache() {
+    try {
+      const raw = localStorage.getItem(CRAFT_CACHE_KEY)
+      if (!raw) return null
+      const parsed = JSON.parse(raw)
+      if (!parsed || !Array.isArray(parsed.crafts) || !parsed.crafts.length) return null
+      return {
+        version: 1,
+        updatedAt: parsed.updatedAt || null,
+        source: 'local-cache',
+        crafts: parsed.crafts
+      }
+    } catch (_) {
+      return null
+    }
+  },
+
+  buildDefaultCatalog() {
+    const crafts = getCraftNameOrder()
+      .map((name) => {
+        if (typeof window.getDefaultCraftRecipe !== 'function') return null
+        const d = window.getDefaultCraftRecipe(name)
+        if (!d) return null
+        return typeof window.applyFixedCraftRecipe === 'function'
+          ? window.applyFixedCraftRecipe(d)
+          : d
+      })
+      .filter(Boolean)
+    return {
+      version: 1,
+      updatedAt: new Date().toISOString(),
+      source: 'wiki-defaults',
+      crafts
+    }
+  },
+
+  ensureSixCraftCatalog(catalog) {
+    const byName = new Map()
+    ;(catalog?.crafts || []).forEach((c) => {
+      if (c && c.name) byName.set(c.name, c)
+    })
+    const crafts = getCraftNameOrder()
+      .map((name) => {
+        const prev = byName.get(name) || { name }
+        const base =
+          typeof window.getDefaultCraftRecipe === 'function'
+            ? window.getDefaultCraftRecipe(name)
+            : null
+        const merged = {
+          name,
+          price: base ? base.price : prev.price || 0,
+          inputs: base ? base.inputs.map((i) => ({ ...i })) : prev.inputs || [],
+          timeMinutes: base ? base.timeMinutes : prev.timeMinutes || 1,
+          time: base ? base.timeMinutes : prev.time || 1,
+          group: 'craft'
+        }
+        if (prev.currentPrice > 0) merged.currentPrice = prev.currentPrice
+        if (prev.maxPrice > 0) merged.maxPrice = prev.maxPrice
+        if (prev.priceChange) merged.priceChange = prev.priceChange
+        if (prev.maxPricePercent > 0) merged.maxPricePercent = prev.maxPricePercent
+        return typeof window.applyFixedCraftRecipe === 'function'
+          ? window.applyFixedCraftRecipe(merged)
+          : merged
+      })
+      .filter(Boolean)
+
+    return {
+      version: catalog?.version || 1,
+      updatedAt: catalog?.updatedAt || new Date().toISOString(),
+      source: catalog?.source || 'merged',
+      crafts
+    }
+  },
 
   mapCraftRecipe(item) {
     const recipe = {
@@ -57,12 +155,12 @@ const CraftsCatalog = {
       }
     }
 
-    return {
+    return this.ensureSixCraftCatalog({
       version: 1,
       updatedAt: updatedAt || new Date().toISOString(),
       source: 'supabase-direct',
       crafts
-    }
+    })
   },
 
   async fetchFromSupabaseDirect() {
@@ -92,9 +190,7 @@ const CraftsCatalog = {
 
     const rows = await response.json()
     const catalog = this.rowsToCatalog(rows)
-    if (!catalog.crafts.length) {
-      throw new Error('craft_items 테이블에 데이터가 없습니다. supabase_craft_items.sql 을 실행하세요.')
-    }
+    this.saveLocalCache(catalog)
     return catalog
   },
 
@@ -105,16 +201,19 @@ const CraftsCatalog = {
       throw new Error(body.message || body.error || 'API crafts 조회 실패')
     }
     const catalog = await response.json()
-    if (!catalog || !Array.isArray(catalog.crafts) || !catalog.crafts.length) {
+    if (!catalog || !Array.isArray(catalog.crafts)) {
       throw new Error('공예품 카탈로그가 비어 있습니다.')
     }
     catalog.source = catalog.source || 'supabase-api'
-    return catalog
+    const full = this.ensureSixCraftCatalog(catalog)
+    this.saveLocalCache(full)
+    return full
   },
 
   async fetchCatalog() {
     try {
-      return await this.fetchFromSupabaseDirect()
+      const direct = await this.fetchFromSupabaseDirect()
+      if (direct && direct.crafts.length) return direct
     } catch (directErr) {
       console.warn('[crafts-catalog] direct Supabase failed:', directErr)
     }
@@ -122,18 +221,23 @@ const CraftsCatalog = {
       return await this.fetchCatalogViaApi()
     } catch (apiErr) {
       console.warn('[crafts-catalog] API fallback failed:', apiErr)
-      throw apiErr
     }
+    const cached = this.loadLocalCache()
+    if (cached) {
+      console.info('[crafts-catalog] using localStorage cache')
+      return this.ensureSixCraftCatalog(cached)
+    }
+    console.warn('[crafts-catalog] using wiki default recipes only')
+    return this.buildDefaultCatalog()
   },
 
   mergeIntoRecipes(data, catalog) {
-    if (!data || !Array.isArray(data.recipes) || !catalog || !Array.isArray(catalog.crafts)) {
-      return false
-    }
-    const recipes = data.recipes
-    const craftRecipes = catalog.crafts.map((c) => this.mapCraftRecipe(c)).filter((c) => c.name)
-    if (!craftRecipes.length) return false
+    if (!data || !Array.isArray(data.recipes)) return false
+    const full = this.ensureSixCraftCatalog(catalog)
+    const craftRecipes = full.crafts.map((c) => this.mapCraftRecipe(c)).filter((c) => c.name)
+    if (craftRecipes.length < getCraftNameOrder().length) return false
 
+    const recipes = data.recipes
     const nonCraft = recipes.filter((r) => !r || r.group !== 'craft')
     const firstCraftIdx = recipes.findIndex((r) => r && r.group === 'craft')
     const alchemyAnchorIdx = recipes.findIndex((r) => r && r.name === '추출된 희석액')
@@ -154,8 +258,8 @@ const CraftsCatalog = {
 
     this.loaded = true
     this.meta = {
-      updatedAt: catalog.updatedAt || null,
-      source: catalog.source || 'supabase',
+      updatedAt: full.updatedAt || null,
+      source: full.source || 'supabase',
       count: craftRecipes.length
     }
     return true
@@ -167,7 +271,10 @@ const CraftsCatalog = {
   },
 
   hasCraftRecipes(data) {
-    return Array.isArray(data?.recipes) && data.recipes.some((r) => r && r.group === 'craft')
+    const order = getCraftNameOrder()
+    if (!Array.isArray(data?.recipes)) return false
+    const names = new Set(data.recipes.filter((r) => r && r.group === 'craft').map((r) => r.name))
+    return order.every((n) => names.has(n))
   },
 
   startAutoRefresh(data, onUpdated) {
@@ -188,7 +295,15 @@ const CraftsCatalog = {
     }
     try {
       const channel = new BroadcastChannel(CRAFTS_BROADCAST_CHANNEL)
-      channel.onmessage = () => {
+      channel.onmessage = (ev) => {
+        try {
+          if (ev?.data?.catalog) {
+            const merged = CraftsCatalog.ensureSixCraftCatalog(ev.data.catalog)
+            CraftsCatalog.saveLocalCache(merged)
+            CraftsCatalog.mergeIntoRecipes(data, merged)
+            if (typeof onUpdated === 'function') onUpdated(CraftsCatalog.meta)
+          }
+        } catch (_) {}
         tick(true)
         refreshCraftPriceCharts()
       }
@@ -199,7 +314,7 @@ const CraftsCatalog = {
     })
     setInterval(() => {
       if (!document.hidden) tick(false)
-    }, 15000)
+    }, 12000)
   }
 }
 
