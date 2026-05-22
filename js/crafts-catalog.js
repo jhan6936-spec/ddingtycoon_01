@@ -3,6 +3,12 @@
  */
 const CRAFTS_BROADCAST_CHANNEL = 'ddingtahe-crafts-updated'
 
+const refreshCraftPriceCharts = () => {
+  try {
+    if (window.CraftPriceCharts) window.CraftPriceCharts.refresh()
+  } catch (_) {}
+}
+
 const CraftsCatalog = {
   loaded: false,
   meta: null,
@@ -176,7 +182,10 @@ const CraftsCatalog = {
     }
     try {
       const channel = new BroadcastChannel(CRAFTS_BROADCAST_CHANNEL)
-      channel.onmessage = () => tick(true)
+      channel.onmessage = () => {
+        tick(true)
+        refreshCraftPriceCharts()
+      }
     } catch (_) {}
     window.addEventListener('focus', () => tick(false))
     document.addEventListener('visibilitychange', () => {

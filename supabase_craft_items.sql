@@ -44,3 +44,5 @@ on conflict (name) do update set
   inputs = excluded.inputs,
   sort_order = excluded.sort_order,
   updated_at = now();
+
+-- 이력 테이블: supabase_craft_price_history.sql 도 함께 실행

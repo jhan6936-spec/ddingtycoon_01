@@ -10514,6 +10514,10 @@ function renderCraftPricePanel(effects) {
   }
 
   containerCraftPrice.appendChild(list);
+
+  if (window.CraftPriceCharts) {
+    window.CraftPriceCharts.mount(containerCraftPrice);
+  }
 }
 
 // ===== 효율성 분석 =====
@@ -10877,6 +10881,9 @@ window.addEventListener('DOMContentLoaded', async function() {
         try { renderRecipes() } catch (_) {}
         try {
           renderCraftPricePanel(typeof getExpertEffects === 'function' ? getExpertEffects() : { craftPriceBoost: 0 });
+        } catch (_) {}
+        try {
+          if (window.CraftPriceCharts) CraftPriceCharts.refresh();
         } catch (_) {}
       });
       try {
