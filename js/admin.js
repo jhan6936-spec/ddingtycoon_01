@@ -72,17 +72,51 @@ const mergeCraftsByName = (baseCatalog, incomingCatalog) => {
       byName.set(craft.name, merged)
     }
   })
+
+  const order =
+    window.CRAFT_NAME_ORDER ||
+    (window.CraftOcr && window.CraftOcr.CRAFT_NAME_ORDER) ||
+    []
+  const crafts = order
+    .map((name) => {
+      let item = byName.get(name)
+      if (!item && typeof window.getDefaultCraftRecipe === 'function') {
+        item = window.getDefaultCraftRecipe(name)
+      }
+      if (!item) return null
+      return typeof window.applyFixedCraftRecipe === 'function'
+        ? window.applyFixedCraftRecipe(item)
+        : item
+    })
+    .filter(Boolean)
+
   return {
     version: baseCatalog.version || incomingCatalog.version || 1,
     updatedAt: new Date().toISOString(),
-    crafts: Array.from(byName.values())
+    crafts
   }
 }
 
-const notifyMainSiteCraftsUpdated = (updatedAt) => {
+const saveCraftCatalogCache = (catalog) => {
+  try {
+    if (window.CraftsCatalog && typeof window.CraftsCatalog.saveLocalCache === 'function') {
+      window.CraftsCatalog.saveLocalCache(catalog)
+    }
+  } catch (_) {}
+}
+
+const notifyMainSiteCraftsUpdated = (catalogOrAt) => {
+  const payload =
+    catalogOrAt && catalogOrAt.crafts
+      ? catalogOrAt
+      : { updatedAt: catalogOrAt || new Date().toISOString(), crafts: state.catalog.crafts }
+  saveCraftCatalogCache(payload.crafts ? payload : state.catalog)
   try {
     const channel = new BroadcastChannel(CRAFTS_BROADCAST_CHANNEL)
-    channel.postMessage({ updatedAt: updatedAt || new Date().toISOString() })
+    channel.postMessage({
+      updatedAt: payload.updatedAt || new Date().toISOString(),
+      catalog: payload.crafts ? payload : state.catalog
+    })
     channel.close()
   } catch (_) {}
 }
@@ -365,10 +399,10 @@ const runAutoPipeline = async (file) => {
     const extracted = await runClientOcr(file)
     setOcrPreview(state.lastOcrText, extracted.crafts || [], extracted.screenType)
 
-    if (!extracted.crafts || !extracted.crafts.length) {
+    if (!extracted.crafts || extracted.crafts.length < 6) {
       renderManualTable(state.catalog)
       throw new Error(
-        'OCR로 공예품을 찾지 못했습니다. 글자가 선명한 스크린샷을 올리거나, 아래 표에서 가격을 직접 입력한 뒤 「수동 저장」을 누르세요.'
+        'OCR로 공예품 6종을 모두 읽지 못했습니다. 「공예품 시세 변동」전체 화면을 선명하게 올리거나, 아래 표에서 직접 입력 후 「수동 저장」하세요.'
       )
     }
 
@@ -381,11 +415,13 @@ const runAutoPipeline = async (file) => {
     state.catalog = saveResult.catalog || state.catalog
     renderManualTable(state.catalog)
 
-    notifyMainSiteCraftsUpdated(state.catalog.updatedAt)
+    saveCraftCatalogCache(state.catalog)
+    notifyMainSiteCraftsUpdated(state.catalog)
 
     setPipelineStep('')
+    const n = extracted.priceUpdatedCount || 0
     setStatus(
-      `완료! 공예품 ${extracted.crafts.length}건 반영됨. index.html에서 확인하세요.`,
+      `완료! 공예품 6종 저장 (시세 OCR 반영 ${n}건). index.html을 새로고침하세요.`,
       false
     )
   } catch (error) {
