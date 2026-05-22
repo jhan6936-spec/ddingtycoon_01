@@ -10418,7 +10418,7 @@ function renderCraftPricePanel(effects) {
   headerRow.style.cssText = 'display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;flex-wrap:wrap;gap:8px;';
   headerRow.innerHTML = `
     <div style="font-size:14px;font-weight:900;color:#e5e5e5;">공예품 가격</div>
-    <div style="font-size:11px;color:#e8945a;font-weight:600;">현재 시세·변동(▲▼)·최고가 상한(5만~100만)·도달% 표시. 레시피·최고가는 고정입니다.</div>
+    <div style="font-size:11px;color:#e8945a;font-weight:600;">현재 시세·최고가 대비 % 자동 표시. 두 번째 시세부터 전회 대비 변동(▲▼) 표시.</div>
   `;
   containerCraftPrice.appendChild(headerRow);
 
@@ -10435,18 +10435,21 @@ function renderCraftPricePanel(effects) {
       currentPrice = repairCraftCurrentPrice(recipe.name, currentPrice);
     }
     const maxPrice = ceiling || Number(recipe.maxPrice) || 0;
-    const priceChange = Number(recipe.priceChange) || 0;
+    const hasPriceChange = recipe.priceChange != null && Number.isFinite(Number(recipe.priceChange));
+    const priceChange = hasPriceChange ? Number(recipe.priceChange) : 0;
     const changeAbs = Math.abs(priceChange).toLocaleString();
-    const changeHtml = priceChange > 0
-      ? `<span style="color:#f87171;font-weight:800;">▲ ${changeAbs}G</span>`
-      : priceChange < 0
-        ? `<span style="color:#60a5fa;font-weight:800;">▼ ${changeAbs}G</span>`
-        : `<span style="color:#777;">변동 없음</span>`;
+    const changeHtml = !hasPriceChange
+      ? `<span style="color:#666;">—</span>`
+      : priceChange > 0
+        ? `<span style="color:#f87171;font-weight:800;">▲ ${changeAbs}G</span>`
+        : priceChange < 0
+          ? `<span style="color:#60a5fa;font-weight:800;">▼ ${changeAbs}G</span>`
+          : `<span style="color:#777;">변동 없음</span>`;
     let ratio = 0;
-    if (recipe.maxPricePercent >= 1 && recipe.maxPricePercent <= 100) {
-      ratio = recipe.maxPricePercent;
-    } else if (maxPrice > 0 && currentPrice > 0) {
-      ratio = (currentPrice / maxPrice) * 100;
+    if (maxPrice > 0 && currentPrice > 0) {
+      ratio = recipe.maxPricePercent >= 1 && recipe.maxPricePercent <= 100
+        ? recipe.maxPricePercent
+        : (currentPrice / maxPrice) * 100;
     }
     const ratioColor = ratio >= 80 ? '#4ade80' : ratio <= 50 ? '#f87171' : '#facc15';
     const boostedRecipePrice = Math.round(recipePrice * (1 + (effects.craftPriceBoost / 100)));
