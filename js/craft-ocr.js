@@ -65,17 +65,10 @@ const extractMaxPricePercent = (segment) => {
 
 const extractPriceChange = (text) => {
   const t = String(text || '')
-  const patterns = [
-    /(?:▲|△|↑|＋|\+)\s*([\dOo,\s.]{3,})/,
-    /(?:▼|▽|↓|－|-)\s*([\dOo,\s.]{3,})/,
-    /(?:▲|▼)\s*([\dOo,\s.]{3,})/
-  ]
-  for (const re of patterns) {
-    const up = t.match(new RegExp('(?:▲|△|↑|＋|\\+)\\s*([\\dOo,\\s.]{3,})'))
-    if (up) return parseGoldNumber(up[1])
-    const down = t.match(/(?:▼|▽|↓|－|-)\s*([\dOo,\s.]{3,})/)
-    if (down) return -parseGoldNumber(down[1])
-  }
+  const up = t.match(/(?:▲|△|↑|＋|\+)\s*([\dOo,\s.]{3,})/)
+  if (up) return parseGoldNumber(up[1])
+  const down = t.match(/(?:▼|▽|↓|－|-)\s*([\dOo,\s.]{3,})/)
+  if (down) return -parseGoldNumber(down[1])
   return 0
 }
 
