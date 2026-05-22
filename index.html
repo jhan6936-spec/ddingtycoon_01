@@ -10952,11 +10952,16 @@ function analyzeEfficiency() {
       if (recipe) accumulateFinalRecipeNeeds(recipe, count, rawTotals, planOpts);
     });
     const { shell, vanilla } = splitShellfishVanillaTotals(rawTotals);
+    const planMaterialTotals = {};
+    Object.entries(rawTotals).forEach(([name, n]) => {
+      if (!n || n <= 0) return;
+      if (isRemainingMaterialStockName(name)) planMaterialTotals[name] = n;
+    });
 
     const directInputs = aggregatePlanDirectInputs(planEntries);
     const summaryBox = document.createElement('div');
     summaryBox.className = 'alchemy-mat-summary';
-    lastAlchemySummaryData = { shell, vanilla, directInputs, planEntries };
+    lastAlchemySummaryData = { shell, vanilla, directInputs, planEntries, planMaterialTotals };
     summaryBox.innerHTML = `
       <div class="alchemy-summary-head-row">
         <div class="alchemy-summary-title-text">추천 제작 기준 필요 재료 합계</div>
@@ -10993,11 +10998,11 @@ function analyzeEfficiency() {
     applyAlchemyMatPanelVisibility();
     syncAlchemySummaryQtyButtons();
 
-    const remainingShellEl = renderRemainingShellfishAccordion(
+    const remainingMatEl = renderRemainingMaterialsAccordion(
       warehouseStockSnapshot,
-      lastAlchemySummaryData ? lastAlchemySummaryData.shell : {}
+      lastAlchemySummaryData ? lastAlchemySummaryData.planMaterialTotals : {}
     );
-    if (remainingShellEl) containerAlchemy.appendChild(remainingShellEl);
+    if (remainingMatEl) containerAlchemy.appendChild(remainingMatEl);
   }
   
   renderCraftPricePanel(effects);
