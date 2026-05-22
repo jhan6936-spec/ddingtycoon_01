@@ -22,7 +22,7 @@ const text = [
   '흑진주 시계 477,579 Gold ▼ 257,485 최고가의 48%'
 ].join('\n')
 
-const r = ctx.window.CraftOcr.parseCraftsFromOcrText(text, { crafts: [] })
+const r = ctx.window.CraftOcr.parseCraftsFromOcrText(text)
 const { CRAFT_MAX_PRICES } = require('../lib/craft-recipe-fixed')
 r.crafts.forEach((c) => {
   console.log(c.name, c.currentPrice, c.priceChange, c.maxPricePercent + '%', 'max', c.maxPrice, 'ceiling', CRAFT_MAX_PRICES[c.name])
