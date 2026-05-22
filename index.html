@@ -2613,8 +2613,27 @@
       font-size: 13px;
       color: #c4c4c4;
       padding: 6px 0;
-      white-space: nowrap;
       letter-spacing: 0.01em;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px 10px;
+    }
+    .craft-ingredient-price-input {
+      width: 76px;
+      min-width: 64px;
+      padding: 3px 6px;
+      font-size: 12px;
+      text-align: right;
+      border-radius: 4px;
+      border: 1px solid rgba(100, 130, 170, 0.45);
+      background: rgba(8, 14, 28, 0.85);
+      color: #c8daf0;
+    }
+    .craft-ingredient-price-input:focus {
+      outline: none;
+      border-color: #56a3f1;
     }
     #craftPriceHistoryWrap {
       margin-top: 56px;
