@@ -6,13 +6,14 @@
   <title>띵타해 | 공예품 데이터 관리</title>
   <link rel="icon" href="assets/favicon/favicon-32x32.png" type="image/png">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
 <body class="min-h-screen bg-slate-950 text-slate-100">
   <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur">
     <div class="mx-auto max-w-6xl px-4 py-4 flex flex-wrap items-center justify-between gap-3">
       <div>
         <h1 class="text-lg font-semibold text-sky-300">공예품 데이터 관리</h1>
-        <p class="text-xs text-slate-400 mt-1">로그인 후 사진만 올리면 띵타해 메인 사이트에 자동 반영</p>
+        <p class="text-xs text-slate-400 mt-1">무료 OCR(Tesseract) → Supabase 즉시 반영 · OpenAI 불필요</p>
       </div>
       <a href="index.html" class="text-sm text-sky-400 hover:text-sky-300 underline">← 메인 계산기</a>
     </div>
@@ -42,6 +43,7 @@
         </button>
       </div>
       <p id="authMessage" class="text-sm text-slate-400" aria-live="polite"></p>
+      <p class="text-xs text-slate-500">필수 Vercel 변수: ADMIN_SECRET, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY (OPENAI_API_KEY 불필요)</p>
     </section>
 
     <section class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-4">
@@ -55,7 +57,7 @@
           class="flex min-h-[280px] w-full cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-slate-600 bg-slate-950/80 px-6 py-12 text-center text-sm text-slate-400 hover:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <p id="dropZoneTitle">로그인 후 스크린샷을 드래그하거나 클릭</p>
-          <p class="text-xs mt-2 text-slate-500">업로드 즉시 분석 → 저장 → index.html 공예품 가격 반영</p>
+          <p class="text-xs mt-2 text-slate-500">공예품 가격 화면이 글자 크게 보이게 캡처할수록 정확합니다</p>
         </div>
         <div id="pipelineOverlay" class="hidden absolute inset-0 flex items-center justify-center rounded-lg bg-slate-950/90">
           <div class="text-center px-4">
@@ -67,9 +69,39 @@
       <input id="imageInput" type="file" accept="image/*" class="hidden" aria-hidden="true" disabled />
       <img id="imagePreview" alt="업로드 미리보기" class="hidden max-h-80 w-full rounded-lg object-contain border border-slate-700" />
       <p id="statusMessage" class="text-sm text-slate-400" aria-live="polite"></p>
+      <details class="rounded-lg border border-slate-700/80 bg-slate-950/50 p-3 text-xs">
+        <summary class="cursor-pointer text-slate-400">OCR 인식 텍스트 보기</summary>
+        <p id="ocrParseSummary" class="text-slate-500 mt-2 mb-2"></p>
+        <pre id="ocrTextPreview" class="max-h-40 overflow-auto text-slate-400 whitespace-pre-wrap"></pre>
+      </details>
+    </section>
+
+    <section class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-3 overflow-x-auto">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 class="text-sm font-medium text-slate-300">수동 수정 (OCR 실패 시)</h2>
+        <button
+          id="manualSaveBtn"
+          type="button"
+          class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+        >
+          수동 저장
+        </button>
+      </div>
+      <table class="w-full min-w-[520px] text-left text-sm">
+        <thead class="text-xs text-slate-400 border-b border-slate-700">
+          <tr>
+            <th class="px-2 py-2">공예품</th>
+            <th class="px-2 py-2">제작 판매가</th>
+            <th class="px-2 py-2">현재가</th>
+            <th class="px-2 py-2">최고가</th>
+          </tr>
+        </thead>
+        <tbody id="manualTableBody"></tbody>
+      </table>
     </section>
   </main>
 
+  <script src="js/craft-ocr.js"></script>
   <script src="js/admin.js"></script>
 </body>
 </html>
