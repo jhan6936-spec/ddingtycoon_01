@@ -9054,6 +9054,56 @@ function splitShellfishVanillaTotals(rawTotals) {
   return { shell, vanilla };
 }
 
+/** 창고 보유 − 추천 연금 제작 소모 = 남는 어패류 (0·음수 제외) */
+function computeRemainingShellfishRows(warehouseStock, usedShellTotals) {
+  const stock = warehouseStock || {};
+  const used = usedShellTotals || {};
+  const names = new Set();
+  Object.keys(stock).forEach((name) => {
+    if (isShellfishStockName(name)) names.add(name);
+  });
+  Object.keys(used).forEach((name) => {
+    if (isShellfishStockName(name)) names.add(name);
+  });
+
+  const rows = [];
+  names.forEach((name) => {
+    const have = Math.max(0, Math.floor(Number(stock[name]) || 0));
+    const consumed = Math.max(0, Math.floor(Number(used[name]) || 0));
+    const left = have - consumed;
+    if (left > 0) rows.push({ name, left });
+  });
+
+  rows.sort((a, b) => {
+    const starA = (a.name.match(/★/g) || []).length;
+    const starB = (b.name.match(/★/g) || []).length;
+    if (starA !== starB) return starA - starB;
+    return a.name.localeCompare(b.name, 'ko');
+  });
+  return rows;
+}
+
+function renderRemainingShellfishAccordion(warehouseStock, usedShellTotals) {
+  const rows = computeRemainingShellfishRows(warehouseStock, usedShellTotals);
+  if (!rows.length) return null;
+
+  const listHtml = rows
+    .map(({ name, left }) => {
+      const img = buildImageTag(name, '', 'height:16px;vertical-align:middle;');
+      const label = img ? `${img}<span>${name}</span>` : `<span>${name}</span>`;
+      return `<li class="alchemy-remaining-shellfish-item">${label}<strong>×${left.toLocaleString()}</strong></li>`;
+    })
+    .join('');
+
+  const wrap = document.createElement('details');
+  wrap.className = 'alchemy-remaining-shellfish';
+  wrap.innerHTML = `
+    <summary>남는 어패류 <span class="alchemy-remaining-chevron" aria-hidden="true">▼</span></summary>
+    <ul class="alchemy-remaining-shellfish-list">${listHtml}</ul>
+  `;
+  return wrap;
+}
+
 function formatAlchemyMaterialLinesHTML(matObj, qtyMode) {
   const mode = qtyMode != null ? qtyMode : alchemySummaryQtyMode;
   const entries = Object.entries(matObj).filter(([, c]) => c > 0).sort((a, b) => a[0].localeCompare(b[0], 'ko'));
@@ -10608,7 +10658,8 @@ function handleEfficiencyInputChanged() {
 }
 
 function analyzeEfficiency() {
-  const inventory = getWarehouseInventory();
+  const warehouseStockSnapshot = { ...getWarehouseInventory() };
+  const inventory = { ...warehouseStockSnapshot };
   const effects = getExpertEffects();
   const vanillaToggle = document.getElementById('vanillaCalcToggle');
   const isVanillaCalcOn = vanillaToggle ? vanillaToggle.checked : true;
@@ -10837,6 +10888,12 @@ function analyzeEfficiency() {
     refreshAlchemyMaterialPanelBodies();
     applyAlchemyMatPanelVisibility();
     syncAlchemySummaryQtyButtons();
+
+    const remainingShellEl = renderRemainingShellfishAccordion(
+      warehouseStockSnapshot,
+      lastAlchemySummaryData ? lastAlchemySummaryData.shell : {}
+    );
+    if (remainingShellEl) containerAlchemy.appendChild(remainingShellEl);
   }
   
   renderCraftPricePanel(effects);
