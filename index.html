@@ -2613,27 +2613,8 @@
       font-size: 13px;
       color: #c4c4c4;
       padding: 6px 0;
+      white-space: nowrap;
       letter-spacing: 0.01em;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px 10px;
-    }
-    .craft-ingredient-price-input {
-      width: 76px;
-      min-width: 64px;
-      padding: 3px 6px;
-      font-size: 12px;
-      text-align: right;
-      border-radius: 4px;
-      border: 1px solid rgba(100, 130, 170, 0.45);
-      background: rgba(8, 14, 28, 0.85);
-      color: #c8daf0;
-    }
-    .craft-ingredient-price-input:focus {
-      outline: none;
-      border-color: #56a3f1;
     }
     #craftPriceHistoryWrap {
       margin-top: 56px;
@@ -10773,10 +10754,6 @@ function toggleCraftSalesCalcPanel() {
 function updateCraftSalesCalcTotals() {
   const effects = getExpertEffects();
   const boost = effects.craftPriceBoost || 0;
-  const lookup =
-    window.CraftSellPrice && typeof window.CraftSellPrice.buildNpcPriceLookup === 'function'
-      ? window.CraftSellPrice.buildNpcPriceLookup(data)
-      : null;
   const craftMap = new Map(data.recipes.filter(r => r.group === 'craft').map(r => [r.name, r]));
   let totalBase = 0;
   let totalAdj = 0;
@@ -10786,14 +10763,12 @@ function updateCraftSalesCalcTotals() {
     craftSalesInputState[name] = cnt;
     const recipe = craftMap.get(name);
     const baseUnit =
-      recipe && lookup && window.CraftSellPrice
-        ? window.CraftSellPrice.computeCraftBaseSellPrice(recipe, lookup)
-        : recipe
-          ? recipe.price || 0
-          : 0;
+      recipe && window.CraftSellPrice
+        ? window.CraftSellPrice.getCraftMarketBasePrice(recipe)
+        : 0;
     const adjUnit =
-      recipe && lookup && window.CraftSellPrice
-        ? window.CraftSellPrice.computeCraftBoostedSellPrice(recipe, effects, lookup)
+      recipe && window.CraftSellPrice
+        ? window.CraftSellPrice.getCraftMarketBoostedPrice(recipe, effects)
         : Math.round(baseUnit * (1 + boost / 100));
     const lineBase = baseUnit * cnt;
     const lineAdj = adjUnit * cnt;
