@@ -89,25 +89,32 @@ const extractPercentFromSegment = (segment) => {
 const extractMarketPrices = (segment) => {
   const rawNums =
     String(segment || '').match(/\d{1,3}(?:[,\s]\d{3})+|\d{4,7}/g)?.map(parseGoldNumber) || []
-  const big = rawNums.filter((n) => n >= 5000)
-  const small = rawNums.filter((n) => n >= 1 && n <= 100)
+  const sortedBig = [...new Set(rawNums.filter((n) => n >= 5000))].sort((a, b) => b - a)
 
-  let currentPrice = 0
-  if (big.length) {
-    currentPrice = Math.max(...big)
+  let currentPrice = sortedBig[0] || 0
+  let priceChange = 0
+
+  const upMatch = segment.match(/(?:▲|△|↑|상승)\s*[:\s]*(\d[\d,.\s]{2,})/i)
+  const downMatch = segment.match(/(?:▼|▽|↓|하락)\s*[:\s]*(\d[\d,.\s]{2,})/i)
+  if (upMatch) {
+    priceChange = parseGoldNumber(upMatch[1])
+  } else if (downMatch) {
+    priceChange = -parseGoldNumber(downMatch[1])
+  } else if (sortedBig.length >= 2) {
+    const changeAbs = sortedBig[1]
+    if (changeAbs < currentPrice * 3) {
+      priceChange = /[▼▽↓]|하락/i.test(segment) ? -changeAbs : changeAbs
+    }
   }
 
   let percent = extractPercentFromSegment(segment)
-  if (!percent && small.length) {
-    percent = small[small.length - 1]
-  }
 
   let maxPrice = 0
   if (currentPrice > 0 && percent > 0) {
     maxPrice = Math.round(currentPrice / (percent / 100))
   }
 
-  return { currentPrice, maxPrice, percent }
+  return { currentPrice, priceChange, maxPrice, percent }
 }
 
 const parseInputsNear = (segment) => {
@@ -145,12 +152,13 @@ const parseMarketScreen = (text, baseCatalog) => {
     const segment = segments[name]
     if (!segment) continue
 
-    const { currentPrice, maxPrice } = extractMarketPrices(segment)
+    const { currentPrice, priceChange, maxPrice } = extractMarketPrices(segment)
     if (!currentPrice) continue
 
     const existing = baseMap.get(name) || {}
     const craft = buildCraftFromDefaults(name, {
       currentPrice,
+      priceChange: priceChange || 0,
       maxPrice: maxPrice || existing.maxPrice || 0,
       timeMinutes: existing.timeMinutes || 1,
       time: existing.time || 1
