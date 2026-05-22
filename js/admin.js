@@ -159,8 +159,10 @@ const setUploadEnabled = (enabled) => {
   const dropZone = el('dropZone')
   const title = el('dropZoneTitle')
   const fixBtn = el('fixRecipesBtn')
+  const clearBtn = el('clearHistoryBtn')
   const manualBtn = el('manualSaveBtn')
   if (fixBtn) fixBtn.disabled = !enabled
+  if (clearBtn) clearBtn.disabled = !enabled
   if (manualBtn) manualBtn.disabled = !enabled
   if (fileInput) fileInput.disabled = !enabled
   if (dropZone) {
