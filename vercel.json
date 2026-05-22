@@ -3,6 +3,13 @@
   "outputDirectory": ".",
   "rewrites": [
     { "source": "/callback", "destination": "/auth/callback" },
-    { "source": "/callback/", "destination": "/auth/callback" }
+    { "source": "/callback/", "destination": "/auth/callback" },
+    { "source": "/api/minecraft/link/start", "destination": "/api/minecraft/link?action=start" },
+    { "source": "/api/minecraft/link/status", "destination": "/api/minecraft/link?action=status" },
+    { "source": "/api/minecraft/link/restore", "destination": "/api/minecraft/link?action=restore" },
+    { "source": "/api/minecraft/link/me", "destination": "/api/minecraft/link?action=me" },
+    { "source": "/api/minecraft/link/claim", "destination": "/api/minecraft/link?action=claim" },
+    { "source": "/api/admin/verify", "destination": "/api/admin/crafts?action=verify" },
+    { "source": "/api/admin/fix-recipes", "destination": "/api/admin/crafts?action=fix-recipes" }
   ]
 }
