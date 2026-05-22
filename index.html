@@ -10850,21 +10850,18 @@ function renderCraftPricePanel(effects) {
   list.className = 'craft-price-grid';
   list.id = 'craftPriceCardList';
 
-  const priceLookup =
-    window.CraftSellPrice && typeof window.CraftSellPrice.buildNpcPriceLookup === 'function'
-      ? window.CraftSellPrice.buildNpcPriceLookup(data)
-      : new Map();
-
   craftItems.forEach((recipe) => {
-    const recipePrice =
-      window.CraftSellPrice && typeof window.CraftSellPrice.computeCraftBaseSellPrice === 'function'
-        ? window.CraftSellPrice.computeCraftBaseSellPrice(recipe, priceLookup)
-        : recipe.price || 0;
     const ceiling = typeof getCraftMaxPrice === 'function' ? getCraftMaxPrice(recipe.name) : 0;
     let currentPrice = Number(recipe.currentPrice) || 0;
     if (typeof repairCraftCurrentPrice === 'function') {
       currentPrice = repairCraftCurrentPrice(recipe.name, currentPrice);
     }
+    const baseSellPrice =
+      window.CraftSellPrice && typeof window.CraftSellPrice.getCraftMarketBasePrice === 'function'
+        ? window.CraftSellPrice.getCraftMarketBasePrice(recipe)
+        : currentPrice >= 500
+          ? currentPrice
+          : 0;
     const maxPrice = ceiling || Number(recipe.maxPrice) || 0;
     const hasPriceChange = recipe.priceChange != null && Number.isFinite(Number(recipe.priceChange));
     const priceChange = hasPriceChange ? Number(recipe.priceChange) : 0;
@@ -10884,33 +10881,18 @@ function renderCraftPricePanel(effects) {
     }
     const ratioColor = ratio >= 80 ? '#4ade80' : ratio <= 50 ? '#f87171' : '#facc15';
     const boostedRecipePrice =
-      window.CraftSellPrice && typeof window.CraftSellPrice.computeCraftBoostedSellPrice === 'function'
-        ? window.CraftSellPrice.computeCraftBoostedSellPrice(recipe, effects, priceLookup)
-        : Math.round(recipePrice * (1 + (effects.craftPriceBoost / 100)));
-    const hasCraftBoost = effects.craftPriceBoost > 0;
+      window.CraftSellPrice && typeof window.CraftSellPrice.getCraftMarketBoostedPrice === 'function'
+        ? window.CraftSellPrice.getCraftMarketBoostedPrice(recipe, effects)
+        : baseSellPrice >= 500
+          ? Math.round(baseSellPrice * (1 + (effects.craftPriceBoost / 100)))
+          : 0;
+    const hasCraftBoost = effects.craftPriceBoost > 0 && baseSellPrice >= 500;
     const titleImgHTML = buildImageTag(recipe.name, recipe.name, 'height:22px; margin-right:8px; vertical-align:middle;');
     const titleHTML = titleImgHTML ? `${titleImgHTML}${recipe.name}` : recipe.name;
     const ingredientsHTML = (recipe.inputs || []).map((i) => {
       const imgHTML = buildImageTag(i.name, i.name, 'height:16px; margin-right:6px; vertical-align:middle;');
       const label = imgHTML ? `${imgHTML}${i.name}` : i.name;
-      const unitPrice =
-        window.CraftSellPrice && typeof window.CraftSellPrice.getCraftIngredientUnitPrice === 'function'
-          ? window.CraftSellPrice.getCraftIngredientUnitPrice(i.name, priceLookup)
-          : priceLookup.get(i.name) || 0;
-      const safeName = String(i.name).replace(/"/g, '&quot;');
-      return `<div class="craft-price-ingredient">
-        <span>${label} x${i.count}</span>
-        <input
-          type="number"
-          min="0"
-          step="1"
-          class="craft-ingredient-price-input"
-          data-ingredient="${safeName}"
-          value="${unitPrice > 0 ? unitPrice : ''}"
-          placeholder="단가"
-          aria-label="${safeName} 재료 단가"
-        />
-      </div>`;
+      return `<div class="craft-price-ingredient">${label} x${i.count}</div>`;
     }).join('');
 
     const card = document.createElement('div');
