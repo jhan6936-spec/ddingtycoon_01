@@ -95,8 +95,7 @@ const CraftsCatalog = {
         }
         if (prev.currentPrice > 0) merged.currentPrice = prev.currentPrice
         if (prev.maxPrice > 0) merged.maxPrice = prev.maxPrice
-        if (prev.priceChange) merged.priceChange = prev.priceChange
-        if (prev.maxPricePercent > 0) merged.maxPricePercent = prev.maxPricePercent
+        if (prev.priceChange != null) merged.priceChange = prev.priceChange
         return typeof window.applyFixedCraftRecipe === 'function'
           ? window.applyFixedCraftRecipe(merged)
           : merged
@@ -121,8 +120,9 @@ const CraftsCatalog = {
     }
     if (item.currentPrice != null) recipe.currentPrice = Math.max(0, Number(item.currentPrice) || 0)
     if (item.maxPrice != null) recipe.maxPrice = Math.max(0, Number(item.maxPrice) || 0)
-    if (item.priceChange != null) recipe.priceChange = Math.floor(Number(item.priceChange) || 0)
-    if (item.maxPricePercent != null) recipe.maxPricePercent = Math.floor(Number(item.maxPricePercent) || 0)
+    if (item.priceChange != null && item.priceChange !== '') {
+      recipe.priceChange = Math.floor(Number(item.priceChange))
+    }
     if (typeof window.applyFixedCraftRecipe === 'function') {
       return window.applyFixedCraftRecipe(recipe)
     }
@@ -143,8 +143,9 @@ const CraftsCatalog = {
         }
         if (row.current_price != null) craft.currentPrice = Number(row.current_price) || 0
         if (row.max_price != null) craft.maxPrice = Number(row.max_price) || 0
-        if (row.price_change != null) craft.priceChange = Number(row.price_change) || 0
-        return craft
+        if (row.price_change != null && row.price_change !== '') {
+          craft.priceChange = Number(row.price_change)
+        }
       })
       .filter(Boolean)
 
