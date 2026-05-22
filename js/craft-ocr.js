@@ -100,9 +100,7 @@ const collectNumberCandidates = (text, excludeAbs, percent) => {
   const re = /\d{1,3}(?:[,\s.]?\d{3})+|\d{4,7}/g
   let m
   while ((m = re.exec(text))) {
-    const n = parseGoldNumber(m[0])
-    if (n >= 1000 && n <= 100) continue
-    push(n, 1)
+    push(parseGoldNumber(m[0]), 1)
   }
 
   return found
@@ -110,7 +108,7 @@ const collectNumberCandidates = (text, excludeAbs, percent) => {
 
 const pickCurrentPrice = (name, chunk, percent, changeAbs) => {
   const ceiling = getCeiling(name)
-  const candidates = collectNumberCandidates(chunk, changeAbs)
+  const candidates = collectNumberCandidates(chunk, changeAbs, percent)
 
   if (!candidates.length) return 0
 

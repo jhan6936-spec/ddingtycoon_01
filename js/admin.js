@@ -518,15 +518,22 @@ const runAutoPipeline = async (file) => {
       )
     }
 
-    if ((extracted.priceUpdatedCount || 0) < 4) {
-      setStatus(
-        `OCR 시세 인식이 부족합니다 (${extracted.priceUpdatedCount || 0}/6). OCR 결과 표·수동 입력란을 확인한 뒤 저장하세요.`,
-        true
-      )
-    }
-
     state.catalog = buildCatalogFromOcr(extracted)
     renderManualTable(state.catalog)
+
+    const issues = extracted.validationIssues || []
+    const lowCount = (extracted.priceUpdatedCount || 0) < 6
+    const lowConfidence = extracted.confidenceOk === false
+
+    if (lowCount || lowConfidence || issues.length) {
+      const detail = issues.length ? issues.join(' · ') : `시세 ${extracted.priceUpdatedCount || 0}/6`
+      setPipelineStep('')
+      setStatus(
+        `OCR 검증 실패 — 자동 저장하지 않았습니다. ${detail} · 아래 표를 고친 뒤 「수동 저장」하세요.`,
+        true
+      )
+      return
+    }
 
     setPipelineStep('③ Supabase에 저장 중…')
     state.lastSaveSource = 'ocr'
