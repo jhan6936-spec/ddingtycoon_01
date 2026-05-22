@@ -399,7 +399,7 @@ const runClientOcr = async (file) => {
     setPipelineStep(`② OCR 인식 중… ${pct}%`)
   })
   state.lastOcrText = text
-  return window.CraftOcr.parseCraftsFromOcrText(text, state.catalog)
+  return window.CraftOcr.parseCraftsFromOcrText(text)
 }
 
 const runSaveApi = async () => {
@@ -505,32 +505,25 @@ const runAutoPipeline = async (file) => {
       preview.classList.remove('hidden')
     }
 
-    await loadCatalogFromApi()
-    const baseBeforeAnalyze = {
-      version: state.catalog.version,
-      crafts: (state.catalog.crafts || []).map((c) => ({ ...c }))
-    }
-
     setPipelineStep('② OCR 인식 중… (시세 변동 화면 권장)')
     const extracted = await runClientOcr(file)
-    setOcrPreview(state.lastOcrText, extracted.crafts || [], extracted.screenType)
+    setOcrPreview(state.lastOcrText, extracted)
 
     if (!extracted.crafts || extracted.crafts.length < 6) {
-      renderManualTable(state.catalog)
+      await loadCatalogFromApi()
       throw new Error(
-        '공예품 6종 구성 실패. 「공예품 시세 변동」전체 화면을 선명하게 올리거나, 아래 표에서 직접 입력 후 「수동 저장」하세요.'
+        '공예품 6종 구성 실패. 「공예품 시세 변동」전체 화면(최고가의 N% 6줄)을 선명하게 올리거나, 아래 표에서 직접 입력 후 「수동 저장」하세요.'
       )
     }
 
     if ((extracted.priceUpdatedCount || 0) < 4) {
-      setOcrPreview(state.lastOcrText, extracted.crafts, extracted.screenType)
       setStatus(
-        `OCR 시세 인식이 부족합니다 (${extracted.priceUpdatedCount || 0}/6). 아래 표를 확인·수정 후 저장하세요.`,
+        `OCR 시세 인식이 부족합니다 (${extracted.priceUpdatedCount || 0}/6). OCR 결과 표·수동 입력란을 확인한 뒤 저장하세요.`,
         true
       )
     }
 
-    state.catalog = mergeCraftsByName(baseBeforeAnalyze, extracted)
+    state.catalog = buildCatalogFromOcr(extracted)
     renderManualTable(state.catalog)
 
     setPipelineStep('③ Supabase에 저장 중…')
@@ -586,6 +579,28 @@ const handleFileSelected = async (file) => {
   await runAutoPipeline(file)
 }
 
+const handleClearHistory = async () => {
+  if (!state.authenticated) {
+    setStatus('먼저 로그인하세요.', true)
+    return
+  }
+  if (!window.confirm('공예품 가격 이력(그래프)을 모두 삭제할까요? 되돌릴 수 없습니다.')) return
+
+  try {
+    setStatus('가격 이력 삭제 중…', false)
+    const res = await fetch('/api/admin/crafts?action=clear-history', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: '{}'
+    })
+    const body = await res.json().catch(() => ({}))
+    if (!res.ok) throw new Error(body.message || body.error || '삭제 실패')
+    setStatus(body.message || '가격 이력을 초기화했습니다. 다음 저장부터 그래프가 다시 쌓입니다.', false)
+  } catch (err) {
+    setStatus(String(err.message || err), true)
+  }
+}
+
 const handleFixRecipes = async () => {
   if (!state.authenticated) {
     setStatus('먼저 로그인하세요.', true)
@@ -615,6 +630,7 @@ const handleFixRecipes = async () => {
 const bindEvents = () => {
   el('loginBtn')?.addEventListener('click', handleLogin)
   el('fixRecipesBtn')?.addEventListener('click', handleFixRecipes)
+  el('clearHistoryBtn')?.addEventListener('click', handleClearHistory)
   el('adminSecret')?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') handleLogin()
   })
