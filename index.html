@@ -10414,23 +10414,6 @@ function renderCraftPricePanel(effects) {
 
   updateCraftSalesCalcTotals();
 
-  const currentPriceMap = {
-    '조개껍데기 브로치': 40624,
-    '푸른 향수병': 133645,
-    '자개 손거울': 144554,
-    '분홍 헤어핀': 94420,
-    '자개 부채': 630402,
-    '흑진주 시계': 631626
-  };
-  const maxPriceMap = {
-    '조개껍데기 브로치': 50178,
-    '푸른 향수병': 150163,
-    '자개 손거울': 301154,
-    '분홍 헤어핀': 496947,
-    '자개 부채': 700447,
-    '흑진주 시계': 1002581
-  };
-
   const headerRow = document.createElement('div');
   headerRow.style.cssText = 'display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;flex-wrap:wrap;gap:8px;';
   headerRow.innerHTML = `
