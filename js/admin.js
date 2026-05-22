@@ -117,6 +117,10 @@ const setUploadEnabled = (enabled) => {
   const fileInput = el('imageInput')
   const dropZone = el('dropZone')
   const title = el('dropZoneTitle')
+  const fixBtn = el('fixRecipesBtn')
+  const manualBtn = el('manualSaveBtn')
+  if (fixBtn) fixBtn.disabled = !enabled
+  if (manualBtn) manualBtn.disabled = !enabled
   if (fileInput) fileInput.disabled = !enabled
   if (dropZone) {
     dropZone.classList.toggle('opacity-50', !enabled)
@@ -203,7 +207,15 @@ const syncManualTableToCatalog = () => {
     byName.set(name, craft)
   })
 
-  state.catalog.crafts = names.map((name) => byName.get(name)).filter(Boolean)
+  state.catalog.crafts = names
+    .map((name) => {
+      const craft = byName.get(name)
+      if (!craft) return null
+      return typeof window.applyFixedCraftRecipe === 'function'
+        ? window.applyFixedCraftRecipe(craft)
+        : craft
+    })
+    .filter(Boolean)
 }
 
 const fetchApiErrorMessage = (error) => {
@@ -221,6 +233,9 @@ const loadCatalogFromApi = async () => {
     throw new Error(body.message || body.error || '공예품 데이터 로드 실패')
   }
   state.catalog = await response.json()
+  if (typeof window.applyFixedCraftRecipe === 'function' && state.catalog.crafts) {
+    state.catalog.crafts = state.catalog.crafts.map((c) => window.applyFixedCraftRecipe(c))
+  }
   renderManualTable(state.catalog)
 }
 

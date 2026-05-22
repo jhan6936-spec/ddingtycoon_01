@@ -23,14 +23,13 @@ module.exports = async function handler(req, res) {
 
     const crafts = Object.keys(CRAFT_FIXED_RECIPES).map((name) => {
       const prev = byName.get(name) || {}
-      const fixed = applyFixedRecipeToCraft({
+      return applyFixedRecipeToCraft({
         name,
         currentPrice: prev.currentPrice,
         priceChange: prev.priceChange,
         maxPrice: prev.maxPrice,
         maxPricePercent: prev.maxPricePercent
       })
-      return fixed
     })
 
     const saved = await upsertCraftItems(supabaseRest, { crafts }, { source: 'wiki-fix' })
