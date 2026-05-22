@@ -118,6 +118,13 @@ const refreshCraftSellPriceDisplays = (data, effects) => {
     }
   })
 
+  document.querySelectorAll('.craft-ingredient-price-input').forEach((inp) => {
+    const name = inp.getAttribute('data-ingredient')
+    if (!name) return
+    const unit = getCraftIngredientUnitPrice(name, lookup)
+    inp.value = unit > 0 ? String(unit) : ''
+  })
+
   if (typeof updateCraftSalesCalcTotals === 'function') {
     updateCraftSalesCalcTotals()
   }
