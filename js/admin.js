@@ -3,10 +3,9 @@ const CRAFTS_BROADCAST_CHANNEL = 'ddingtahe-crafts-updated'
 
 const state = {
   catalog: { version: 1, updatedAt: null, crafts: [] },
-  imageBase64: '',
-  mimeType: 'image/png',
   pipelineRunning: false,
-  authenticated: false
+  authenticated: false,
+  lastOcrText: ''
 }
 
 const el = (id) => document.getElementById(id)
@@ -20,18 +19,6 @@ const authHeaders = () => ({
   'Content-Type': 'application/json',
   Authorization: `Bearer ${getAdminSecret()}`
 })
-
-const fileToBase64 = (file) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => {
-      const dataUrl = String(reader.result || '')
-      const comma = dataUrl.indexOf(',')
-      resolve(comma >= 0 ? dataUrl.slice(comma + 1) : dataUrl)
-    }
-    reader.onerror = () => reject(reader.error)
-    reader.readAsDataURL(file)
-  })
 
 const mergeCraftsByName = (baseCatalog, incomingCatalog) => {
   const byName = new Map()
@@ -99,7 +86,7 @@ const setUploadEnabled = (enabled) => {
   }
   if (title) {
     title.textContent = enabled
-      ? '공예 UI 스크린샷을 드래그하거나 클릭'
+      ? '공예 UI 스크린샷을 드래그하거나 클릭 (무료 OCR)'
       : '로그인 후 스크린샷을 드래그하거나 클릭'
   }
 }
@@ -109,37 +96,100 @@ const setPipelineStep = (text) => {
   if (step) step.textContent = text || ''
 }
 
-const loadCatalogFromApi = async () => {
-  try {
-    const response = await fetch('/api/crafts', { cache: 'no-store' })
-    if (!response.ok) return
-    state.catalog = await response.json()
-  } catch (_) {}
+const setOcrPreview = (text, crafts) => {
+  const pre = el('ocrTextPreview')
+  const summary = el('ocrParseSummary')
+  if (pre) pre.textContent = text || '(인식된 텍스트 없음)'
+  if (summary) {
+    summary.textContent = crafts.length
+      ? `인식된 공예품: ${crafts.map((c) => c.name).join(', ')}`
+      : '공예품 이름을 찾지 못했습니다. 아래에서 수동 입력 후 저장하세요.'
+  }
 }
 
-const runAnalyzeApi = async () => {
-  const response = await fetch('/api/admin/analyze', {
-    method: 'POST',
-    headers: authHeaders(),
-    body: JSON.stringify({
-      imageBase64: state.imageBase64,
-      mimeType: state.mimeType
-    })
+const renderManualTable = (catalog) => {
+  const tbody = el('manualTableBody')
+  if (!tbody || !window.CraftOcr) return
+  tbody.innerHTML = ''
+  const names = window.CraftOcr.CRAFT_NAME_ORDER
+  const map = new Map((catalog.crafts || []).map((c) => [c.name, c]))
+
+  names.forEach((name, index) => {
+    const craft = map.get(name) || { name, price: 0, currentPrice: 0, maxPrice: 0, timeMinutes: 1, inputs: [] }
+    const tr = document.createElement('tr')
+    tr.className = 'border-b border-slate-700/60'
+    tr.innerHTML = `
+      <td class="px-2 py-2 text-slate-300">${name}</td>
+      <td class="px-2 py-2"><input data-field="price" data-index="${index}" type="number" class="w-full rounded bg-slate-900 border border-slate-600 px-2 py-1 text-sm" value="${Number(craft.price) || 0}" /></td>
+      <td class="px-2 py-2"><input data-field="currentPrice" data-index="${index}" type="number" class="w-full rounded bg-slate-900 border border-slate-600 px-2 py-1 text-sm" value="${Number(craft.currentPrice) || 0}" /></td>
+      <td class="px-2 py-2"><input data-field="maxPrice" data-index="${index}" type="number" class="w-full rounded bg-slate-900 border border-slate-600 px-2 py-1 text-sm" value="${Number(craft.maxPrice) || 0}" /></td>
+    `
+    tbody.appendChild(tr)
   })
-  const body = await response.json()
-  if (!response.ok) throw new Error(body.error || body.detail || '분석 실패')
-  return body.catalog || { crafts: [] }
+}
+
+const syncManualTableToCatalog = () => {
+  if (!window.CraftOcr) return
+  const names = window.CraftOcr.CRAFT_NAME_ORDER
+  const tbody = el('manualTableBody')
+  if (!tbody) return
+
+  const byName = new Map((state.catalog.crafts || []).map((c) => [c.name, { ...c }]))
+  tbody.querySelectorAll('input[data-field]').forEach((input) => {
+    const index = Number(input.getAttribute('data-index'))
+    const field = input.getAttribute('data-field')
+    const name = names[index]
+    if (!name) return
+    const craft = byName.get(name) || { name, group: 'craft', inputs: [], timeMinutes: 1, time: 1 }
+    craft[field] = Math.max(0, parseInt(input.value || '0', 10))
+    if (field === 'price' && !craft.currentPrice) craft.currentPrice = craft.price
+    craft.group = 'craft'
+    byName.set(name, craft)
+  })
+
+  state.catalog.crafts = names.map((name) => byName.get(name)).filter(Boolean)
+}
+
+const fetchApiErrorMessage = (error) => {
+  const msg = String(error?.message || error || '')
+  if (msg === 'Failed to fetch' || msg.includes('NetworkError')) {
+    return 'API 연결 실패. Vercel 배포 URL(https://…vercel.app/admin.html)에서 열었는지, 최신 코드가 배포됐는지 확인하세요.'
+  }
+  return msg
+}
+
+const loadCatalogFromApi = async () => {
+  const response = await fetch('/api/crafts', { cache: 'no-store' })
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}))
+    throw new Error(body.message || body.error || '공예품 데이터 로드 실패')
+  }
+  state.catalog = await response.json()
+  renderManualTable(state.catalog)
+}
+
+const runClientOcr = async (file) => {
+  if (!window.CraftOcr) throw new Error('OCR 모듈이 로드되지 않았습니다.')
+  let progress = 0
+  const text = await window.CraftOcr.runTesseractOnFile(file, (pct) => {
+    progress = pct
+    setPipelineStep(`② OCR 인식 중… ${pct}%`)
+  })
+  state.lastOcrText = text
+  const parsed = window.CraftOcr.parseCraftsFromOcrText(text, state.catalog)
+  return parsed
 }
 
 const runSaveApi = async () => {
+  syncManualTableToCatalog()
   state.catalog.updatedAt = new Date().toISOString()
   const response = await fetch('/api/admin/crafts', {
     method: 'PUT',
     headers: authHeaders(),
     body: JSON.stringify(state.catalog)
   })
-  const body = await response.json()
-  if (!response.ok) throw new Error(body.error || body.message || '저장 실패')
+  const body = await response.json().catch(() => ({}))
+  if (!response.ok) throw new Error(body.error || body.message || body.hint || '저장 실패')
   return body
 }
 
@@ -162,9 +212,10 @@ const handleLogin = async () => {
   try {
     const response = await fetch('/api/admin/verify', {
       method: 'POST',
-      headers: authHeaders()
+      headers: authHeaders(),
+      body: '{}'
     })
-    const body = await response.json()
+    const body = await response.json().catch(() => ({}))
     if (!response.ok || !body.ok) {
       state.authenticated = false
       setUploadEnabled(false)
@@ -182,11 +233,11 @@ const handleLogin = async () => {
     setAuthMessage('인증되었습니다.', false)
     setUploadEnabled(true)
     await loadCatalogFromApi()
-    setStatus('사진을 올리면 공예품 데이터가 자동으로 메인 사이트에 반영됩니다.', false)
+    setStatus('사진 업로드 시 무료 OCR로 분석 후 Supabase에 저장됩니다. (OpenAI 불필요)', false)
   } catch (error) {
     state.authenticated = false
     setUploadEnabled(false)
-    setAuthMessage(String(error.message || error), true)
+    setAuthMessage(fetchApiErrorMessage(error), true)
   } finally {
     if (btn) {
       btn.disabled = false
@@ -220,10 +271,8 @@ const runAutoPipeline = async (file) => {
   setPipelineBusy(true)
 
   try {
-    setPipelineStep('① 이미지 읽는 중…')
-    setStatus('자동 처리 시작…', false)
-    state.mimeType = file.type || 'image/png'
-    state.imageBase64 = await fileToBase64(file)
+    setPipelineStep('① 이미지 준비…')
+    setStatus('자동 처리 시작 (Tesseract OCR)…', false)
 
     const preview = el('imagePreview')
     if (preview) {
@@ -237,33 +286,61 @@ const runAutoPipeline = async (file) => {
       crafts: (state.catalog.crafts || []).map((c) => ({ ...c }))
     }
 
-    setPipelineStep('② GPT Vision으로 공예품 추출 중…')
-    const extracted = await runAnalyzeApi()
+    setPipelineStep('② OCR 인식 중… (한글, 무료)')
+    const extracted = await runClientOcr(file)
+    setOcrPreview(state.lastOcrText, extracted.crafts || [])
+
     if (!extracted.crafts || !extracted.crafts.length) {
-      throw new Error('이미지에서 공예품을 찾지 못했습니다. 공예 가격/목록 화면 전체가 보이게 다시 올려주세요.')
+      renderManualTable(state.catalog)
+      throw new Error(
+        'OCR로 공예품을 찾지 못했습니다. 글자가 선명한 스크린샷을 올리거나, 아래 표에서 가격을 직접 입력한 뒤 「수동 저장」을 누르세요.'
+      )
     }
 
     state.catalog = mergeCraftsByName(baseBeforeAnalyze, extracted)
+    renderManualTable(state.catalog)
 
-    setPipelineStep('③ 띵타해 웹에 저장 중…')
+    setPipelineStep('③ Supabase에 저장 중…')
     const saveResult = await runSaveApi()
     state.catalog = saveResult.catalog || state.catalog
+    renderManualTable(state.catalog)
 
     notifyMainSiteCraftsUpdated(state.catalog.updatedAt)
 
     setPipelineStep('')
     setStatus(
-      `완료! 공예품 ${extracted.crafts.length}건 반영됨. index.html 공예품 가격 탭을 확인하세요.`,
+      `완료! 공예품 ${extracted.crafts.length}건 반영됨. index.html에서 확인하세요.`,
       false
     )
   } catch (error) {
     setPipelineStep('')
-    setStatus(String(error.message || error), true)
+    setStatus(fetchApiErrorMessage(error), true)
+    renderManualTable(state.catalog)
   } finally {
     state.pipelineRunning = false
     setPipelineBusy(false)
     const fileInput = el('imageInput')
     if (fileInput) fileInput.value = ''
+  }
+}
+
+const handleManualSave = async () => {
+  if (!state.authenticated) {
+    setStatus('먼저 로그인하세요.', true)
+    return
+  }
+  setPipelineBusy(true)
+  setStatus('수동 입력 저장 중…', false)
+  try {
+    syncManualTableToCatalog()
+    const saveResult = await runSaveApi()
+    state.catalog = saveResult.catalog || state.catalog
+    notifyMainSiteCraftsUpdated(state.catalog.updatedAt)
+    setStatus('수동 저장 완료. 메인 사이트에 반영되었습니다.', false)
+  } catch (error) {
+    setStatus(fetchApiErrorMessage(error), true)
+  } finally {
+    setPipelineBusy(false)
   }
 }
 
@@ -276,6 +353,7 @@ const bindEvents = () => {
   el('adminSecret')?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') handleLogin()
   })
+  el('manualSaveBtn')?.addEventListener('click', handleManualSave)
 
   const fileInput = el('imageInput')
   if (fileInput) {
