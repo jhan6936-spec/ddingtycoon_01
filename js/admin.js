@@ -23,6 +23,38 @@ const authHeaders = () => ({
 
 const getCraftNames = () => window.CRAFT_NAME_ORDER || []
 
+const getSeoulTodayDateString = () => {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(new Date())
+  const pick = (type) => parts.find((p) => p.type === type)?.value || ''
+  return `${pick('year')}-${pick('month')}-${pick('day')}`
+}
+
+const initHistoryDateInput = () => {
+  const input = el('historyDate')
+  if (!input) return
+  const today = getSeoulTodayDateString()
+  if (!input.value) input.value = today
+  input.max = today
+}
+
+const getSelectedHistoryDate = () => {
+  const input = el('historyDate')
+  const raw = input ? String(input.value || '').trim() : ''
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw
+  return getSeoulTodayDateString()
+}
+
+const formatHistoryDateKorean = (yyyyMmDd) => {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(yyyyMmDd)
+  if (!m) return yyyyMmDd
+  return `${Number(m[2])}월 ${Number(m[3])}일`
+}
+
 const getCraftPercent = (name, currentPrice) => {
   const ceiling = typeof window.getCraftMaxPrice === 'function' ? window.getCraftMaxPrice(name) : 0
   const current = Number(currentPrice) || 0
@@ -178,11 +210,16 @@ const setAuthMessage = (message, isError) => {
 
 const setFormEnabled = (enabled) => {
   const saveBtn = el('dailySaveBtn')
+  const historyDate = el('historyDate')
   const fixBtn = el('fixRecipesBtn')
   const reanchorBtn = el('reanchorHistoryBtn')
   const clearBtn = el('clearHistoryBtn')
   const resetBtn = el('resetMarketBtn')
   if (saveBtn) saveBtn.disabled = !enabled
+  if (historyDate) {
+    historyDate.disabled = !enabled
+    if (enabled) initHistoryDateInput()
+  }
   if (fixBtn) fixBtn.disabled = !enabled
   if (reanchorBtn) reanchorBtn.disabled = !enabled
   if (clearBtn) clearBtn.disabled = !enabled
@@ -292,7 +329,8 @@ const handleLogin = async () => {
     setAuthMessage('인증되었습니다.', false)
     setFormEnabled(true)
     await loadCatalogFromApi()
-    setStatus('6종 현재 판매가를 입력한 뒤 「오늘 시세 저장」을 누르세요.', false)
+    initHistoryDateInput()
+    setStatus('6종 현재 판매가를 입력한 뒤 그래프 기록일을 확인하고 「시세 저장」을 누르세요.', false)
   } catch (error) {
     state.authenticated = false
     setFormEnabled(false)
