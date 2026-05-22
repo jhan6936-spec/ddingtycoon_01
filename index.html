@@ -9028,16 +9028,28 @@ function splitShellfishVanillaTotals(rawTotals) {
   return { shell, vanilla };
 }
 
-/** 창고 보유 − 추천 연금 제작 소모 = 남는 어패류 (0·음수 제외) */
-function computeRemainingShellfishRows(warehouseStock, usedShellTotals) {
+/** 남는 재료 목록: 어패류 + 1·2차 연금품(3성·바닐라 제외) */
+function isRemainingMaterialStockName(name) {
+  const n = String(name || '').trim();
+  if (!n) return false;
+  if (isShellfishStockName(n)) return true;
+  if (/★★★/.test(n)) return false;
+  if (categoryMap.alchemy1.includes(n) || categoryMap.alchemy2.includes(n)) return true;
+  if (/핵\s+★$/.test(n) || /정수\s+★$/.test(n)) return true;
+  if (/에센스\s+★★$/.test(n) || /결정\s+★★$/.test(n)) return true;
+  return false;
+}
+
+/** 창고 보유 − 추천 연금 제작 소모 = 남는 재료 (0·음수 제외) */
+function computeRemainingMaterialRows(warehouseStock, usedMaterialTotals) {
   const stock = warehouseStock || {};
-  const used = usedShellTotals || {};
+  const used = usedMaterialTotals || {};
   const names = new Set();
   Object.keys(stock).forEach((name) => {
-    if (isShellfishStockName(name)) names.add(name);
+    if (isRemainingMaterialStockName(name)) names.add(name);
   });
   Object.keys(used).forEach((name) => {
-    if (isShellfishStockName(name)) names.add(name);
+    if (isRemainingMaterialStockName(name)) names.add(name);
   });
 
   const rows = [];
@@ -9045,10 +9057,11 @@ function computeRemainingShellfishRows(warehouseStock, usedShellTotals) {
     const have = Math.max(0, Math.floor(Number(stock[name]) || 0));
     const consumed = Math.max(0, Math.floor(Number(used[name]) || 0));
     const left = have - consumed;
-    if (left > 0) rows.push({ name, left });
+    if (left > 0) rows.push({ name, left, isShellfish: isShellfishStockName(name) });
   });
 
   rows.sort((a, b) => {
+    if (a.isShellfish !== b.isShellfish) return a.isShellfish ? -1 : 1;
     const starA = (a.name.match(/★/g) || []).length;
     const starB = (b.name.match(/★/g) || []).length;
     if (starA !== starB) return starA - starB;
@@ -9057,8 +9070,8 @@ function computeRemainingShellfishRows(warehouseStock, usedShellTotals) {
   return rows;
 }
 
-function renderRemainingShellfishAccordion(warehouseStock, usedShellTotals) {
-  const rows = computeRemainingShellfishRows(warehouseStock, usedShellTotals);
+function renderRemainingMaterialsAccordion(warehouseStock, usedMaterialTotals) {
+  const rows = computeRemainingMaterialRows(warehouseStock, usedMaterialTotals);
   if (!rows.length) return null;
 
   const listHtml = rows
@@ -9072,7 +9085,7 @@ function renderRemainingShellfishAccordion(warehouseStock, usedShellTotals) {
   const wrap = document.createElement('details');
   wrap.className = 'alchemy-remaining-shellfish';
   wrap.innerHTML = `
-    <summary>남는 어패류 <span class="alchemy-remaining-chevron" aria-hidden="true">▼</span></summary>
+    <summary>남는 재료 <span class="alchemy-remaining-chevron" aria-hidden="true">▼</span></summary>
     <ul class="alchemy-remaining-shellfish-list">${listHtml}</ul>
   `;
   return wrap;
