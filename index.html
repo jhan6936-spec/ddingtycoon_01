@@ -10429,18 +10429,12 @@ function renderCraftPricePanel(effects) {
 
   craftItems.forEach((recipe) => {
     const recipePrice = recipe.price || 0;
-    const currentPrice = (recipe.currentPrice != null && recipe.currentPrice > 0)
-      ? recipe.currentPrice
-      : (currentPriceMap[recipe.name] || recipePrice);
-    let maxPrice = (recipe.maxPrice != null && recipe.maxPrice > 0)
-      ? recipe.maxPrice
-      : (maxPriceMap[recipe.name] || 0);
-    if (maxPrice > 0 && maxPrice < 1000 && currentPrice > 5000) {
-      maxPrice = maxPriceMap[recipe.name] || 0;
+    const ceiling = typeof getCraftMaxPrice === 'function' ? getCraftMaxPrice(recipe.name) : 0;
+    let currentPrice = Number(recipe.currentPrice) || 0;
+    if (typeof repairCraftCurrentPrice === 'function') {
+      currentPrice = repairCraftCurrentPrice(recipe.name, currentPrice);
     }
-    if (maxPrice > 0 && currentPrice > 0 && maxPrice < currentPrice * 0.5) {
-      maxPrice = maxPriceMap[recipe.name] || 0;
-    }
+    const maxPrice = ceiling || Number(recipe.maxPrice) || 0;
     const priceChange = Number(recipe.priceChange) || 0;
     const changeAbs = Math.abs(priceChange).toLocaleString();
     const changeHtml = priceChange > 0
@@ -10451,7 +10445,7 @@ function renderCraftPricePanel(effects) {
     let ratio = 0;
     if (recipe.maxPricePercent >= 1 && recipe.maxPricePercent <= 100) {
       ratio = recipe.maxPricePercent;
-    } else if (maxPrice > 0 && maxPrice >= currentPrice * 0.5) {
+    } else if (maxPrice > 0 && currentPrice > 0) {
       ratio = (currentPrice / maxPrice) * 100;
     }
     const ratioColor = ratio >= 80 ? '#4ade80' : ratio <= 50 ? '#f87171' : '#facc15';

@@ -268,10 +268,6 @@ const syncManualTableToCatalog = () => {
     }
     if (field === 'maxPricePercent') {
       craft.maxPricePercent = Math.min(100, Math.max(0, parseInt(input.value || '0', 10)))
-      delete craft.maxPrice
-      if (craft.currentPrice && craft.maxPricePercent) {
-        craft.maxPrice = calcMaxFromPercent(craft.currentPrice, craft.maxPricePercent)
-      }
     }
     if (field === 'priceChange') {
       craft.priceChange = parseInt(input.value || '0', 10)
