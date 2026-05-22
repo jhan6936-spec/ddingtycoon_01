@@ -5,7 +5,8 @@ const {
   verifyAdminSecret,
   normalizeCraftsPayload,
   readCraftsFromSupabase,
-  clearCraftPriceHistory
+  clearCraftPriceHistory,
+  resetCraftMarketData
 } = require('../../lib/crafts-store')
 const { CRAFT_FIXED_RECIPES, applyFixedRecipeToCraft } = require('../../lib/craft-recipe-fixed')
 
