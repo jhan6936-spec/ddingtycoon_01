@@ -151,8 +151,8 @@ const CraftPriceCharts = {
               labels: {
                 color: '#c8d0d8',
                 boxWidth: 14,
-                padding: 14,
-                font: { size: 12, lineHeight: 1.5 },
+                padding: 18,
+                font: { size: 12, lineHeight: 1.65 },
                 usePointStyle: true,
                 pointStyleWidth: 10
               }
@@ -176,7 +176,7 @@ const CraftPriceCharts = {
               ticks: {
                 color: '#9aa8b8',
                 maxRotation: 0,
-                padding: 8,
+                padding: 12,
                 font: { size: 11 }
               },
               grid: { color: 'rgba(255,255,255,0.06)' }
@@ -184,7 +184,7 @@ const CraftPriceCharts = {
             y: {
               ticks: {
                 color: '#9aa8b8',
-                padding: 10,
+                padding: 14,
                 font: { size: 11 },
                 callback: (v) => Number(v).toLocaleString() + 'G'
               },

@@ -10871,7 +10871,7 @@ function renderCraftPricePanel(effects) {
     const titleImgHTML = buildImageTag(recipe.name, recipe.name, 'height:24px; margin-right:10px; vertical-align:middle;');
     const titleHTML = titleImgHTML ? `${titleImgHTML}${recipe.name}` : recipe.name;
     const ingredientsHTML = (recipe.inputs || []).map((i) => {
-      const imgHTML = buildImageTag(i.name, i.name, 'height:18px; margin-right:6px; vertical-align:middle;');
+      const imgHTML = buildImageTag(i.name, i.name, 'height:20px; margin-right:10px; vertical-align:middle;');
       const label = imgHTML ? `${imgHTML}${i.name}` : i.name;
       return `<div class="craft-price-ingredient">${label} x${i.count}</div>`;
     }).join('');
