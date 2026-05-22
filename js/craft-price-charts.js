@@ -48,15 +48,15 @@ const CRAFT_CHART_STYLES = {
     pointBorderColor: '#ddd6fe'
   },
   '흑진주 시계': {
-    borderColor: '#334155',
-    backgroundColor: 'rgba(51, 65, 85, 0.25)',
-    pointBackgroundColor: '#1e293b',
+    borderColor: '#94a3b8',
+    backgroundColor: 'rgba(148, 163, 184, 0.2)',
+    pointBackgroundColor: '#0f172a',
     pointBorderColor: '#f8fafc',
-    borderWidth: 2.5,
+    borderWidth: 3,
     pointBorderWidth: 2.5,
     pointRadius: 5,
-    outlineColor: 'rgba(241, 245, 249, 0.92)',
-    outlineWidth: 6
+    outlineColor: 'rgba(255, 255, 255, 0.88)',
+    outlineWidth: 7
   }
 }
 
