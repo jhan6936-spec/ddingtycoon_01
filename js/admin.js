@@ -5,7 +5,8 @@ const state = {
   catalog: { version: 1, updatedAt: null, crafts: [] },
   pipelineRunning: false,
   authenticated: false,
-  lastOcrText: ''
+  lastOcrText: '',
+  lastSaveSource: 'ocr'
 }
 
 const el = (id) => document.getElementById(id)
@@ -186,7 +187,10 @@ const runSaveApi = async () => {
   const response = await fetch('/api/admin/crafts', {
     method: 'PUT',
     headers: authHeaders(),
-    body: JSON.stringify(state.catalog)
+    body: JSON.stringify({
+      ...state.catalog,
+      source: state.lastSaveSource || 'ocr'
+    })
   })
   const body = await response.json().catch(() => ({}))
   if (!response.ok) throw new Error(body.error || body.message || body.hint || '저장 실패')
@@ -301,6 +305,7 @@ const runAutoPipeline = async (file) => {
     renderManualTable(state.catalog)
 
     setPipelineStep('③ Supabase에 저장 중…')
+    state.lastSaveSource = 'ocr'
     const saveResult = await runSaveApi()
     state.catalog = saveResult.catalog || state.catalog
     renderManualTable(state.catalog)
@@ -333,6 +338,7 @@ const handleManualSave = async () => {
   setStatus('수동 입력 저장 중…', false)
   try {
     syncManualTableToCatalog()
+    state.lastSaveSource = 'manual'
     const saveResult = await runSaveApi()
     state.catalog = saveResult.catalog || state.catalog
     notifyMainSiteCraftsUpdated(state.catalog.updatedAt)

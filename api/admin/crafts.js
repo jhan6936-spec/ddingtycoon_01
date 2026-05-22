@@ -35,7 +35,8 @@ module.exports = async function handler(req, res) {
         return
       }
 
-      const saved = await upsertCraftItems(supabaseRest, normalized)
+      const source = body.source === 'manual' ? 'manual' : body.source === 'ocr' ? 'ocr' : 'admin'
+      const saved = await upsertCraftItems(supabaseRest, normalized, { source })
       sendJson(res, 200, {
         ok: true,
         catalog: saved,
