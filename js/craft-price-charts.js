@@ -49,14 +49,11 @@ const CraftPriceCharts = {
         const rows = await response.json()
         if (Array.isArray(rows)) return rows
       }
+      const text = await response.text().catch(() => '')
+      throw new Error('craft_price_history 조회 실패: ' + response.status + ' ' + text.slice(0, 120))
     }
 
-    const apiRes = await fetch('/api/crafts/history?days=' + encodeURIComponent(days), {
-      cache: 'no-store'
-    })
-    if (!apiRes.ok) throw new Error('가격 이력을 불러오지 못했습니다.')
-    const body = await apiRes.json()
-    return body.history || []
+    throw new Error('supabase-config.js에 SUPABASE_CONFIG(url, anonKey)가 필요합니다.')
   },
 
   buildDatasets(history) {

@@ -318,7 +318,10 @@ const fetchApiErrorMessage = (error) => {
 }
 
 const loadCatalogFromApi = async () => {
-  const response = await fetch('/api/crafts', { cache: 'no-store' })
+  const response = await fetch('/api/admin/crafts', {
+    cache: 'no-store',
+    headers: authHeaders()
+  })
   if (!response.ok) {
     const body = await response.json().catch(() => ({}))
     throw new Error(body.message || body.error || '공예품 데이터 로드 실패')
@@ -384,7 +387,7 @@ const handleLogin = async () => {
   setAuthMessage('비밀번호 확인 중…', false)
 
   try {
-    const response = await fetch('/api/admin/verify', {
+    const response = await fetch('/api/admin/crafts?action=verify', {
       method: 'POST',
       headers: authHeaders(),
       body: '{}'
@@ -542,7 +545,7 @@ const handleFixRecipes = async () => {
   }
   try {
     setStatus('위키 레시피 복구 중…', false)
-    const res = await fetch('/api/admin/fix-recipes', {
+    const res = await fetch('/api/admin/crafts?action=fix-recipes', {
       method: 'POST',
       headers: authHeaders()
     })

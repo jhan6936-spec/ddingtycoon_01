@@ -166,7 +166,7 @@ const CraftsCatalog = {
   async fetchFromSupabaseDirect() {
     const cfg = window.SUPABASE_CONFIG
     if (!cfg || !cfg.url || !cfg.anonKey) {
-      console.warn('[crafts-catalog] SUPABASE_CONFIG 없음 — /api/crafts 로 폴백')
+      console.warn('[crafts-catalog] SUPABASE_CONFIG 없음 — localStorage/위키 기본값 사용')
       return null
     }
     const base = String(cfg.url).replace(/\/$/, '')
@@ -194,33 +194,12 @@ const CraftsCatalog = {
     return catalog
   },
 
-  async fetchCatalogViaApi() {
-    const response = await fetch('/api/crafts', { cache: 'no-store' })
-    if (!response.ok) {
-      const body = await response.json().catch(() => ({}))
-      throw new Error(body.message || body.error || 'API crafts 조회 실패')
-    }
-    const catalog = await response.json()
-    if (!catalog || !Array.isArray(catalog.crafts)) {
-      throw new Error('공예품 카탈로그가 비어 있습니다.')
-    }
-    catalog.source = catalog.source || 'supabase-api'
-    const full = this.ensureSixCraftCatalog(catalog)
-    this.saveLocalCache(full)
-    return full
-  },
-
   async fetchCatalog() {
     try {
       const direct = await this.fetchFromSupabaseDirect()
       if (direct && direct.crafts.length) return direct
     } catch (directErr) {
       console.warn('[crafts-catalog] direct Supabase failed:', directErr)
-    }
-    try {
-      return await this.fetchCatalogViaApi()
-    } catch (apiErr) {
-      console.warn('[crafts-catalog] API fallback failed:', apiErr)
     }
     const cached = this.loadLocalCache()
     if (cached) {

@@ -6870,7 +6870,7 @@ async function fetchMinecraftLinkState() {
   const token = sessionData?.session?.access_token;
   if (!token) return { linked: false };
   try {
-    const response = await fetch('/api/minecraft/link/me', {
+    const response = await fetch('/api/minecraft/link?action=me', {
       headers: { Authorization: `Bearer ${token}` }
     });
     const body = await response.json().catch(() => ({}));
