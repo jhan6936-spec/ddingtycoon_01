@@ -8,7 +8,10 @@ window.CRAFT_NAME_ORDER = [
   '흑진주 시계'
 ]
 
-/** 공예품 고정 레시피·제작 판매가 (OCR/DB 변경 없음 — 위키 해양 제작 시설) */
+/** 레시피 잠금: 사용자가 직접 요청하기 전까지 재료·제작가는 아래 값만 사용 */
+window.CRAFT_RECIPES_LOCKED = true
+
+/** 위키 해양 제작 시설 기준 고정 레시피 */
 window.CRAFT_RECIPE_DEFAULTS = {
   '조개껍데기 브로치': {
     price: 47682,
@@ -94,39 +97,36 @@ window.getDefaultCraftRecipe = (name) => {
   }
 }
 
-const sanitizeCraftMarketFields = (out, fixed) => {
+const sanitizeCraftMarketFields = (out) => {
   if (!out) return out
+
   let current = Math.floor(Number(out.currentPrice) || 0)
   let max = Math.floor(Number(out.maxPrice) || 0)
   let change = Math.floor(Number(out.priceChange) || 0)
-  const base = fixed && fixed.price ? fixed.price : 0
+  let pct = Math.floor(Number(out.maxPricePercent) || 0)
 
-  if (max >= 1 && max <= 100 && current > 5000) {
-    out.maxPricePercent = max
-    max = Math.round(current / (max / 100))
+  if (pct >= 1 && pct <= 100) {
+    out.maxPricePercent = pct
+  } else if (max >= 1 && max <= 100 && current > 1000) {
+    pct = max
+    out.maxPricePercent = pct
+    max = Math.round(current / (pct / 100))
   }
 
-  if (current > 0 && base > 20000 && current < base * 0.45) {
-    current = base
-  }
-
-  if (change && current && Math.abs(current - Math.abs(change)) < 500 && base > current * 1.15) {
-    current = base
-  }
-
-  if (max > 0 && max < 1000 && current > 5000) max = 0
-  if (max > 0 && current > 0 && max < current * 0.5) max = 0
-
-  if (current >= 5000) out.currentPrice = current
+  if (current > 1000) out.currentPrice = current
   else delete out.currentPrice
-  if (max >= (out.currentPrice || 0) * 0.5) out.maxPrice = max
-  else delete out.maxPrice
+
+  if (max > 0 && current > 0 && max >= current * 0.8) {
+    out.maxPrice = max
+  } else if (out.maxPricePercent && current > 1000) {
+    out.maxPrice = Math.round(current / (out.maxPricePercent / 100))
+  } else {
+    delete out.maxPrice
+  }
+
   if (change !== 0) out.priceChange = change
   else delete out.priceChange
 
-  if (out.maxPricePercent && out.currentPrice && !out.maxPrice) {
-    out.maxPrice = Math.round(out.currentPrice / (out.maxPricePercent / 100))
-  }
   return out
 }
 
@@ -134,6 +134,7 @@ window.applyFixedCraftRecipe = (recipe) => {
   if (!recipe || !recipe.name) return recipe
   const fixed = window.getDefaultCraftRecipe(recipe.name)
   if (!fixed) return recipe
+
   const out = {
     name: fixed.name,
     price: fixed.price,
@@ -142,9 +143,20 @@ window.applyFixedCraftRecipe = (recipe) => {
     timeMinutes: fixed.timeMinutes,
     group: 'craft'
   }
-  if (recipe.currentPrice != null && recipe.currentPrice > 0) out.currentPrice = recipe.currentPrice
-  if (recipe.maxPrice != null && recipe.maxPrice > 0) out.maxPrice = recipe.maxPrice
-  if (recipe.maxPricePercent != null) out.maxPricePercent = recipe.maxPricePercent
-  if (recipe.priceChange != null && recipe.priceChange !== 0) out.priceChange = recipe.priceChange
-  return sanitizeCraftMarketFields(out, fixed)
+
+  if (recipe.currentPrice != null && recipe.currentPrice > 0) {
+    out.currentPrice = Math.floor(Number(recipe.currentPrice) || 0)
+  }
+  if (recipe.priceChange != null && recipe.priceChange !== 0) {
+    out.priceChange = Math.floor(Number(recipe.priceChange) || 0)
+  }
+  if (recipe.maxPricePercent != null) {
+    const p = Math.floor(Number(recipe.maxPricePercent) || 0)
+    if (p >= 1 && p <= 100) out.maxPricePercent = p
+  }
+  if (recipe.maxPrice != null && recipe.maxPrice > 0) {
+    out.maxPrice = Math.floor(Number(recipe.maxPrice) || 0)
+  }
+
+  return sanitizeCraftMarketFields(out)
 }
