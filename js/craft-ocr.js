@@ -86,7 +86,7 @@ const parseMarketScreenByPercentBlocks = (text) => {
 
   return markers.slice(0, 6).map((marker, i) => {
     const start = i === 0 ? 0 : markers[i - 1].end
-    const end = marker.end + 48
+    const end = marker.end
     const chunk = text.slice(start, end)
     const prices = extractMarketPricesFromChunk(chunk)
     if (!prices.maxPricePercent) prices.maxPricePercent = marker.percent
