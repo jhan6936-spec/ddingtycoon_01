@@ -1,105 +1,23 @@
 /**
- * 공예품 기본/전문가 제작 판매가 — 재료 단가 합산 (NPC 시세·직접 입력)
+ * 공예품 기본/전문가 제작 판매가 — admin 현재 시세(currentPrice) 기준
  */
-const CRAFT_INGREDIENT_PRICE_STORAGE = 'thingta_craft_ingredient_prices_v1'
-
-window.npcMarketPricesByItem = window.npcMarketPricesByItem || {}
-window.craftIngredientPriceOverrides = window.craftIngredientPriceOverrides || {}
-
-const loadCraftIngredientPriceOverrides = () => {
-  try {
-    const raw = localStorage.getItem(CRAFT_INGREDIENT_PRICE_STORAGE)
-    if (!raw) return
-    const parsed = JSON.parse(raw)
-    if (parsed && typeof parsed === 'object') {
-      window.craftIngredientPriceOverrides = parsed
-    }
-  } catch (_) {}
-}
-
-const saveCraftIngredientPriceOverrides = () => {
-  try {
-    localStorage.setItem(
-      CRAFT_INGREDIENT_PRICE_STORAGE,
-      JSON.stringify(window.craftIngredientPriceOverrides || {})
-    )
-  } catch (_) {}
-}
-
-const setCraftIngredientPriceOverride = (name, value) => {
-  const key = String(name || '').trim()
-  if (!key) return
-  const n = Math.max(0, Math.round(Number(value) || 0))
-  if (!n) {
-    delete window.craftIngredientPriceOverrides[key]
-  } else {
-    window.craftIngredientPriceOverrides[key] = n
-  }
-  saveCraftIngredientPriceOverrides()
-}
-
-const buildNpcPriceLookup = (data) => {
-  const map = new Map()
-  const recipes = (data && data.recipes) || []
-
-  recipes.forEach((r) => {
-    const p = Math.round(Number(r.price) || 0)
-    if (r && r.name && p > 0) map.set(r.name, p)
-  })
-
-  const market = window.npcMarketPricesByItem || {}
-  Object.keys(market).forEach((name) => {
-    const p = Math.round(Number(market[name]) || 0)
-    if (name && p > 0) map.set(name, p)
-  })
-
-  const overrides = window.craftIngredientPriceOverrides || {}
-  Object.keys(overrides).forEach((name) => {
-    const p = Math.round(Number(overrides[name]) || 0)
-    if (name && p > 0) map.set(name, p)
-  })
-
-  return map
-}
-
-const computeCraftBaseSellPrice = (recipe, lookup) => {
+const getCraftMarketBasePrice = (recipe) => {
   if (!recipe) return 0
-  const fixed =
-    typeof window.getDefaultCraftRecipe === 'function'
-      ? window.getDefaultCraftRecipe(recipe.name)?.price
-      : window.CRAFT_RECIPE_DEFAULTS?.[recipe.name]?.price
-  const inputs = recipe.inputs || []
-  if (!inputs.length) {
-    return Math.round(Number(fixed) || Number(recipe.price) || 0)
+  let current = Math.floor(Number(recipe.currentPrice) || 0)
+  if (typeof window.repairCraftCurrentPrice === 'function' && recipe.name) {
+    current = window.repairCraftCurrentPrice(recipe.name, current)
   }
-
-  let sum = 0
-  let pricedCount = 0
-  inputs.forEach((inp) => {
-    const unit = lookup.get(inp.name) || 0
-    if (unit > 0) pricedCount += 1
-    sum += unit * Math.max(1, Math.floor(Number(inp.count) || 1))
-  })
-
-  if (pricedCount > 0) return sum
-  return Math.round(Number(fixed) || Number(recipe.price) || 0)
+  return current >= 500 ? current : 0
 }
 
-const computeCraftBoostedSellPrice = (recipe, effects, lookup) => {
-  const base = computeCraftBaseSellPrice(recipe, lookup)
+const getCraftMarketBoostedPrice = (recipe, effects) => {
+  const base = getCraftMarketBasePrice(recipe)
+  if (base < 500) return 0
   const boost = effects && effects.craftPriceBoost ? Number(effects.craftPriceBoost) : 0
   return Math.round(base * (1 + boost / 100))
 }
 
-const getCraftIngredientUnitPrice = (ingredientName, lookup) => {
-  const fromLookup = lookup.get(ingredientName) || 0
-  if (fromLookup > 0) return fromLookup
-  const override = window.craftIngredientPriceOverrides?.[ingredientName]
-  return Math.round(Number(override) || 0)
-}
-
 const refreshCraftSellPriceDisplays = (data, effects) => {
-  const lookup = buildNpcPriceLookup(data)
   const eff = effects || (typeof getExpertEffects === 'function' ? getExpertEffects() : { craftPriceBoost: 0 })
   const boost = eff.craftPriceBoost || 0
   const order = Array.isArray(window.CRAFT_NAME_ORDER) ? window.CRAFT_NAME_ORDER : []
@@ -107,22 +25,20 @@ const refreshCraftSellPriceDisplays = (data, effects) => {
   order.forEach((name) => {
     const recipe = (data?.recipes || []).find((r) => r && r.name === name && r.group === 'craft')
     if (!recipe) return
-    const base = computeCraftBaseSellPrice(recipe, lookup)
-    const boosted = computeCraftBoostedSellPrice(recipe, eff, lookup)
+    const base = getCraftMarketBasePrice(recipe)
+    const boosted = getCraftMarketBoostedPrice(recipe, eff)
     const baseEl = document.querySelector(`[data-craft-base="${CSS.escape(name)}"]`)
     const boostedEl = document.querySelector(`[data-craft-boosted="${CSS.escape(name)}"]`)
-    if (baseEl) baseEl.textContent = `${base.toLocaleString()}G`
-    if (boostedEl) {
-      boostedEl.textContent = `${boosted.toLocaleString()}G${boost > 0 ? ` ( +${boost}% )` : ''}`
-      boostedEl.style.color = boost > 0 ? '#8fd5ff' : '#9a9a9a'
+    if (baseEl) {
+      baseEl.textContent = base >= 500 ? `${base.toLocaleString()}G` : '—'
     }
-  })
-
-  document.querySelectorAll('.craft-ingredient-price-input').forEach((inp) => {
-    const name = inp.getAttribute('data-ingredient')
-    if (!name) return
-    const unit = getCraftIngredientUnitPrice(name, lookup)
-    inp.value = unit > 0 ? String(unit) : ''
+    if (boostedEl) {
+      boostedEl.textContent =
+        base >= 500
+          ? `${boosted.toLocaleString()}G${boost > 0 ? ` ( +${boost}% )` : ''}`
+          : '—'
+      boostedEl.style.color = base >= 500 && boost > 0 ? '#8fd5ff' : '#9a9a9a'
+    }
   })
 
   if (typeof updateCraftSalesCalcTotals === 'function') {
@@ -130,15 +46,8 @@ const refreshCraftSellPriceDisplays = (data, effects) => {
   }
 }
 
-loadCraftIngredientPriceOverrides()
-
 window.CraftSellPrice = {
-  loadCraftIngredientPriceOverrides,
-  saveCraftIngredientPriceOverrides,
-  setCraftIngredientPriceOverride,
-  buildNpcPriceLookup,
-  computeCraftBaseSellPrice,
-  computeCraftBoostedSellPrice,
-  getCraftIngredientUnitPrice,
+  getCraftMarketBasePrice,
+  getCraftMarketBoostedPrice,
   refreshCraftSellPriceDisplays
 }
