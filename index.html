@@ -10840,10 +10840,7 @@ function renderCraftPricePanel(effects) {
 
   const headerRow = document.createElement('div');
   headerRow.className = 'craft-price-header';
-  headerRow.innerHTML = `
-    <div class="craft-price-header-title">공예품 가격</div>
-    <div class="craft-price-header-hint">기본 제작 판매가 = admin에서 입력한 현재 시세. 전문가 적용 판매가는 개인설정 「조개 좀 사조개」 보너스가 반영됩니다.</div>
-  `;
+  headerRow.innerHTML = `<div class="craft-price-header-title">공예품 가격</div>`;
   containerCraftPrice.appendChild(headerRow);
 
   const list = document.createElement('div');

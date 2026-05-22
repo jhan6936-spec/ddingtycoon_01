@@ -10,14 +10,72 @@ const CRAFT_CHART_NAMES = [
   '흑진주 시계'
 ]
 
-const CRAFT_CHART_COLORS = [
-  '#56a3f1',
-  '#4ade80',
-  '#f6c15a',
-  '#f472b6',
-  '#a78bfa',
-  '#fb923c'
-]
+const CHART_Y_MAX_GOLD = 1000000
+const CHART_Y_MAX_SQRT = Math.sqrt(CHART_Y_MAX_GOLD)
+
+/** Y축 눈금(실제 Gold) — √ 스케일로 표시해 저가 품목(브로치 등)도 잘 보이게 */
+const CHART_Y_TICK_GOLD = [0, 25000, 50000, 100000, 200000, 400000, 600000, 800000, 1000000]
+
+const CRAFT_CHART_STYLES = {
+  '조개껍데기 브로치': {
+    borderColor: '#facc15',
+    backgroundColor: 'rgba(250, 204, 21, 0.2)',
+    pointBackgroundColor: '#facc15',
+    pointBorderColor: '#fef08a'
+  },
+  '푸른 향수병': {
+    borderColor: '#3b82f6',
+    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+    pointBackgroundColor: '#3b82f6',
+    pointBorderColor: '#93c5fd'
+  },
+  '자개 손거울': {
+    borderColor: '#38bdf8',
+    backgroundColor: 'rgba(56, 189, 248, 0.2)',
+    pointBackgroundColor: '#38bdf8',
+    pointBorderColor: '#bae6fd'
+  },
+  '분홍 헤어핀': {
+    borderColor: '#f472b6',
+    backgroundColor: 'rgba(244, 114, 182, 0.2)',
+    pointBackgroundColor: '#f472b6',
+    pointBorderColor: '#fbcfe8'
+  },
+  '자개 부채': {
+    borderColor: '#a78bfa',
+    backgroundColor: 'rgba(167, 139, 250, 0.2)',
+    pointBackgroundColor: '#a78bfa',
+    pointBorderColor: '#ddd6fe'
+  },
+  '흑진주 시계': {
+    borderColor: '#0f172a',
+    backgroundColor: 'rgba(15, 23, 42, 0.35)',
+    pointBackgroundColor: '#020617',
+    pointBorderColor: '#e2e8f0',
+    borderWidth: 2.5,
+    pointBorderWidth: 2
+  }
+}
+
+const goldToChartY = (gold) => {
+  const g = Math.max(0, Math.min(CHART_Y_MAX_GOLD, Number(gold) || 0))
+  return Math.sqrt(g)
+}
+
+const chartYToGold = (ySqrt) => Math.round((Number(ySqrt) || 0) ** 2)
+
+const formatChartDateLabel = (value) => {
+  const d = value instanceof Date ? value : new Date(value)
+  if (Number.isNaN(d.getTime())) return ''
+  const parts = new Intl.DateTimeFormat('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    month: 'numeric',
+    day: 'numeric'
+  }).formatToParts(d)
+  const m = parts.find((p) => p.type === 'month')?.value
+  const day = parts.find((p) => p.type === 'day')?.value
+  return m && day ? `${m}/${day}` : ''
+}
 
 const CraftPriceCharts = {
   chartInstance: null,
@@ -33,6 +91,18 @@ const CraftPriceCharts = {
     if (canvas) {
       const ctx = canvas.getContext('2d')
       if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height)
+    }
+  },
+
+  setNoteError(message) {
+    const note = document.getElementById('craftPriceHistoryNote')
+    if (!note) return
+    if (message) {
+      note.hidden = false
+      note.textContent = message
+    } else {
+      note.hidden = true
+      note.textContent = ''
     }
   },
 
@@ -77,17 +147,20 @@ const CraftPriceCharts = {
 
     const ceiling =
       typeof window.getCraftMaxPrice === 'function' ? window.getCraftMaxPrice(name) : 0
-    let y =
+    let gold =
       typeof window.repairCraftCurrentPrice === 'function'
         ? window.repairCraftCurrentPrice(name, raw)
         : raw
 
-    if (ceiling && y > ceiling * 1.15) return null
-    if (y < 500) return null
+    if (ceiling && gold > ceiling * 1.15) return null
+    if (gold < 500) return null
+
+    gold = Math.min(CHART_Y_MAX_GOLD, gold)
 
     return {
       x: row.recorded_at,
-      y
+      y: goldToChartY(gold),
+      gold
     }
   },
 
@@ -102,16 +175,29 @@ const CraftPriceCharts = {
       if (point) byName.get(name).push(point)
     })
 
-    return CRAFT_CHART_NAMES.map((name, idx) => ({
-      label: name,
-      data: byName.get(name) || [],
-      borderColor: CRAFT_CHART_COLORS[idx % CRAFT_CHART_COLORS.length],
-      backgroundColor: CRAFT_CHART_COLORS[idx % CRAFT_CHART_COLORS.length] + '33',
-      tension: 0.25,
-      pointRadius: 3,
-      pointHoverRadius: 5,
-      spanGaps: true
-    })).filter((ds) => ds.data.length > 0)
+    return CRAFT_CHART_NAMES.map((name) => {
+      const style = CRAFT_CHART_STYLES[name] || {
+        borderColor: '#94a3b8',
+        backgroundColor: 'rgba(148, 163, 184, 0.2)',
+        pointBackgroundColor: '#94a3b8',
+        pointBorderColor: '#e2e8f0'
+      }
+      const data = byName.get(name) || []
+      return {
+        label: name,
+        data,
+        borderColor: style.borderColor,
+        backgroundColor: style.backgroundColor,
+        pointBackgroundColor: style.pointBackgroundColor,
+        pointBorderColor: style.pointBorderColor,
+        borderWidth: style.borderWidth || 2,
+        pointBorderWidth: style.pointBorderWidth || 1,
+        tension: 0.25,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        spanGaps: true
+      }
+    }).filter((ds) => ds.data.length > 0)
   },
 
   async render(container) {
@@ -119,22 +205,17 @@ const CraftPriceCharts = {
 
     const wrap = document.getElementById('craftPriceHistoryWrap')
     const canvas = document.getElementById('craftPriceHistoryChart')
-    const note = document.getElementById('craftPriceHistoryNote')
     if (!wrap || !canvas) return
 
     this.reset()
-
-    if (note) note.textContent = '이력 불러오는 중…'
+    this.setNoteError('')
 
     try {
       const history = await this.fetchHistory(this.days)
       const datasets = this.buildDatasets(history)
 
       if (!datasets.length) {
-        if (note) {
-          note.textContent =
-            '아직 기록된 가격 이력이 없습니다. admin에서 공예품을 저장하면 그래프가 쌓입니다.'
-        }
+        this.setNoteError('아직 기록된 가격 이력이 없습니다. admin에서 공예품을 저장하면 그래프가 쌓입니다.')
         return
       }
 
@@ -159,9 +240,24 @@ const CraftPriceCharts = {
             },
             tooltip: {
               callbacks: {
+                title: (items) => {
+                  if (!items.length) return ''
+                  const raw = items[0].parsed.x
+                  const d = raw instanceof Date ? raw : new Date(raw)
+                  if (Number.isNaN(d.getTime())) return ''
+                  return new Intl.DateTimeFormat('ko-KR', {
+                    timeZone: 'Asia/Seoul',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                  }).format(d)
+                },
                 label: (ctx) => {
-                  const v = ctx.parsed.y
-                  return (ctx.dataset.label || '') + ': ' + (Number(v) || 0).toLocaleString() + 'G'
+                  const gold =
+                    ctx.raw && ctx.raw.gold != null
+                      ? ctx.raw.gold
+                      : chartYToGold(ctx.parsed.y)
+                  return (ctx.dataset.label || '') + ': ' + gold.toLocaleString() + 'G'
                 }
               }
             }
@@ -170,40 +266,50 @@ const CraftPriceCharts = {
             x: {
               type: 'time',
               time: {
-                tooltipFormat: 'yyyy-MM-dd HH:mm',
-                displayFormats: { day: 'MM/dd', week: 'MM/dd', month: 'yyyy-MM' }
+                unit: 'day',
+                tooltipFormat: 'yyyy-MM-dd',
+                displayFormats: {
+                  millisecond: 'M/d',
+                  second: 'M/d',
+                  minute: 'M/d',
+                  hour: 'M/d',
+                  day: 'M/d',
+                  week: 'M/d',
+                  month: 'yyyy-MM',
+                  quarter: 'yyyy-MM',
+                  year: 'yyyy'
+                }
               },
               ticks: {
                 color: '#9aa8b8',
                 maxRotation: 0,
+                autoSkip: true,
+                maxTicksLimit: 14,
                 padding: 12,
-                font: { size: 11 }
+                font: { size: 11 },
+                callback: (value) => formatChartDateLabel(value)
               },
               grid: { color: 'rgba(255,255,255,0.06)' }
             },
             y: {
+              min: 0,
+              max: CHART_Y_MAX_SQRT,
+              afterBuildTicks: (scale) => {
+                scale.ticks = CHART_Y_TICK_GOLD.map((g) => ({ value: goldToChartY(g) }))
+              },
               ticks: {
                 color: '#9aa8b8',
                 padding: 14,
                 font: { size: 11 },
-                callback: (v) => Number(v).toLocaleString() + 'G'
+                callback: (v) => chartYToGold(v).toLocaleString() + 'G'
               },
               grid: { color: 'rgba(255,255,255,0.06)' }
             }
           }
         }
       })
-
-      if (note) {
-        note.textContent =
-          '저장 ' +
-          history.length +
-          '건 · 최근 ' +
-          this.days +
-          '일 · admin 저장 시마다 자동 누적'
-      }
     } catch (err) {
-      if (note) note.textContent = String(err.message || err)
+      this.setNoteError(String(err.message || err))
       console.warn('[craft-price-charts]', err)
     }
   },
@@ -229,7 +335,7 @@ const CraftPriceCharts = {
           </select>
         </label>
       </div>
-      <p id="craftPriceHistoryNote"></p>
+      <p id="craftPriceHistoryNote" class="craft-price-chart-error" hidden></p>
       <div class="craft-price-chart-canvas-wrap">
         <canvas id="craftPriceHistoryChart" aria-label="공예품 가격 추이 차트"></canvas>
       </div>
