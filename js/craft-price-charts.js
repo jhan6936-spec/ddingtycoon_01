@@ -294,13 +294,11 @@ const CraftPriceCharts = {
             y: {
               min: 0,
               max: CHART_Y_MAX_SQRT,
-              afterBuildTicks: (scale) => {
-                scale.ticks = CHART_Y_TICK_GOLD.map((g) => ({ value: goldToChartY(g) }))
-              },
               ticks: {
                 color: '#9aa8b8',
                 padding: 14,
                 font: { size: 11 },
+                values: CHART_Y_TICK_GOLD.map((g) => goldToChartY(g)),
                 callback: (v) => chartYToGold(v).toLocaleString() + 'G'
               },
               grid: { color: 'rgba(255,255,255,0.06)' }
