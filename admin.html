@@ -3,17 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>띵타해 | 공예품 데이터 관리</title>
+  <title>띵타해 | 공예품 시세 입력</title>
   <link rel="icon" href="assets/favicon/favicon-32x32.png" type="image/png">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
 <body class="min-h-screen bg-slate-950 text-slate-100">
   <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur">
     <div class="mx-auto max-w-6xl px-4 py-4 flex flex-wrap items-center justify-between gap-3">
       <div>
-        <h1 class="text-lg font-semibold text-sky-300">공예품 데이터 관리</h1>
-        <p class="text-xs text-slate-400 mt-1">무료 OCR(Tesseract) → Supabase 즉시 반영 · OpenAI 불필요</p>
+        <h1 class="text-lg font-semibold text-sky-300">공예품 시세 입력</h1>
+        <p class="text-xs text-slate-400 mt-1">매일 현재 판매가만 입력 · 변동·최고가 %는 자동 계산</p>
       </div>
       <a href="index.html" class="text-sm text-sky-400 hover:text-sky-300 underline">← 메인 계산기</a>
     </div>
@@ -43,103 +42,59 @@
         </button>
       </div>
       <p id="authMessage" class="text-sm text-slate-400" aria-live="polite"></p>
-      <p class="text-xs text-slate-500">필수: ADMIN_SECRET, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY · 저장 시 가격 이력이 쌓여 메인 그래프에 표시됩니다</p>
+      <p class="text-xs text-slate-500">
+        첫 시세 입력 시 메인에는 변동(▲▼)이 표시되지 않습니다. 두 번째 저장부터 전회 대비 변동이 표시됩니다.
+      </p>
     </section>
 
-    <section class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-4">
-      <h2 class="text-sm font-medium text-slate-300">공예 UI 스크린샷 업로드</h2>
-      <div class="relative w-full">
-        <div
-          id="dropZone"
-          tabindex="0"
-          role="button"
-          aria-label="이미지 업로드 영역"
-          class="flex min-h-[280px] w-full cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-slate-600 bg-slate-950/80 px-6 py-12 text-center text-sm text-slate-400 hover:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500 disabled:cursor-not-allowed disabled:opacity-50"
+    <section class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-3 overflow-x-auto">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 class="text-sm font-medium text-slate-300">오늘의 현재 판매가 (6종)</h2>
+        <button
+          id="dailySaveBtn"
+          type="button"
+          disabled
+          class="rounded-lg bg-emerald-600 px-5 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
         >
-          <p id="dropZoneTitle">로그인 후 스크린샷을 드래그하거나 클릭</p>
-          <p class="text-xs mt-2 text-slate-500">「공예품 시세 변동」전체 화면 캡처 권장 · 검증 실패 시 자동 저장 안 함 → 표 수정 후 「수동 저장」</p>
-        </div>
-        <div id="pipelineOverlay" class="hidden absolute inset-0 flex items-center justify-center rounded-lg bg-slate-950/90">
-          <div class="text-center px-4">
-            <p class="text-sm text-sky-300 font-medium">자동 처리 중…</p>
-            <p id="pipelineStep" class="text-xs text-slate-400 mt-2"></p>
-          </div>
-        </div>
+          오늘 시세 저장
+        </button>
       </div>
-      <input id="imageInput" type="file" accept="image/*" class="hidden" aria-hidden="true" disabled />
-      <img id="imagePreview" alt="업로드 미리보기" class="hidden max-h-80 w-full rounded-lg object-contain border border-slate-700" />
       <p id="statusMessage" class="text-sm text-slate-400" aria-live="polite"></p>
-      <div class="flex flex-wrap gap-2">
+      <table class="w-full min-w-[640px] text-left text-sm">
+        <thead class="text-xs text-slate-400 border-b border-slate-700">
+          <tr>
+            <th class="px-2 py-2">공예품 · 레시피 (고정)</th>
+            <th class="px-2 py-2">제작 판매가</th>
+            <th class="px-2 py-2">현재 판매가 (Gold)</th>
+            <th class="px-2 py-2">최고가 대비 %</th>
+            <th class="px-2 py-2">저장 시 변동 예상</th>
+            <th class="px-2 py-2">최고가 상한</th>
+          </tr>
+        </thead>
+        <tbody id="priceTableBody"></tbody>
+      </table>
+      <div class="flex flex-wrap gap-2 pt-2">
         <button
           id="fixRecipesBtn"
           type="button"
           disabled
           class="rounded-lg border border-amber-600/60 px-4 py-2 text-sm text-amber-200 hover:bg-amber-950/40 disabled:opacity-40"
         >
-          레시피 위키 기준 복구 (시세는 유지·보정)
+          레시피 위키 기준 복구
         </button>
         <button
           id="clearHistoryBtn"
           type="button"
           disabled
           class="rounded-lg border border-rose-600/50 px-4 py-2 text-sm text-rose-200 hover:bg-rose-950/40 disabled:opacity-40"
-          title="메인 페이지 공예품 가격 그래프 이력 전체 삭제"
         >
           그래프 이력 초기화
         </button>
       </div>
-      <div class="rounded-lg border border-sky-800/50 bg-slate-950/60 p-3">
-        <p class="text-xs font-medium text-sky-300/90 mb-2">OCR 파싱 결과 (저장 전 확인)</p>
-        <p id="ocrParseSummary" class="text-[11px] text-slate-500 mb-2"></p>
-        <table class="w-full text-left text-xs">
-          <thead class="text-slate-500 border-b border-slate-700/80">
-            <tr>
-              <th class="px-2 py-1">공예품</th>
-              <th class="px-2 py-1">현재 시세</th>
-              <th class="px-2 py-1">변동</th>
-              <th class="px-2 py-1">최고가 %</th>
-            </tr>
-          </thead>
-          <tbody id="ocrResultBody">
-            <tr><td colspan="4" class="px-2 py-2 text-slate-600">스크린샷 업로드 후 표시됩니다</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <details class="rounded-lg border border-slate-700/80 bg-slate-950/50 p-3 text-xs">
-        <summary class="cursor-pointer text-slate-400">OCR 인식 텍스트 보기</summary>
-        <pre id="ocrTextPreview" class="max-h-40 overflow-auto text-slate-400 whitespace-pre-wrap mt-2"></pre>
-      </details>
-    </section>
-
-    <section class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-3 overflow-x-auto">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <h2 class="text-sm font-medium text-slate-300">수동 수정 (OCR 실패 시)</h2>
-        <button
-          id="manualSaveBtn"
-          type="button"
-          class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
-        >
-          수동 저장
-        </button>
-      </div>
-      <table class="w-full min-w-[520px] text-left text-sm">
-        <thead class="text-xs text-slate-400 border-b border-slate-700">
-          <tr>
-            <th class="px-2 py-2">공예품 · 레시피 (고정)</th>
-            <th class="px-2 py-2">제작 판매가</th>
-            <th class="px-2 py-2">현재 시세 (Gold)</th>
-            <th class="px-2 py-2">변동 ▲▼</th>
-            <th class="px-2 py-2">최고가 %</th>
-            <th class="px-2 py-2">최고가 상한 (고정)</th>
-          </tr>
-        </thead>
-        <tbody id="manualTableBody"></tbody>
-      </table>
     </section>
   </main>
 
   <script src="js/craft-recipe-defaults.js"></script>
-  <script src="js/craft-ocr.js"></script>
   <script src="js/admin.js"></script>
 </body>
 </html>
