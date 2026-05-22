@@ -64,10 +64,9 @@
         <thead class="text-xs text-slate-400 border-b border-slate-700">
           <tr>
             <th class="px-2 py-2">공예품 · 레시피 (고정)</th>
-            <th class="px-2 py-2">제작 판매가</th>
             <th class="px-2 py-2">현재 판매가 (Gold)</th>
             <th class="px-2 py-2">최고가 대비 %</th>
-            <th class="px-2 py-2">저장 시 변동 예상</th>
+            <th class="px-2 py-2" title="메인에 표시되지 않음 · 직전 저장값 대비">이전 저장 대비 (관리용)</th>
             <th class="px-2 py-2">최고가 상한</th>
           </tr>
         </thead>
@@ -81,6 +80,15 @@
           class="rounded-lg border border-amber-600/60 px-4 py-2 text-sm text-amber-200 hover:bg-amber-950/40 disabled:opacity-40"
         >
           레시피 위키 기준 복구
+        </button>
+        <button
+          id="reanchorHistoryBtn"
+          type="button"
+          disabled
+          class="rounded-lg border border-sky-600/60 px-4 py-2 text-sm text-sky-200 hover:bg-sky-950/40 disabled:opacity-40"
+          title="기존 이력을 5/21 03:00(KST)부터 하루씩 재배치"
+        >
+          그래프 날짜 3시로 맞추기
         </button>
         <button
           id="clearHistoryBtn"

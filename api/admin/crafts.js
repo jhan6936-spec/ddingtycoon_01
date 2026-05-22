@@ -58,6 +58,38 @@ module.exports = async function handler(req, res) {
     return
   }
 
+  if (action === 'reanchor-history') {
+    const auth = verifyAdminSecret(req)
+    if (!auth.ok) {
+      sendJson(res, 401, { error: auth.error })
+      return
+    }
+    if (req.method !== 'POST') {
+      sendJson(res, 405, { error: 'Method not allowed' })
+      return
+    }
+    try {
+      const body = req.method === 'POST' ? await readJson(req).catch(() => ({})) : {}
+      const result = await reanchorCraftPriceHistory(supabaseRest, {
+        year: body.year,
+        month: body.month,
+        day: body.day
+      })
+      sendJson(res, 200, {
+        ok: true,
+        message:
+          result.snapshotCount > 0
+            ? `그래프 이력 ${result.snapshotCount}개 스냅샷을 5/21 03:00(KST)부터 하루씩 맞췄습니다.`
+            : '맞출 이력이 없습니다.',
+        ...result
+      })
+    } catch (error) {
+      const info = classifySupabaseError(error)
+      sendJson(res, 500, { error: info.code, hint: info.hint, message: String(error.message || error) })
+    }
+    return
+  }
+
   if (action === 'reset-market') {
     const auth = verifyAdminSecret(req)
     if (!auth.ok) {
