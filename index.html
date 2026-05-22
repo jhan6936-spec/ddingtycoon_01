@@ -10954,7 +10954,6 @@ window.addEventListener('DOMContentLoaded', async function() {
     let staminaSaveTimer = 0;
     staminaInput.addEventListener('input', () => {
       renderStaminaPlan();
-      scheduleMinecraftDashboardSync();
       clearTimeout(staminaSaveTimer);
       staminaSaveTimer = setTimeout(() => {
         try {
