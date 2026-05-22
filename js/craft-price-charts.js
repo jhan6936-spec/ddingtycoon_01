@@ -24,6 +24,18 @@ const CraftPriceCharts = {
   days: 90,
   mounted: false,
 
+  reset() {
+    if (this.chartInstance) {
+      this.chartInstance.destroy()
+      this.chartInstance = null
+    }
+    const canvas = document.getElementById('craftPriceHistoryChart')
+    if (canvas) {
+      const ctx = canvas.getContext('2d')
+      if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height)
+    }
+  },
+
   async fetchHistory(days) {
     const cfg = window.SUPABASE_CONFIG
     const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString()
@@ -56,6 +68,29 @@ const CraftPriceCharts = {
     throw new Error('supabase-config.js에 SUPABASE_CONFIG(url, anonKey)가 필요합니다.')
   },
 
+  normalizeHistoryPoint(name, row) {
+    const raw =
+      row.current_price != null && row.current_price > 0
+        ? Number(row.current_price)
+        : Number(row.price) || 0
+    if (!raw) return null
+
+    const ceiling =
+      typeof window.getCraftMaxPrice === 'function' ? window.getCraftMaxPrice(name) : 0
+    let y =
+      typeof window.repairCraftCurrentPrice === 'function'
+        ? window.repairCraftCurrentPrice(name, raw)
+        : raw
+
+    if (ceiling && y > ceiling * 1.15) return null
+    if (y < 500) return null
+
+    return {
+      x: row.recorded_at,
+      y
+    }
+  },
+
   buildDatasets(history) {
     const byName = new Map()
     CRAFT_CHART_NAMES.forEach((name) => byName.set(name, []))
@@ -63,14 +98,8 @@ const CraftPriceCharts = {
     history.forEach((row) => {
       const name = row.craft_name
       if (!byName.has(name)) return
-      const y =
-        row.current_price != null && row.current_price > 0
-          ? Number(row.current_price)
-          : Number(row.price) || 0
-      byName.get(name).push({
-        x: row.recorded_at,
-        y
-      })
+      const point = this.normalizeHistoryPoint(name, row)
+      if (point) byName.get(name).push(point)
     })
 
     return CRAFT_CHART_NAMES.map((name, idx) => ({
@@ -93,16 +122,13 @@ const CraftPriceCharts = {
     const note = document.getElementById('craftPriceHistoryNote')
     if (!wrap || !canvas) return
 
+    this.reset()
+
     if (note) note.textContent = '이력 불러오는 중…'
 
     try {
       const history = await this.fetchHistory(this.days)
       const datasets = this.buildDatasets(history)
-
-      if (this.chartInstance) {
-        this.chartInstance.destroy()
-        this.chartInstance = null
-      }
 
       if (!datasets.length) {
         if (note) {
