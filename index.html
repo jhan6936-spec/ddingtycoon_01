@@ -2797,6 +2797,58 @@
       font-weight: 800;
       margin-left: auto;
     }
+    .alchemy-remaining-shellfish {
+      margin-top: 12px;
+      padding: 10px 12px;
+      background: #0a1018;
+      border: 1px solid #243040;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+    .alchemy-remaining-shellfish summary {
+      cursor: pointer;
+      font-weight: 700;
+      color: #9eb2c8;
+      list-style: none;
+      user-select: none;
+      outline: none;
+    }
+    .alchemy-remaining-shellfish summary::-webkit-details-marker {
+      display: none;
+    }
+    .alchemy-remaining-shellfish[open] summary .alchemy-remaining-chevron {
+      transform: rotate(180deg);
+    }
+    .alchemy-remaining-chevron {
+      display: inline-block;
+      margin-left: 4px;
+      font-size: 10px;
+      color: #6a7a8a;
+      transition: transform 0.15s ease;
+    }
+    .alchemy-remaining-shellfish-list {
+      margin: 8px 0 0;
+      padding: 0;
+      list-style: none;
+      max-height: 160px;
+      overflow-y: auto;
+    }
+    .alchemy-remaining-shellfish-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 0;
+      color: #b8c5d4;
+      border-bottom: 1px solid #1a2430;
+    }
+    .alchemy-remaining-shellfish-item:last-child {
+      border-bottom: none;
+    }
+    .alchemy-remaining-shellfish-item strong {
+      margin-left: auto;
+      color: #7eb8e8;
+      font-weight: 800;
+    }
     .alchemy-shell-tier-grid,
     .alchemy-vanilla-grid {
       width: 100%;
