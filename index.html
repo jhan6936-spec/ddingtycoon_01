@@ -10921,9 +10921,9 @@ function renderCraftPricePanel(effects) {
       </div>
       <div class="craft-price-sell-grid">
         <div class="craft-price-sell-label">기본 제작 판매가</div>
-        <div class="craft-price-sell-value" data-craft-base="${recipe.name}">${recipePrice.toLocaleString()}G</div>
+        <div class="craft-price-sell-value" data-craft-base="${recipe.name}">${baseSellPrice >= 500 ? baseSellPrice.toLocaleString() + 'G' : '—'}</div>
         <div class="craft-price-sell-label">전문가 적용 판매가</div>
-        <div class="craft-price-sell-value" data-craft-boosted="${recipe.name}" style="color:${hasCraftBoost ? '#8fd5ff' : '#9a9a9a'};">${boostedRecipePrice.toLocaleString()}G${hasCraftBoost ? ` ( +${effects.craftPriceBoost}% )` : ''}</div>
+        <div class="craft-price-sell-value" data-craft-boosted="${recipe.name}" style="color:${hasCraftBoost ? '#8fd5ff' : '#9a9a9a'};">${baseSellPrice >= 500 ? boostedRecipePrice.toLocaleString() + 'G' + (hasCraftBoost ? ` ( +${effects.craftPriceBoost}% )` : '') : '—'}</div>
       </div>
       <div class="craft-price-ingredients">
         ${ingredientsHTML}
@@ -10949,21 +10949,6 @@ function renderCraftPricePanel(effects) {
   }
 
   containerCraftPrice.appendChild(list);
-
-  list.addEventListener('input', (ev) => {
-    const target = ev.target;
-    if (!target || !target.classList || !target.classList.contains('craft-ingredient-price-input')) return;
-    const ingredient = target.getAttribute('data-ingredient');
-    if (!ingredient || !window.CraftSellPrice) return;
-    window.CraftSellPrice.setCraftIngredientPriceOverride(ingredient, target.value);
-    const lookup = window.CraftSellPrice.buildNpcPriceLookup(data);
-    const unit = window.CraftSellPrice.getCraftIngredientUnitPrice(ingredient, lookup);
-    const unitStr = unit > 0 ? String(unit) : '';
-    list.querySelectorAll(`.craft-ingredient-price-input[data-ingredient="${ingredient.replace(/"/g, '\\"')}"]`).forEach((inp) => {
-      if (inp !== target) inp.value = unitStr;
-    });
-    window.CraftSellPrice.refreshCraftSellPriceDisplays(data, effects);
-  });
 
   if (window.CraftPriceCharts) {
     window.CraftPriceCharts.mount(containerCraftPrice);
