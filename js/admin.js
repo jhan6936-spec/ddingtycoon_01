@@ -467,7 +467,15 @@ const runAutoPipeline = async (file) => {
     if (!extracted.crafts || extracted.crafts.length < 6) {
       renderManualTable(state.catalog)
       throw new Error(
-        'OCR로 공예품 6종을 모두 읽지 못했습니다. 「공예품 시세 변동」전체 화면을 선명하게 올리거나, 아래 표에서 직접 입력 후 「수동 저장」하세요.'
+        '공예품 6종 구성 실패. 「공예품 시세 변동」전체 화면을 선명하게 올리거나, 아래 표에서 직접 입력 후 「수동 저장」하세요.'
+      )
+    }
+
+    if ((extracted.priceUpdatedCount || 0) < 4) {
+      setOcrPreview(state.lastOcrText, extracted.crafts, extracted.screenType)
+      setStatus(
+        `OCR 시세 인식이 부족합니다 (${extracted.priceUpdatedCount || 0}/6). 아래 표를 확인·수정 후 저장하세요.`,
+        true
       )
     }
 
