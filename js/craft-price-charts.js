@@ -214,14 +214,13 @@ const CraftPriceCharts = {
 
     wrap = document.createElement('div')
     wrap.id = 'craftPriceHistoryWrap'
-    wrap.className = 'panel-card'
-    wrap.style.cssText = 'margin-top:16px;padding:14px 16px;'
+    wrap.className = 'panel-card craft-price-chart-section'
     wrap.innerHTML = `
-      <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;">
-        <div style="font-size:14px;font-weight:900;color:#e5e5e5;">공예품 가격 추이</div>
-        <label style="font-size:12px;color:#9d9d9d;display:flex;align-items:center;gap:8px;">
+      <div class="craft-price-chart-head">
+        <div class="craft-price-chart-title">공예품 가격 추이</div>
+        <label class="craft-price-chart-period">
           <span>기간</span>
-          <select id="craftHistoryDays" style="background:#151515;border:1px solid #333;color:#ddd;border-radius:6px;padding:4px 8px;font-size:12px;">
+          <select id="craftHistoryDays" aria-label="가격 추이 기간">
             <option value="7">7일</option>
             <option value="30">30일</option>
             <option value="90" selected>90일</option>
@@ -230,8 +229,8 @@ const CraftPriceCharts = {
           </select>
         </label>
       </div>
-      <p id="craftPriceHistoryNote" style="font-size:11px;color:#888;margin-bottom:10px;"></p>
-      <div style="position:relative;height:320px;width:100%;">
+      <p id="craftPriceHistoryNote"></p>
+      <div class="craft-price-chart-canvas-wrap">
         <canvas id="craftPriceHistoryChart" aria-label="공예품 가격 추이 차트"></canvas>
       </div>
     `
