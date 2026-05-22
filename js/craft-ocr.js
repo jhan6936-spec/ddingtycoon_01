@@ -125,7 +125,7 @@ const extractMarketPrices = (segment) => {
     }
   }
 
-  return { currentPrice, priceChange, maxPricePercent }
+  return { currentPrice, priceChange, maxPrice: 0, maxPricePercent }
 }
 
 const parseMarketScreenByPercentBlocks = (text) => {
