@@ -6843,6 +6843,7 @@ function buildMinecraftDashboardPayload() {
     gatheringTargetStamina: staminaTarget,
     staminaPerGather: STAMINA_PER_GATHER,
     gatheringPlanLines,
+    gatheringSyncEpoch: Date.now(),
     captainLog: [
       'Discord 계정의 웹 계산 결과가 동기화되었습니다.',
       topCraft ? `추천 제작: ${topCraft[0]} x${Number(topCraft[1]).toLocaleString()}` : '추천 제작 결과가 없습니다.',
@@ -6888,16 +6889,32 @@ async function fetchMinecraftLinkState() {
 async function refreshMinecraftLinkUi() {
   const badge = document.getElementById('minecraftLinkBadge');
   if (!badge) return;
+  const staminaReady = getStaminaForDashboardSync() >= STAMINA_PER_GATHER;
   if (!currentAuthUserId) {
-    badge.hidden = true;
-    badge.textContent = '';
+    if (staminaReady) {
+      badge.hidden = false;
+      badge.textContent = '스태미나 입력됨 · Discord 로그인 후 모드에 동기화됩니다';
+      badge.style.color = '#fbbf24';
+    } else {
+      badge.hidden = true;
+      badge.textContent = '';
+    }
     return;
   }
   const state = await fetchMinecraftLinkState();
   if (state.linked) {
     const name = state.discordName || resolveDiscordDisplayNameForMinecraft() || 'Discord';
     badge.hidden = false;
-    badge.textContent = `${name} · 마인크래프트 연동됨`;
+    badge.style.color = '';
+    badge.textContent = staminaReady
+      ? `${name} · 마크 연동됨 · 스태미나 동기화 중`
+      : `${name} · 마인크래프트 연동됨`;
+    return;
+  }
+  if (staminaReady) {
+    badge.hidden = false;
+    badge.style.color = '#fbbf24';
+    badge.textContent = '스태미나 입력됨 · 게임에서 연동 코드 발급 후 웹에서 연동하세요';
     return;
   }
   badge.hidden = true;
