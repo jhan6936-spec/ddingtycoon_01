@@ -138,21 +138,31 @@ const parseMarketScreenByPercentBlocks = (text) => {
   const re = /최고\s*가\s*의?\s*(\d{1,3})\s*%/gi
   let m
   while ((m = re.exec(text)) !== null) {
-    markers.push({ index: m.index, percent: parseInt(m[1], 10) })
+    markers.push({
+      index: m.index,
+      percent: parseInt(m[1], 10),
+      end: m.index + m[0].length
+    })
   }
   if (markers.length < 5) return null
 
-  return markers.slice(0, CRAFT_NAME_ORDER.length).map((marker, i) => {
-    const start = i === 0 ? 0 : markers[i - 1].index
-    const end = marker.index + 60
-    const chunk = text.slice(start, end)
+  const count = Math.min(markers.length, CRAFT_NAME_ORDER.length)
+  const rows = []
+  for (let i = 0; i < count; i++) {
+    const name = CRAFT_NAME_ORDER[i]
+    const marker = markers[i]
+    const searchFrom = i > 0 ? markers[i - 1].end : 0
+    const nameIdx = findNameIndex(text, name, searchFrom)
+    const start = nameIdx >= 0 ? nameIdx : searchFrom
+    const chunk = text.slice(start, marker.end + 24)
     const prices = extractMarketPrices(chunk)
-    if (!prices.maxPricePercent) prices.maxPricePercent = marker.percent
+    prices.maxPricePercent = marker.percent
     if (!prices.maxPrice && prices.currentPrice && prices.maxPricePercent) {
       prices.maxPrice = Math.round(prices.currentPrice / (prices.maxPricePercent / 100))
     }
-    return { name: CRAFT_NAME_ORDER[i], ...prices }
-  })
+    rows.push({ name, ...prices })
+  }
+  return rows
 }
 
 const getDefaultCraft = (name) =>
