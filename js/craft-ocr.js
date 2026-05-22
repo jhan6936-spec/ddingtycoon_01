@@ -125,12 +125,7 @@ const extractMarketPrices = (segment) => {
     }
   }
 
-  let maxPrice = 0
-  if (currentPrice > 0 && maxPricePercent > 0) {
-    maxPrice = Math.round(currentPrice / (maxPricePercent / 100))
-  }
-
-  return { currentPrice, priceChange, maxPrice, maxPricePercent }
+  return { currentPrice, priceChange, maxPrice: 0, maxPricePercent }
 }
 
 const parseMarketScreenByPercentBlocks = (text) => {
@@ -157,9 +152,6 @@ const parseMarketScreenByPercentBlocks = (text) => {
     const chunk = text.slice(start, marker.end + 24)
     const prices = extractMarketPrices(chunk)
     prices.maxPricePercent = marker.percent
-    if (!prices.maxPrice && prices.currentPrice && prices.maxPricePercent) {
-      prices.maxPrice = Math.round(prices.currentPrice / (prices.maxPricePercent / 100))
-    }
     rows.push({ name, ...prices })
   }
   return rows
@@ -194,17 +186,6 @@ const buildCraftFromDefaults = (name, overrides, prev) => {
 
   const pct = o.maxPricePercent > 0 ? o.maxPricePercent : p.maxPricePercent > 0 ? p.maxPricePercent : 0
   if (pct > 0) craft.maxPricePercent = pct
-
-  let max = o.maxPrice > 0 ? o.maxPrice : 0
-  if (max >= 1 && max <= 100 && craft.currentPrice > 1000) {
-    craft.maxPricePercent = max
-    max = Math.round(craft.currentPrice / (max / 100))
-  }
-  if (!max && craft.maxPricePercent && craft.currentPrice) {
-    max = Math.round(craft.currentPrice / (craft.maxPricePercent / 100))
-  }
-  if (!max && p.maxPrice > 0 && p.maxPrice > 1000) max = p.maxPrice
-  if (max > 0) craft.maxPrice = max
 
   return typeof window.applyFixedCraftRecipe === 'function'
     ? window.applyFixedCraftRecipe(craft)
