@@ -10909,6 +10909,7 @@ window.addEventListener('DOMContentLoaded', async function() {
           if (window.CraftPriceCharts) CraftPriceCharts.refresh();
         } catch (_) {}
       });
+      try { renderRecipes() } catch (_) {}
       try {
         renderCraftPricePanel(typeof getExpertEffects === 'function' ? getExpertEffects() : { craftPriceBoost: 0 });
       } catch (_) {}

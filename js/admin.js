@@ -97,11 +97,18 @@ const mergeCraftsByName = (baseCatalog, incomingCatalog) => {
   }
 }
 
+const CRAFT_CACHE_KEY = 'ddingtahe_craft_catalog_v1'
+
 const saveCraftCatalogCache = (catalog) => {
   try {
-    if (window.CraftsCatalog && typeof window.CraftsCatalog.saveLocalCache === 'function') {
-      window.CraftsCatalog.saveLocalCache(catalog)
-    }
+    if (!catalog || !Array.isArray(catalog.crafts)) return
+    localStorage.setItem(
+      CRAFT_CACHE_KEY,
+      JSON.stringify({
+        updatedAt: catalog.updatedAt || new Date().toISOString(),
+        crafts: catalog.crafts
+      })
+    )
   } catch (_) {}
 }
 
@@ -281,9 +288,7 @@ const runClientOcr = async (file) => {
     setPipelineStep(`② OCR 인식 중… ${pct}%`)
   })
   state.lastOcrText = text
-  const parsed = window.CraftOcr.parseCraftsFromOcrText(text, state.catalog)
-  parsed.crafts = window.CraftOcr.mergeParsedWithDefaults(parsed.crafts || [])
-  return parsed
+  return window.CraftOcr.parseCraftsFromOcrText(text, state.catalog)
 }
 
 const runSaveApi = async () => {
@@ -448,8 +453,9 @@ const handleManualSave = async () => {
     state.lastSaveSource = 'manual'
     const saveResult = await runSaveApi()
     state.catalog = saveResult.catalog || state.catalog
-    notifyMainSiteCraftsUpdated(state.catalog.updatedAt)
-    setStatus('수동 저장 완료. 메인 사이트에 반영되었습니다.', false)
+    saveCraftCatalogCache(state.catalog)
+    notifyMainSiteCraftsUpdated(state.catalog)
+    setStatus('수동 저장 완료 (6종). index.html을 새로고침하세요.', false)
   } catch (error) {
     setStatus(fetchApiErrorMessage(error), true)
   } finally {
@@ -476,8 +482,12 @@ const handleFixRecipes = async () => {
     if (!res.ok) throw new Error(body.message || body.error || '복구 실패')
     await loadCatalogFromApi()
     renderManualTable(state.catalog)
-    notifyMainSiteCraftsUpdated(body.catalog && body.catalog.updatedAt)
-    setStatus(body.message || '레시피 복구 완료', false)
+    if (body.catalog) {
+      state.catalog = body.catalog
+      saveCraftCatalogCache(state.catalog)
+      notifyMainSiteCraftsUpdated(state.catalog)
+    }
+    setStatus(body.message || '레시피 복구 완료 (6종)', false)
   } catch (err) {
     setStatus(String(err.message || err), true)
   }
