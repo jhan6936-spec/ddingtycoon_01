@@ -12,8 +12,6 @@ const CRAFT_NAME_ORDER = [
   '흑진주 시계'
 ]
 
-const CRAFT_RECIPE_DEFAULTS = () => window.CRAFT_RECIPE_DEFAULTS || {}
-
 const MATERIAL_HINTS = [
   '깨진 조개껍데기', '노란빛 진주', '푸른빛 진주', '청록빛 진주', '분홍빛 진주', '보라빛 진주', '흑진주',
   '금속 재활용품', '합금 재활용품', '합성수지 재활용품', '플라스틱 재활용품', '섬유 재활용품',
