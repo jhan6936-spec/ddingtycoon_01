@@ -179,10 +179,12 @@ const setAuthMessage = (message, isError) => {
 const setFormEnabled = (enabled) => {
   const saveBtn = el('dailySaveBtn')
   const fixBtn = el('fixRecipesBtn')
+  const reanchorBtn = el('reanchorHistoryBtn')
   const clearBtn = el('clearHistoryBtn')
   const resetBtn = el('resetMarketBtn')
   if (saveBtn) saveBtn.disabled = !enabled
   if (fixBtn) fixBtn.disabled = !enabled
+  if (reanchorBtn) reanchorBtn.disabled = !enabled
   if (clearBtn) clearBtn.disabled = !enabled
   if (resetBtn) resetBtn.disabled = !enabled
 }
@@ -364,6 +366,30 @@ const handleDailySave = async () => {
   }
 }
 
+const handleReanchorHistory = async () => {
+  if (!state.authenticated) return
+  const ok = window.confirm(
+    '그래프 이력의 날짜를 5월 21일 03:00(KST)부터 하루씩 맞출까요?\n\n' +
+      '· 가장 오래된 스냅샷 → 5/21 03:00\n' +
+      '· 그다음 → 5/22 03:00 …\n' +
+      '· 이후 「오늘 시세 저장」은 해당일 03:00에 기록됩니다.'
+  )
+  if (!ok) return
+  try {
+    setStatus('그래프 날짜 재배치 중…', false)
+    const res = await fetch('/api/admin/crafts?action=reanchor-history', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: '{}'
+    })
+    const body = await res.json().catch(() => ({}))
+    if (!res.ok) throw new Error(body.message || body.error || '재배치 실패')
+    setStatus(body.message || '그래프 날짜를 3시(KST) 기준으로 맞췄습니다.', false)
+  } catch (err) {
+    setStatus(String(err.message || err), true)
+  }
+}
+
 const handleClearHistory = async () => {
   if (!state.authenticated) return
   if (!window.confirm('그래프 이력(craft_price_history)만 삭제할까요?\n(현재 시세·메인 표시는 유지됩니다)')) return
@@ -452,6 +478,7 @@ document.addEventListener('DOMContentLoaded', () => {
   el('loginBtn')?.addEventListener('click', handleLogin)
   el('dailySaveBtn')?.addEventListener('click', handleDailySave)
   el('fixRecipesBtn')?.addEventListener('click', handleFixRecipes)
+  el('reanchorHistoryBtn')?.addEventListener('click', handleReanchorHistory)
   el('clearHistoryBtn')?.addEventListener('click', handleClearHistory)
   el('resetMarketBtn')?.addEventListener('click', handleResetMarket)
   el('adminSecret')?.addEventListener('keydown', (e) => {
