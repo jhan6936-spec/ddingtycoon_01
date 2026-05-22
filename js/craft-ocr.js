@@ -170,34 +170,7 @@ const parseMarketScreen = (text, baseCatalog) => {
 }
 
 const parseRecipeScreen = (text, baseCatalog) => {
-  const baseMap = new Map((baseCatalog?.crafts || []).map((c) => [c.name, c]))
-  const segments = splitSegmentsByCraftOrder(text)
-  const crafts = []
-
-  for (const name of CRAFT_NAME_ORDER) {
-    const segment = segments[name]
-    if (!segment) continue
-
-    const inputs = parseInputsNear(segment)
-    if (inputs.length < 2) continue
-
-    const existing = baseMap.get(name) || {}
-    const bigNums = (segment.match(/\d{4,7}/g) || []).map(parseGoldNumber).filter((n) => n >= 1000)
-    const price = bigNums.length ? Math.max(...bigNums) : existing.price || getDefaultCraft(name)?.price
-
-    crafts.push(
-      buildCraftFromDefaults(name, {
-        inputs,
-        price: price || getDefaultCraft(name)?.price,
-        currentPrice: existing.currentPrice,
-        maxPrice: existing.maxPrice,
-        timeMinutes: existing.timeMinutes || 1,
-        time: existing.time || 1
-      })
-    )
-  }
-
-  return { crafts, screenType: 'recipe' }
+  return parseMarketScreen(text, baseCatalog)
 }
 
 const parseCraftsFromOcrText = (text, baseCatalog) => {
@@ -214,16 +187,18 @@ const mergeParsedWithDefaults = (parsedCrafts) => {
   return (parsedCrafts || []).map((craft) => {
     const base = getDefaultCraft(craft.name)
     if (!base) return craft
-    return {
+    const out = {
       name: craft.name,
       price: base.price,
       inputs: base.inputs.map((i) => ({ ...i })),
       timeMinutes: craft.timeMinutes || base.timeMinutes,
       time: craft.time || base.timeMinutes,
-      group: 'craft',
-      currentPrice: craft.currentPrice != null ? craft.currentPrice : undefined,
-      maxPrice: craft.maxPrice != null ? craft.maxPrice : undefined
+      group: 'craft'
     }
+    if (craft.currentPrice != null && craft.currentPrice > 0) out.currentPrice = craft.currentPrice
+    if (craft.maxPrice != null && craft.maxPrice > 0) out.maxPrice = craft.maxPrice
+    if (craft.priceChange != null && craft.priceChange !== 0) out.priceChange = craft.priceChange
+    return out
   })
 }
 

@@ -23,6 +23,7 @@ const CraftsCatalog = {
     }
     if (item.currentPrice != null) recipe.currentPrice = Math.max(0, Number(item.currentPrice) || 0)
     if (item.maxPrice != null) recipe.maxPrice = Math.max(0, Number(item.maxPrice) || 0)
+    if (item.priceChange != null) recipe.priceChange = Math.floor(Number(item.priceChange) || 0)
     if (typeof window.applyFixedCraftRecipe === 'function') {
       return window.applyFixedCraftRecipe(recipe)
     }
@@ -43,6 +44,7 @@ const CraftsCatalog = {
         }
         if (row.current_price != null) craft.currentPrice = Number(row.current_price) || 0
         if (row.max_price != null) craft.maxPrice = Number(row.max_price) || 0
+        if (row.price_change != null) craft.priceChange = Number(row.price_change) || 0
         return craft
       })
       .filter(Boolean)
@@ -71,7 +73,7 @@ const CraftsCatalog = {
     const base = String(cfg.url).replace(/\/$/, '')
     const url =
       base +
-      '/rest/v1/craft_items?select=name,price,current_price,max_price,time_minutes,inputs,sort_order,updated_at&order=sort_order.asc,name.asc'
+      '/rest/v1/craft_items?select=name,price,current_price,max_price,price_change,time_minutes,inputs,sort_order,updated_at&order=sort_order.asc,name.asc'
 
     const response = await fetch(url, {
       cache: 'no-store',
