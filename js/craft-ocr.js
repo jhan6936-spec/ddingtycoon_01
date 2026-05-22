@@ -12,78 +12,7 @@ const CRAFT_NAME_ORDER = [
   '흑진주 시계'
 ]
 
-/** 레시피·제작 판매가 — OCR로 덮어쓰지 않음 */
-const CRAFT_RECIPE_DEFAULTS = {
-  '조개껍데기 브로치': {
-    price: 47682,
-    timeMinutes: 1,
-    inputs: [
-      { name: '깨진 조개껍데기', count: 1 },
-      { name: '노란빛 진주', count: 1 },
-      { name: '금속 재활용품', count: 1 },
-      { name: '거미줄', count: 4 }
-    ]
-  },
-  '푸른 향수병': {
-    price: 89700,
-    timeMinutes: 1,
-    inputs: [
-      { name: '깨진 조개껍데기', count: 2 },
-      { name: '푸른빛 진주', count: 1 },
-      { name: '합성수지 재활용품', count: 1 },
-      { name: '플라스틱 재활용품', count: 1 },
-      { name: '양동이', count: 8 }
-    ]
-  },
-  '자개 손거울': {
-    price: 257671,
-    timeMinutes: 1,
-    inputs: [
-      { name: '깨진 조개껍데기', count: 3 },
-      { name: '청록빛 진주', count: 1 },
-      { name: '합금 재활용품', count: 2 },
-      { name: '플라스틱 재활용품', count: 2 },
-      { name: '유리판', count: 16 }
-    ]
-  },
-  '분홍 헤어핀': {
-    price: 456177,
-    timeMinutes: 1,
-    inputs: [
-      { name: '깨진 조개껍데기', count: 4 },
-      { name: '분홍빛 진주', count: 1 },
-      { name: '합성수지 재활용품', count: 3 },
-      { name: '섬유 재활용품', count: 3 },
-      { name: '대나무', count: 64 },
-      { name: '분홍 꽃잎', count: 16 }
-    ]
-  },
-  '자개 부채': {
-    price: 90580,
-    timeMinutes: 1,
-    inputs: [
-      { name: '깨진 조개껍데기', count: 5 },
-      { name: '보라빛 진주', count: 1 },
-      { name: '합금 재활용품', count: 5 },
-      { name: '합성수지 재활용품', count: 5 },
-      { name: '막대기', count: 64 },
-      { name: '자수정 조각', count: 16 }
-    ]
-  },
-  '흑진주 시계': {
-    price: 735064,
-    timeMinutes: 1,
-    inputs: [
-      { name: '깨진 조개껍데기', count: 7 },
-      { name: '흑진주', count: 1 },
-      { name: '금속 재활용품', count: 7 },
-      { name: '합금 재활용품', count: 7 },
-      { name: '섬유 재활용품', count: 7 },
-      { name: '흑요석', count: 16 },
-      { name: '시계', count: 8 }
-    ]
-  }
-}
+const CRAFT_RECIPE_DEFAULTS = () => window.CRAFT_RECIPE_DEFAULTS || {}
 
 const MATERIAL_HINTS = [
   '깨진 조개껍데기', '노란빛 진주', '푸른빛 진주', '청록빛 진주', '분홍빛 진주', '보라빛 진주', '흑진주',
