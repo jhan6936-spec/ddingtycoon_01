@@ -11327,6 +11327,8 @@ async function loadLiveNpcMarketPrices() {
     const prices = body && body.prices ? body.prices : null;
     if (!prices || typeof prices !== 'object') return;
 
+    window.npcMarketPricesByItem = { ...prices };
+
     let applied = 0;
     (data.recipes || []).forEach((recipe) => {
       const live = prices[recipe.name];
@@ -11338,6 +11340,10 @@ async function loadLiveNpcMarketPrices() {
     });
     if (applied > 0) {
       console.info('[market-prices] applied', applied, 'live NPC prices for', body.date || 'today');
+    }
+    if (window.CraftSellPrice && typeof window.CraftSellPrice.refreshCraftSellPriceDisplays === 'function') {
+      const effects = typeof getExpertEffects === 'function' ? getExpertEffects() : { craftPriceBoost: 0 };
+      window.CraftSellPrice.refreshCraftSellPriceDisplays(data, effects);
     }
   } catch (error) {
     console.warn('[market-prices] load failed:', error);
