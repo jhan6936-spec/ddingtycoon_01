@@ -74,14 +74,14 @@ const computeCraftBaseSellPrice = (recipe, lookup) => {
   }
 
   let sum = 0
-  let missing = 0
+  let pricedCount = 0
   inputs.forEach((inp) => {
     const unit = lookup.get(inp.name) || 0
-    if (!unit) missing += 1
+    if (unit > 0) pricedCount += 1
     sum += unit * Math.max(1, Math.floor(Number(inp.count) || 1))
   })
 
-  if (missing === 0 && sum > 0) return sum
+  if (pricedCount > 0) return sum
   return Math.round(Number(fixed) || Number(recipe.price) || 0)
 }
 
