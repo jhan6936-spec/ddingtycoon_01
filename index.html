@@ -6967,11 +6967,13 @@ let lastMinecraftDashboardSyncAt = 0;
 const MINECRAFT_DASHBOARD_SYNC_DEBOUNCE_MS = 100;
 const MINECRAFT_DASHBOARD_SYNC_FORCE_GAP_MS = 900;
 
-function scheduleMinecraftDashboardSync() {
+function scheduleMinecraftDashboardSync(options) {
+  void refreshMinecraftLinkUi();
   if (!currentAuthUserId) return;
+  const immediate = options && options.immediate;
   const now = Date.now();
   clearTimeout(minecraftDashboardSyncTimer);
-  if (now - lastMinecraftDashboardSyncAt >= MINECRAFT_DASHBOARD_SYNC_FORCE_GAP_MS) {
+  if (immediate || now - lastMinecraftDashboardSyncAt >= MINECRAFT_DASHBOARD_SYNC_FORCE_GAP_MS) {
     void syncMinecraftDashboardSnapshot();
     return;
   }
@@ -10249,7 +10251,8 @@ function renderStaminaPlan() {
       ${rows.join('')}
     </div>
   `;
-  scheduleMinecraftDashboardSync();
+  void refreshMinecraftLinkUi();
+  scheduleMinecraftDashboardSync({ immediate: true });
 }
 
 function updateVanillaInputState() {
