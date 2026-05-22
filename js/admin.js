@@ -51,6 +51,11 @@ const mergeCraftsByName = (baseCatalog, incomingCatalog) => {
     } else if (prev.currentPrice) {
       merged.currentPrice = prev.currentPrice
     }
+    if (craft.priceChange != null && craft.priceChange !== 0) {
+      merged.priceChange = craft.priceChange
+    } else if (prev.priceChange) {
+      merged.priceChange = prev.priceChange
+    }
     if (craft.maxPrice != null && craft.maxPrice > 0) {
       merged.maxPrice = craft.maxPrice
     } else if (prev.maxPrice) {
@@ -127,7 +132,7 @@ const setOcrPreview = (text, crafts, screenType) => {
   if (summary) {
     const mode =
       screenType === 'market'
-        ? '시세 변동 화면 — 현재가·최고가만 갱신 (레시피 고정)'
+        ? '시세 변동 화면 — 시세·변동폭·최고가 갱신 (레시피 고정)'
         : screenType === 'recipe'
           ? '제작 화면 — 재료 인식'
           : ''
@@ -153,7 +158,8 @@ const renderManualTable = (catalog) => {
     tr.innerHTML = `
       <td class="px-2 py-2 text-slate-300">${name}</td>
       <td class="px-2 py-2 text-slate-400 text-sm">${fixedPrice.toLocaleString()} <span class="text-xs text-slate-600">(고정)</span></td>
-      <td class="px-2 py-2"><input data-field="currentPrice" data-index="${index}" type="number" class="w-full rounded bg-slate-900 border border-slate-600 px-2 py-1 text-sm" value="${Number(craft.currentPrice) || 0}" /></td>
+      <td class="px-2 py-2"><input data-field="currentPrice" data-index="${index}" type="number" class="w-full rounded bg-slate-900 border border-slate-600 px-2 py-1 text-sm" value="${Number(craft.currentPrice) || 0}" title="NPC 현재 시세" /></td>
+      <td class="px-2 py-2"><input data-field="priceChange" data-index="${index}" type="number" class="w-full rounded bg-slate-900 border border-slate-600 px-2 py-1 text-sm" value="${Number(craft.priceChange) || 0}" title="▲ 양수, ▼ 음수" /></td>
       <td class="px-2 py-2"><input data-field="maxPrice" data-index="${index}" type="number" class="w-full rounded bg-slate-900 border border-slate-600 px-2 py-1 text-sm" value="${Number(craft.maxPrice) || 0}" /></td>
     `
     tbody.appendChild(tr)
@@ -176,6 +182,9 @@ const syncManualTableToCatalog = () => {
     const craft = byName.get(name) || defaults || { name, group: 'craft', inputs: [], timeMinutes: 1, time: 1 }
     if (field === 'currentPrice' || field === 'maxPrice') {
       craft[field] = Math.max(0, parseInt(input.value || '0', 10))
+    }
+    if (field === 'priceChange') {
+      craft.priceChange = parseInt(input.value || '0', 10)
     }
     if (defaults) {
       craft.price = defaults.price

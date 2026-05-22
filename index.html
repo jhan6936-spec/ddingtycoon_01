@@ -10452,6 +10452,13 @@ function renderCraftPricePanel(effects) {
     const maxPrice = (recipe.maxPrice != null && recipe.maxPrice > 0)
       ? recipe.maxPrice
       : (maxPriceMap[recipe.name] || 0);
+    const priceChange = Number(recipe.priceChange) || 0;
+    const changeAbs = Math.abs(priceChange).toLocaleString();
+    const changeHtml = priceChange > 0
+      ? `<span style="color:#f87171;font-weight:800;">▲ ${changeAbs}G</span>`
+      : priceChange < 0
+        ? `<span style="color:#60a5fa;font-weight:800;">▼ ${changeAbs}G</span>`
+        : `<span style="color:#777;">변동 없음</span>`;
     const ratio = maxPrice > 0 ? (currentPrice / maxPrice * 100) : 0;
     const ratioColor = ratio >= 80 ? '#4ade80' : ratio <= 50 ? '#f87171' : '#facc15';
     const boostedRecipePrice = Math.round(recipePrice * (1 + (effects.craftPriceBoost / 100)));
