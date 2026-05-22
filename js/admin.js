@@ -179,20 +179,86 @@ const setPipelineStep = (text) => {
   if (step) step.textContent = text || ''
 }
 
-const setOcrPreview = (text, crafts, screenType) => {
+const formatChangeLabel = (change) => {
+  const n = Number(change) || 0
+  if (!n) return '0'
+  return n > 0 ? `▲ ${n.toLocaleString()}` : `▼ ${Math.abs(n).toLocaleString()}`
+}
+
+const setOcrPreview = (text, extracted) => {
   const pre = el('ocrTextPreview')
   const summary = el('ocrParseSummary')
+  const crafts = extracted?.crafts || []
+  const screenType = extracted?.screenType
+  const markerCount = extracted?.markerCount
+
   if (pre) pre.textContent = text || '(인식된 텍스트 없음)'
   if (summary) {
-    const mode =
-      screenType === 'market'
-        ? '시세 변동 화면 — 시세·변동폭·최고가 갱신 (레시피 고정)'
-        : screenType === 'recipe'
-          ? '제작 화면 — 재료 인식'
-          : ''
-    summary.textContent = crafts.length
-      ? `${mode} · ${crafts.map((c) => c.name).join(', ')}`
-      : '공예품 이름을 찾지 못했습니다. 시세 변동 전체 화면을 올리거나 아래에서 수동 입력하세요.'
+    if (crafts.length >= 6) {
+      summary.textContent = `시세 변동 OCR · 최고가의 N% 마커 ${markerCount ?? 6}개 · 아래 표와 수동 입력란을 확인하세요`
+    } else {
+      summary.textContent =
+        `「최고가의 N%」가 6개 보이지 않습니다 (인식 ${markerCount ?? 0}개). 시세 변동 전체 화면을 올리거나 수동 입력 후 저장하세요.`
+    }
+  }
+  renderOcrResultTable(crafts)
+}
+
+const renderOcrResultTable = (crafts) => {
+  const tbody = el('ocrResultBody')
+  if (!tbody) return
+  const names = window.CRAFT_NAME_ORDER || window.CraftOcr?.CRAFT_NAME_ORDER || []
+  const map = new Map((crafts || []).map((c) => [c.name, c]))
+  tbody.innerHTML = ''
+
+  names.forEach((name) => {
+    const c = map.get(name)
+    const current = c ? Number(c.currentPrice) || 0 : 0
+    const pct = c ? Number(c.maxPricePercent) || 0 : 0
+    const ok = current >= 1000
+    const tr = document.createElement('tr')
+    tr.className = ok ? 'border-b border-slate-700/60' : 'border-b border-rose-900/50 bg-rose-950/20'
+    tr.innerHTML = `
+      <td class="px-2 py-1.5 text-slate-300">${name}</td>
+      <td class="px-2 py-1.5 ${ok ? 'text-amber-200' : 'text-rose-400'}">${ok ? current.toLocaleString() + 'G' : '—'}</td>
+      <td class="px-2 py-1.5 text-slate-400">${formatChangeLabel(c?.priceChange)}</td>
+      <td class="px-2 py-1.5 text-slate-400">${pct ? pct + '%' : '—'}</td>
+    `
+    tbody.appendChild(tr)
+  })
+}
+
+/** OCR 결과만으로 6종 카탈로그 구성 (DB 이전 시세와 섞지 않음) */
+const buildCatalogFromOcr = (extracted) => {
+  const order = window.CRAFT_NAME_ORDER || window.CraftOcr?.CRAFT_NAME_ORDER || []
+  const byName = new Map((extracted.crafts || []).map((c) => [c.name, c]))
+  const crafts = order
+    .map((name) => {
+      const ocr = byName.get(name)
+      const base =
+        typeof window.getDefaultCraftRecipe === 'function' ? window.getDefaultCraftRecipe(name) : null
+      if (!base) return null
+      const merged = {
+        name: base.name,
+        price: base.price,
+        inputs: base.inputs.map((i) => ({ ...i })),
+        timeMinutes: base.timeMinutes,
+        time: base.timeMinutes,
+        group: 'craft',
+        currentPrice: ocr?.currentPrice,
+        priceChange: ocr?.priceChange,
+        maxPricePercent: ocr?.maxPricePercent
+      }
+      return typeof window.applyFixedCraftRecipe === 'function'
+        ? window.applyFixedCraftRecipe(merged)
+        : merged
+    })
+    .filter(Boolean)
+
+  return {
+    version: 1,
+    updatedAt: new Date().toISOString(),
+    crafts
   }
 }
 
