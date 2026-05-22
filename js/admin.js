@@ -367,6 +367,18 @@ const handleDailySave = async () => {
     return
   }
 
+  const historyDate = getSelectedHistoryDate()
+  const today = getSeoulTodayDateString()
+  if (historyDate !== today) {
+    const ok = window.confirm(
+      `그래프 기록일: ${formatHistoryDateKorean(historyDate)} 03:00 (KST)\n\n` +
+        '· craft_items 현재 시세는 방금 입력한 값으로 갱신됩니다.\n' +
+        '· 그래프 이력은 선택한 날짜에 기록됩니다.\n\n' +
+        '계속 저장할까요?'
+    )
+    if (!ok) return
+  }
+
   state.saving = true
   const btn = el('dailySaveBtn')
   if (btn) {
@@ -382,7 +394,8 @@ const handleDailySave = async () => {
       headers: authHeaders(),
       body: JSON.stringify({
         ...state.catalog,
-        source: 'daily'
+        source: 'daily',
+        historyDate
       })
     })
     const body = await response.json().catch(() => ({}))
@@ -392,14 +405,20 @@ const handleDailySave = async () => {
     rememberPreviousPrices(state.catalog)
     renderPriceTable(state.catalog)
     notifyMainSiteCraftsUpdated(state.catalog)
-    setStatus('오늘 시세 저장 완료. 메인 사이트(index.html)를 새로고침하세요.', false)
+    const recordedLabel = body.recordedAt
+      ? body.recordedAt.replace('T', ' ').replace('+09:00', ' (KST)')
+      : `${historyDate} 03:00 (KST)`
+    setStatus(
+      `시세 저장 완료 · 그래프 기록: ${formatHistoryDateKorean(historyDate)} 03:00 (${recordedLabel}). index.html을 새로고침하세요.`,
+      false
+    )
   } catch (error) {
     setStatus(fetchApiErrorMessage(error), true)
   } finally {
     state.saving = false
     if (btn) {
       btn.disabled = false
-      btn.textContent = '오늘 시세 저장'
+      btn.textContent = '시세 저장'
     }
   }
 }
@@ -523,5 +542,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Enter') handleLogin()
   })
   setFormEnabled(false)
+  initHistoryDateInput()
   tryAutoLogin()
 })
