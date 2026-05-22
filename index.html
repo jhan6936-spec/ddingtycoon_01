@@ -10390,38 +10390,13 @@ function renderStaminaPlan() {
     return;
   }
   const inventory = getWarehouseInventory();
-  const vanillaToggle = document.getElementById('vanillaCalcToggle');
-  const isVanillaCalcOn = vanillaToggle ? vanillaToggle.checked : true;
-  const invForEff = { ...inventory };
-  if (!isVanillaCalcOn) {
-    getInfiniteVanillaMaterials().forEach((n) => { invForEff[n] = Number.MAX_SAFE_INTEGER; });
-  }
-  const effScores = computeShellfishEfficiencyScores(invForEff);
-  const baseStock = {};
-  SHELLFISH_NAMES.forEach((name) => {
-    const p3 = Math.min(0.95, STAR_PROBS.s3 + ((expertMeta.starshell.values[expertState.starshell] || 0) / 100));
-    const p1 = Math.max(0.05, STAR_PROBS.s1 - (p3 - STAR_PROBS.s3) * 0.7);
-    const p2 = Math.max(0.05, 1 - p1 - p3);
-    const w1 = 1 / p1;
-    const w2 = 1 / p2;
-    const w3 = 1 / p3;
-    baseStock[name] =
-      (inventory[`${name} ★`] || 0) * w1 +
-      (inventory[`${name} ★★`] || 0) * w2 +
-      (inventory[`${name} ★★★`] || 0) * w3;
-  });
-  const stockW = SHELLFISH_NAMES.map((n) => 1 / (baseStock[n] + 1));
-  const effW = SHELLFISH_NAMES.map((n) => effScores[n] || 0.001);
-  const combined = SHELLFISH_NAMES.map((_, idx) => stockW[idx] * effW[idx]);
-  const totalW = combined.reduce((a, b) => a + b, 0);
-  const baseAlloc = SHELLFISH_NAMES.map((_, idx) => Math.floor(((stamina * combined[idx]) / totalW) / STAMINA_PER_GATHER) * STAMINA_PER_GATHER);
-  let remain = stamina - baseAlloc.reduce((a, b) => a + b, 0);
-  let turn = 0;
-  while (remain >= STAMINA_PER_GATHER) {
-    baseAlloc[turn % baseAlloc.length] += STAMINA_PER_GATHER;
-    remain -= STAMINA_PER_GATHER;
-    turn += 1;
-  }
+  const allocCtx = buildStaminaAllocationContext(inventory);
+  const baseAlloc = allocateStaminaByWeights(stamina, allocCtx.weights);
+  const planHint = allocCtx.planInfo.fromAlchemyPlan
+    ? '연금 추천 제작이 쓰는 어패류·창고 보유를 반영했습니다. 부족한 종에 채집 스태미나를 더 배분합니다.'
+    : allocCtx.planInfo.shell
+      ? '창고 기준으로 연금 소모량을 추정해 분배했습니다. 연금품 탭 계산 후 더 정확해집니다.'
+      : '창고·연금 효율만 반영했습니다. 재료 창고 입력 후 연금품 계산을 실행하세요.';
   const shellfishImages = { 굴: '재료/굴.png', 소라: '재료/소라.png', 문어: '재료/문어.png', 미역: '재료/미역.png', 성게: '재료/성게.png' };
   const deepBonus = (expertMeta.deepCollector.values[expertState.deepCollector] || 0) / 100;
   const engraving = getSageEngravingEffects();
