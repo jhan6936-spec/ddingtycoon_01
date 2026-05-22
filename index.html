@@ -10459,7 +10459,12 @@ function renderCraftPricePanel(effects) {
       : priceChange < 0
         ? `<span style="color:#60a5fa;font-weight:800;">▼ ${changeAbs}G</span>`
         : `<span style="color:#777;">변동 없음</span>`;
-    const ratio = maxPrice > 0 ? (currentPrice / maxPrice * 100) : 0;
+    let ratio = 0;
+    if (recipe.maxPricePercent >= 1 && recipe.maxPricePercent <= 100) {
+      ratio = recipe.maxPricePercent;
+    } else if (maxPrice > 0 && maxPrice >= currentPrice * 0.5) {
+      ratio = (currentPrice / maxPrice) * 100;
+    }
     const ratioColor = ratio >= 80 ? '#4ade80' : ratio <= 50 ? '#f87171' : '#facc15';
     const boostedRecipePrice = Math.round(recipePrice * (1 + (effects.craftPriceBoost / 100)));
     const hasCraftBoost = effects.craftPriceBoost > 0;
