@@ -23,7 +23,8 @@ const text = [
 ].join('\n')
 
 const r = ctx.window.CraftOcr.parseCraftsFromOcrText(text, { crafts: [] })
+const { CRAFT_MAX_PRICES } = require('../lib/craft-recipe-fixed')
 r.crafts.forEach((c) => {
-  console.log(c.name, c.currentPrice, c.priceChange, c.maxPricePercent, c.maxPrice)
+  console.log(c.name, c.currentPrice, c.priceChange, c.maxPricePercent + '%', 'max', c.maxPrice, 'ceiling', CRAFT_MAX_PRICES[c.name])
 })
 console.log('count', r.crafts.length, 'updated', r.priceUpdatedCount)
