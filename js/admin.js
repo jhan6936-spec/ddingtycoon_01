@@ -179,9 +179,11 @@ const setFormEnabled = (enabled) => {
   const saveBtn = el('dailySaveBtn')
   const fixBtn = el('fixRecipesBtn')
   const clearBtn = el('clearHistoryBtn')
+  const resetBtn = el('resetMarketBtn')
   if (saveBtn) saveBtn.disabled = !enabled
   if (fixBtn) fixBtn.disabled = !enabled
   if (clearBtn) clearBtn.disabled = !enabled
+  if (resetBtn) resetBtn.disabled = !enabled
 }
 
 const fetchApiErrorMessage = (error) => {
