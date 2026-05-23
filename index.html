@@ -12935,8 +12935,18 @@ function renderCraftPricePanel(effects) {
 }
 
 // ===== 효율성 분석 =====
+let efficiencyDebounceTimer = 0;
+let efficiencyRunSeq = 0;
+
 function handleEfficiencyInputChanged() {
-  analyzeEfficiency();
+  clearTimeout(efficiencyDebounceTimer);
+  efficiencyDebounceTimer = setTimeout(() => {
+    const seq = ++efficiencyRunSeq;
+    requestAnimationFrame(() => {
+      if (seq !== efficiencyRunSeq) return;
+      analyzeEfficiency();
+    });
+  }, 320);
 }
 
 function analyzeEfficiency() {
@@ -12965,49 +12975,6 @@ function analyzeEfficiency() {
     });
   }
 
-  const results = [];
-  
-  const craftNoPromote = { skipShellfishTierConvert: true };
-
-  // 각 최종 산물에 대해 분석
-  data.recipes.forEach(recipe => {
-    const maxCraft = calculateMaxCraft(recipe, inventory, {}, craftNoPromote);
-    
-    if (maxCraft > 0) {
-      const isAlchemy = /(희석액|핵|정수|에센스|결정|엘릭서|영약|비약|코어|아쿠티스|광란체|깃털|날개|파편|나우틸러스|무저)/.test(recipe.name);
-      const isCraft = recipe.group === 'craft';
-      const priceMultiplier = isAlchemy ? (1 + effects.alchemyPriceBoost / 100) : (isCraft ? (1 + effects.craftPriceBoost / 100) : 1);
-      const adjustedPrice = Math.round((recipe.price || 0) * priceMultiplier);
-      const baseTimeSec = isAlchemy
-        ? getAlchemyCraftOperationTimeSec(recipe.name)
-        : Math.max(1, Math.round((recipe.time || 1) * 60));
-      const adjustedTimeSec = Math.max(1, baseTimeSec * (1 - effects.timeReduce / 100));
-      const adjustedTimeMin = adjustedTimeSec / 60;
-      const kind = isAlchemy ? 'alchemy' : (isCraft ? 'craft' : 'other');
-      results.push({
-        name: recipe.name,
-        kind: kind,
-        maxCount: maxCraft,
-        price: adjustedPrice,
-        totalPrice: adjustedPrice * maxCraft,
-        efficiency: adjustedTimeMin > 0 ? (adjustedPrice * maxCraft) / adjustedTimeMin : 0,
-        recipe: recipe,
-        requiredMaterials: calculateRequiredMaterials(recipe, maxCraft),
-        adjustedTimeSec
-      });
-    }
-  });
-  
-  // 정렬: 바닐라 OFF면 어패류 수량(제작 가능 수량) 우선, 그 외는 효율성 우선
-  if (!isVanillaCalcOn) {
-    results.sort((a, b) => {
-      if (b.maxCount !== a.maxCount) return b.maxCount - a.maxCount;
-      return b.efficiency - a.efficiency;
-    });
-  } else {
-    results.sort((a, b) => b.efficiency - a.efficiency);
-  }
-  
   const containerAlchemy = document.getElementById('efficiencyContainerAlchemy');
   const containerCraftPrice = document.getElementById('efficiencyContainerCraftPrice');
   if (!containerAlchemy) return;
@@ -13016,8 +12983,6 @@ function analyzeEfficiency() {
   lastAlchemyPlanCountsByName = null;
   lastAlchemyRecordSnapshot = null;
   if (containerCraftPrice) containerCraftPrice.innerHTML = '';
-
-  const alchemyResults = results.filter(r => r.kind === 'alchemy');
 
   const purchaseOn = isPurchaseIncludeEnabled() && shellfishPricesHasAny;
   const purchaseBudget = purchaseOn ? getPurchaseBudgetGold() : 0;
@@ -13242,7 +13207,7 @@ function analyzeEfficiency() {
   
   renderCraftPricePanel(effects);
   
-  if (!alchemyResults.length) {
+  if (!planEntries.length) {
     const emptyNote = document.createElement('div');
     emptyNote.className = 'no-result';
     emptyNote.style.marginTop = '12px';
