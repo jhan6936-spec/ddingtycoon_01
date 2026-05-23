@@ -5255,27 +5255,91 @@
     .craft-price-metrics > div {
       min-width: 0;
     }
-    .craft-price-metric-value--price {
-      font-size: clamp(15px, 1.6vw, 20px);
-      color: #9ee0ff;
-      line-height: 1.2;
+    .craft-price-metric-value {
+      font-size: 18px !important;
+      line-height: 1.25;
       white-space: nowrap;
+    }
+    .craft-price-metrics > div:nth-child(2) .craft-price-metric-value {
+      font-size: 17px !important;
+    }
+    .craft-price-metric-value--price {
+      color: #9ee0ff;
       text-shadow: 0 0 18px rgba(96, 187, 255, 0.38);
     }
     .craft-price-metric-value--ratio {
-      font-size: clamp(15px, 1.5vw, 19px);
-      line-height: 1.2;
-      white-space: nowrap;
       font-weight: 900;
     }
+    .craft-price-change {
+      font-size: 17px;
+    }
+    .craft-price-card-title .expert-name {
+      font-size: 18px !important;
+    }
+    .craft-price-card-title img {
+      height: 28px !important;
+      width: auto;
+    }
+    .craft-price-ingredient {
+      font-size: 15px !important;
+      padding: 8px 0 !important;
+    }
+    .craft-price-ingredient img {
+      height: 22px !important;
+      width: auto;
+    }
+    .recipe-card-title {
+      font-size: 17px !important;
+    }
+    .recipe-card-title img,
+    .recipe-card .ingredient-icon {
+      height: 28px !important;
+      width: auto;
+      max-height: none;
+    }
+    .recipe-card .ingredient-item {
+      font-size: 15px !important;
+      padding: 8px 0 !important;
+    }
+    .recipe-card .ingredient-item img {
+      height: 24px !important;
+      width: auto;
+    }
+    .recipe-card-price-val {
+      font-size: 16px !important;
+    }
+    .recipe-section-title {
+      font-size: 12px !important;
+    }
+    .warehouse-grid.alchemy-compact {
+      grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)) !important;
+      gap: 10px !important;
+    }
+    .warehouse-item.alchemy-compact-item {
+      padding: 10px 11px !important;
+    }
+    .warehouse-item.alchemy-compact-item .warehouse-item-name {
+      font-size: 14px !important;
+      margin-bottom: 6px !important;
+    }
+    .warehouse-item.alchemy-compact-item input {
+      font-size: 14px !important;
+      padding: 7px 8px !important;
+    }
+    .warehouse-item.alchemy-compact-item .warehouse-item-name img {
+      height: 24px !important;
+      width: auto;
+    }
     .craft-price-sell-value[data-craft-boosted] {
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 900;
       text-shadow: 0 0 14px rgba(96, 187, 255, 0.28);
     }
-    .recipe-card-price-val {
-      font-size: 15px;
-      text-shadow: 0 0 14px rgba(96, 187, 255, 0.3);
+    .craft-price-sell-value {
+      font-size: 15px !important;
+    }
+    .craft-price-sell-label {
+      font-size: 13px !important;
     }
     .alchemy-time-card--expert .alchemy-time-value {
       font-size: 22px;
@@ -5434,10 +5498,6 @@
       width: 55%;
       height: 80%;
       background: radial-gradient(ellipse at 70% 30%, rgba(40, 120, 200, 0.14) 0%, transparent 65%);
-    }
-    .platform-hero__inner {
-      position: relative;
-      z-index: 1;
     }
     .platform-hero__top {
       display: flex;
@@ -9075,8 +9135,8 @@ function renderWarehouse() {
   alchemyCategoryTitle.textContent = '⚗️ 연금품';
   container.appendChild(alchemyCategoryTitle);
 
-  createSection('1성 연금품 · 핵', alchemy1Core, '', { isAlchemy: true });
   createSection('1성 연금품 · 정수', alchemy1Ess, '', { isAlchemy: true });
+  createSection('1성 연금품 · 핵', alchemy1Core, '', { isAlchemy: true });
 
   createSection('2성 연금품 · 에센스', alchemy2Ess, '', { isAlchemy: true });
   createSection('2성 연금품 · 결정', alchemy2Crystal, '', { isAlchemy: true });
