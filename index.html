@@ -11740,6 +11740,34 @@ window.addEventListener('DOMContentLoaded', async function() {
       handleEfficiencyInputChanged();
     });
   }
+  restorePurchaseUiState();
+  fetchShellfishBuyPrices();
+  try {
+    const shellfishChannel = new BroadcastChannel(SHELLFISH_PRICES_BROADCAST);
+    shellfishChannel.onmessage = (event) => {
+      if (event?.data?.catalog) applyShellfishPricesCatalog(event.data.catalog);
+      else fetchShellfishBuyPrices().then(() => handleEfficiencyInputChanged());
+    };
+  } catch (_) {}
+  const purchaseToggle = document.getElementById('purchaseIncludeToggle');
+  if (purchaseToggle) {
+    purchaseToggle.addEventListener('change', () => {
+      savePurchaseUiState();
+      syncPurchaseControlsUi();
+      handleEfficiencyInputChanged();
+    });
+  }
+  const purchaseBudgetInput = document.getElementById('purchaseBudgetInput');
+  if (purchaseBudgetInput) {
+    let purchaseBudgetTimer = 0;
+    const onPurchaseBudgetChange = () => {
+      savePurchaseUiState();
+      clearTimeout(purchaseBudgetTimer);
+      purchaseBudgetTimer = setTimeout(() => handleEfficiencyInputChanged(), 280);
+    };
+    purchaseBudgetInput.addEventListener('input', onPurchaseBudgetChange);
+    purchaseBudgetInput.addEventListener('change', onPurchaseBudgetChange);
+  }
   const warehouseCalcModeToggle = document.getElementById('warehouseCalcModeToggle');
   if (warehouseCalcModeToggle) {
     warehouseCalcModeToggle.addEventListener('change', handleWarehouseCalcModeToggle);
