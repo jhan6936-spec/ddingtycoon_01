@@ -6557,7 +6557,9 @@
           <section id="ug-start" class="usage-guide-section is-active">
             <h2>시작하기</h2>
             <p class="usage-guide-lead">띵타해는 해양 제작·연금·채집을 위한 계산 플랫폼입니다. 대부분의 기능은 <strong>재료 창고</strong>에 보유량을 넣은 뒤 각 계산기에서 결과를 확인합니다.</p>
-            <div class="usage-guide-shot" id="usageGuideShot-ug-start" aria-label="메인 화면 미리보기"></div>
+            <div class="usage-guide-shot" id="usageGuideShot-ug-start" aria-label="메인 화면 미리보기">
+              <img src="가이드/ug-start.png?v=3" alt="시작하기 화면" loading="lazy" decoding="async">
+            </div>
             <ol class="usage-guide-steps">
               <li>사이드바 <strong>재료 창고</strong>에서 보유 재료·조개·정수 등을 입력합니다.</li>
               <li><strong>개인설정</strong>에서 해양 전문가·세이지 낚싯대 각인을 맞춥니다.</li>
@@ -8897,7 +8899,7 @@ document.addEventListener('keydown', (e) => {
 
 
 /** 이용 가이드 일러스트 (가이드/*.png) */
-const USAGE_GUIDE_IMAGE_VERSION = '2';
+const USAGE_GUIDE_IMAGE_VERSION = '3';
 const USAGE_GUIDE_STATIC_SHOTS = {
   'ug-start': '가이드/ug-start.png',
   'ug-warehouse': '가이드/ug-warehouse.png',
@@ -8938,6 +8940,10 @@ function initUsageGuide() {
     applyUsageGuideShotFile(id, filePath);
   });
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  initUsageGuide();
+});
 
 // ===== 섹션 전환 =====
 function switchSection(sectionId, clickedEl) {
