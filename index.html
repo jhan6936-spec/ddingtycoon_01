@@ -5303,72 +5303,77 @@
       width: auto;
     }
     #craft .recipe-card {
-      border-radius: 10px;
+      border-radius: 8px;
     }
     #craft .recipe-card-header {
-      padding: 10px 12px !important;
+      padding: 8px 10px !important;
       align-items: center !important;
       min-height: 0;
     }
     #craft .recipe-card-body {
-      padding: 10px 12px 12px !important;
+      padding: 8px 10px 10px !important;
     }
     #craft .recipe-card-header-side {
       align-self: center;
     }
     #craft .recipe-card-title {
-      font-size: 21px !important;
-      line-height: 1.35;
+      font-size: 17px !important;
+      line-height: 1.25;
       font-weight: 800 !important;
+      gap: 8px !important;
     }
     #craft .recipe-card-title img,
     #craft .recipe-card .ingredient-icon {
-      height: 42px !important;
-      width: 42px !important;
+      height: 34px !important;
+      width: 34px !important;
       max-height: none;
       object-fit: contain;
       flex-shrink: 0;
     }
     #craft .recipe-card .ingredient-item {
-      font-size: 17px !important;
-      padding: 6px 0 !important;
-      gap: 10px;
+      font-size: 14px !important;
+      padding: 3px 0 !important;
+      gap: 6px;
     }
     #craft .recipe-card .ingredient-name {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       font-weight: 600;
       color: #e2e8f0;
     }
     #craft .recipe-card .ingredient-item img {
-      height: 34px !important;
-      width: 34px !important;
+      height: 26px !important;
+      width: 26px !important;
       object-fit: contain;
     }
     #craft .recipe-card .ingredient-count {
-      font-size: 16px !important;
+      font-size: 13px !important;
       font-weight: 700;
       color: #9ee0ff;
+      padding: 2px 6px !important;
     }
-    .recipe-card-price {
-      padding: 8px 12px !important;
+    #craft .recipe-card-price {
+      padding: 5px 9px !important;
     }
-    .recipe-card-price-val {
-      font-size: 15px !important;
+    #craft .recipe-card-price-val {
+      font-size: 13px !important;
     }
-    .recipe-card-price-base {
-      font-size: 12px !important;
+    #craft .recipe-card-price-base {
+      font-size: 10px !important;
+      padding-top: 3px !important;
+      margin-top: 1px !important;
     }
-    .recipe-section {
-      margin-bottom: 10px !important;
+    #craft .recipe-card-output {
+      font-size: 10px !important;
+      padding: 4px 7px !important;
     }
-    .recipe-section-title {
-      font-size: 12px !important;
+    #craft .recipe-section {
       margin-bottom: 6px !important;
     }
-    .recipe-section-title {
-      font-size: 12px !important;
+    #craft .recipe-section-title {
+      font-size: 11px !important;
+      margin-bottom: 4px !important;
     }
     .warehouse-grid.alchemy-compact {
       grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)) !important;
@@ -9293,8 +9298,8 @@ function renderRecipes() {
     { title: '혼합 최종 산물', items: alchemyRecipes.filter(r => /희석액/.test(r.name) && !/(정수|핵|에센스|결정|엘릭서|영약)\s+★/.test(r.name)) }
   ];
 
-  const recipeImgStyle = 'height:42px;width:42px;object-fit:contain;margin-right:10px;flex-shrink:0;';
-  const recipeIngImgStyle = 'height:34px;width:34px;object-fit:contain;margin-right:8px;flex-shrink:0;';
+  const recipeImgStyle = 'height:34px;width:34px;object-fit:contain;margin-right:8px;flex-shrink:0;';
+  const recipeIngImgStyle = 'height:26px;width:26px;object-fit:contain;margin-right:6px;flex-shrink:0;';
 
   const renderCard = (recipe, opts = {}) => {
     const card = document.createElement('div');
