@@ -1960,13 +1960,18 @@
       color: #4a8fd9;
       font-weight: 600;
     }
-    /* 창고 레이아웃 — 전체 너비 가로 배치 */
+    /* 창고 레이아웃 */
+    #warehouseContainer.warehouse-root,
+    #warehouseContainer.warehouse-root .warehouse-layout {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+    }
     #warehouse .warehouse-layout {
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 16px;
       width: 100%;
-      max-width: 100%;
     }
     #warehouse .warehouse-panel {
       width: 100%;
@@ -1994,90 +1999,95 @@
       font-size: 13px;
       color: #8fa3b8;
     }
-    .warehouse-species-strip {
+    .warehouse-shellfish-matrix {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: minmax(56px, 72px) repeat(3, minmax(0, 1fr));
+      gap: 8px 10px;
+      align-items: stretch;
+    }
+    .warehouse-shellfish-matrix__corner,
+    .warehouse-shellfish-matrix__star,
+    .warehouse-shellfish-matrix__species {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      color: #9ee0ff;
+      min-height: 28px;
+    }
+    .warehouse-shellfish-matrix__species {
+      justify-content: flex-start;
+      color: #d4e8f5;
+      padding-left: 4px;
+    }
+    .warehouse-shellfish-matrix__star {
+      background: rgba(0, 0, 0, 0.22);
+      border-radius: 8px;
+      padding: 6px 4px;
+    }
+    .warehouse-shellfish-matrix .warehouse-grid--cell {
+      grid-template-columns: 1fr;
+      gap: 0;
+      min-width: 0;
+    }
+    .warehouse-alchemy-strip {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
       gap: 10px;
       align-items: start;
     }
-    @media (max-width: 1100px) {
-      .warehouse-species-strip {
+    @media (max-width: 1400px) {
+      .warehouse-alchemy-strip {
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
     }
-    @media (max-width: 640px) {
-      .warehouse-species-strip {
+    @media (max-width: 760px) {
+      .warehouse-alchemy-strip {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
-    .warehouse-species-col {
-      background: rgba(0, 0, 0, 0.18);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 10px;
-      padding: 10px;
-      min-width: 0;
+    @media (max-width: 480px) {
+      .warehouse-alchemy-strip {
+        grid-template-columns: 1fr;
+      }
     }
-    .warehouse-species-col__title {
-      margin: 0 0 8px;
-      padding-bottom: 6px;
-      border-bottom: 1px solid rgba(158, 224, 255, 0.2);
-      font-size: 14px;
-      font-weight: 800;
-      color: #9ee0ff;
-      text-align: center;
-    }
-    .warehouse-species-col .warehouse-grid {
+    .warehouse-alchemy-strip .warehouse-grid {
       grid-template-columns: 1fr;
       gap: 6px;
     }
-    .warehouse-alchemy-blocks {
+    .warehouse-vanilla-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 12px;
       align-items: start;
+    }
+    .warehouse-vanilla-grid .warehouse-subsection--full {
+      grid-column: 1 / -1;
     }
     @media (max-width: 1200px) {
-      .warehouse-alchemy-blocks {
+      .warehouse-vanilla-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-    @media (max-width: 700px) {
-      .warehouse-alchemy-blocks {
-        grid-template-columns: 1fr;
-      }
-    }
-    .warehouse-alchemy-blocks .warehouse-grid {
-      grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
-      gap: 8px;
-    }
-    .warehouse-vanilla-container {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-      align-items: start;
-    }
-    .warehouse-vanilla-container .warehouse-section--wide {
-      grid-column: span 2;
-    }
-    @media (max-width: 1100px) {
-      .warehouse-vanilla-container {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-      .warehouse-vanilla-container .warehouse-section--wide {
-        grid-column: span 2;
       }
     }
     @media (max-width: 640px) {
-      .warehouse-vanilla-container {
+      .warehouse-vanilla-grid {
         grid-template-columns: 1fr;
       }
-      .warehouse-vanilla-container .warehouse-section--wide {
-        grid-column: auto;
+      .warehouse-shellfish-matrix {
+        grid-template-columns: minmax(48px, 60px) repeat(3, minmax(0, 1fr));
       }
     }
-    .warehouse-vanilla-container .warehouse-grid {
-      grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+    .warehouse-vanilla-grid .warehouse-grid {
+      grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
       gap: 8px;
+    }
+    #warehouse .warehouse-subsection .warehouse-section {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      margin: 0;
     }
     .warehouse-subsection {
       background: rgba(0, 0, 0, 0.2);
