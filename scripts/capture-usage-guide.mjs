@@ -52,6 +52,12 @@ const TARGETS = [
 ]
 
 async function main() {
+  if (!process.argv.includes('--force')) {
+    console.error(
+      '가이드/*.png 는 사용자 제공 일러스트입니다. 덮어쓰려면:\n  node scripts/capture-usage-guide.mjs --force'
+    )
+    process.exit(1)
+  }
   if (!fs.existsSync(INDEX)) {
     console.error('index.html not found:', INDEX)
     process.exit(1)
