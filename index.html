@@ -9814,6 +9814,40 @@ function renderWarehouse() {
   const other = pick(all, n => !assigned.has(n) && !isCraftOnlyMaterial(n) && !isCraftRelatedVanilla(n))
     .sort((a, b) => a.localeCompare(b, 'ko'));
 
+  function appendWarehouseItem(grid, material, options = {}) {
+    const isVanillaSection = !!options.isVanillaSection;
+    const isShellfish = !!options.isShellfish;
+    const isAlchemy = !!options.isAlchemy;
+    const item = document.createElement('div');
+    item.className =
+      'warehouse-item' +
+      (options.vanillaDense ? ' vanilla-item' : '') +
+      (isShellfish ? ' shellfish-compact-item' : '') +
+      (isAlchemy ? ' alchemy-compact-item' : '');
+    const imgStyle = isAlchemy
+      ? 'height: 24px; margin-right: 6px; vertical-align: middle;'
+      : isShellfish
+        ? 'height: 22px; margin-right: 5px; vertical-align: middle;'
+        : 'height: 18px; margin-right: 4px; vertical-align: middle;';
+    const imageHTML = buildImageTag(material, material, imgStyle);
+    const cnt = savedInventory[material] ?? 0;
+    const setCnt = Math.floor(cnt / SET_SIZE);
+    const remCnt = cnt % SET_SIZE;
+    item.innerHTML = `
+      <div class="warehouse-item-name">${imageHTML}${material}</div>
+      <div class="warehouse-qty-field"${isVanillaSection ? ' data-vanilla="1"' : ''}>
+        <input type="number" class="warehouse-qty-count" min="0" value="${cnt}" data-warehouse-count="${cnt}" data-material="${material}" placeholder="수량 입력">
+        <div class="warehouse-qty-setpair" aria-label="세트·개 수량">
+          <input type="text" class="warehouse-qty-sets" inputmode="numeric" autocomplete="off" value="${setCnt}" aria-label="세트">
+          <span class="warehouse-qty-unit">세트</span>
+          <input type="text" class="warehouse-qty-rem" inputmode="numeric" autocomplete="off" value="${remCnt}" maxlength="2" aria-label="개">
+          <span class="warehouse-qty-unit">개</span>
+        </div>
+      </div>
+    `;
+    grid.appendChild(item);
+  }
+
   function createSection(title, items, subtitle = '', options = {}) {
     if (!items || items.length === 0) return;
     const isVanillaSection = !!options.isVanillaSection;
@@ -9835,43 +9869,24 @@ function renderWarehouse() {
     `;
 
     const grid = section.querySelector('.warehouse-grid');
-    if (options.vanillaDense) {
-      grid.classList.add('vanilla-dense');
-    }
-    if (isShellfish) {
-      grid.classList.add('shellfish-compact');
-    }
-    if (isAlchemy) {
-      grid.classList.add('alchemy-compact');
-    }
-    items.forEach(material => {
-      const item = document.createElement('div');
-      item.className = 'warehouse-item' + (options.vanillaDense ? ' vanilla-item' : '') + (isShellfish ? ' shellfish-compact-item' : '') + (isAlchemy ? ' alchemy-compact-item' : '');
-      const imgStyle = isAlchemy
-        ? 'height: 24px; margin-right: 6px; vertical-align: middle;'
-        : isShellfish
-          ? 'height: 22px; margin-right: 5px; vertical-align: middle;'
-          : 'height: 18px; margin-right: 4px; vertical-align: middle;';
-      const imageHTML = buildImageTag(material, material, imgStyle);
-      const cnt = savedInventory[material] ?? 0;
-      const setCnt = Math.floor(cnt / SET_SIZE);
-      const remCnt = cnt % SET_SIZE;
-      item.innerHTML = `
-        <div class="warehouse-item-name">${imageHTML}${material}</div>
-        <div class="warehouse-qty-field"${isVanillaSection ? ' data-vanilla="1"' : ''}>
-          <input type="number" class="warehouse-qty-count" min="0" value="${cnt}" data-warehouse-count="${cnt}" data-material="${material}" placeholder="수량 입력">
-          <div class="warehouse-qty-setpair" aria-label="세트·개 수량">
-            <input type="text" class="warehouse-qty-sets" inputmode="numeric" autocomplete="off" value="${setCnt}" aria-label="세트">
-            <span class="warehouse-qty-unit">세트</span>
-            <input type="text" class="warehouse-qty-rem" inputmode="numeric" autocomplete="off" value="${remCnt}" maxlength="2" aria-label="개">
-            <span class="warehouse-qty-unit">개</span>
-          </div>
-        </div>
-      `;
-      grid.appendChild(item);
-    });
-
+    if (options.vanillaDense) grid.classList.add('vanilla-dense');
+    if (isShellfish) grid.classList.add('shellfish-compact');
+    if (isAlchemy) grid.classList.add('alchemy-compact');
+    items.forEach((material) => appendWarehouseItem(grid, material, options));
     appendTarget.appendChild(section);
+  }
+
+  function createWarehouseMiniGrid(items, options = {}) {
+    const wrap = document.createElement('div');
+    wrap.className = 'warehouse-section';
+    const grid = document.createElement('div');
+    grid.className = 'warehouse-grid';
+    if (options.isShellfish) grid.classList.add('shellfish-compact');
+    if (options.isAlchemy) grid.classList.add('alchemy-compact');
+    if (options.vanillaDense) grid.classList.add('vanilla-dense');
+    (items || []).forEach((material) => appendWarehouseItem(grid, material, options));
+    wrap.appendChild(grid);
+    return wrap;
   }
 
   const layout = document.createElement('div');
@@ -9879,27 +9894,41 @@ function renderWarehouse() {
   container.appendChild(layout);
 
   const shellPanel = document.createElement('section');
-  shellPanel.className = 'warehouse-panel';
+  shellPanel.className = 'warehouse-panel warehouse-panel--shellfish';
   shellPanel.innerHTML = `
     <div class="warehouse-panel-head">
       <h2>🐚 어패류</h2>
-      <p>성급별로 나눠 입력합니다. 연금·매입 추천의 핵심 재료입니다.</p>
+      <p>종류별·성급별 한눈에 입력 (가로 표)</p>
     </div>
-    <div class="warehouse-shellfish-columns"></div>
+    <div class="warehouse-shellfish-matrix"></div>
   `;
   layout.appendChild(shellPanel);
-  const shellCols = shellPanel.querySelector('.warehouse-shellfish-columns');
-  [
-    { title: '1성', items: shellfish1 },
-    { title: '2성', items: shellfish2 },
-    { title: '3성', items: shellfish3 },
-  ].forEach(({ title, items }) => {
-    if (!items.length) return;
-    const col = document.createElement('div');
-    col.className = 'warehouse-shellfish-col';
-    col.innerHTML = `<h3>${title}</h3>`;
-    createSection(`어패류 (${title})`, items, '', { isShellfish: true, appendTo: col, hideHeader: true });
-    shellCols.appendChild(col);
+  const shellMatrix = shellPanel.querySelector('.warehouse-shellfish-matrix');
+  const corner = document.createElement('div');
+  corner.className = 'warehouse-shellfish-matrix__corner';
+  corner.textContent = '종류';
+  shellMatrix.appendChild(corner);
+  ['1성', '2성', '3성'].forEach((label) => {
+    const h = document.createElement('div');
+    h.className = 'warehouse-shellfish-matrix__star';
+    h.textContent = label;
+    shellMatrix.appendChild(h);
+  });
+  SHELLFISH_NAMES.forEach((species) => {
+    const label = document.createElement('div');
+    label.className = 'warehouse-shellfish-matrix__species';
+    label.textContent = species;
+    shellMatrix.appendChild(label);
+    [1, 2, 3].forEach((stars) => {
+      const name = `${species} ${'★'.repeat(stars)}`;
+      const cellItems = shellfish1.includes(name) || shellfish2.includes(name) || shellfish3.includes(name) ? [name] : [];
+      if (!cellItems.length) {
+        const empty = document.createElement('div');
+        shellMatrix.appendChild(empty);
+        return;
+      }
+      shellMatrix.appendChild(createWarehouseMiniGrid(cellItems, { isShellfish: true }));
+    });
   });
 
   const alchPanel = document.createElement('section');
@@ -9907,26 +9936,33 @@ function renderWarehouse() {
   alchPanel.innerHTML = `
     <div class="warehouse-panel-head">
       <h2>⚗️ 연금품</h2>
-      <p>정수·핵·에센스·결정·엘릭서·영약을 성급별로 정리했습니다.</p>
+      <p>성급별 가로 배치</p>
     </div>
-    <div class="warehouse-alchemy-grid"></div>
+    <div class="warehouse-alchemy-rows"></div>
   `;
   layout.appendChild(alchPanel);
-  const alchGrid = alchPanel.querySelector('.warehouse-alchemy-grid');
+  const alchRows = alchPanel.querySelector('.warehouse-alchemy-rows');
   [
-    { title: '1성 · 정수', items: alchemy1Ess },
-    { title: '1성 · 핵', items: alchemy1Core },
-    { title: '2성 · 에센스', items: alchemy2Ess },
-    { title: '2성 · 결정', items: alchemy2Crystal },
-    { title: '3성 · 엘릭서', items: alchemy3Elixir },
-    { title: '3성 · 영약', items: alchemy3Potion },
-  ].forEach(({ title, items }) => {
-    if (!items.length) return;
-    const sub = document.createElement('div');
-    sub.className = 'warehouse-subsection';
-    sub.innerHTML = `<div class="warehouse-subsection-title">${title}</div>`;
-    createSection(title, items, '', { isAlchemy: true, appendTo: sub, hideHeader: true });
-    alchGrid.appendChild(sub);
+    { tier: '1성', groups: [{ title: '정수', items: alchemy1Ess }, { title: '핵', items: alchemy1Core }] },
+    { tier: '2성', groups: [{ title: '에센스', items: alchemy2Ess }, { title: '결정', items: alchemy2Crystal }] },
+    { tier: '3성', groups: [{ title: '엘릭서', items: alchemy3Elixir }, { title: '영약', items: alchemy3Potion }] },
+  ].forEach(({ tier, groups }) => {
+    const row = document.createElement('div');
+    row.className = 'warehouse-alchemy-row';
+    const tierLabel = document.createElement('div');
+    tierLabel.className = 'warehouse-alchemy-row__tier';
+    tierLabel.textContent = tier;
+    row.appendChild(tierLabel);
+    groups.forEach(({ title, items }) => {
+      if (!items.length) return;
+      const sub = document.createElement('div');
+      sub.className = 'warehouse-subsection';
+      sub.innerHTML = `<div class="warehouse-subsection-title">${title}</div>`;
+      const gridWrap = createWarehouseMiniGrid(items, { isAlchemy: true });
+      sub.appendChild(gridWrap);
+      row.appendChild(sub);
+    });
+    if (row.children.length > 1) alchRows.appendChild(row);
   });
 
   const vanillaPanel = document.createElement('section');
@@ -9934,7 +9970,7 @@ function renderWarehouse() {
   vanillaPanel.innerHTML = `
     <div class="warehouse-panel-head">
       <h2>🌾 바닐라 재료</h2>
-      <p>광물·어류·산호·잎 등 제작 보조 재료입니다.</p>
+      <p>광물·어류·산호·잎 등</p>
     </div>
     <div class="warehouse-vanilla-container"></div>
   `;

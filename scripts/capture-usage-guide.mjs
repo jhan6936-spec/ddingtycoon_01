@@ -1,6 +1,10 @@
 /**
- * 이용 가이드용 화면 캡처 (1회 실행)
- * 사용: npx puppeteer@23 scripts/capture-usage-guide.mjs
+ * 이용 가이드용 화면 스크린샷 캡처 (선택 실행)
+ *
+ * 주의: 가이드/ug-*.png 는 사용자 제공 일러스트입니다.
+ * 이 스크립트를 실행하면 일러스트가 스크린샷으로 덮어씌워집니다.
+ *
+ * 사용: npm run guide:capture
  */
 import fs from 'fs'
 import path from 'path'
