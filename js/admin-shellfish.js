@@ -205,6 +205,9 @@
       if (!response.ok || !body.ok) {
         shellfishState.authenticated = false
         setShellfishFormEnabled(false)
+        if (window.SiteOwnerGate && typeof window.SiteOwnerGate.setOwnerUnlockedFromAdminLogin === 'function') {
+          window.SiteOwnerGate.setOwnerUnlockedFromAdminLogin(false)
+        }
         try {
           localStorage.removeItem(STORAGE_SHELLFISH_ADMIN_SECRET)
         } catch (_) {}
@@ -222,6 +225,9 @@
 
       shellfishState.authenticated = true
       shellfishState.editor = body.editor || null
+      if (window.SiteOwnerGate && typeof window.SiteOwnerGate.setOwnerUnlockedFromAdminLogin === 'function') {
+        window.SiteOwnerGate.setOwnerUnlockedFromAdminLogin(body.editor === 'owner')
+      }
       try {
         localStorage.setItem(STORAGE_SHELLFISH_ADMIN_SECRET, secret)
       } catch (_) {}
