@@ -10634,12 +10634,12 @@ function purchaseCostFromMap(purchases, prices) {
 }
 
 /** 재고+매입 합산 재고로 연금 최적화 · 총 판매가·순이익 */
-function evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects, prepOpts) {
+function evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects, prepOpts, prices) {
   const prep = prepOpts || getAlchemyPlanPrepOptions();
   const merged = prepareInventoryForAlchemyPlan(mergeInventoryWithPurchases(stockInv, purchases), prep);
   const optimized = optimizeAlchemyPlan(merged, effects);
   const gold = alchemyPlanTotalGold(optimized, effects);
-  const purchaseCost = purchaseCostFromMap(purchases, prices);
+  const purchaseCost = prices ? purchaseCostFromMap(purchases, prices) : 0;
   return {
     optimized,
     merged,
@@ -10656,14 +10656,14 @@ function searchBestPurchaseQtyForName(stockInv, purchases, prices, effects, prep
   const maxQ = Math.min(Math.floor(budgetRemaining / unitPrice), 800);
   if (maxQ <= 0) return null;
 
-  const baseEval = evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects, prepOpts);
+  const baseEval = evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects, prepOpts, prices);
   const baseNet = baseEval.net;
 
   const evalAddQty = (addQ) => {
     const q = Math.max(0, Math.floor(Number(addQ) || 0));
     if (q <= 0) return { net: baseNet, eval: baseEval };
     const trialPurchases = { ...purchases, [name]: (purchases[name] || 0) + q };
-    const ev = evaluateAlchemyPlanWithPurchases(stockInv, trialPurchases, effects, prepOpts);
+    const ev = evaluateAlchemyPlanWithPurchases(stockInv, trialPurchases, effects, prepOpts, prices);
     return { net: ev.net, eval: ev, qty: q, cost: ev.purchaseCost };
   };
 
