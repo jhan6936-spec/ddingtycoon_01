@@ -13254,7 +13254,7 @@ async function downloadAlchemyPaneScreenshot() {
   }
   try {
     await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-    const canvas = await html2canvas(pane, {
+    const canvas = await captureFn(pane, {
       scale: Math.min(2, window.devicePixelRatio || 2),
       backgroundColor: '#0f0f0f',
       useCORS: true,
