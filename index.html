@@ -7729,6 +7729,10 @@ function ensureCalcPopup() {
     const target = e.target;
     if (!(target instanceof Node)) return;
     if (pop.contains(target)) return;
+    const field =
+      calcState.targetField ||
+      (calcState.targetInput ? getWarehouseQtyFieldFromNode(calcState.targetInput) : null);
+    if (field && field.contains(target)) return;
     if (calcState.targetInput && calcState.targetInput.contains(target)) return;
     closeCalculator();
   });
@@ -7847,10 +7851,14 @@ function parkCalcPopupOnBody() {
   document.body.appendChild(popup);
 }
 
-function syncCalcPopupModeUi(popup, mode) {
+function syncCalcPopupModeUi(popup, mode, activePartHint) {
   if (!popup) return;
   calcState.mode = mode;
-  calcState.activePart = mode === 'count' ? 'count' : 'set';
+  if (mode === 'count') {
+    calcState.activePart = 'count';
+  } else {
+    calcState.activePart = activePartHint === 'rem' ? 'rem' : 'set';
+  }
   popup.querySelectorAll('.mode-btn[data-mode]').forEach((b) => {
     b.classList.toggle('active', b.getAttribute('data-mode') === mode);
   });
@@ -7863,7 +7871,30 @@ function syncCalcPopupModeUi(popup, mode) {
   }
 }
 
-function openCalculatorForInput(inputEl) {
+function getWarehouseCalcActivePart(inputEl) {
+  if (!inputEl || !inputEl.classList) return 'set';
+  if (inputEl.classList.contains('warehouse-qty-rem')) return 'rem';
+  if (inputEl.classList.contains('warehouse-qty-sets')) return 'set';
+  return 'set';
+}
+
+function getCalcPopupAnchorEl(inputEl, field) {
+  if (!inputEl) return inputEl;
+  if (field && warehouseSetViewEnabled()) {
+    if (
+      inputEl.classList.contains('warehouse-qty-sets') ||
+      inputEl.classList.contains('warehouse-qty-rem') ||
+      inputEl.classList.contains('warehouse-qty-setpair')
+    ) {
+      return inputEl.closest('.warehouse-qty-setpair') || inputEl;
+    }
+    const { wrap } = getWarehouseSetPair(field);
+    if (wrap) return wrap;
+  }
+  return inputEl;
+}
+
+function openCalculatorForInput(inputEl, options = {}) {
   const isWarehouseInput = !!(inputEl && inputEl.closest && inputEl.closest('#warehouseContainer'));
   if (isWarehouseInput && !warehouseCalcModeEnabled()) return;
   ensureCalcPopup();
@@ -7871,18 +7902,23 @@ function openCalculatorForInput(inputEl) {
   const popup = document.getElementById('calcPopup');
   if (!popup) return;
 
+  const field = getWarehouseQtyFieldFromNode(inputEl);
+  const primary = field ? getWarehousePrimaryInput(field) : inputEl;
+  if (!primary && !inputEl) return;
+
   calcState.isOpen = true;
-  calcState.targetInput = inputEl;
-  calcState.materialName = inputEl.getAttribute('data-material') || '수량 입력';
+  calcState.targetField = field;
+  calcState.targetInput = primary || inputEl;
+  calcState.materialName =
+    calcState.targetInput.getAttribute('data-material') || inputEl.getAttribute('data-material') || '수량 입력';
 
   const useSetCalcMode = isWarehouseInput && warehouseSetViewEnabled();
-  const field = getWarehouseQtyFieldFromNode(inputEl);
   let raw = 0;
   if (field) {
     raw = warehouseFieldRawCount(field);
-  } else if (inputEl) {
-    raw = parseInt(inputEl.getAttribute('data-warehouse-count'), 10);
-    if (!Number.isFinite(raw)) raw = Math.max(0, parseInt(inputEl.value, 10) || 0);
+  } else if (calcState.targetInput) {
+    raw = parseInt(calcState.targetInput.getAttribute('data-warehouse-count'), 10);
+    if (!Number.isFinite(raw)) raw = Math.max(0, parseInt(calcState.targetInput.value, 10) || 0);
     else raw = Math.max(0, raw);
   }
 
@@ -7892,9 +7928,10 @@ function openCalculatorForInput(inputEl) {
     calcState.countExpr = '';
     calcState.setExpr = String(sets);
     calcState.remExpr = String(rem);
-    syncCalcPopupModeUi(popup, 'set');
+    const partHint = options.activePart === 'rem' ? 'rem' : getWarehouseCalcActivePart(inputEl);
+    syncCalcPopupModeUi(popup, 'set', partHint);
   } else {
-    calcState.countExpr = '';
+    calcState.countExpr = raw > 0 ? String(raw) : '';
     calcState.setExpr = '';
     calcState.remExpr = '';
     syncCalcPopupModeUi(popup, 'count');
@@ -7906,13 +7943,14 @@ function openCalculatorForInput(inputEl) {
     b.classList.toggle('active', b.getAttribute('data-commit') === cm);
   });
 
-  const host = inputEl.closest('.warehouse-item');
+  const anchorEl = getCalcPopupAnchorEl(inputEl, field) || calcState.targetInput;
+  const host = anchorEl.closest('.warehouse-item');
   if (host) {
     popup.classList.remove('calc-popup--fixed');
     popup.classList.add('calc-popup--anchored');
     host.appendChild(popup);
     popup.style.display = 'block';
-    const layout = () => positionCalcPopupAnchored(host, inputEl, popup);
+    const layout = () => positionCalcPopupAnchored(host, anchorEl, popup);
     requestAnimationFrame(() => {
       layout();
       requestAnimationFrame(layout);
@@ -7921,8 +7959,8 @@ function openCalculatorForInput(inputEl) {
   } else {
     parkCalcPopupOnBody();
     popup.style.display = 'block';
-    positionCalcPopupViewport(inputEl, popup);
-    bindCalcPopupResizeOnly(() => positionCalcPopupViewport(inputEl, popup));
+    positionCalcPopupViewport(anchorEl, popup);
+    bindCalcPopupResizeOnly(() => positionCalcPopupViewport(anchorEl, popup));
   }
 
   const titleEl = document.getElementById('calcTitle');
@@ -7932,6 +7970,7 @@ function openCalculatorForInput(inputEl) {
 function closeCalculator() {
   calcState.isOpen = false;
   calcState.targetInput = null;
+  calcState.targetField = null;
   calcState.materialName = '';
   calcState.countExpr = '';
   calcState.setExpr = '';
@@ -10090,7 +10129,15 @@ function sanitizeWarehouseSetPartDigits(value) {
 function handleWarehouseSetPartKeydown(e) {
   if (!warehouseSetViewEnabled()) return;
   const input = e.currentTarget;
-  if (input.disabled || input.readOnly) return;
+  if (input.disabled) return;
+  if (warehouseCalcModeEnabled()) {
+    e.preventDefault();
+    if (!calcState.isOpen) {
+      openCalculatorForInput(input, { activePart: getWarehouseCalcActivePart(input) });
+    }
+    return;
+  }
+  if (input.readOnly) return;
   const allowed = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Tab', 'Home', 'End', 'Backspace', 'Delete'];
   if (allowed.includes(e.key)) return;
   if (e.key === 'Enter') {
