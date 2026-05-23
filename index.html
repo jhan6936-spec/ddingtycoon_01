@@ -10725,7 +10725,7 @@ function planAlchemyWithOptionalPurchase(stockInv, budget, prices, effects) {
   }
 
   const purchases = {};
-  let current = evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects, prepOpts);
+  let current = evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects, prepOpts, prices);
   const MAX_ROUNDS = 36;
 
   for (let round = 0; round < MAX_ROUNDS; round++) {
@@ -10751,7 +10751,7 @@ function planAlchemyWithOptionalPurchase(stockInv, budget, prices, effects) {
     if (!bestPick || bestPick.qty <= 0) break;
 
     purchases[bestPick.name] = (purchases[bestPick.name] || 0) + bestPick.qty;
-    current = evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects, prepOpts);
+    current = evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects, prepOpts, prices);
   }
 
   return {
