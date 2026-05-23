@@ -8135,14 +8135,19 @@ function commitCalcValue(action) {
   if (!calcState.targetInput) return false;
 
   const inputEl = calcState.targetInput;
+  const field = calcState.targetField || getWarehouseQtyFieldFromNode(inputEl);
 
-  let current = parseInt(inputEl.getAttribute('data-warehouse-count'), 10);
-  if (!Number.isFinite(current)) current = parseInt(inputEl.value, 10) || 0;
+  let current = 0;
+  if (field) {
+    current = warehouseFieldRawCount(field);
+  } else {
+    current = parseInt(inputEl.getAttribute('data-warehouse-count'), 10);
+    if (!Number.isFinite(current)) current = parseInt(inputEl.value, 10) || 0;
+  }
   const computed = getCalcResultValue();
   if (computed === null) return false;
 
   if (action === 'apply') {
-    const field = getWarehouseQtyFieldFromNode(inputEl);
     if (field) syncWarehouseFieldCount(field, computed);
     else {
       inputEl.setAttribute('data-warehouse-count', String(computed));
@@ -10178,6 +10183,12 @@ function bindWarehouseQtyFieldEvents() {
     const { wrap, sets, rem } = getWarehouseSetPair(field);
     if (!primary) return;
 
+    const openWarehouseCalc = (el, part) => {
+      if (!warehouseCalcModeEnabled()) return;
+      const activePart = warehouseSetViewEnabled() ? part || 'set' : undefined;
+      openCalculatorForInput(el, activePart ? { activePart } : {});
+    };
+
     const handleCountChange = () => {
       if (warehouseSetViewEnabled()) return;
       syncWarehouseInputRawAttribute(primary);
@@ -10187,28 +10198,45 @@ function bindWarehouseQtyFieldEvents() {
     primary.addEventListener('change', handleCountChange);
     primary.addEventListener('input', handleCountChange);
     primary.addEventListener('focus', () => {
-      if (warehouseSetViewEnabled() && warehouseCalcModeEnabled()) openCalculatorForInput(primary);
+      if (warehouseSetViewEnabled() && warehouseCalcModeEnabled()) openWarehouseCalc(wrap || primary, 'set');
     });
     primary.addEventListener('click', () => {
-      if (warehouseSetViewEnabled() && warehouseCalcModeEnabled()) openCalculatorForInput(primary);
+      if (warehouseSetViewEnabled() && warehouseCalcModeEnabled()) openWarehouseCalc(wrap || primary, 'set');
     });
 
     [sets, rem].forEach((partInput) => {
       if (!partInput) return;
+      const part = partInput.classList.contains('warehouse-qty-rem') ? 'rem' : 'set';
       partInput.addEventListener('keydown', handleWarehouseSetPartKeydown);
-      partInput.addEventListener('paste', (e) => e.preventDefault());
-      partInput.addEventListener('input', () => handleWarehouseSetPartInput(field));
-      partInput.addEventListener('change', () => commitWarehouseSetPartField(field));
-      partInput.addEventListener('blur', () => commitWarehouseSetPartField(field));
+      partInput.addEventListener('paste', (e) => {
+        if (warehouseCalcModeEnabled()) {
+          e.preventDefault();
+          return;
+        }
+        e.preventDefault();
+      });
+      partInput.addEventListener('input', () => {
+        if (warehouseCalcModeEnabled()) return;
+        handleWarehouseSetPartInput(field);
+      });
+      partInput.addEventListener('change', () => {
+        if (warehouseCalcModeEnabled()) return;
+        commitWarehouseSetPartField(field);
+      });
+      partInput.addEventListener('blur', () => {
+        if (warehouseCalcModeEnabled()) return;
+        commitWarehouseSetPartField(field);
+      });
       partInput.addEventListener('focus', () => {
         if (warehouseCalcModeEnabled()) {
-          openCalculatorForInput(primary);
+          openWarehouseCalc(partInput, part);
           return;
         }
         if (!partInput.value.trim()) partInput.value = '0';
       });
-      partInput.addEventListener('click', () => {
-        if (warehouseCalcModeEnabled()) openCalculatorForInput(primary);
+      partInput.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (warehouseCalcModeEnabled()) openWarehouseCalc(partInput, part);
       });
     });
 
@@ -10216,7 +10244,8 @@ function bindWarehouseQtyFieldEvents() {
       wrap.addEventListener('click', (e) => {
         if (!warehouseSetViewEnabled() || !warehouseCalcModeEnabled() || primary?.disabled) return;
         if (e.target === wrap || e.target.classList.contains('warehouse-qty-unit')) {
-          openCalculatorForInput(primary);
+          e.stopPropagation();
+          openWarehouseCalc(wrap, 'set');
         }
       });
     }
