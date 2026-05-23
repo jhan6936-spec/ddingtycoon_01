@@ -9900,16 +9900,24 @@ function renderWarehouse() {
   }
 
   function createWarehouseMiniGrid(items, options = {}) {
-    const wrap = document.createElement('div');
-    wrap.className = 'warehouse-section';
     const grid = document.createElement('div');
     grid.className = 'warehouse-grid';
+    if (options.cell) grid.classList.add('warehouse-grid--cell');
     if (options.isShellfish) grid.classList.add('shellfish-compact');
     if (options.isAlchemy) grid.classList.add('alchemy-compact');
     if (options.vanillaDense) grid.classList.add('vanilla-dense');
     (items || []).forEach((material) => appendWarehouseItem(grid, material, options));
-    wrap.appendChild(grid);
-    return wrap;
+    return grid;
+  }
+
+  function appendVanillaBlock(parent, title, items) {
+    if (!items.length) return;
+    const block = document.createElement('div');
+    block.className = 'warehouse-subsection' + (items.length > 12 ? ' warehouse-subsection--full' : '');
+    block.innerHTML = `<div class="warehouse-subsection-title">${title} <span class="warehouse-subsection-count">${items.length}종</span></div>`;
+    const grid = createWarehouseMiniGrid(items, { isVanillaSection: true, vanillaDense: true });
+    block.appendChild(grid);
+    parent.appendChild(block);
   }
 
   const layout = document.createElement('div');
@@ -9921,22 +9929,36 @@ function renderWarehouse() {
   shellPanel.innerHTML = `
     <div class="warehouse-panel-head">
       <h2>🐚 어패류</h2>
-      <p>종류별 1·2·3성 — 가로 5열</p>
+      <p>종류 × 1·2·3성 표</p>
     </div>
-    <div class="warehouse-species-strip"></div>
+    <div class="warehouse-shellfish-matrix"></div>
   `;
   layout.appendChild(shellPanel);
-  const speciesStrip = shellPanel.querySelector('.warehouse-species-strip');
+  const shellMatrix = shellPanel.querySelector('.warehouse-shellfish-matrix');
+  const corner = document.createElement('div');
+  corner.className = 'warehouse-shellfish-matrix__corner';
+  corner.textContent = '종류';
+  shellMatrix.appendChild(corner);
+  ['1성', '2성', '3성'].forEach((label) => {
+    const h = document.createElement('div');
+    h.className = 'warehouse-shellfish-matrix__star';
+    h.textContent = label;
+    shellMatrix.appendChild(h);
+  });
   SHELLFISH_NAMES.forEach((species) => {
-    const col = document.createElement('div');
-    col.className = 'warehouse-species-col';
-    col.innerHTML = `<h3 class="warehouse-species-col__title">${species}</h3>`;
-    const items = [1, 2, 3]
-      .map((n) => `${species} ${'★'.repeat(n)}`)
-      .filter((name) => shellfish1.includes(name) || shellfish2.includes(name) || shellfish3.includes(name));
-    if (!items.length) return;
-    createSection('', items, '', { isShellfish: true, appendTo: col, hideHeader: true });
-    speciesStrip.appendChild(col);
+    const label = document.createElement('div');
+    label.className = 'warehouse-shellfish-matrix__species';
+    label.textContent = species;
+    shellMatrix.appendChild(label);
+    [1, 2, 3].forEach((stars) => {
+      const name = `${species} ${'★'.repeat(stars)}`;
+      const exists = shellfish1.includes(name) || shellfish2.includes(name) || shellfish3.includes(name);
+      if (!exists) {
+        shellMatrix.appendChild(document.createElement('div'));
+        return;
+      }
+      shellMatrix.appendChild(createWarehouseMiniGrid([name], { isShellfish: true, cell: true }));
+    });
   });
 
   const alchPanel = document.createElement('section');
@@ -9944,26 +9966,26 @@ function renderWarehouse() {
   alchPanel.innerHTML = `
     <div class="warehouse-panel-head">
       <h2>⚗️ 연금품</h2>
-      <p>정수·핵·에센스·결정·엘릭서·영약 — 3열 가로</p>
+      <p>정수·핵·에센스·결정·엘릭서·영약 — 6열 가로</p>
     </div>
-    <div class="warehouse-alchemy-blocks"></div>
+    <div class="warehouse-alchemy-strip"></div>
   `;
   layout.appendChild(alchPanel);
-  const alchBlocks = alchPanel.querySelector('.warehouse-alchemy-blocks');
+  const alchStrip = alchPanel.querySelector('.warehouse-alchemy-strip');
   [
-    { title: '1성 · 정수', items: alchemy1Ess },
-    { title: '1성 · 핵', items: alchemy1Core },
-    { title: '2성 · 에센스', items: alchemy2Ess },
-    { title: '2성 · 결정', items: alchemy2Crystal },
-    { title: '3성 · 엘릭서', items: alchemy3Elixir },
-    { title: '3성 · 영약', items: alchemy3Potion },
+    { title: '1성 정수', items: alchemy1Ess },
+    { title: '1성 핵', items: alchemy1Core },
+    { title: '2성 에센스', items: alchemy2Ess },
+    { title: '2성 결정', items: alchemy2Crystal },
+    { title: '3성 엘릭서', items: alchemy3Elixir },
+    { title: '3성 영약', items: alchemy3Potion },
   ].forEach(({ title, items }) => {
     if (!items.length) return;
     const sub = document.createElement('div');
     sub.className = 'warehouse-subsection';
     sub.innerHTML = `<div class="warehouse-subsection-title">${title}</div>`;
-    createSection('', items, '', { isAlchemy: true, appendTo: sub, hideHeader: true });
-    alchBlocks.appendChild(sub);
+    sub.appendChild(createWarehouseMiniGrid(items, { isAlchemy: true }));
+    alchStrip.appendChild(sub);
   });
 
   const vanillaPanel = document.createElement('section');
@@ -9971,33 +9993,19 @@ function renderWarehouse() {
   vanillaPanel.innerHTML = `
     <div class="warehouse-panel-head">
       <h2>🌾 바닐라 재료</h2>
-      <p>광물·어류·산호·잎·기타 — 3열 가로</p>
+      <p>광물·어류·산호·잎·기타</p>
     </div>
-    <div class="warehouse-vanilla-container"></div>
+    <div class="warehouse-vanilla-grid"></div>
   `;
   layout.appendChild(vanillaPanel);
-  const vanillaContainer = vanillaPanel.querySelector('.warehouse-vanilla-container');
+  const vanillaGrid = vanillaPanel.querySelector('.warehouse-vanilla-grid');
 
   const vb = partitionVanillaNamesForWarehouse(other);
-  const vanillaSections = [
-    { title: '광물', items: vb.minerals },
-    { title: '바닐라 어류', items: vb.vanillaFish },
-    { title: '산호 · 해양', items: vb.coralSea },
-    { title: '나무 잎', items: vb.leaves },
-    { title: '기타 바닐라', items: vb.other },
-  ];
-  vanillaSections.forEach(({ title, items }) => {
-    if (!items.length) return;
-    const wide = items.length > 10;
-    const holder = document.createElement('div');
-    if (wide) holder.className = 'warehouse-section--wide';
-    createSection(title, items, '', {
-      isVanillaSection: true,
-      appendTo: wide ? holder : vanillaContainer,
-      vanillaDense: true,
-    });
-    if (wide) vanillaContainer.appendChild(holder);
-  });
+  appendVanillaBlock(vanillaGrid, '광물', vb.minerals);
+  appendVanillaBlock(vanillaGrid, '바닐라 어류', vb.vanillaFish);
+  appendVanillaBlock(vanillaGrid, '산호 · 해양', vb.coralSea);
+  appendVanillaBlock(vanillaGrid, '나무 잎', vb.leaves);
+  appendVanillaBlock(vanillaGrid, '기타 바닐라', vb.other);
   
   bindWarehouseQtyFieldEvents();
 
