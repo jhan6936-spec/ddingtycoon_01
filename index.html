@@ -8882,7 +8882,8 @@ document.addEventListener('keydown', (e) => {
 
 
 
-/** 이용 가이드 정적 화면 캡처 (가이드/*.png — scripts/capture-usage-guide.mjs 로 재생성) */
+/** 이용 가이드 일러스트 (가이드/*.png) */
+const USAGE_GUIDE_IMAGE_VERSION = '2';
 const USAGE_GUIDE_STATIC_SHOTS = {
   'ug-start': '가이드/ug-start.png',
   'ug-warehouse': '가이드/ug-warehouse.png',
@@ -8913,7 +8914,7 @@ function scrollUsageGuideSection(sectionId) {
 function applyUsageGuideShotFile(sectionId, relativePath) {
   const wrap = document.getElementById(`usageGuideShot-${sectionId}`);
   if (!wrap || !relativePath) return;
-  const src = encodeAssetPath(relativePath);
+  const src = `${encodeAssetPath(relativePath)}?v=${USAGE_GUIDE_IMAGE_VERSION}`;
   wrap.innerHTML = `<img src="${src}" alt="화면 미리보기" loading="lazy" decoding="async">`;
 }
 
@@ -9332,7 +9333,7 @@ function renderRecipes() {
     card.innerHTML = `
       <div class="recipe-card-header">
         <div class="recipe-card-title">${withAlchemyImage(recipe.name, recipeImgStyle)}</div>
-        ${outputEl || priceEl ? `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;">${outputEl}${priceEl}</div>` : ''}
+        ${outputEl || priceEl ? `<div class="recipe-card-header-side">${outputEl}${priceEl}</div>` : ''}
       </div>
       <div class="recipe-card-body">
         <div class="recipe-section">
