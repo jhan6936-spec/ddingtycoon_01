@@ -10935,34 +10935,61 @@ function evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects, prepOpts
   };
 }
 
+function packOptimizedPlanCounts(optimized) {
+  if (!optimized || !optimized.plans) return {};
+  const out = { ...optimized.plans[0], ...optimized.plans[1], ...optimized.plans[2] };
+  out['추출된 희석액'] = optimized.diluentCount || 0;
+  return out;
+}
+
+function diffFinalPlanCounts(beforeOptimized, afterOptimized) {
+  const before = packOptimizedPlanCounts(beforeOptimized);
+  const after = packOptimizedPlanCounts(afterOptimized);
+  const deltas = {};
+  [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'].forEach((name) => {
+    const d = Math.max(0, Math.floor(Number(after[name]) || 0) - Math.floor(Number(before[name]) || 0));
+    if (d > 0) deltas[name] = d;
+  });
+  return deltas;
+}
+
 function searchBestPurchaseQtyForName(stockInv, purchases, prices, effects, prepOpts, name, budgetRemaining) {
   const unitPrice = Math.max(0, Math.floor(Number(prices[name]) || 0));
   if (!unitPrice || budgetRemaining < unitPrice) return null;
 
-  const maxQ = Math.min(Math.floor(budgetRemaining / unitPrice), 800);
+  const maxQ = Math.min(Math.floor(budgetRemaining / unitPrice), 2400);
   if (maxQ <= 0) return null;
 
   const baseEval = evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects, prepOpts, prices);
-  const baseNet = baseEval.net;
+  const baseGold = baseEval.gold;
 
   const evalAddQty = (addQ) => {
     const q = Math.max(0, Math.floor(Number(addQ) || 0));
-    if (q <= 0) return { net: baseNet, eval: baseEval };
+    if (q <= 0) return { gold: baseGold, goldDelta: 0, eval: baseEval, qty: 0 };
     const trialPurchases = { ...purchases, [name]: (purchases[name] || 0) + q };
     const ev = evaluateAlchemyPlanWithPurchases(stockInv, trialPurchases, effects, prepOpts, prices);
-    return { net: ev.net, eval: ev, qty: q, cost: ev.purchaseCost };
+    const goldDelta = ev.gold - baseGold;
+    return { gold: ev.gold, goldDelta, eval: ev, qty: q, cost: q * unitPrice };
   };
 
   const probe1 = evalAddQty(1);
-  if (probe1.net <= baseNet) return null;
+  if (probe1.goldDelta <= 0) return null;
 
   let bestQ = 1;
   let best = probe1;
-  const coarseStep = Math.max(1, Math.ceil(maxQ / 32));
+  const coarseStep = Math.max(1, Math.ceil(maxQ / 48));
+
+  const scorePick = (ev) => {
+    const eff = ev.cost > 0 ? ev.goldDelta / ev.cost : ev.goldDelta;
+    return { goldDelta: ev.goldDelta, eff };
+  };
 
   for (let q = 1; q <= maxQ; q += coarseStep) {
     const ev = evalAddQty(q);
-    if (ev.net > best.net) {
+    if (ev.goldDelta <= 0) continue;
+    const s = scorePick(ev);
+    const bs = scorePick(best);
+    if (s.goldDelta > bs.goldDelta || (s.goldDelta === bs.goldDelta && s.eff > bs.eff)) {
       bestQ = q;
       best = ev;
     }
@@ -10971,14 +10998,17 @@ function searchBestPurchaseQtyForName(stockInv, purchases, prices, effects, prep
   const refineTo = Math.min(maxQ, bestQ + coarseStep);
   for (let q = refineFrom; q <= refineTo; q++) {
     const ev = evalAddQty(q);
-    if (ev.net > best.net) {
+    if (ev.goldDelta <= 0) continue;
+    const s = scorePick(ev);
+    const bs = scorePick(best);
+    if (s.goldDelta > bs.goldDelta || (s.goldDelta === bs.goldDelta && s.eff > bs.eff)) {
       bestQ = q;
       best = ev;
     }
   }
 
-  if (!best || best.net <= baseNet) return null;
-  return { name, qty: bestQ, net: best.net, eval: best.eval };
+  if (!best || best.goldDelta <= 0) return null;
+  return { name, qty: bestQ, gold: best.gold, goldDelta: best.goldDelta, eval: best.eval };
 }
 
 /**
