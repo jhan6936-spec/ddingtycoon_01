@@ -10633,23 +10633,76 @@ function purchaseCostFromMap(purchases, prices) {
   }, 0);
 }
 
-/** 재고+매입 합산 재고로 연금 최적화 · 총 판매가 */
-function evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects) {
-  const merged = prepareInventoryForAlchemyPlan(mergeInventoryWithPurchases(stockInv, purchases));
+/** 재고+매입 합산 재고로 연금 최적화 · 총 판매가·순이익 */
+function evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects, prepOpts) {
+  const prep = prepOpts || getAlchemyPlanPrepOptions();
+  const merged = prepareInventoryForAlchemyPlan(mergeInventoryWithPurchases(stockInv, purchases), prep);
   const optimized = optimizeAlchemyPlan(merged, effects);
+  const gold = alchemyPlanTotalGold(optimized, effects);
+  const purchaseCost = purchaseCostFromMap(purchases, prices);
   return {
     optimized,
     merged,
-    gold: alchemyPlanTotalGold(optimized, effects),
+    gold,
+    net: gold - purchaseCost,
+    purchaseCost,
   };
 }
 
+function searchBestPurchaseQtyForName(stockInv, purchases, prices, effects, prepOpts, name, budgetRemaining) {
+  const unitPrice = Math.max(0, Math.floor(Number(prices[name]) || 0));
+  if (!unitPrice || budgetRemaining < unitPrice) return null;
+
+  const maxQ = Math.min(Math.floor(budgetRemaining / unitPrice), 800);
+  if (maxQ <= 0) return null;
+
+  const baseEval = evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects, prepOpts);
+  const baseNet = baseEval.net;
+
+  const evalAddQty = (addQ) => {
+    const q = Math.max(0, Math.floor(Number(addQ) || 0));
+    if (q <= 0) return { net: baseNet, eval: baseEval };
+    const trialPurchases = { ...purchases, [name]: (purchases[name] || 0) + q };
+    const ev = evaluateAlchemyPlanWithPurchases(stockInv, trialPurchases, effects, prepOpts);
+    return { net: ev.net, eval: ev, qty: q, cost: ev.purchaseCost };
+  };
+
+  const probe1 = evalAddQty(1);
+  if (probe1.net <= baseNet) return null;
+
+  let bestQ = 1;
+  let best = probe1;
+  const coarseStep = Math.max(1, Math.ceil(maxQ / 32));
+
+  for (let q = 1; q <= maxQ; q += coarseStep) {
+    const ev = evalAddQty(q);
+    if (ev.net > best.net) {
+      bestQ = q;
+      best = ev;
+    }
+  }
+  const refineFrom = Math.max(1, bestQ - coarseStep);
+  const refineTo = Math.min(maxQ, bestQ + coarseStep);
+  for (let q = refineFrom; q <= refineTo; q++) {
+    const ev = evalAddQty(q);
+    if (ev.net > best.net) {
+      bestQ = q;
+      best = ev;
+    }
+  }
+
+  if (!best || best.net <= baseNet) return null;
+  return { name, qty: bestQ, net: best.net, eval: best.eval };
+}
+
 /**
- * 매입 포함: 예산 안에서 한계 수익(총 판매가 증가)이 큰 어패류를 구매·합산 후
+ * 매입 포함: 창고 실재고(바닐라 OFF 시 핵·정수 등 제한) 기준으로
+ * 예산 안에서 순이익(총 판매가−매입비)이 커지도록 어패류 매입량을 탐색하고
  * 매 단계마다 연금 전체 최적화를 다시 실행합니다.
  */
 function planAlchemyWithOptionalPurchase(stockInv, budget, prices, effects) {
-  const stockOnly = prepareInventoryForAlchemyPlan({ ...stockInv });
+  const prepOpts = getAlchemyPlanPrepOptions();
+  const stockOnly = prepareInventoryForAlchemyPlan({ ...stockInv }, prepOpts);
   if (!budget || budget <= 0) {
     return {
       optimized: optimizeAlchemyPlan(stockOnly, effects),
@@ -10672,79 +10725,39 @@ function planAlchemyWithOptionalPurchase(stockInv, budget, prices, effects) {
   }
 
   const purchases = {};
-  let current = evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects);
-  const MAX_ROUNDS = 24;
-
-  const evalExtraQty = (name, addQty) => {
-    const q = Math.max(0, Math.floor(Number(addQty) || 0));
-    if (q <= 0) return current;
-    const trialPurchases = { ...purchases, [name]: (purchases[name] || 0) + q };
-    return evaluateAlchemyPlanWithPurchases(stockInv, trialPurchases, effects);
-  };
-
-  const fillShellfishWithinBudget = (name, baseEval) => {
-    const unitPrice = Math.max(1, Math.floor(Number(prices[name]) || 0));
-    const spent = purchaseCostFromMap(purchases, prices);
-    const maxQ = Math.floor((budget - spent) / unitPrice);
-    if (maxQ <= 0) return baseEval;
-
-    const probe1 = evalExtraQty(name, 1);
-    if (probe1.gold <= baseEval.gold) return baseEval;
-
-    let bestQ = 1;
-    let bestEval = probe1;
-    const coarseStep = Math.max(1, Math.ceil(maxQ / 28));
-
-    for (let q = 1; q <= maxQ; q += coarseStep) {
-      const ev = evalExtraQty(name, q);
-      if (ev.gold > bestEval.gold) {
-        bestQ = q;
-        bestEval = ev;
-      }
-    }
-    const refineFrom = Math.max(1, bestQ - coarseStep);
-    const refineTo = Math.min(maxQ, bestQ + coarseStep);
-    for (let q = refineFrom; q <= refineTo; q++) {
-      const ev = evalExtraQty(name, q);
-      if (ev.gold > bestEval.gold) {
-        bestQ = q;
-        bestEval = ev;
-      }
-    }
-
-    purchases[name] = (purchases[name] || 0) + bestQ;
-    return bestEval;
-  };
+  let current = evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects, prepOpts);
+  const MAX_ROUNDS = 36;
 
   for (let round = 0; round < MAX_ROUNDS; round++) {
     const spent = purchaseCostFromMap(purchases, prices);
-    if (spent >= budget) break;
+    const remaining = budget - spent;
+    if (remaining <= 0) break;
 
-    let bestName = null;
-    let bestMarginal = 0;
-
+    let bestPick = null;
     purchasable.forEach((name) => {
-      const unitPrice = Math.max(0, Math.floor(Number(prices[name]) || 0));
-      if (!unitPrice || spent + unitPrice > budget) return;
-
-      const probe = evalExtraQty(name, 1);
-      const marginal = probe.gold - current.gold;
-      if (marginal > bestMarginal) {
-        bestMarginal = marginal;
-        bestName = name;
-      }
+      const pick = searchBestPurchaseQtyForName(
+        stockInv,
+        purchases,
+        prices,
+        effects,
+        prepOpts,
+        name,
+        remaining
+      );
+      if (!pick) return;
+      if (!bestPick || pick.net > bestPick.net) bestPick = pick;
     });
 
-    if (!bestName || bestMarginal <= 0) break;
+    if (!bestPick || bestPick.qty <= 0) break;
 
-    current = fillShellfishWithinBudget(bestName, current);
+    purchases[bestPick.name] = (purchases[bestPick.name] || 0) + bestPick.qty;
+    current = evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects, prepOpts);
   }
 
-  const purchaseCost = purchaseCostFromMap(purchases, prices);
   return {
     optimized: current.optimized,
     purchases,
-    purchaseCost,
+    purchaseCost: current.purchaseCost,
     mergedInv: current.merged,
   };
 }
@@ -10958,8 +10971,10 @@ function greedyCraftFinalCounts(recipeNames, inv, options = {}) {
 /** 연금 제작 추천: 어패류만 창고 수량 제한, 바닐라·잎·광물 등은 무한 가정 */
 const ALCHEMY_PLAN_UNBOUNDED_STOCK = 1e12;
 
-function prepareInventoryForAlchemyPlan(inv) {
+function prepareInventoryForAlchemyPlan(inv, options = {}) {
+  const unboundNonShellfish = options.unboundNonShellfish !== false;
   const out = { ...inv };
+  if (!unboundNonShellfish) return out;
   const products = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'];
   products.forEach((name) => {
     Object.keys(buildFinalProductLeafNeeds(name)).forEach((mat) => {
@@ -10969,6 +10984,12 @@ function prepareInventoryForAlchemyPlan(inv) {
     });
   });
   return out;
+}
+
+function getAlchemyPlanPrepOptions() {
+  const vanillaToggle = document.getElementById('vanillaCalcToggle');
+  const isVanillaOn = vanillaToggle ? vanillaToggle.checked : true;
+  return { unboundNonShellfish: !isVanillaOn };
 }
 
 const _lpMatKeys = new Map();
