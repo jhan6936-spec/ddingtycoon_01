@@ -5842,36 +5842,204 @@
       color: #8fa3b8;
       line-height: 1.45;
     }
-    .tool-hub-guide {
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      background: rgba(12, 16, 22, 0.8);
-      padding: 0 16px;
+    .main-credits-block--hub {
+      margin-top: 8px;
+      padding: 30px 28px;
+      background: linear-gradient(145deg, rgba(36, 64, 96, 0.58) 0%, rgba(22, 42, 62, 0.78) 100%);
+      border: 1px solid rgba(120, 200, 255, 0.38);
+      box-shadow:
+        0 12px 36px rgba(4, 12, 24, 0.35),
+        inset 0 1px 0 rgba(180, 220, 255, 0.15);
     }
-    .tool-hub-guide summary {
-      cursor: pointer;
-      padding: 14px 0;
-      font-size: 14px;
-      font-weight: 700;
-      color: #9eb8cc;
-      list-style: none;
-      user-select: none;
+    .main-credits-block--hub .main-credits-block-title {
+      font-size: 22px;
+      color: #f4fbff;
     }
-    .tool-hub-guide summary::-webkit-details-marker {
-      display: none;
+    .main-credits-block--hub .main-credits-block-lead {
+      font-size: 15px;
+      color: #b8d4ec;
     }
-    .tool-hub-guide-body {
-      padding: 0 0 16px;
+    .main-credits-block--hub .credit-plaque {
+      background: linear-gradient(180deg, #2a3c4e 0%, #1e2c3a 100%);
+      border-color: rgba(96, 187, 255, 0.28);
+    }
+    .main-credits-block--hub .credit-plaque-name {
+      font-size: 16px;
+    }
+    .main-credits-block--hub .credit-plaque-sub {
       font-size: 13px;
-      color: #9aa8b8;
+      color: #a8c8e4;
+    }
+
+    /* 이용 가이드 (위키형) */
+    #usage-guide .usage-guide-layout {
+      display: grid;
+      grid-template-columns: minmax(200px, 240px) minmax(0, 1fr);
+      gap: 28px;
+      align-items: start;
+      width: 100%;
+    }
+    @media (max-width: 960px) {
+      #usage-guide .usage-guide-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+    .usage-guide-toc {
+      position: sticky;
+      top: 16px;
+      padding: 20px 18px;
+      border-radius: 14px;
+      border: 1px solid rgba(96, 187, 255, 0.28);
+      background: rgba(16, 28, 42, 0.92);
+    }
+    .usage-guide-toc-title {
+      margin: 0 0 14px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #7ec8ff;
+    }
+    .usage-guide-toc-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .usage-guide-toc-list a {
+      display: block;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #b8d4ec;
+      text-decoration: none;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .usage-guide-toc-list a:hover {
+      background: rgba(74, 143, 217, 0.18);
+      color: #eaf6ff;
+    }
+    .usage-guide-content {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    .usage-guide-section {
+      padding: 28px 28px 26px;
+      border-radius: 16px;
+      border: 1px solid rgba(96, 187, 255, 0.22);
+      background: linear-gradient(160deg, rgba(20, 34, 50, 0.95), rgba(12, 20, 30, 0.98));
+      scroll-margin-top: 20px;
+    }
+    .usage-guide-section h2 {
+      margin: 0 0 10px;
+      font-size: clamp(22px, 2vw, 28px);
+      font-weight: 900;
+      color: #f4fbff;
+      line-height: 1.25;
+    }
+    .usage-guide-section .usage-guide-lead {
+      margin: 0 0 18px;
+      font-size: 17px;
+      color: #a8c4dc;
+      line-height: 1.55;
+    }
+    .usage-guide-steps {
+      margin: 0 0 20px;
+      padding-left: 22px;
+      font-size: 16px;
+      color: #c5dce8;
+      line-height: 1.65;
+    }
+    .usage-guide-steps li {
+      margin-bottom: 8px;
+    }
+    .usage-guide-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: 20px;
+      align-items: center;
+      margin-top: 8px;
+      padding: 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.22);
+    }
+    @media (max-width: 768px) {
+      .usage-guide-panel {
+        grid-template-columns: 1fr;
+      }
+    }
+    .usage-guide-panel-visual {
+      min-height: 140px;
+      border-radius: 10px;
+      border: 1px solid rgba(96, 187, 255, 0.25);
+      background:
+        linear-gradient(135deg, rgba(28, 56, 88, 0.9), rgba(14, 28, 44, 0.95)),
+        url("배경/December 15th 2025, 6_03_14 PM.png") center / cover no-repeat;
+      display: flex;
+      align-items: flex-end;
+      padding: 14px 16px;
+    }
+    .usage-guide-panel-visual span {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #9ee0ff;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    }
+    .usage-guide-panel-visual--warehouse {
+      background:
+        linear-gradient(135deg, rgba(32, 48, 64, 0.92), rgba(18, 28, 40, 0.96));
+    }
+    .usage-guide-panel-visual--alchemy {
+      background:
+        linear-gradient(135deg, rgba(40, 72, 110, 0.9), rgba(20, 36, 56, 0.96));
+    }
+    .usage-guide-panel-visual--craft {
+      background:
+        linear-gradient(135deg, rgba(48, 64, 48, 0.9), rgba(24, 36, 28, 0.96));
+    }
+    .usage-guide-panel-text {
+      font-size: 16px;
+      color: #b8d0e4;
       line-height: 1.6;
     }
-    .tool-hub-guide-body ul {
-      margin: 8px 0 0 20px;
-      padding: 0;
+    .usage-guide-panel-text strong {
+      color: #eaf6ff;
     }
-    .main-credits-block--hub {
-      margin-top: 4px;
+    .usage-guide-go {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 16px;
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: 1px solid rgba(96, 187, 255, 0.4);
+      background: rgba(74, 143, 217, 0.2);
+      color: #c8e8ff;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .usage-guide-go:hover {
+      background: rgba(74, 143, 217, 0.35);
+      border-color: rgba(120, 200, 255, 0.55);
+    }
+    .usage-guide-tip {
+      margin: 14px 0 0;
+      padding: 14px 16px;
+      border-radius: 10px;
+      border-left: 3px solid #68b8f5;
+      background: rgba(74, 143, 217, 0.12);
+      font-size: 15px;
+      color: #a8c8e4;
+      line-height: 1.55;
     }
     .warehouse-grid.shellfish-compact {
       grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
@@ -5902,6 +6070,7 @@
     <div class="sidebar-title">메뉴</div>
 
       <div class="nav-item active" data-nav-section="main" onclick="switchSection('main', this)">메인</div>
+      <div class="nav-item" data-nav-section="usage-guide" onclick="switchSection('usage-guide', this)">이용 가이드</div>
 
       <div class="sidebar-calc-group">
         <div class="sidebar-group-label">계산기</div>
@@ -5956,13 +6125,14 @@
       <header class="platform-hero" aria-label="띵타해 메인">
         <div class="platform-hero__glow" aria-hidden="true"></div>
         <div class="platform-hero__visual" aria-hidden="true"></div>
+        <div class="platform-hero__overlay" aria-hidden="true"></div>
+        <button class="patch-note-btn platform-hero__patch" type="button" onclick="openPatchNotes()">패치노트</button>
         <div class="platform-hero__inner">
           <div class="platform-hero__top">
             <span class="platform-hero__kicker">Marine Work Toolkit</span>
-            <button class="patch-note-btn" type="button" onclick="openPatchNotes()">패치노트</button>
           </div>
           <h1 class="platform-hero__title">띵타해</h1>
-          <p class="platform-hero__lead">해양 제작 · 연금 · 채집을 위한 전문 계산 플랫폼. 창고 입력부터 최적 제작·수익·시세 분석까지 한곳에서 처리합니다.</p>
+          <p class="platform-hero__lead">해양 제작 · 연금 · 채집을 위한 전문 계산 플랫폼.<span class="platform-hero__lead-br"></span>창고 입력부터 최적 제작·수익·시세 분석까지 한곳에서 처리합니다.</p>
           <div class="platform-hero__stats" aria-label="플랫폼 요약">
             <div class="platform-stat"><strong>8+</strong><span>계산 · 가이드 도구</span></div>
             <div class="platform-stat"><strong>3</strong><span>핵심 효율 분석</span></div>
@@ -6028,20 +6198,13 @@
               <span class="tool-hub-card-title">해양전문가 가이드</span>
               <span class="tool-hub-card-desc">뉴비용 스킬 안내</span>
             </button>
+            <button type="button" class="tool-hub-card tool-hub-card--aux" onclick="switchSection('usage-guide', document.querySelector('.nav-item[data-nav-section=\'usage-guide\']'))">
+              <span class="tool-hub-card-kicker">안내</span>
+              <span class="tool-hub-card-title">이용 가이드</span>
+              <span class="tool-hub-card-desc">기능 설명 · 사용 순서</span>
+            </button>
           </div>
         </section>
-
-        <details class="tool-hub-guide">
-          <summary>사용 팁 · 기능 안내</summary>
-          <div class="tool-hub-guide-body">
-            <p>창고에 재료를 입력한 뒤 연금품·공예품 계산을 실행하면 결과가 반영됩니다. 바닐라 재료 토글로 무한 재료 가정 여부를 바꿀 수 있습니다.</p>
-            <ul>
-              <li>연금품 계산 — 재고(＋선택 매입) 기준 최적 제작 추천</li>
-              <li>재료 창고 — 보유량·세트/갯수 입력</li>
-              <li>개인설정 — 전문가·세이지 각인 반영</li>
-            </ul>
-          </div>
-        </details>
 
         <div class="main-credits-block main-credits-block--hub">
           <h2 class="main-credits-block-title">띵타해를 만드는 데 도움을 주신 분들</h2>
