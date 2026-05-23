@@ -8982,15 +8982,14 @@ document.addEventListener('keydown', (e) => {
 
 /** 이용 가이드 일러스트 (가이드/*.png) */
 const USAGE_GUIDE_IMAGE_VERSION = '4';
-const USAGE_GUIDE_DIR = encodeURIComponent('가이드');
 const USAGE_GUIDE_STATIC_SHOTS = {
-  'ug-start': `${USAGE_GUIDE_DIR}/ug-start.png`,
-  'ug-warehouse': `${USAGE_GUIDE_DIR}/ug-warehouse.png`,
-  'ug-settings': `${USAGE_GUIDE_DIR}/ug-settings.png`,
-  'ug-alchemy': `${USAGE_GUIDE_DIR}/ug-alchemy.png`,
-  'ug-craftprice': `${USAGE_GUIDE_DIR}/ug-craftprice.png`,
-  'ug-stamina': `${USAGE_GUIDE_DIR}/ug-stamina.png`,
-  'ug-recipes': `${USAGE_GUIDE_DIR}/ug-recipes.png`,
+  'ug-start': '가이드/ug-start.png',
+  'ug-warehouse': '가이드/ug-warehouse.png',
+  'ug-settings': '가이드/ug-settings.png',
+  'ug-alchemy': '가이드/ug-alchemy.png',
+  'ug-craftprice': '가이드/ug-craftprice.png',
+  'ug-stamina': '가이드/ug-stamina.png',
+  'ug-recipes': '가이드/ug-recipes.png',
 };
 function usageGuideImageSrc(filePath) {
   return `${encodeAssetPath(filePath)}?v=${USAGE_GUIDE_IMAGE_VERSION}`;
