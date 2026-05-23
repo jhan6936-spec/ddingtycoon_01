@@ -5245,7 +5245,7 @@
     .recipe-card-header {
       flex-wrap: wrap;
       gap: 10px;
-      align-items: flex-start;
+      align-items: center;
     }
     .recipe-card-title {
       flex: 1 1 140px;
@@ -5297,10 +5297,15 @@
       border-radius: 10px;
     }
     #craft .recipe-card-header {
-      padding: 14px 16px !important;
+      padding: 10px 12px !important;
+      align-items: center !important;
+      min-height: 0;
     }
     #craft .recipe-card-body {
-      padding: 14px 16px 16px !important;
+      padding: 10px 12px 12px !important;
+    }
+    #craft .recipe-card-header > div[style] {
+      align-self: center;
     }
     #craft .recipe-card-title {
       font-size: 21px !important;
