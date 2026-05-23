@@ -36,12 +36,37 @@
     Authorization: `Bearer ${getShellfishSecret()}`
   })
 
+  const formatShellfishApiFailure = (body, fallbackStatus) => {
+    if (body?.error === 'table_missing' || /shellfish_buy_prices|PGRST205/i.test(String(body?.message || ''))) {
+      return (
+        body?.message ||
+        '어패류 매입가 테이블이 Supabase에 아직 없습니다.'
+      ) + (body?.hint ? `\n\n${body.hint}` : '\n\n사이트 관리자(오너)에게 Supabase에서 supabase_shellfish_buy_prices.sql 실행을 요청하세요.')
+    }
+    const msg = body?.message || body?.error || fallbackStatus || '요청 실패'
+    return body?.hint ? `${msg}\n\n${body.hint}` : msg
+  }
+
   const fetchShellfishApiErrorMessage = (error) => {
     const msg = String(error?.message || error || '')
     if (/failed to fetch|networkerror|load failed/i.test(msg)) {
       return '서버에 연결할 수 없습니다. 배포 후 /api/admin/shellfish-prices 가 동작하는지 확인하세요.'
     }
     return msg || '요청 실패'
+  }
+
+  const updateShellfishDbSetupBanner = (ready, hint) => {
+    const banner = sfEl('shellfishDbSetupBanner')
+    if (!banner) return
+    if (ready) {
+      banner.hidden = true
+      banner.textContent = ''
+      return
+    }
+    banner.hidden = false
+    banner.textContent =
+      hint ||
+      'Supabase에 shellfish_buy_prices 테이블이 없습니다. 오너가 SQL Editor에서 supabase_shellfish_buy_prices.sql 을 실행해야 저장할 수 있습니다.'
   }
 
   const setShellfishAuthMessage = (message, isError) => {
@@ -172,8 +197,7 @@
     })
     const body = await response.json().catch(() => ({}))
     if (!response.ok) {
-      const hint = body.hint ? ` ${body.hint}` : ''
-      throw new Error((body.message || body.error || '시세 불러오기 실패') + hint)
+      throw new Error(formatShellfishApiFailure(body, '시세 불러오기 실패'))
     }
     shellfishState.catalog = body
     rememberShellfishPreviousPrices(body)
@@ -297,7 +321,7 @@
         body: JSON.stringify(shellfishState.catalog)
       })
       const body = await response.json().catch(() => ({}))
-      if (!response.ok) throw new Error(body.message || body.error || '저장 실패')
+      if (!response.ok) throw new Error(formatShellfishApiFailure(body, '저장 실패'))
       if (body.catalog) {
         shellfishState.catalog = body.catalog
         rememberShellfishPreviousPrices(body.catalog)
@@ -321,6 +345,13 @@
       const response = await fetch('/api/admin/shellfish-prices?action=auth-status')
       const body = await response.json().catch(() => ({}))
       if (!response.ok || !body.ok) return
+      updateShellfishDbSetupBanner(body.shellfishTableReady !== false, body.tableHint || body.hint)
+      if (body.shellfishTableReady === false) {
+        setShellfishStatus(
+          'DB 테이블이 없어 저장할 수 없습니다. 아래 안내를 확인하세요.',
+          true
+        )
+      }
       if (body.shellfishSlotCount === 0 && !body.craftConfigured) {
         setShellfishAuthMessage(
           '서버에 관리자 비밀번호가 없습니다. Vercel 환경 변수 설정 후 재배포가 필요합니다.',
