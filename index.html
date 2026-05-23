@@ -10615,14 +10615,14 @@ function renderTriFinalPlan(title, orderedNames, counts, tierGold) {
         ? `<div style="font-size:11px;color:#9ecb7a;margin-top:5px;line-height:1.35;">전부 판매 시 <strong style="color:#c8f5a8;">${totalSell.toLocaleString()}G</strong></div>`
         : '';
     return `<div class="plan-cell">
-      <div style="font-size:11px;color:#9eb2c8;line-height:1.25;word-break:keep-all;">${imgH}${name}</div>
+      <div class="plan-cell-name">${imgH}${name}</div>
       <div class="plan-cell-qty">${n}개</div>
       ${sellLine}
     </div>`;
   }).join('');
-  return `<div style="margin-bottom:10px;">
-    <div style="font-size:13px;font-weight:800;color:#e5e5e5;margin-bottom:6px;">${title}${tierSellLine}</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">${cells}</div>
+  return `<div style="margin-bottom:14px;">
+    <div style="font-size:15px;font-weight:800;color:#e5e5e5;margin-bottom:10px;">${title}${tierSellLine}</div>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;">${cells}</div>
   </div>`;
 }
 
@@ -11904,7 +11904,7 @@ function analyzeEfficiency() {
       : '';
   revBox.innerHTML = `
     <div class="summary-panel__title">수익 요약</div>
-    <p class="summary-panel__lead">1성·2성·3성 연금품 + 희석액 전량 판매 기준 · 전문가 연금 +${effects.alchemyPriceBoost || 0}%</p>
+    <p class="summary-panel__lead text-muted">1성·2성·3성 연금품 + 희석액 전량 판매 기준 · 전문가 연금 +${effects.alchemyPriceBoost || 0}%</p>
     <div class="metric-kpi-grid" style="margin-bottom:8px;">
       <div class="metric-kpi">
         <div class="metric-kpi__label">총 판매가</div>
@@ -11920,7 +11920,7 @@ function analyzeEfficiency() {
         <div class="metric-kpi__value">${totalBase.toLocaleString()}G</div>
       </div>
     </div>
-    <p class="summary-panel__lead" style="margin-bottom:8px;"><span style="color:#9ecb7a;">${tierSumExpr}</span></p>
+    <p class="summary-panel__lead text-muted" style="margin-bottom:10px;">성급별 합산: <span style="color:#9ecb7a;font-weight:700;">${tierSumExpr}</span></p>
     ${purchaseRevBlock}
     <div class="metric-kpi-grid" style="margin-bottom:8px;">
       <div class="metric-kpi"><div class="metric-kpi__label">1성</div><div class="metric-kpi__value">${g1.boosted.toLocaleString()}G</div></div>
