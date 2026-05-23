@@ -5128,23 +5128,59 @@
       margin: 6px 0 0 18px;
     }
 
-    /* ===== 레이아웃 · hierarchy (축소 없음, 강조만) ===== */
+    /* ===== 레이아웃 · 중앙 정렬 · wide canvas ===== */
     .main-content {
-      max-width: 1440px;
-      padding: 26px 36px 32px;
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 22px clamp(18px, 2.2vw, 52px) 40px;
+      overflow-y: auto;
+      box-sizing: border-box;
+    }
+    .main-content > .site-auth-bar,
+    .main-content > .content-section {
+      width: 100%;
+      max-width: 1720px;
+      margin-left: auto;
+      margin-right: auto;
+      box-sizing: border-box;
     }
     .header {
       margin-bottom: 22px;
     }
-    #main.content-section .main-hero {
-      margin-bottom: 20px;
-      padding: 20px 22px 16px;
+    #main.content-section {
+      zoom: 1;
+      padding: 0;
+      border-radius: 0;
+      overflow: visible;
+    }
+    #main.content-section::before {
+      display: none;
     }
     .recipes-grid {
-      gap: 18px;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
     }
     .craft-price-grid {
-      gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(460px, 1fr));
+      gap: 20px;
+    }
+    @media (min-width: 1280px) {
+      .recipes-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+    @media (min-width: 1400px) {
+      .craft-price-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (min-width: 1680px) {
+      .craft-price-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
     }
     #warehouse .warehouse-toolbar {
       padding: 16px 0 14px;
