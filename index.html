@@ -2252,17 +2252,21 @@
       font-size: 11px;
       height: 24px;
     }
-    .warehouse-section[data-vanilla-section="1"] .warehouse-item input {
+    .warehouse-section[data-vanilla-section="1"] .warehouse-item input,
+    .warehouse-subsection[data-vanilla-section="1"] .warehouse-item input {
       color: #888;
       font-size: 12px;
     }
-    .warehouse-section[data-vanilla-section="1"] .warehouse-item-name {
+    .warehouse-section[data-vanilla-section="1"] .warehouse-item-name,
+    .warehouse-subsection[data-vanilla-section="1"] .warehouse-item-name {
       font-size: 11px;
     }
-    .warehouse-section[data-vanilla-section="1"] .warehouse-grid {
+    .warehouse-section[data-vanilla-section="1"] .warehouse-grid,
+    .warehouse-subsection[data-vanilla-section="1"] .warehouse-grid {
       gap: 6px;
     }
-    .warehouse-section[data-vanilla-section="1"] .warehouse-item.vanilla-item .warehouse-item-name {
+    .warehouse-section[data-vanilla-section="1"] .warehouse-item.vanilla-item .warehouse-item-name,
+    .warehouse-subsection[data-vanilla-section="1"] .warehouse-item.vanilla-item .warehouse-item-name {
       font-size: 11px;
       margin-bottom: 5px;
       line-height: 1.3;
@@ -9923,6 +9927,7 @@ function renderWarehouse() {
     if (!items.length) return;
     const block = document.createElement('div');
     block.className = 'warehouse-subsection' + (items.length > 12 ? ' warehouse-subsection--full' : '');
+    block.setAttribute('data-vanilla-section', '1');
     block.innerHTML = `<div class="warehouse-subsection-title">${title} <span class="warehouse-subsection-count">${items.length}종</span></div>`;
     const grid = createWarehouseMiniGrid(items, { isVanillaSection: true, vanillaDense: true });
     block.appendChild(grid);
