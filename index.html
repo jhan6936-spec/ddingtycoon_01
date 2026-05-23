@@ -11090,131 +11090,73 @@ function diffFinalPlanCounts(beforeOptimized, afterOptimized) {
   return deltas;
 }
 
-function searchBestPurchaseQtyForName(stockInv, purchases, prices, effects, prepOpts, name, budgetRemaining) {
-  const unitPrice = Math.max(0, Math.floor(Number(prices[name]) || 0));
-  if (!unitPrice || budgetRemaining < unitPrice) return null;
-
-  const maxQ = Math.min(Math.floor(budgetRemaining / unitPrice), 2400);
-  if (maxQ <= 0) return null;
-
-  const baseEval = evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects, prepOpts, prices);
-  const baseGold = baseEval.gold;
-
-  const evalAddQty = (addQ) => {
-    const q = Math.max(0, Math.floor(Number(addQ) || 0));
-    if (q <= 0) return { gold: baseGold, goldDelta: 0, eval: baseEval, qty: 0 };
-    const trialPurchases = { ...purchases, [name]: (purchases[name] || 0) + q };
-    const ev = evaluateAlchemyPlanWithPurchases(stockInv, trialPurchases, effects, prepOpts, prices);
-    const goldDelta = ev.gold - baseGold;
-    return { gold: ev.gold, goldDelta, eval: ev, qty: q, cost: q * unitPrice };
-  };
-
-  const probe1 = evalAddQty(1);
-  if (probe1.goldDelta <= 0) return null;
-
-  let bestQ = 1;
-  let best = probe1;
-  const coarseStep = Math.max(1, Math.ceil(maxQ / 48));
-
-  const scorePick = (ev) => {
-    const eff = ev.cost > 0 ? ev.goldDelta / ev.cost : ev.goldDelta;
-    return { goldDelta: ev.goldDelta, eff };
-  };
-
-  for (let q = 1; q <= maxQ; q += coarseStep) {
-    const ev = evalAddQty(q);
-    if (ev.goldDelta <= 0) continue;
-    const s = scorePick(ev);
-    const bs = scorePick(best);
-    if (s.goldDelta > bs.goldDelta || (s.goldDelta === bs.goldDelta && s.eff > bs.eff)) {
-      bestQ = q;
-      best = ev;
-    }
-  }
-  const refineFrom = Math.max(1, bestQ - coarseStep);
-  const refineTo = Math.min(maxQ, bestQ + coarseStep);
-  for (let q = refineFrom; q <= refineTo; q++) {
-    const ev = evalAddQty(q);
-    if (ev.goldDelta <= 0) continue;
-    const s = scorePick(ev);
-    const bs = scorePick(best);
-    if (s.goldDelta > bs.goldDelta || (s.goldDelta === bs.goldDelta && s.eff > bs.eff)) {
-      bestQ = q;
-      best = ev;
-    }
-  }
-
-  if (!best || best.goldDelta <= 0) return null;
-  return { name, qty: bestQ, gold: best.gold, goldDelta: best.goldDelta, eval: best.eval };
-}
-
 /**
- * 매입 포함: 보유재고+매입 합산 재고로 연금 최적화를 매 단계 재실행.
- * 구매 조합은 최종 연금품 판매가 증가량(총 판매가) 기준으로 탐색합니다.
+ * 매입 포함: 예산 한도 내에서 판매가가 오르는 어패류 종류를 모두 매입.
+ * 매 스윕마다 종류별 +1씩 시뮬레이션 후, 이득 나는 종류는 전부 1개씩 추가합니다.
  */
 function planAlchemyWithOptionalPurchase(stockInv, budget, prices, effects) {
+  clearPurchasePlanEvalCache();
   const prepOpts = getAlchemyPlanPrepOptions();
-  const stockBaseline = evaluateAlchemyPlanWithPurchases(stockInv, {}, effects, prepOpts, prices);
+  const stockBaseline = evaluateAlchemyPlanWithPurchases(stockInv, {}, effects, prepOpts, prices, false);
 
-  if (!budget || budget <= 0) {
-    return {
-      optimized: stockBaseline.optimized,
-      purchases: {},
-      purchaseCost: 0,
-      mergedInv: stockBaseline.merged,
-      stockOnlyOptimized: stockBaseline.optimized,
-      stockOnlyGold: stockBaseline.gold,
-      boostedGold: stockBaseline.gold,
-      goldDelta: 0,
-      netDelta: 0,
-    };
-  }
+  const emptyResult = {
+    optimized: stockBaseline.optimized,
+    purchases: {},
+    purchaseCost: 0,
+    mergedInv: stockBaseline.merged,
+    stockOnlyOptimized: stockBaseline.optimized,
+    stockOnlyGold: stockBaseline.gold,
+    boostedGold: stockBaseline.gold,
+    goldDelta: 0,
+    netDelta: 0,
+  };
+
+  if (!budget || budget <= 0) return emptyResult;
 
   const purchasable = getAllShellfishStockNames().filter(
     (n) => Math.max(0, Math.floor(Number(prices[n]) || 0)) > 0
   );
-  if (!purchasable.length) {
-    return {
-      optimized: stockBaseline.optimized,
-      purchases: {},
-      purchaseCost: 0,
-      mergedInv: stockBaseline.merged,
-      stockOnlyOptimized: stockBaseline.optimized,
-      stockOnlyGold: stockBaseline.gold,
-      boostedGold: stockBaseline.gold,
-      goldDelta: 0,
-      netDelta: 0,
-    };
-  }
+  if (!purchasable.length) return emptyResult;
+
+  const minUnit = Math.min(...purchasable.map((n) => Math.max(1, Math.floor(Number(prices[n]) || 0))));
+  const maxSteps = Math.min(600, Math.max(60, Math.ceil(budget / minUnit) + purchasable.length * 4));
 
   const purchases = {};
   let current = stockBaseline;
-  const MAX_ROUNDS = 48;
 
-  for (let round = 0; round < MAX_ROUNDS; round++) {
+  for (let step = 0; step < maxSteps; step++) {
     const spent = purchaseCostFromMap(purchases, prices);
-    const remaining = budget - spent;
-    if (remaining <= 0) break;
+    if (spent >= budget) break;
 
-    let bestPick = null;
+    const baseGold = current.gold;
+    const marginals = [];
     purchasable.forEach((name) => {
-      const pick = searchBestPurchaseQtyForName(
-        stockInv,
-        purchases,
-        prices,
-        effects,
-        prepOpts,
-        name,
-        remaining
-      );
-      if (!pick) return;
-      if (!bestPick || pick.goldDelta > bestPick.goldDelta) bestPick = pick;
+      const unit = Math.max(0, Math.floor(Number(prices[name]) || 0));
+      if (!unit || spent + unit > budget) return;
+      const trial = { ...purchases, [name]: (purchases[name] || 0) + 1 };
+      const ev = evaluateAlchemyPlanWithPurchases(stockInv, trial, effects, prepOpts, prices);
+      const goldDelta = ev.gold - baseGold;
+      if (goldDelta > 0) {
+        marginals.push({ name, unit, goldDelta, eff: goldDelta / unit, ev });
+      }
     });
 
-    if (!bestPick || bestPick.qty <= 0) break;
+    if (!marginals.length) break;
 
-    purchases[bestPick.name] = (purchases[bestPick.name] || 0) + bestPick.qty;
-    current = evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects, prepOpts, prices);
+    marginals.sort((a, b) => b.eff - a.eff || b.goldDelta - a.goldDelta || a.name.localeCompare(b.name, 'ko'));
+
+    let addedAny = false;
+    for (const m of marginals) {
+      const spentNow = purchaseCostFromMap(purchases, prices);
+      if (spentNow + m.unit > budget) continue;
+      const trial = { ...purchases, [m.name]: (purchases[m.name] || 0) + 1 };
+      const ev = evaluateAlchemyPlanWithPurchases(stockInv, trial, effects, prepOpts, prices);
+      if (ev.gold <= current.gold) continue;
+      purchases[m.name] = (purchases[m.name] || 0) + 1;
+      current = ev;
+      addedAny = true;
+    }
+    if (!addedAny) break;
   }
 
   const goldDelta = current.gold - stockBaseline.gold;
@@ -11285,7 +11227,7 @@ function renderPurchaseBoostPanel(purchaseMeta, prices, effects) {
 
   panel.innerHTML = `
     <div class="purchase-boost-panel__title">추가 구매 추천</div>
-    <p class="purchase-boost-panel__lead">보유 재고 + 아래 매입을 합산해 연금 최적화를 다시 계산한 결과입니다. (예산 ${budget.toLocaleString()}G 중 ${purchaseCost.toLocaleString()}G 사용)</p>
+    <p class="purchase-boost-panel__lead">보유 재고 + 아래 <strong>복수 어패류</strong> 매입을 합산해 연금 최적화를 다시 계산한 결과입니다. (예산 ${budget.toLocaleString()}G 중 ${purchaseCost.toLocaleString()}G · ${entries.length}종)</p>
     <div class="purchase-boost-buy-list">${buyBlocks}</div>
     ${craftLines ? `<div class="purchase-boost-craft"><div class="purchase-boost-craft__label">추가 제작 가능</div><ul>${craftLines}</ul></div>` : ''}
     <div class="purchase-boost-metrics">
