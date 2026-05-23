@@ -121,14 +121,14 @@
           </thead>
           <tbody id="priceTableBody"></tbody>
         </table>
-        <div class="flex flex-wrap gap-2 pt-2">
+        <div class="flex flex-wrap gap-2 pt-2" data-site-owner-only hidden>
           <button id="fixRecipesBtn" type="button" disabled class="rounded-lg border border-amber-600/60 px-4 py-2 text-sm text-amber-200 hover:bg-amber-950/40 disabled:opacity-40">레시피 위키 기준 복구</button>
           <button id="reanchorHistoryBtn" type="button" disabled class="rounded-lg border border-sky-600/60 px-4 py-2 text-sm text-sky-200 hover:bg-sky-950/40 disabled:opacity-40">그래프 날짜 3시로 맞추기</button>
           <button id="clearHistoryBtn" type="button" disabled class="rounded-lg border border-slate-600 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800/60 disabled:opacity-40">그래프 이력만 삭제</button>
         </div>
       </section>
 
-      <section class="rounded-xl border border-rose-900/50 bg-rose-950/20 p-4 space-y-3">
+      <section class="rounded-xl border border-rose-900/50 bg-rose-950/20 p-4 space-y-3" data-site-owner-only hidden>
         <h2 class="text-sm font-medium text-rose-200">시세·이력 전체 초기화</h2>
         <p class="text-xs text-slate-400 leading-relaxed">Supabase의 <strong class="text-slate-300">공예품 현재 시세·변동·가격 이력</strong>을 비웁니다.</p>
         <button id="resetMarketBtn" type="button" disabled class="rounded-lg bg-rose-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-rose-600 disabled:opacity-50">공예품 시세·이력 전체 초기화</button>
