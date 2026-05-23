@@ -10936,7 +10936,7 @@ function syncPurchaseControlsUi() {
   if (budgetInput) budgetInput.disabled = !on;
   if (hint) {
     hint.textContent = canUse
-      ? 'admin 어패류 매입가 기준 · 예산 내 추천 매입 후 제작 추천에 반영됩니다.'
+      ? '어패류 매입가 기준 · 예산 내 구매 후 최종 연금품 판매가가 최대가 되도록 추천합니다.'
       : 'admin에서 어패류 매입가를 등록하면 사용할 수 있습니다.';
   }
 }
@@ -13131,10 +13131,13 @@ function analyzeEfficiency() {
   const purchaseRevBlock =
     purchaseOn && purchaseMeta.purchaseBudget > 0
       ? `<div class="revenue-purchase-note">
-          추가 매입비 <strong style="color:#f0a8a8;">−${purchaseMeta.purchaseCost.toLocaleString()}G</strong>
-          <span style="color:#8899aa;"> (예산 ${purchaseMeta.purchaseBudget.toLocaleString()}G)</span>
+          재고만 <strong style="color:#b8c9d9;">${(purchaseMeta.stockOnlyGold || 0).toLocaleString()}G</strong>
+          → 매입 후 <strong style="color:#9ecb7a;">${(purchaseMeta.boostedGold || totalBoosted).toLocaleString()}G</strong>
+          <span style="color:#8899aa;"> (추가 판매 +${(purchaseMeta.goldDelta || 0).toLocaleString()}G · 매입비 −${purchaseMeta.purchaseCost.toLocaleString()}G · 예산 ${purchaseMeta.purchaseBudget.toLocaleString()}G)</span>
         </div>`
-      : '';
+      : purchaseOn && purchaseMeta.goldDelta > 0
+        ? `<div class="revenue-purchase-note">매입 반영 추가 판매 <strong style="color:#9ecb7a;">+${purchaseMeta.goldDelta.toLocaleString()}G</strong></div>`
+        : '';
   revBox.innerHTML = `
     <div class="summary-panel__title">수익 요약</div>
     <p class="summary-panel__lead text-muted">1성·2성·3성 연금품 + 희석액 전량 판매 기준 · 전문가 연금 +${effects.alchemyPriceBoost || 0}%</p>
