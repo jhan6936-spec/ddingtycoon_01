@@ -2291,6 +2291,10 @@
       grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
       gap: 8px;
     }
+    #warehouse .warehouse-shellfish-matrix .warehouse-grid.shellfish-compact,
+    #warehouse .warehouse-alchemy-strip .warehouse-grid.alchemy-compact {
+      grid-template-columns: 1fr;
+    }
     .warehouse-item.shellfish-compact-item,
     .warehouse-item.alchemy-compact-item {
       padding: 8px 9px;
@@ -5625,9 +5629,9 @@
       font-size: 11px !important;
       margin-bottom: 4px !important;
     }
-    .warehouse-grid.alchemy-compact {
-      grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)) !important;
-      gap: 10px !important;
+    #warehouse .warehouse-alchemy-strip .warehouse-grid.alchemy-compact {
+      grid-template-columns: 1fr !important;
+      gap: 6px !important;
     }
     .warehouse-item.alchemy-compact-item {
       padding: 10px 11px !important;
