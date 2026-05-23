@@ -2538,12 +2538,12 @@
     }
     .craft-price-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-      gap: 18px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
     }
     .craft-price-card.panel-card {
       margin-bottom: 0;
-      padding: 20px 22px 22px;
+      padding: 14px 16px 16px;
     }
     .craft-price-card-title {
       margin-bottom: 14px;
@@ -2556,12 +2556,12 @@
     .craft-price-metrics {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px 12px;
-      padding: 16px 14px;
+      gap: 8px 6px;
+      padding: 10px 10px;
       background: #151515;
       border: 1px solid #2a2a2a;
       border-radius: 8px;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
     .craft-price-metrics > div {
       min-width: 0;
@@ -12587,7 +12587,7 @@ function analyzeEfficiency() {
     };
     baseInvForPlan = purchasePlan.mergedInv;
   } else {
-    baseInvForPlan = prepareInventoryForAlchemyPlan(inventory);
+    baseInvForPlan = prepareInventoryForAlchemyPlan(inventory, getAlchemyPlanPrepOptions());
     optimized = optimizeAlchemyPlan(baseInvForPlan, effects);
   }
   const plan1 = optimized.plans[0];
