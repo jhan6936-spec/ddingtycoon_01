@@ -5624,53 +5624,65 @@
       </div>
 
       <div class="tool-hub">
-        <div class="tool-hub-cta-wrap">
+        <section class="tool-hub-hero-band" aria-label="시작하기">
+          <div class="tool-hub-hero-copy">
+            <h2>해양 제작 · 연금 전문 계산</h2>
+            <p>재료 창고에 보유량을 입력한 뒤 연금품 계산으로 제작 추천, 총 판매가, 제작 시간을 확인하세요.</p>
+          </div>
           <button type="button" class="tool-hub-cta" onclick="handleMainCtaAlchemy()">연금 계산 시작</button>
-          <p class="tool-hub-cta-hint">재료 창고 입력 → 연금품 계산에서 제작 추천·수익·시간을 확인하세요</p>
-        </div>
+        </section>
 
-        <div class="tool-hub-grid" role="navigation" aria-label="빠른 이동">
-          <button type="button" class="tool-hub-card" onclick="navigateToCalcSection('efficiency', 'alchemy')">
-            <span class="tool-hub-card-kicker">핵심</span>
-            <span class="tool-hub-card-title">연금품 계산</span>
-            <span class="tool-hub-card-desc">제작 추천 · 총 판매가 · 제작 시간</span>
-          </button>
-          <button type="button" class="tool-hub-card" onclick="navigateToCalcSection('warehouse')">
-            <span class="tool-hub-card-kicker">재료</span>
-            <span class="tool-hub-card-title">재료 창고</span>
-            <span class="tool-hub-card-desc">보유 재료 입력 · 세트/갯수</span>
-          </button>
-          <button type="button" class="tool-hub-card" onclick="navigateToCalcSection('efficiency', 'craftPrice')">
-            <span class="tool-hub-card-kicker">시세</span>
-            <span class="tool-hub-card-title">공예품 계산</span>
-            <span class="tool-hub-card-desc">현재 시세 · 판매가 비교</span>
-          </button>
-          <button type="button" class="tool-hub-card" onclick="navigateToCalcSection('efficiency', 'stamina')">
-            <span class="tool-hub-card-kicker">채집</span>
-            <span class="tool-hub-card-title">스태미나 계산</span>
-            <span class="tool-hub-card-desc">어패류 채집 분배 추천</span>
-          </button>
-          <button type="button" class="tool-hub-card" onclick="navigateToCalcSection('settings')">
-            <span class="tool-hub-card-kicker">설정</span>
-            <span class="tool-hub-card-title">개인설정</span>
-            <span class="tool-hub-card-desc">전문가 · 세이지 낚싯대</span>
-          </button>
-          <button type="button" class="tool-hub-card" onclick="navigateToCalcSection('craft')">
-            <span class="tool-hub-card-kicker">레시피</span>
-            <span class="tool-hub-card-title">제작 및 조합법</span>
-            <span class="tool-hub-card-desc">전체 레시피 · 재료 확인</span>
-          </button>
-          <button type="button" class="tool-hub-card" onclick="switchSection('factory', document.querySelector('.nav-item[data-nav-section=\'factory\']'))">
-            <span class="tool-hub-card-kicker">가이드</span>
-            <span class="tool-hub-card-title">공장 제작법</span>
-            <span class="tool-hub-card-desc">해초 · 불우렁쉥이 공장</span>
-          </button>
-          <button type="button" class="tool-hub-card" onclick="switchSection('marine-guide', document.querySelector('.nav-item[data-nav-section=\'marine-guide\']'))">
-            <span class="tool-hub-card-kicker">참고</span>
-            <span class="tool-hub-card-title">해양전문가 가이드</span>
-            <span class="tool-hub-card-desc">뉴비용 스킬 안내</span>
-          </button>
-        </div>
+        <section aria-labelledby="toolHubCoreTitle">
+          <h3 id="toolHubCoreTitle" class="tool-hub-section-title">핵심 계산</h3>
+          <div class="tool-hub-featured" role="navigation" aria-label="핵심 기능">
+            <button type="button" class="tool-hub-feature tool-hub-feature--primary" onclick="navigateToCalcSection('efficiency', 'alchemy')">
+              <span class="tool-hub-feature-kicker">대표 기능</span>
+              <span class="tool-hub-feature-title">연금품 계산</span>
+              <span class="tool-hub-feature-desc">제작 추천 · 총 판매가 · 제작 시간 · 순이익</span>
+            </button>
+            <button type="button" class="tool-hub-feature" onclick="navigateToCalcSection('warehouse')">
+              <span class="tool-hub-feature-kicker">1단계</span>
+              <span class="tool-hub-feature-title">재료 창고</span>
+              <span class="tool-hub-feature-desc">보유 재료 · 세트/갯수 입력 — 계산의 기준</span>
+            </button>
+            <button type="button" class="tool-hub-feature" onclick="navigateToCalcSection('efficiency', 'craftPrice')">
+              <span class="tool-hub-feature-kicker">시세</span>
+              <span class="tool-hub-feature-title">공예품 계산</span>
+              <span class="tool-hub-feature-desc">현재 시세 · 최고가 대비 · 판매가 비교</span>
+            </button>
+          </div>
+        </section>
+
+        <section aria-labelledby="toolHubToolsTitle">
+          <h3 id="toolHubToolsTitle" class="tool-hub-section-title">도구 · 참고</h3>
+          <div class="tool-hub-secondary" role="navigation" aria-label="기타 기능">
+            <button type="button" class="tool-hub-card" onclick="navigateToCalcSection('efficiency', 'stamina')">
+              <span class="tool-hub-card-kicker">채집</span>
+              <span class="tool-hub-card-title">스태미나 계산</span>
+              <span class="tool-hub-card-desc">어패류 채집 분배 추천</span>
+            </button>
+            <button type="button" class="tool-hub-card" onclick="navigateToCalcSection('settings')">
+              <span class="tool-hub-card-kicker">설정</span>
+              <span class="tool-hub-card-title">개인설정</span>
+              <span class="tool-hub-card-desc">전문가 · 세이지 낚싯대</span>
+            </button>
+            <button type="button" class="tool-hub-card" onclick="navigateToCalcSection('craft')">
+              <span class="tool-hub-card-kicker">레시피</span>
+              <span class="tool-hub-card-title">제작 및 조합법</span>
+              <span class="tool-hub-card-desc">전체 레시피 · 재료 확인</span>
+            </button>
+            <button type="button" class="tool-hub-card" onclick="switchSection('factory', document.querySelector('.nav-item[data-nav-section=\'factory\']'))">
+              <span class="tool-hub-card-kicker">가이드</span>
+              <span class="tool-hub-card-title">공장 제작법</span>
+              <span class="tool-hub-card-desc">해초 · 불우렁쉥이 공장</span>
+            </button>
+            <button type="button" class="tool-hub-card" onclick="switchSection('marine-guide', document.querySelector('.nav-item[data-nav-section=\'marine-guide\']'))">
+              <span class="tool-hub-card-kicker">참고</span>
+              <span class="tool-hub-card-title">해양전문가 가이드</span>
+              <span class="tool-hub-card-desc">뉴비용 스킬 안내</span>
+            </button>
+          </div>
+        </section>
 
         <details class="tool-hub-guide">
           <summary>사용 팁 · 기능 안내</summary>
@@ -5684,7 +5696,7 @@
           </div>
         </details>
 
-        <div class="main-credits-block main-credits-block--compact">
+        <div class="main-credits-block main-credits-block--hub">
           <h2 class="main-credits-block-title">띵타해를 만드는 데 도움을 주신 분들</h2>
           <p class="main-credits-block-lead">고마운 분들을 소개합니다. 사진은 앞서부터 박총총, 세링, 율, 부시, 혜진, 외계인, 쿠아 님 순입니다.</p>
           <div id="mainCreditsInline" class="main-credits-inline"></div>
