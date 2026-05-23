@@ -5128,370 +5128,405 @@
       margin: 6px 0 0 18px;
     }
 
-    /* ===== UI 밀도 · 대시보드 톤 (2026) ===== */
+    /* ===== 레이아웃 · hierarchy (축소 없음, 강조만) ===== */
     .main-content {
-      padding: 16px 22px 24px;
-      max-width: 1320px;
+      max-width: 1440px;
+      padding: 26px 36px 32px;
     }
     .header {
-      margin-bottom: 14px;
+      margin-bottom: 22px;
     }
-    .header h1 {
-      font-size: 24px;
-      margin-bottom: 3px;
-      line-height: 1.2;
-    }
-    .header-subtitle {
-      font-size: 12px;
-      line-height: 1.4;
-    }
-    #main.content-section {
-      padding: 10px 12px 14px;
-      zoom: 1;
-    }
-    .main-hero {
-      padding: 14px 16px 12px;
-      margin-bottom: 12px;
-    }
-    .main-hero h1 {
-      font-size: 26px;
-      margin-bottom: 4px;
-    }
-    .main-hero .header-subtitle {
-      font-size: 12px;
-    }
-    .hero-kicker {
-      margin-bottom: 6px;
-      padding: 3px 8px;
-      font-size: 10px;
-    }
-    .search-filter {
-      margin-bottom: 12px;
-      gap: 10px;
+    #main.content-section .main-hero {
+      margin-bottom: 20px;
+      padding: 20px 22px 16px;
     }
     .recipes-grid {
-      grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
-      gap: 12px;
+      gap: 18px;
     }
-    .recipe-card {
-      transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+    .craft-price-grid {
+      gap: 16px;
     }
-    .recipe-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(74, 143, 217, 0.2);
-    }
-    .recipe-card-header {
-      padding: 10px 12px;
-    }
-    .recipe-card-body {
-      padding: 10px 12px;
-    }
-    .recipe-section {
-      margin-bottom: 10px;
-    }
-    .recipe-card-title {
-      font-size: 14px;
+    #warehouse .warehouse-toolbar {
+      padding: 16px 0 14px;
+      margin-bottom: 18px;
     }
     .panel-card,
-    .craft-price-card.panel-card {
-      padding: 11px 12px 12px;
-      margin-bottom: 10px;
+    .craft-price-card.panel-card,
+    .recipe-card,
+    .efficiency-card {
       transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
     }
     .panel-card:hover,
     .craft-price-card.panel-card:hover {
       border-color: rgba(74, 143, 217, 0.45);
-      box-shadow: 0 4px 16px rgba(74, 143, 217, 0.12);
-      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(74, 143, 217, 0.14);
+      transform: translateY(-2px);
     }
-    .craft-price-grid {
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 12px;
-    }
-    .craft-price-metrics {
-      gap: 10px 8px;
-      padding: 10px 10px;
-      margin-bottom: 10px;
-    }
-    .craft-price-metric-label {
-      font-size: 10px;
-      margin-bottom: 5px;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: #7a8fa6;
-    }
-    .craft-price-metric-value {
-      font-size: 17px;
-      font-weight: 900;
-      text-shadow: 0 0 14px rgba(96, 187, 255, 0.22);
-    }
-    .craft-price-metric-value--hero {
-      font-size: 20px;
-      color: #9ee0ff !important;
-      text-shadow: 0 0 18px rgba(96, 187, 255, 0.38);
-    }
-    .craft-price-card-title {
-      margin-bottom: 8px;
-    }
-    .efficiency-card {
-      padding: 11px 12px;
-      margin-bottom: 10px;
-      transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
-    }
-    .efficiency-card:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 5px 16px rgba(74, 143, 217, 0.18);
-    }
-    .efficiency-header {
-      margin-bottom: 6px;
-    }
-    .efficiency-info {
-      gap: 8px;
-      margin-top: 6px;
-    }
-    .info-item {
-      padding: 6px 8px;
-    }
-  #warehouse .warehouse-toolbar {
-      margin-bottom: 12px;
-      padding: 10px 0 10px 0;
-    }
-    .warehouse-toolbar-stack {
-      gap: 8px;
-    }
-    .alchemy-craft-toolbar {
-      margin-bottom: 8px;
-    }
-    .alchemy-time-summary-box {
-      margin: 0 0 12px;
-      padding: 10px 12px;
-    }
-    .alchemy-time-grid {
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-    .alchemy-time-card {
-      padding: 8px 10px;
-    }
-    .alchemy-time-label {
-      font-size: 10px;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: #7a8fa6;
-    }
-    .alchemy-time-value {
-      font-size: 18px;
-      text-shadow: 0 0 14px rgba(96, 187, 255, 0.28);
-    }
-    .alchemy-time-card--expert .alchemy-time-value {
-      font-size: 22px;
-      color: #9ee0ff;
-      text-shadow: 0 0 20px rgba(96, 187, 255, 0.4);
-    }
-    .alchemy-time-talk {
-      font-size: 12px;
-      padding: 8px 10px;
-      line-height: 1.45;
-    }
-    .eff-alchemy-pane-head {
-      margin: 4px 0 10px;
-      gap: 8px;
-    }
-    .category-filters {
-      margin-bottom: 12px;
-      gap: 6px;
-    }
-    .category-btn,
     .patch-note-btn,
-    .btn {
+    .btn,
+    .category-btn {
       transition: border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
     }
     .patch-note-btn:hover,
     .btn:hover:not(:disabled) {
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(74, 143, 217, 0.2);
-    }
-    .no-result {
-      padding: 24px 16px;
+      box-shadow: 0 4px 14px rgba(74, 143, 217, 0.22);
     }
 
-    /* KPI / 요약 패널 */
+    /* 카드 overflow · 반응형 안전 영역 */
+    .recipe-card,
+    .craft-price-card,
+    .panel-card,
+    .plan-cell,
+    .metric-kpi,
+    .tool-hub-card,
+    .tool-hub-feature {
+      min-width: 0;
+    }
+    .recipe-card-header {
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .recipe-card-title {
+      flex: 1 1 140px;
+      min-width: 0;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
+    .recipe-card-price {
+      flex-shrink: 0;
+      max-width: 100%;
+    }
+    .craft-price-metrics > div {
+      min-width: 0;
+    }
+    .craft-price-metric-value {
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      max-width: 100%;
+    }
+    .craft-price-metrics > div:nth-child(2) .craft-price-metric-value {
+      font-size: 14px;
+    }
+    .craft-price-metric-value--hero {
+      font-size: 22px;
+      color: #9ee0ff !important;
+      line-height: 1.25;
+      text-shadow: 0 0 20px rgba(96, 187, 255, 0.42);
+    }
+    .craft-price-sell-value[data-craft-boosted] {
+      font-size: 15px;
+      font-weight: 900;
+      text-shadow: 0 0 14px rgba(96, 187, 255, 0.28);
+    }
+    .recipe-card-price-val {
+      font-size: 15px;
+      text-shadow: 0 0 14px rgba(96, 187, 255, 0.3);
+    }
+    .alchemy-time-card--expert .alchemy-time-value {
+      font-size: 22px;
+      color: #9ee0ff;
+      text-shadow: 0 0 22px rgba(96, 187, 255, 0.45);
+    }
+
+    /* 보조 텍스트 (작게 — 본문·카드 제목은 건드리지 않음) */
+    .text-muted {
+      color: #8a9eb2;
+      font-size: 13px;
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    /* KPI / 요약 — 핵심 숫자만 크게 */
     .summary-panel {
-      margin-bottom: 12px;
-      padding: 10px 12px;
+      margin-bottom: 18px;
+      padding: 16px 18px;
       background: linear-gradient(135deg, rgba(12, 20, 30, 0.96), rgba(16, 28, 40, 0.94));
       border: 1px solid rgba(74, 143, 217, 0.28);
-      border-radius: 10px;
-      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.04);
     }
     .summary-panel--plan {
       background: #121212;
       border-color: #2a3140;
       box-shadow: none;
+      padding: 16px 18px;
     }
     .summary-panel__title {
-      font-size: 13px;
+      font-size: 16px;
       font-weight: 900;
       color: #e8f4ff;
-      margin-bottom: 8px;
-      line-height: 1.35;
+      margin-bottom: 10px;
+      line-height: 1.4;
     }
     .summary-panel__lead {
-      font-size: 11px;
-      color: #9eb2c8;
-      line-height: 1.45;
-      margin-bottom: 8px;
+      font-size: 13px;
+      color: #8a9eb2;
+      line-height: 1.55;
+      margin-bottom: 12px;
+      font-weight: 500;
     }
     .metric-kpi-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
-      gap: 8px;
+      grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+      gap: 12px;
     }
     .metric-kpi {
-      padding: 8px 10px;
-      border-radius: 8px;
+      padding: 14px 14px;
+      border-radius: 10px;
       background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      min-width: 0;
     }
     .metric-kpi__label {
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: #7a8fa6;
-      margin-bottom: 4px;
+      color: #7f95ad;
+      margin-bottom: 8px;
+      line-height: 1.35;
     }
     .metric-kpi__value {
-      font-size: 16px;
+      font-size: 20px;
       font-weight: 900;
       font-variant-numeric: tabular-nums;
       color: #8fd5ff;
       line-height: 1.2;
-      text-shadow: 0 0 12px rgba(96, 187, 255, 0.28);
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      text-shadow: 0 0 16px rgba(96, 187, 255, 0.32);
     }
     .metric-kpi__value--profit {
-      color: #9ecb7a;
-      text-shadow: 0 0 12px rgba(120, 210, 130, 0.28);
+      color: #a8e08a;
+      text-shadow: 0 0 16px rgba(120, 210, 130, 0.32);
     }
     .metric-kpi__value--gold {
       color: #f6c15a;
-      text-shadow: 0 0 12px rgba(246, 193, 90, 0.22);
+      text-shadow: 0 0 16px rgba(246, 193, 90, 0.28);
     }
     .metric-kpi__value--xl {
-      font-size: 20px;
+      font-size: 28px;
+      line-height: 1.15;
     }
     .revenue-purchase-note {
-      font-size: 11px;
-      color: #c8d6e4;
-      line-height: 1.45;
-      margin-bottom: 8px;
-      padding: 8px 10px;
+      font-size: 13px;
+      color: #b8c9d9;
+      line-height: 1.5;
+      margin-bottom: 12px;
+      padding: 12px 14px;
       background: #101820;
       border-radius: 8px;
       border: 1px solid #2a3a4d;
     }
+    .plan-cell {
+      background: #141414;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 10px 8px;
+      text-align: center;
+      min-height: 76px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2px;
+      transition: border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+    .plan-cell:hover {
+      border-color: rgba(96, 187, 255, 0.38);
+      box-shadow: 0 0 14px rgba(74, 143, 217, 0.14);
+    }
+    .plan-cell-qty {
+      font-size: 22px;
+      font-weight: 900;
+      color: #9ee0ff;
+      margin-top: 6px;
+      line-height: 1.15;
+      text-shadow: 0 0 18px rgba(96, 187, 255, 0.38);
+      font-variant-numeric: tabular-nums;
+    }
+    .plan-cell-name {
+      font-size: 12px;
+      color: #9eb2c8;
+      line-height: 1.35;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
 
-    /* 메인 · 툴 허브 */
+    /* 메인 · 전문 툴 허브 */
     .tool-hub {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 28px;
     }
-    .tool-hub-cta-wrap {
+    .tool-hub-hero-band {
       display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 6px;
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(96, 187, 255, 0.35);
-      background: linear-gradient(120deg, rgba(22, 48, 72, 0.9), rgba(14, 26, 38, 0.92));
-      box-shadow: 0 10px 28px rgba(9, 26, 40, 0.35), inset 0 1px 0 rgba(141, 189, 230, 0.12);
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px 28px;
+      padding: 22px 24px;
+      border-radius: 14px;
+      border: 1px solid rgba(96, 187, 255, 0.38);
+      background: linear-gradient(115deg, rgba(24, 52, 78, 0.92) 0%, rgba(14, 26, 38, 0.95) 55%, rgba(10, 18, 28, 0.98) 100%);
+      box-shadow: 0 14px 36px rgba(9, 26, 40, 0.4), inset 0 1px 0 rgba(141, 189, 230, 0.14);
+    }
+    .tool-hub-hero-copy h2 {
+      margin: 0 0 8px;
+      font-size: 22px;
+      font-weight: 900;
+      color: #f0f8ff;
+      line-height: 1.3;
+      text-shadow: 0 0 20px rgba(96, 187, 255, 0.25);
+    }
+    .tool-hub-hero-copy p {
+      margin: 0;
+      font-size: 14px;
+      color: #a8c0d4;
+      line-height: 1.55;
+      max-width: 520px;
     }
     .tool-hub-cta {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 44px;
-      padding: 0 22px;
+      min-height: 52px;
+      padding: 0 32px;
       border: none;
-      border-radius: 10px;
-      background: linear-gradient(180deg, #5ba3e8 0%, #3d85c9 100%);
+      border-radius: 12px;
+      background: linear-gradient(180deg, #62b0f0 0%, #3d85c9 100%);
       color: #fff;
-      font-size: 15px;
+      font-size: 17px;
       font-weight: 800;
       letter-spacing: 0.02em;
       cursor: pointer;
-      box-shadow: 0 4px 16px rgba(74, 143, 217, 0.45), 0 0 24px rgba(74, 143, 217, 0.25);
+      white-space: nowrap;
+      flex-shrink: 0;
+      box-shadow: 0 6px 22px rgba(74, 143, 217, 0.5), 0 0 32px rgba(74, 143, 217, 0.28);
       transition: filter 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease;
     }
     .tool-hub-cta:hover {
-      filter: brightness(1.06);
-      transform: translateY(-1px);
-      box-shadow: 0 6px 22px rgba(74, 143, 217, 0.5), 0 0 28px rgba(74, 143, 217, 0.32);
+      filter: brightness(1.07);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(74, 143, 217, 0.55), 0 0 36px rgba(74, 143, 217, 0.35);
     }
-    .tool-hub-cta-hint {
-      margin: 0;
-      font-size: 11px;
-      color: #9eb8cc;
-      line-height: 1.4;
+    .tool-hub-section-title {
+      margin: 0 0 14px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #6e8fad;
     }
-    .tool-hub-grid {
+    .tool-hub-featured {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    @media (max-width: 960px) {
+      .tool-hub-featured {
+        grid-template-columns: 1fr;
+      }
+    }
+    .tool-hub-feature {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      min-height: 148px;
+      padding: 20px 20px 18px;
+      text-align: left;
+      border-radius: 12px;
+      border: 1px solid rgba(96, 187, 255, 0.22);
+      background: linear-gradient(160deg, rgba(22, 36, 50, 0.95), rgba(16, 24, 32, 0.98));
+      color: inherit;
+      cursor: pointer;
+      font-family: inherit;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+    }
+    .tool-hub-feature:hover {
+      border-color: rgba(96, 187, 255, 0.5);
+      box-shadow: 0 10px 28px rgba(74, 143, 217, 0.2);
+      transform: translateY(-3px);
+    }
+    .tool-hub-feature--primary {
+      border-color: rgba(96, 187, 255, 0.45);
+      box-shadow: 0 0 0 1px rgba(96, 187, 255, 0.12), 0 8px 24px rgba(74, 143, 217, 0.18);
+    }
+    .tool-hub-feature-kicker {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #6e9fc4;
+    }
+    .tool-hub-feature-title {
+      font-size: 18px;
+      font-weight: 900;
+      color: #f0f8ff;
+      line-height: 1.3;
+    }
+    .tool-hub-feature-desc {
+      font-size: 13px;
+      color: #9eb2c8;
+      line-height: 1.5;
+      margin-top: auto;
+    }
+    .tool-hub-secondary {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
     }
     .tool-hub-card {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      gap: 4px;
-      min-height: 88px;
-      padding: 12px 12px 10px;
+      gap: 6px;
+      min-height: 108px;
+      padding: 16px 16px 14px;
       text-align: left;
       border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(18, 22, 28, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(20, 26, 34, 0.92);
       color: inherit;
       cursor: pointer;
       font-family: inherit;
       transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
     }
     .tool-hub-card:hover {
-      border-color: rgba(96, 187, 255, 0.45);
-      background: rgba(28, 40, 54, 0.95);
-      box-shadow: 0 6px 18px rgba(74, 143, 217, 0.16), 0 0 0 1px rgba(96, 187, 255, 0.12);
+      border-color: rgba(96, 187, 255, 0.42);
+      background: rgba(28, 40, 54, 0.96);
+      box-shadow: 0 6px 20px rgba(74, 143, 217, 0.14);
       transform: translateY(-2px);
     }
     .tool-hub-card-kicker {
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: #6e8fad;
     }
     .tool-hub-card-title {
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 800;
       color: #eaf6ff;
-      line-height: 1.25;
+      line-height: 1.3;
     }
     .tool-hub-card-desc {
-      font-size: 11px;
+      font-size: 13px;
       color: #8fa3b8;
-      line-height: 1.35;
+      line-height: 1.45;
     }
     .tool-hub-guide {
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 10px;
-      background: rgba(12, 16, 22, 0.75);
-      padding: 0 12px;
+      background: rgba(12, 16, 22, 0.8);
+      padding: 0 16px;
     }
     .tool-hub-guide summary {
       cursor: pointer;
-      padding: 10px 0;
-      font-size: 12px;
+      padding: 14px 0;
+      font-size: 14px;
       font-weight: 700;
       color: #9eb8cc;
       list-style: none;
@@ -5501,66 +5536,17 @@
       display: none;
     }
     .tool-hub-guide-body {
-      padding: 0 0 12px;
-      font-size: 12px;
+      padding: 0 0 16px;
+      font-size: 13px;
       color: #9aa8b8;
-      line-height: 1.55;
+      line-height: 1.6;
     }
     .tool-hub-guide-body ul {
-      margin: 6px 0 0 18px;
+      margin: 8px 0 0 20px;
       padding: 0;
     }
-    .tool-hub-guide-body li {
-      margin-bottom: 4px;
-    }
-    .main-credits-block--compact {
+    .main-credits-block--hub {
       margin-top: 4px;
-      padding: 12px 14px;
-    }
-    .main-credits-block--compact .main-credits-block-title {
-      font-size: 14px;
-      margin-bottom: 4px;
-    }
-    .main-credits-block--compact .main-credits-block-lead {
-      font-size: 11px;
-      margin-bottom: 10px;
-    }
-    .recipe-card-price-val {
-      font-size: 17px;
-      text-shadow: 0 0 12px rgba(96, 187, 255, 0.28);
-    }
-    .craft-price-sell-value {
-      font-size: 14px;
-      font-weight: 800;
-      font-variant-numeric: tabular-nums;
-    }
-    .craft-price-sell-value[data-craft-boosted] {
-      font-size: 16px;
-      text-shadow: 0 0 12px rgba(96, 187, 255, 0.25);
-    }
-    .plan-cell-qty {
-      font-size: 19px;
-      font-weight: 900;
-      color: #9ee0ff;
-      margin-top: 5px;
-      text-shadow: 0 0 14px rgba(96, 187, 255, 0.32);
-      font-variant-numeric: tabular-nums;
-    }
-    .plan-cell {
-      background: #141414;
-      border: 1px solid #2a2a2a;
-      border-radius: 8px;
-      padding: 8px 6px;
-      text-align: center;
-      min-height: 64px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      transition: border-color 0.16s ease, box-shadow 0.16s ease;
-    }
-    .plan-cell:hover {
-      border-color: rgba(96, 187, 255, 0.35);
-      box-shadow: 0 0 12px rgba(74, 143, 217, 0.12);
     }
   </style>
 </head>
