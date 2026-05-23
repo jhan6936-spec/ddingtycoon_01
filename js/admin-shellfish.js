@@ -303,6 +303,20 @@
     }
   }
 
+  const checkShellfishAuthStatusOnServer = async () => {
+    try {
+      const response = await fetch('/api/admin/shellfish-prices?action=auth-status')
+      const body = await response.json().catch(() => ({}))
+      if (!response.ok || !body.ok) return
+      if (body.shellfishSlotCount === 0 && !body.craftConfigured) {
+        setShellfishAuthMessage(
+          '서버에 관리자 비밀번호가 없습니다. Vercel 환경 변수 설정 후 재배포가 필요합니다.',
+          true
+        )
+      }
+    } catch (_) {}
+  }
+
   const bindShellfishAdmin = () => {
     const loginBtn = sfEl('shellfishLoginBtn')
     const saveBtn = sfEl('shellfishSaveBtn')
@@ -312,6 +326,8 @@
       console.error('[admin-shellfish] shellfishLoginBtn 또는 shellfishAdminSecret 요소를 찾을 수 없습니다.')
       return
     }
+
+    void checkShellfishAuthStatusOnServer()
 
     loginBtn.addEventListener('click', () => {
       void handleShellfishLogin()
