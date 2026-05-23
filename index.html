@@ -5933,29 +5933,75 @@
     }
     .usage-guide-toc-list a {
       display: block;
-      padding: 8px 10px;
+      padding: 9px 12px;
       border-radius: 8px;
       font-size: 15px;
       font-weight: 600;
       color: #b8d4ec;
       text-decoration: none;
-      transition: background 0.15s ease, color 0.15s ease;
+      border: 1px solid transparent;
+      transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
     }
     .usage-guide-toc-list a:hover {
       background: rgba(74, 143, 217, 0.18);
       color: #eaf6ff;
+      transform: translateX(2px);
+    }
+    .usage-guide-toc-list a.is-active {
+      background: rgba(74, 143, 217, 0.28);
+      border-color: rgba(120, 200, 255, 0.45);
+      color: #f4fbff;
+      box-shadow: 0 4px 14px rgba(74, 143, 217, 0.22);
     }
     .usage-guide-content {
-      display: flex;
-      flex-direction: column;
-      gap: 32px;
+      position: relative;
+      min-height: 360px;
     }
     .usage-guide-section {
+      display: none;
       padding: 28px 28px 26px;
       border-radius: 16px;
       border: 1px solid rgba(96, 187, 255, 0.22);
       background: linear-gradient(160deg, rgba(20, 34, 50, 0.95), rgba(12, 20, 30, 0.98));
-      scroll-margin-top: 20px;
+      box-shadow:
+        0 18px 44px rgba(4, 12, 24, 0.42),
+        inset 0 1px 0 rgba(180, 220, 255, 0.1);
+      animation: usageGuideFadeIn 0.32s ease;
+    }
+    .usage-guide-section.is-active {
+      display: block;
+    }
+    @keyframes usageGuideFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .usage-guide-shot {
+      margin: 16px 0 20px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(96, 187, 255, 0.25);
+      background: #0a1018;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+    }
+    .usage-guide-shot img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 420px;
+      object-fit: contain;
+      object-position: top center;
+    }
+    .usage-guide-shot-loading {
+      padding: 48px 16px;
+      text-align: center;
+      font-size: 14px;
+      color: #7a9ab8;
     }
     .usage-guide-section h2 {
       margin: 0 0 10px;
@@ -6462,14 +6508,14 @@
         <nav class="usage-guide-toc" aria-label="목차">
           <p class="usage-guide-toc-title">목차</p>
           <ul class="usage-guide-toc-list">
-            <li><a href="#ug-start" onclick="scrollUsageGuideSection('ug-start'); return false;">시작하기</a></li>
-            <li><a href="#ug-warehouse" onclick="scrollUsageGuideSection('ug-warehouse'); return false;">재료 창고</a></li>
-            <li><a href="#ug-settings" onclick="scrollUsageGuideSection('ug-settings'); return false;">개인설정</a></li>
-            <li><a href="#ug-alchemy" onclick="scrollUsageGuideSection('ug-alchemy'); return false;">연금품 계산</a></li>
-            <li><a href="#ug-craftprice" onclick="scrollUsageGuideSection('ug-craftprice'); return false;">공예품 계산</a></li>
-            <li><a href="#ug-stamina" onclick="scrollUsageGuideSection('ug-stamina'); return false;">스태미나 계산</a></li>
-            <li><a href="#ug-recipes" onclick="scrollUsageGuideSection('ug-recipes'); return false;">제작 및 조합법</a></li>
-            <li><a href="#ug-extra" onclick="scrollUsageGuideSection('ug-extra'); return false;">가이드 · 공장</a></li>
+            <li><a href="#ug-start" data-ug-target="ug-start" class="is-active" onclick="showUsageGuideSection('ug-start'); return false;">시작하기</a></li>
+            <li><a href="#ug-warehouse" data-ug-target="ug-warehouse" onclick="showUsageGuideSection('ug-warehouse'); return false;">재료 창고</a></li>
+            <li><a href="#ug-settings" data-ug-target="ug-settings" onclick="showUsageGuideSection('ug-settings'); return false;">개인설정</a></li>
+            <li><a href="#ug-alchemy" data-ug-target="ug-alchemy" onclick="showUsageGuideSection('ug-alchemy'); return false;">연금품 계산</a></li>
+            <li><a href="#ug-craftprice" data-ug-target="ug-craftprice" onclick="showUsageGuideSection('ug-craftprice'); return false;">공예품 계산</a></li>
+            <li><a href="#ug-stamina" data-ug-target="ug-stamina" onclick="showUsageGuideSection('ug-stamina'); return false;">스태미나 계산</a></li>
+            <li><a href="#ug-recipes" data-ug-target="ug-recipes" onclick="showUsageGuideSection('ug-recipes'); return false;">제작 및 조합법</a></li>
+            <li><a href="#ug-extra" data-ug-target="ug-extra" onclick="showUsageGuideSection('ug-extra'); return false;">가이드 · 공장</a></li>
           </ul>
         </nav>
 
