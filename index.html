@@ -1910,10 +1910,10 @@
       white-space: nowrap;
     }
     .recipe-card-body {
-      padding: 15px;
+      padding: 12px 14px 14px;
     }
     .recipe-section {
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
     .recipe-section:last-child {
       margin-bottom: 0;
@@ -1929,9 +1929,10 @@
     .ingredient-item {
       display: flex;
       align-items: center;
-      padding: 6px 0;
-      font-size: 13px;
-      color: #bbb;
+      padding: 5px 0;
+      font-size: 14px;
+      color: #ccc;
+      gap: 8px;
     }
     .ingredient-item:before {
       content: "•";
@@ -5884,7 +5885,7 @@
       color: #a8c8e4;
     }
 
-    /* 이용 가이드 (위키형) */
+    /* 이용 가이드 (위키형 · 탭) */
     #usage-guide .usage-guide-layout {
       display: grid;
       grid-template-columns: minmax(200px, 240px) minmax(0, 1fr);
@@ -5896,14 +5897,23 @@
       #usage-guide .usage-guide-layout {
         grid-template-columns: 1fr;
       }
+      .usage-guide-toc {
+        position: relative;
+        top: auto;
+      }
     }
     .usage-guide-toc {
       position: sticky;
-      top: 16px;
+      top: 12px;
+      align-self: start;
       padding: 20px 18px;
       border-radius: 14px;
       border: 1px solid rgba(96, 187, 255, 0.28);
-      background: rgba(16, 28, 42, 0.92);
+      background: rgba(16, 28, 42, 0.94);
+      box-shadow:
+        0 12px 32px rgba(4, 12, 24, 0.45),
+        inset 0 1px 0 rgba(180, 220, 255, 0.08);
+      z-index: 2;
     }
     .usage-guide-toc-title {
       margin: 0 0 14px;
