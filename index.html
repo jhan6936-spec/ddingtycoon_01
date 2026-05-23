@@ -8873,9 +8873,148 @@ document.addEventListener('keydown', (e) => {
 
 
 
+const USAGE_GUIDE_CAPTURE_KEY = 'ddingtycoon_usage_guide_shots_v1';
+let usageGuideCapturesCache = null;
+let usageGuideCaptureTask = null;
+
+const USAGE_GUIDE_CAPTURE_TARGETS = [
+  { id: 'ug-start', sectionId: 'main', selector: '.platform-hero' },
+  { id: 'ug-warehouse', sectionId: 'warehouse', selector: '#warehouse .warehouse-toolbar' },
+  { id: 'ug-settings', sectionId: 'settings', selector: '#settings .header' },
+  { id: 'ug-alchemy', sectionId: 'efficiency', selector: '#effAlchemyPane .alchemy-efficiency-toolbar' },
+  { id: 'ug-craftprice', sectionId: 'efficiency', selector: '#efficiencyContainerCraftPrice .craft-price-header' },
+  { id: 'ug-recipes', sectionId: 'craft', selector: '#craft .recipes-grid' },
+];
+
+function showUsageGuideSection(sectionId) {
+  const id = sectionId || 'ug-start';
+  document.querySelectorAll('.usage-guide-section').forEach((sec) => {
+    sec.classList.toggle('is-active', sec.id === id);
+  });
+  document.querySelectorAll('.usage-guide-toc-list a[data-ug-target]').forEach((link) => {
+    link.classList.toggle('is-active', link.dataset.ugTarget === id);
+  });
+  const content = document.querySelector('.usage-guide-content');
+  if (content) content.scrollTop = 0;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 function scrollUsageGuideSection(sectionId) {
-  const el = document.getElementById(sectionId);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  showUsageGuideSection(sectionId);
+}
+
+function applyUsageGuideShot(sectionId, dataUrl) {
+  const wrap = document.getElementById(`usageGuideShot-${sectionId}`);
+  if (!wrap || !dataUrl) return;
+  wrap.innerHTML = `<img src="${dataUrl}" alt="화면 미리보기" loading="lazy" decoding="async">`;
+}
+
+function loadUsageGuideCapturesFromCache() {
+  try {
+    const raw = sessionStorage.getItem(USAGE_GUIDE_CAPTURE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? parsed : null;
+  } catch (_) {
+    return null;
+  }
+}
+
+function saveUsageGuideCapturesToCache(map) {
+  try {
+    sessionStorage.setItem(USAGE_GUIDE_CAPTURE_KEY, JSON.stringify(map));
+  } catch (_) {}
+}
+
+async function captureElementScreenshot(el) {
+  if (!el || typeof html2canvas !== 'function') return null;
+  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+  const canvas = await html2canvas(el, {
+    scale: Math.min(1.5, window.devicePixelRatio || 1.25),
+    backgroundColor: '#0f0f0f',
+    useCORS: true,
+    allowTaint: true,
+    logging: false,
+  });
+  return canvas.toDataURL('image/png');
+}
+
+async function captureUsageGuideScreenshots() {
+  if (typeof html2canvas !== 'function') return {};
+  const activeSection = document.querySelector('.content-section.active');
+  const activeId = activeSection ? activeSection.id : 'usage-guide';
+  const activeNav = document.querySelector('.sidebar .nav-item.active');
+  const map = {};
+
+  for (const target of USAGE_GUIDE_CAPTURE_TARGETS) {
+    const sectionEl = document.getElementById(target.sectionId);
+    if (!sectionEl) continue;
+    document.querySelectorAll('.content-section').forEach((s) => s.classList.remove('active'));
+    sectionEl.classList.add('active');
+    if (target.sectionId === 'efficiency') {
+      showEfficiencySub(target.id === 'ug-craftprice' ? 'craftPrice' : 'alchemy', null);
+    } else if (target.sectionId === 'warehouse') {
+      try { renderWarehouse() } catch (_) {}
+    } else if (target.sectionId === 'craft') {
+      try { renderRecipes() } catch (_) {}
+    }
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    let el = document.querySelector(target.selector);
+    if (!el && target.sectionId === 'craft') {
+      el = document.querySelector('#craft .header');
+    }
+    if (!el && target.sectionId === 'warehouse') {
+      el = document.querySelector('#warehouse .header');
+    }
+    if (!el && target.sectionId === 'efficiency' && target.id === 'ug-alchemy') {
+      el = document.getElementById('effAlchemyPane');
+    }
+    if (!el) continue;
+    try {
+      const dataUrl = await captureElementScreenshot(el);
+      if (dataUrl) {
+        map[target.id] = dataUrl;
+        applyUsageGuideShot(target.id, dataUrl);
+      }
+    } catch (e) {
+      console.warn('[usage-guide capture]', target.id, e);
+    }
+  }
+
+  document.querySelectorAll('.content-section').forEach((s) => s.classList.remove('active'));
+  const restore = document.getElementById(activeId) || document.getElementById('usage-guide');
+  if (restore) restore.classList.add('active');
+  if (activeNav) activeNav.classList.add('active');
+
+  return map;
+}
+
+function initUsageGuide() {
+  showUsageGuideSection('ug-start');
+  const cached = loadUsageGuideCapturesFromCache();
+  if (cached) {
+    usageGuideCapturesCache = cached;
+    Object.entries(cached).forEach(([id, url]) => applyUsageGuideShot(id, url));
+    return;
+  }
+  if (usageGuideCaptureTask) return;
+  usageGuideCaptureTask = captureUsageGuideScreenshots()
+    .then((map) => {
+      usageGuideCapturesCache = map;
+      saveUsageGuideCapturesToCache(map);
+    })
+    .catch((e) => console.warn('[usage-guide]', e))
+    .finally(() => {
+      usageGuideCaptureTask = null;
+      const ugNav = document.querySelector('.nav-item[data-nav-section="usage-guide"]');
+      if (ugNav) ugNav.classList.add('active');
+      const ugSec = document.getElementById('usage-guide');
+      if (ugSec && !ugSec.classList.contains('active')) return;
+      document.querySelectorAll('.content-section').forEach((s) => s.classList.remove('active'));
+      ugSec.classList.add('active');
+      document.querySelectorAll('.sidebar .nav-item').forEach((n) => n.classList.remove('active'));
+      if (ugNav) ugNav.classList.add('active');
+    });
 }
 
 // ===== 섹션 전환 =====
