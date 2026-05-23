@@ -17,11 +17,23 @@ module.exports = async function handler(req, res) {
 
   if (action === 'auth-status') {
     const status = getShellfishAuthStatus()
+    let shellfishTableReady = false
+    let tableHint = null
+    try {
+      await supabaseRest('/shellfish_buy_prices?select=item_name&limit=1')
+      shellfishTableReady = true
+    } catch (tableErr) {
+      const info = classifySupabaseError(tableErr)
+      if (info.code === 'table_missing') tableHint = info.hint
+    }
     sendJson(res, 200, {
       ok: true,
       ...status,
-      hint:
-        status.shellfishSlotCount === 0 && !status.craftConfigured
+      shellfishTableReady,
+      tableHint,
+      hint: !shellfishTableReady && tableHint
+        ? tableHint
+        : status.shellfishSlotCount === 0 && !status.craftConfigured
           ? 'Vercel에 ADMIN_SECRET 또는 ADMIN_SECRET_SHELLFISH_* 값을 넣고 재배포하세요.'
           : '로그인 입력란에는 환경 변수 이름이 아니라 값(비밀번호)을 입력하세요.'
     })
@@ -75,7 +87,15 @@ module.exports = async function handler(req, res) {
       sendJson(res, 200, catalog)
     } catch (error) {
       const info = classifySupabaseError(error)
-      sendJson(res, 500, { error: info.code, hint: info.hint, message: String(error.message || error) })
+      sendJson(res, 500, {
+        ok: false,
+        error: info.code,
+        hint: info.hint,
+        message:
+          info.code === 'table_missing'
+            ? '어패류 매입가 테이블(shellfish_buy_prices)이 Supabase에 없습니다.'
+            : String(error.message || error)
+      })
     }
     return
   }
@@ -99,7 +119,15 @@ module.exports = async function handler(req, res) {
       })
     } catch (error) {
       const info = classifySupabaseError(error)
-      sendJson(res, 500, { error: info.code, hint: info.hint, message: String(error.message || error) })
+      sendJson(res, 500, {
+        ok: false,
+        error: info.code,
+        hint: info.hint,
+        message:
+          info.code === 'table_missing'
+            ? '어패류 매입가 테이블(shellfish_buy_prices)이 Supabase에 없습니다.'
+            : String(error.message || error)
+      })
     }
     return
   }
