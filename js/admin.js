@@ -315,6 +315,9 @@ const handleLogin = async () => {
     if (!response.ok || !body.ok) {
       state.authenticated = false
       setFormEnabled(false)
+      if (window.SiteOwnerGate && typeof window.SiteOwnerGate.setOwnerUnlockedFromAdminLogin === 'function') {
+        window.SiteOwnerGate.setOwnerUnlockedFromAdminLogin(false)
+      }
       try {
         localStorage.removeItem(STORAGE_ADMIN_SECRET)
       } catch (_) {}
@@ -326,6 +329,10 @@ const handleLogin = async () => {
     try {
       localStorage.setItem(STORAGE_ADMIN_SECRET, secret)
     } catch (_) {}
+    if (window.SiteOwnerGate && typeof window.SiteOwnerGate.setOwnerUnlockedFromAdminLogin === 'function') {
+      const isOwnerLogin = body.role === 'craft' && body.editor === 'owner'
+      window.SiteOwnerGate.setOwnerUnlockedFromAdminLogin(isOwnerLogin)
+    }
     setAuthMessage('인증되었습니다.', false)
     setFormEnabled(true)
     await loadCatalogFromApi()

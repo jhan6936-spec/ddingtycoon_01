@@ -44,52 +44,42 @@
     return ''
   }
 
-  let ownerUnlocked = false
-  let discordOwnerMatch = false
+  let ownerFromDiscord = false
+  let ownerFromAdminPassword = false
 
-  const syncOwnerFlag = () => {
-    ownerUnlocked = discordOwnerMatch
+  const recomputeOwner = () => {
+    const allowed = ownerFromDiscord || ownerFromAdminPassword
     try {
-      if (ownerUnlocked) sessionStorage.setItem(STORAGE_OWNER_UNLOCK, '1')
+      if (allowed) sessionStorage.setItem(STORAGE_OWNER_UNLOCK, '1')
       else sessionStorage.removeItem(STORAGE_OWNER_UNLOCK)
     } catch (_) {}
     applyOwnerOnlyVisibility()
+    return allowed
   }
 
   const setOwnerUnlockedFromAdminLogin = (isOwner) => {
-    if (isOwner) {
-      discordOwnerMatch = true
-      syncOwnerFlag()
-      return
-    }
-    try {
-      sessionStorage.removeItem(STORAGE_OWNER_UNLOCK)
-    } catch (_) {}
-    if (!discordOwnerMatch) {
-      ownerUnlocked = false
-      applyOwnerOnlyVisibility()
-    }
+    ownerFromAdminPassword = Boolean(isOwner)
+    recomputeOwner()
   }
 
   const refreshFromDiscordUser = (user) => {
     if (!user) {
-      discordOwnerMatch = false
+      ownerFromDiscord = false
       try {
-        const saved = sessionStorage.getItem(STORAGE_OWNER_UNLOCK) === '1'
-        ownerUnlocked = saved
+        ownerFromAdminPassword = sessionStorage.getItem(STORAGE_OWNER_UNLOCK) === '1'
       } catch (_) {
-        ownerUnlocked = false
+        ownerFromAdminPassword = false
       }
       applyOwnerOnlyVisibility()
       return
     }
     const name = readDiscordUsername(user)
     const owners = getOwnerDiscordNames()
-    discordOwnerMatch = Boolean(name && owners.includes(name))
-    syncOwnerFlag()
+    ownerFromDiscord = Boolean(name && owners.includes(name))
+    recomputeOwner()
   }
 
-  const isSiteOwner = () => Boolean(ownerUnlocked)
+  const isSiteOwner = () => ownerFromDiscord || ownerFromAdminPassword
 
   const PANEL_SELECTORS = [
     '#siteOwnerAdminPanel',
@@ -153,8 +143,9 @@
     document.addEventListener('keyup', blockDevToolsForGuests, true)
     document.addEventListener('contextmenu', onContextMenu, true)
     try {
-      const saved = sessionStorage.getItem(STORAGE_OWNER_UNLOCK) === '1'
-      if (saved) ownerUnlocked = true
+      if (sessionStorage.getItem(STORAGE_OWNER_UNLOCK) === '1') {
+        ownerFromAdminPassword = true
+      }
     } catch (_) {}
     applyOwnerOnlyVisibility()
   }
