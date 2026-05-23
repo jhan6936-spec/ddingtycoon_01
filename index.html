@@ -203,23 +203,24 @@
     }
     .marine-guide-counter {
       position: absolute;
-      bottom: 10px;
+      bottom: 14px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 2;
-      padding: 4px 12px;
+      padding: 6px 16px;
       border-radius: 999px;
       background: rgba(15, 15, 15, 0.72);
       border: 1px solid rgba(255, 255, 255, 0.12);
-      font-size: 12px;
-      color: #ccc;
+      font-size: 14px;
+      font-weight: 700;
+      color: #ddd;
       pointer-events: none;
     }
     .marine-guide-nav {
       align-self: center;
       flex-shrink: 0;
-      width: 44px;
-      height: 44px;
+      width: 52px;
+      height: 52px;
       border-radius: 50%;
       border: 1px solid #444;
       background: #252525;
@@ -260,16 +261,18 @@
       background: #1a1a1a;
       border: 1px solid #333;
       border-radius: 12px;
-      padding: 22px 24px;
-      line-height: 1.7;
+      padding: 26px 28px;
+      line-height: 1.75;
       color: #ccc;
-      max-width: 920px;
+      width: 100%;
+      max-width: 100%;
+      font-size: 15px;
     }
     .marine-guide-block h2 {
       color: #4a8fd9;
-      font-size: 18px;
+      font-size: 20px;
       margin-bottom: 14px;
-      font-weight: 600;
+      font-weight: 700;
     }
     .marine-guide-block ul {
       margin: 8px 0 0 20px;
@@ -284,12 +287,14 @@
       font-size: 14px;
     }
     .marine-guide-credit {
-      margin-top: 28px;
-      max-width: 920px;
+      margin-top: 0;
+      width: 100%;
+      max-width: 100%;
       padding-top: 18px;
       border-top: 1px solid #333;
-      font-size: 13px;
+      font-size: 14px;
       color: #888;
+      text-align: center;
       text-align: center;
       line-height: 1.6;
     }
@@ -6159,6 +6164,7 @@
         <p class="header-subtitle">뉴비를 위한 해양 전문가 안내</p>
       </div>
 
+      <div class="marine-guide-page">
       <div class="marine-guide-carousel" aria-roledescription="carousel" aria-label="해양전문가 가이드 이미지">
         <button type="button" class="marine-guide-nav" id="marineGuidePrev" onclick="marineGuideStep(-1)" aria-label="이전 이미지">‹</button>
         <div class="marine-guide-slide-wrap marine-guide-viewport" id="marineGuideViewport">
