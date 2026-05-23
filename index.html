@@ -8881,7 +8881,7 @@ const USAGE_GUIDE_CAPTURE_TARGETS = [
   { id: 'ug-start', sectionId: 'main', selector: '.platform-hero' },
   { id: 'ug-warehouse', sectionId: 'warehouse', selector: '#warehouse .warehouse-toolbar' },
   { id: 'ug-settings', sectionId: 'settings', selector: '#settings .header' },
-  { id: 'ug-alchemy', sectionId: 'efficiency', selector: '#effAlchemyPane .alchemy-efficiency-toolbar' },
+  { id: 'ug-alchemy', sectionId: 'efficiency', selector: '#effAlchemyPane .eff-alchemy-pane-head' },
   { id: 'ug-craftprice', sectionId: 'efficiency', selector: '#efficiencyContainerCraftPrice .craft-price-header' },
   { id: 'ug-recipes', sectionId: 'craft', selector: '#craft .recipes-grid' },
 ];
@@ -8953,6 +8953,7 @@ async function captureUsageGuideScreenshots() {
     sectionEl.classList.add('active');
     if (target.sectionId === 'efficiency') {
       showEfficiencySub(target.id === 'ug-craftprice' ? 'craftPrice' : 'alchemy', null);
+      try { analyzeEfficiency() } catch (_) {}
     } else if (target.sectionId === 'warehouse') {
       try { renderWarehouse() } catch (_) {}
     } else if (target.sectionId === 'craft') {
