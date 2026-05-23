@@ -10058,34 +10058,19 @@ function planAlchemyWithOptionalPurchase(stockInv, budget, prices, effects) {
     if (probe1.gold <= baseEval.gold) return baseEval;
 
     let lo = 1;
-    let hi = 1;
+    let hi = maxQ;
     let bestQ = 1;
     let bestEval = probe1;
 
-    while (hi < maxQ) {
-      const nextHi = Math.min(maxQ, hi * 2);
-      const ev = evalExtraQty(name, nextHi);
-      if (ev.gold >= bestEval.gold) {
-        bestQ = nextHi;
-        bestEval = ev;
-        lo = nextHi;
-        hi = nextHi;
-        if (nextHi >= maxQ) break;
-        hi = Math.min(maxQ, nextHi * 2);
-      } else {
-        lo = hi;
-        hi = nextHi;
-        break;
-      }
-    }
-
-    while (lo < hi) {
-      const mid = Math.ceil((lo + hi) / 2);
+    while (lo <= hi) {
+      const mid = Math.floor((lo + hi) / 2);
       const ev = evalExtraQty(name, mid);
-      if (ev.gold >= bestEval.gold) {
-        bestQ = mid;
-        bestEval = ev;
-        lo = mid;
+      if (ev.gold > baseEval.gold) {
+        if (ev.gold >= bestEval.gold) {
+          bestQ = mid;
+          bestEval = ev;
+        }
+        lo = mid + 1;
       } else {
         hi = mid - 1;
       }
