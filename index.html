@@ -1998,33 +1998,81 @@
       font-size: 13px;
       color: #8fa3b8;
     }
-    .warehouse-shellfish-columns {
+    .warehouse-shellfish-matrix {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-      align-items: start;
+      grid-template-columns: minmax(88px, 110px) repeat(3, minmax(0, 1fr));
+      gap: 8px 10px;
+      align-items: stretch;
     }
-    @media (max-width: 1100px) {
-      .warehouse-shellfish-columns {
-        grid-template-columns: 1fr;
-      }
+    .warehouse-shellfish-matrix__corner {
+      font-size: 11px;
+      font-weight: 800;
+      color: #7a9ab8;
+      align-self: end;
+      padding-bottom: 4px;
     }
-    .warehouse-shellfish-col h3 {
-      margin: 0 0 10px;
-      font-size: 13px;
+    .warehouse-shellfish-matrix__star {
+      font-size: 12px;
       font-weight: 800;
       color: #9ee0ff;
-      letter-spacing: 0.04em;
+      text-align: center;
+      padding: 6px 4px;
+      background: rgba(0, 0, 0, 0.22);
+      border-radius: 8px;
     }
-    .warehouse-alchemy-grid {
+    .warehouse-shellfish-matrix__species {
+      font-size: 12px;
+      font-weight: 800;
+      color: #c5dce8;
+      display: flex;
+      align-items: center;
+      padding: 4px 0;
+    }
+    .warehouse-shellfish-matrix .warehouse-grid {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+    .warehouse-shellfish-matrix .warehouse-item {
+      min-height: 0;
+    }
+    .warehouse-alchemy-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .warehouse-alchemy-row {
+      display: grid;
+      grid-template-columns: 52px minmax(0, 1fr) minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+    }
+    .warehouse-alchemy-row__tier {
+      font-size: 12px;
+      font-weight: 800;
+      color: #9ee0ff;
+      padding-top: 10px;
+    }
+    .warehouse-alchemy-row .warehouse-grid {
+      grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+    }
+    .warehouse-vanilla-container {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
+      gap: 12px;
       align-items: start;
     }
     @media (max-width: 900px) {
-      .warehouse-alchemy-grid {
+      .warehouse-alchemy-row {
         grid-template-columns: 1fr;
+      }
+      .warehouse-alchemy-row__tier {
+        padding-top: 0;
+      }
+      .warehouse-vanilla-container {
+        grid-template-columns: 1fr;
+      }
+      .warehouse-shellfish-matrix {
+        grid-template-columns: minmax(72px, 96px) repeat(3, minmax(0, 1fr));
       }
     }
     .warehouse-subsection {
@@ -9096,7 +9144,7 @@ document.addEventListener('keydown', (e) => {
 
 
 /** 이용 가이드 일러스트 (가이드/*.png) */
-const USAGE_GUIDE_IMAGE_VERSION = '5';
+const USAGE_GUIDE_IMAGE_VERSION = '6';
 const USAGE_GUIDE_STATIC_SHOTS = {
   'ug-start': '가이드/ug-start.png',
   'ug-warehouse': '가이드/ug-warehouse.png',
