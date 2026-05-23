@@ -63,10 +63,32 @@ function classifySupabaseError(error) {
   if (message.includes('Missing env:')) {
     return { code: 'config_missing', hint: 'Vercel 환경 변수를 확인한 뒤 재배포하세요.' };
   }
-  if (message.includes('PGRST205') || message.includes('does not exist')) {
+  if (message.includes('PGRST205') || message.includes('Could not find the table') || message.includes('does not exist')) {
+    if (message.includes('shellfish_buy_prices')) {
+      return {
+        code: 'table_missing',
+        table: 'shellfish_buy_prices',
+        hint:
+          'Supabase 대시보드 → SQL Editor에서 프로젝트 저장소의 supabase_shellfish_buy_prices.sql 내용을 통째로 실행하세요. 실행 후 「어패류 매입가 저장」을 다시 누르세요.'
+      };
+    }
+    if (message.includes('craft_items') || message.includes('craft_price_history')) {
+      return {
+        code: 'table_missing',
+        table: 'craft_items',
+        hint: 'Supabase SQL Editor에서 supabase_craft_items.sql (및 필요 시 supabase_craft_price_history.sql)을 실행하세요.'
+      };
+    }
+    if (message.includes('minecraft_')) {
+      return {
+        code: 'table_missing',
+        table: 'minecraft',
+        hint: 'Supabase SQL Editor에서 supabase_minecraft_link.sql 을 실행하세요.'
+      };
+    }
     return {
       code: 'table_missing',
-      hint: 'Supabase SQL Editor에서 supabase_minecraft_link.sql 또는 supabase_craft_items.sql 을 실행하세요.'
+      hint: 'Supabase SQL Editor에서 해당 기능용 .sql 파일을 실행했는지 확인하세요.'
     };
   }
   if (message.includes('42501') || message.toLowerCase().includes('permission denied')) {
