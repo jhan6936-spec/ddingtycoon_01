@@ -12999,10 +12999,6 @@ function analyzeEfficiency() {
   let baseInvForPlan;
   let optimized;
 
-  if (purchaseOn && purchaseBudget > 0) {
-    containerAlchemy.innerHTML = '<div class="no-result" style="padding:24px 12px;">매입 조합 계산 중… (어패류 종류별 시뮬레이션)</div>';
-  }
-
   if (purchaseOn) {
     const purchasePlan = planAlchemyWithOptionalPurchase(inventory, purchaseBudget, shellfishBuyPrices, effects);
     optimized = purchasePlan.optimized;
