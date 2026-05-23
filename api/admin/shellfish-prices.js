@@ -1,5 +1,5 @@
 const { handleCors, sendJson, readJson, supabaseRest, classifySupabaseError } = require('../../_supabase')
-const { verifyShellfishAdmin } = require('../../lib/admin-auth')
+const { verifyShellfishAdmin, getShellfishAuthStatus } = require('../../lib/admin-auth')
 const {
   readShellfishPricesFromSupabase,
   upsertShellfishPrices
