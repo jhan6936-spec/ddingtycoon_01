@@ -1820,8 +1820,8 @@
     /* 레시피 카드 그리드 */
     .recipes-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
     }
     .recipe-card {
       background: #1a1a1a;
@@ -1844,17 +1844,21 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.06);
     }
     .recipe-card-header {
-      padding: 15px;
+      padding: 12px 14px;
       background: #252525;
       border-bottom: 1px solid #2a2a2a;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
     }
     .recipe-card-title {
-      font-size: 16px;
-      font-weight: 600;
+      font-size: 17px;
+      font-weight: 700;
       color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
     .recipe-card-price {
       background: #0f1419;
