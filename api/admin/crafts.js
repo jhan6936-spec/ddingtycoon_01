@@ -26,17 +26,17 @@ module.exports = async function handler(req, res) {
       sendJson(res, 405, { error: 'Method not allowed' })
       return
     }
-    const auth = verifyAdminSecret(req)
+    const auth = verifyCraftAdmin(req)
     if (!auth.ok) {
       sendJson(res, 401, { ok: false, message: '비밀번호가 올바르지 않습니다.' })
       return
     }
-    sendJson(res, 200, { ok: true, message: '인증되었습니다.' })
+    sendJson(res, 200, { ok: true, message: '인증되었습니다.', role: auth.role })
     return
   }
 
   if (action === 'clear-history') {
-    const auth = verifyAdminSecret(req)
+    const auth = verifyCraftAdmin(req)
     if (!auth.ok) {
       sendJson(res, 401, { error: auth.error })
       return
@@ -59,7 +59,7 @@ module.exports = async function handler(req, res) {
   }
 
   if (action === 'reanchor-history') {
-    const auth = verifyAdminSecret(req)
+    const auth = verifyCraftAdmin(req)
     if (!auth.ok) {
       sendJson(res, 401, { error: auth.error })
       return
@@ -91,7 +91,7 @@ module.exports = async function handler(req, res) {
   }
 
   if (action === 'reset-market') {
-    const auth = verifyAdminSecret(req)
+    const auth = verifyCraftAdmin(req)
     if (!auth.ok) {
       sendJson(res, 401, { error: auth.error })
       return
@@ -116,7 +116,7 @@ module.exports = async function handler(req, res) {
   }
 
   if (action === 'fix-recipes') {
-    const auth = verifyAdminSecret(req)
+    const auth = verifyCraftAdmin(req)
     if (!auth.ok) {
       sendJson(res, 401, { error: auth.error })
       return
@@ -155,7 +155,7 @@ module.exports = async function handler(req, res) {
     return
   }
 
-  const auth = verifyAdminSecret(req)
+  const auth = verifyCraftAdmin(req)
   if (!auth.ok) {
     sendJson(res, 401, { error: auth.error })
     return
