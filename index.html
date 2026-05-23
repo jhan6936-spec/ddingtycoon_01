@@ -8155,14 +8155,12 @@ function commitCalcValue(action) {
     }
   } else if (action === 'add') {
     const next = Math.max(0, current + computed);
-    const field = getWarehouseQtyFieldFromNode(inputEl);
     if (field) syncWarehouseFieldCount(field, next);
     else {
       inputEl.setAttribute('data-warehouse-count', String(next));
       inputEl.value = String(next);
     }
   } else if (action === 'reset') {
-    const field = getWarehouseQtyFieldFromNode(inputEl);
     if (field) syncWarehouseFieldCount(field, 0);
     else {
       inputEl.value = '0';
