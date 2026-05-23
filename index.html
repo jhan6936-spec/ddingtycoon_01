@@ -1994,82 +1994,90 @@
       font-size: 13px;
       color: #8fa3b8;
     }
-    .warehouse-shellfish-matrix {
+    .warehouse-species-strip {
       display: grid;
-      grid-template-columns: minmax(88px, 110px) repeat(3, minmax(0, 1fr));
-      gap: 8px 10px;
-      align-items: stretch;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      align-items: start;
     }
-    .warehouse-shellfish-matrix__corner {
-      font-size: 11px;
-      font-weight: 800;
-      color: #7a9ab8;
-      align-self: end;
-      padding-bottom: 4px;
+    @media (max-width: 1100px) {
+      .warehouse-species-strip {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
     }
-    .warehouse-shellfish-matrix__star {
-      font-size: 12px;
+    @media (max-width: 640px) {
+      .warehouse-species-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    .warehouse-species-col {
+      background: rgba(0, 0, 0, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 10px;
+      min-width: 0;
+    }
+    .warehouse-species-col__title {
+      margin: 0 0 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(158, 224, 255, 0.2);
+      font-size: 14px;
       font-weight: 800;
       color: #9ee0ff;
       text-align: center;
-      padding: 6px 4px;
-      background: rgba(0, 0, 0, 0.22);
-      border-radius: 8px;
     }
-    .warehouse-shellfish-matrix__species {
-      font-size: 12px;
-      font-weight: 800;
-      color: #c5dce8;
-      display: flex;
-      align-items: center;
-      padding: 4px 0;
-    }
-    .warehouse-shellfish-matrix .warehouse-grid {
+    .warehouse-species-col .warehouse-grid {
       grid-template-columns: 1fr;
-      gap: 0;
+      gap: 6px;
     }
-    .warehouse-shellfish-matrix .warehouse-item {
-      min-height: 0;
-    }
-    .warehouse-alchemy-rows {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .warehouse-alchemy-row {
+    .warehouse-alchemy-blocks {
       display: grid;
-      grid-template-columns: 52px minmax(0, 1fr) minmax(0, 1fr);
-      gap: 10px;
-      align-items: start;
-    }
-    .warehouse-alchemy-row__tier {
-      font-size: 12px;
-      font-weight: 800;
-      color: #9ee0ff;
-      padding-top: 10px;
-    }
-    .warehouse-alchemy-row .warehouse-grid {
-      grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
-    }
-    .warehouse-vanilla-container {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 12px;
       align-items: start;
     }
-    @media (max-width: 900px) {
-      .warehouse-alchemy-row {
+    @media (max-width: 1200px) {
+      .warehouse-alchemy-blocks {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 700px) {
+      .warehouse-alchemy-blocks {
         grid-template-columns: 1fr;
       }
-      .warehouse-alchemy-row__tier {
-        padding-top: 0;
+    }
+    .warehouse-alchemy-blocks .warehouse-grid {
+      grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+      gap: 8px;
+    }
+    .warehouse-vanilla-container {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      align-items: start;
+    }
+    .warehouse-vanilla-container .warehouse-section--wide {
+      grid-column: span 2;
+    }
+    @media (max-width: 1100px) {
+      .warehouse-vanilla-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
+      .warehouse-vanilla-container .warehouse-section--wide {
+        grid-column: span 2;
+      }
+    }
+    @media (max-width: 640px) {
       .warehouse-vanilla-container {
         grid-template-columns: 1fr;
       }
-      .warehouse-shellfish-matrix {
-        grid-template-columns: minmax(72px, 96px) repeat(3, minmax(0, 1fr));
+      .warehouse-vanilla-container .warehouse-section--wide {
+        grid-column: auto;
       }
+    }
+    .warehouse-vanilla-container .warehouse-grid {
+      grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+      gap: 8px;
     }
     .warehouse-subsection {
       background: rgba(0, 0, 0, 0.2);
@@ -6244,22 +6252,23 @@
       }
     }
     .usage-guide-shot {
-      margin: 10px auto 14px;
-      max-width: min(560px, 72%);
-      border-radius: 10px;
+      margin: 14px 0 20px;
+      width: 100%;
+      max-width: 100%;
+      aspect-ratio: 21 / 9;
+      min-height: clamp(180px, 28vw, 320px);
+      border-radius: 12px;
       overflow: hidden;
-      border: 1px solid rgba(96, 187, 255, 0.18);
+      border: 1px solid rgba(96, 187, 255, 0.22);
       background: #0a1018;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
-      opacity: 0.92;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
     }
     .usage-guide-shot img {
       display: block;
       width: 100%;
-      height: auto;
-      max-height: 220px;
-      object-fit: contain;
-      object-position: center;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
       background: #0a1018;
     }
     .usage-guide-shot-loading {
