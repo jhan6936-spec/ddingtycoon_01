@@ -9319,7 +9319,7 @@ function renderRecipes() {
     if (inputs.length > 0) {
       ingredientsHTML = inputs.map(input => `
         <div class="ingredient-item">
-          <span class="ingredient-name">${withAlchemyImage(input.name)}</span>
+          <span class="ingredient-name">${withAlchemyImage(input.name, recipeIngImgStyle)}</span>
           <span class="ingredient-count">${input.count}x</span>
         </div>
       `).join('');
