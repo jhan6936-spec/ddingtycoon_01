@@ -9329,7 +9329,7 @@ function renderRecipes() {
     
     card.innerHTML = `
       <div class="recipe-card-header">
-        <div class="recipe-card-title">${withAlchemyImage(recipe.name)}</div>
+        <div class="recipe-card-title">${withAlchemyImage(recipe.name, recipeImgStyle)}</div>
         ${outputEl || priceEl ? `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;">${outputEl}${priceEl}</div>` : ''}
       </div>
       <div class="recipe-card-body">

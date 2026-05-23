@@ -4,6 +4,7 @@
   "scripts": {
     "build": "node scripts/generate-env.js",
     "env:generate": "node scripts/generate-env.js",
-    "crafts:seed": "node scripts/seed-craft-items.js"
+    "crafts:seed": "node scripts/seed-craft-items.js",
+    "guide:capture": "node scripts/capture-usage-guide.mjs"
   }
 }
