@@ -8187,6 +8187,19 @@ function switchSection(sectionId, clickedEl) {
   }
 }
 
+function navigateToCalcSection(sectionId, efficiencySub) {
+  if (sectionId === 'efficiency' && efficiencySub) {
+    openEfficiencySub(efficiencySub, null);
+    return;
+  }
+  const sub = document.querySelector(`#calculatorSubNav .sub-item[data-calc-section="${sectionId}"]`);
+  switchSection(sectionId, sub || null);
+}
+
+function handleMainCtaAlchemy() {
+  navigateToCalcSection('efficiency', 'alchemy');
+}
+
 function openFactorySub(subKey) {
   saveWarehouseInventory();
   document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
@@ -10659,7 +10672,7 @@ function renderAlchemyTimeSummaryBox(baseSec, adjustedSec) {
           <div class="alchemy-time-label">기본 제작 시간</div>
           <div class="alchemy-time-value">${escapeHtml(formatGuideDurationSec(baseSec))}</div>
         </div>
-        <div class="alchemy-time-card">
+        <div class="alchemy-time-card alchemy-time-card--expert">
           <div class="alchemy-time-label">전문가 적용 제작 시간</div>
           <div class="alchemy-time-value">${escapeHtml(formatGuideDurationSec(adjustedSec))}</div>
         </div>
@@ -11641,7 +11654,7 @@ function renderCraftPricePanel(effects) {
       <div class="craft-price-metrics">
         <div>
           <div class="craft-price-metric-label">현재 시세</div>
-          <div class="craft-price-metric-value" style="color:#8fd5ff;">${currentPrice.toLocaleString()}G</div>
+          <div class="craft-price-metric-value craft-price-metric-value--hero">${currentPrice.toLocaleString()}G</div>
         </div>
         <div>
           <div class="craft-price-metric-label">전회 대비 변동</div>
@@ -11653,7 +11666,7 @@ function renderCraftPricePanel(effects) {
         </div>
         <div>
           <div class="craft-price-metric-label">최고가 대비</div>
-          <div class="craft-price-metric-value" style="color:${ratioColor};">${ratio.toFixed(1)}%</div>
+          <div class="craft-price-metric-value craft-price-metric-value--hero" style="color:${ratioColor};">${ratio.toFixed(1)}%</div>
         </div>
       </div>
       <div class="craft-price-sell-grid">
