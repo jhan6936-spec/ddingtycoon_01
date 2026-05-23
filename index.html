@@ -5775,23 +5775,8 @@
     }
     .tool-hub-secondary {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 14px;
-    }
-    @media (max-width: 1400px) {
-      .tool-hub-secondary {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-    }
-    @media (max-width: 900px) {
-      .tool-hub-secondary {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-    @media (max-width: 520px) {
-      .tool-hub-secondary {
-        grid-template-columns: 1fr;
-      }
     }
     .tool-hub-card {
       display: flex;
@@ -8798,6 +8783,11 @@ document.addEventListener('keydown', (e) => {
 
 
 
+function scrollUsageGuideSection(sectionId) {
+  const el = document.getElementById(sectionId);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 // ===== 섹션 전환 =====
 function switchSection(sectionId, clickedEl) {
   saveWarehouseInventory();
@@ -8816,6 +8806,9 @@ function switchSection(sectionId, clickedEl) {
     clickedEl.classList.add('active');
   } else if (sectionId === 'main') {
     const nav = document.querySelector('.sidebar .nav-item[data-nav-section="main"]');
+    if (nav) nav.classList.add('active');
+  } else if (sectionId === 'usage-guide') {
+    const nav = document.querySelector('.sidebar .nav-item[data-nav-section="usage-guide"]');
     if (nav) nav.classList.add('active');
   } else if (sectionId === 'marine-guide') {
     const nav = document.querySelector('.sidebar .nav-item[data-nav-section="marine-guide"]');
