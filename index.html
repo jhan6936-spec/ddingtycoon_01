@@ -6861,7 +6861,7 @@ function withAlchemyIcon(text) {
 
 function withAlchemyImage(text, style = '') {
   const t = String(text || '');
-  const img = buildImageTag(t, '', `height: 1.2em; vertical-align: middle; margin-right: 4px; ${style}`, 'ingredient-icon');
+  const img = buildImageTag(t, '', `height: 24px; vertical-align: middle; margin-right: 6px; ${style}`, 'ingredient-icon');
   if (!img) return t;
   return `${img}${t}`;
 }
@@ -9099,7 +9099,12 @@ function renderWarehouse() {
     items.forEach(material => {
       const item = document.createElement('div');
       item.className = 'warehouse-item' + (options.vanillaDense ? ' vanilla-item' : '') + (isShellfish ? ' shellfish-compact-item' : '') + (isAlchemy ? ' alchemy-compact-item' : '');
-      const imageHTML = buildImageTag(material, material, 'height: 18px; margin-right: 4px; vertical-align: middle;');
+      const imgStyle = isAlchemy
+        ? 'height: 24px; margin-right: 6px; vertical-align: middle;'
+        : isShellfish
+          ? 'height: 22px; margin-right: 5px; vertical-align: middle;'
+          : 'height: 18px; margin-right: 4px; vertical-align: middle;';
+      const imageHTML = buildImageTag(material, material, imgStyle);
       const cnt = savedInventory[material] ?? 0;
       const setCnt = Math.floor(cnt / SET_SIZE);
       const remCnt = cnt % SET_SIZE;
@@ -12067,10 +12072,10 @@ function renderCraftPricePanel(effects) {
           ? Math.round(baseSellPrice * (1 + (effects.craftPriceBoost / 100)))
           : 0;
     const hasCraftBoost = effects.craftPriceBoost > 0 && baseSellPrice >= 500;
-    const titleImgHTML = buildImageTag(recipe.name, recipe.name, 'height:22px; margin-right:8px; vertical-align:middle;');
+    const titleImgHTML = buildImageTag(recipe.name, recipe.name, 'height:28px; margin-right:10px; vertical-align:middle;');
     const titleHTML = titleImgHTML ? `${titleImgHTML}${recipe.name}` : recipe.name;
     const ingredientsHTML = (recipe.inputs || []).map((i) => {
-      const imgHTML = buildImageTag(i.name, i.name, 'height:16px; margin-right:6px; vertical-align:middle;');
+      const imgHTML = buildImageTag(i.name, i.name, 'height:22px; margin-right:8px; vertical-align:middle;');
       const label = imgHTML ? `${imgHTML}${i.name}` : i.name;
       return `<div class="craft-price-ingredient">${label} x${i.count}</div>`;
     }).join('');
