@@ -258,6 +258,7 @@
       const editorNote = body.editor ? ` (${body.editor})` : ''
       setShellfishAuthMessage(`인증되었습니다.${editorNote}`, false)
       setShellfishFormEnabled(true)
+      void checkShellfishAuthStatusOnServer()
       try {
         await loadShellfishPricesFromApi()
         setShellfishStatus('15종 매입가를 입력한 뒤 「어패류 매입가 저장」을 누르세요.', false)

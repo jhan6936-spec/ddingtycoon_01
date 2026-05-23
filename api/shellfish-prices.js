@@ -14,6 +14,14 @@ module.exports = async function handler(req, res) {
     sendJson(res, 200, catalog)
   } catch (error) {
     const info = classifySupabaseError(error)
-    sendJson(res, 500, { error: info.code, hint: info.hint, message: String(error.message || error) })
+    sendJson(res, 500, {
+      ok: false,
+      error: info.code,
+      hint: info.hint,
+      message:
+        info.code === 'table_missing'
+          ? '어패류 매입가 테이블(shellfish_buy_prices)이 Supabase에 없습니다.'
+          : String(error.message || error)
+    })
   }
 }
