@@ -1,8 +1,8 @@
 const { handleCors, sendJson, readJson, supabaseRest, classifySupabaseError } = require('../_supabase')
+const { verifyCraftAdmin } = require('../../lib/admin-auth')
 const {
   getCraftsCatalog,
   upsertCraftItems,
-  verifyAdminSecret,
   normalizeCraftsPayload,
   readCraftsFromSupabase,
   clearCraftPriceHistory,
