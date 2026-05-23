@@ -12997,7 +12997,7 @@ function analyzeEfficiency() {
   }
 
   planWrap.innerHTML = `
-    <div class="summary-panel__title">제작 추천${purchaseOn && purchaseMeta.purchaseCost > 0 ? ' <span style="font-size:11px;font-weight:600;color:#9ecb7a;">(재고+매입 반영)</span>' : purchaseOn ? ' <span style="font-size:11px;font-weight:600;color:#8899aa;">(재고 기준)</span>' : ''}</div>
+    <div class="summary-panel__title">제작 추천${purchaseOn && purchaseMeta.goldDelta > 0 ? ` <span style="font-size:11px;font-weight:600;color:#9ecb7a;">(재고+매입 · +${purchaseMeta.goldDelta.toLocaleString()}G)</span>` : purchaseOn ? ' <span style="font-size:11px;font-weight:600;color:#8899aa;">(재고 기준)</span>' : ''}</div>
     ${renderTriFinalPlan('1성', FINAL_GROUP1, plan1, g1)}
     ${renderTriFinalPlan('2성', FINAL_GROUP2, plan2, g2)}
     ${renderTriFinalPlan('3성', FINAL_GROUP3, plan3, g3)}
