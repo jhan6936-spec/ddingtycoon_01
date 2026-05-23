@@ -9756,11 +9756,14 @@ function renderWarehouse() {
     const isVanillaSection = !!options.isVanillaSection;
     const isShellfish = !!options.isShellfish;
     const isAlchemy = !!options.isAlchemy;
+    const hideHeader = !!options.hideHeader;
     const appendTarget = options.appendTo || container;
     const section = document.createElement('div');
     section.className = 'warehouse-section';
     if (isVanillaSection) section.setAttribute('data-vanilla-section', '1');
-    section.innerHTML = `
+    section.innerHTML = hideHeader
+      ? `<div class="warehouse-grid"></div>`
+      : `
       <div class="warehouse-section-title">
         <h2>${title}</h2>
         <div class="warehouse-section-sub">${subtitle || (items.length + '종')}</div>
@@ -9832,7 +9835,7 @@ function renderWarehouse() {
     const col = document.createElement('div');
     col.className = 'warehouse-shellfish-col';
     col.innerHTML = `<h3>${title}</h3>`;
-    createSection(`어패류 (${title})`, items, '', { isShellfish: true, appendTo: col });
+    createSection(`어패류 (${title})`, items, '', { isShellfish: true, appendTo: col, hideHeader: true });
     shellCols.appendChild(col);
   });
 
@@ -9859,7 +9862,7 @@ function renderWarehouse() {
     const sub = document.createElement('div');
     sub.className = 'warehouse-subsection';
     sub.innerHTML = `<div class="warehouse-subsection-title">${title}</div>`;
-    createSection(title, items, '', { isAlchemy: true, appendTo: sub });
+    createSection(title, items, '', { isAlchemy: true, appendTo: sub, hideHeader: true });
     alchGrid.appendChild(sub);
   });
 
