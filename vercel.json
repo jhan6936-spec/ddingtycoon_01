@@ -10,6 +10,7 @@
     { "source": "/api/minecraft/link/me", "destination": "/api/minecraft/link?action=me" },
     { "source": "/api/minecraft/link/claim", "destination": "/api/minecraft/link?action=claim" },
     { "source": "/api/admin/verify", "destination": "/api/admin/crafts?action=verify" },
-    { "source": "/api/admin/fix-recipes", "destination": "/api/admin/crafts?action=fix-recipes" }
+    { "source": "/api/admin/fix-recipes", "destination": "/api/admin/crafts?action=fix-recipes" },
+    { "source": "/api/admin/shellfish-verify", "destination": "/api/admin/shellfish-prices?action=verify" }
   ]
 }
