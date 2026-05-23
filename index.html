@@ -9116,6 +9116,16 @@ function usageGuideImageSrc(filePath) {
   return `${encodeAssetPath(filePath)}?v=${USAGE_GUIDE_IMAGE_VERSION}`;
 }
 
+const usageGuideLoadedShots = new Set();
+
+function loadUsageGuideShot(sectionId) {
+  const id = sectionId || 'ug-start';
+  if (usageGuideLoadedShots.has(id)) return;
+  const filePath = USAGE_GUIDE_STATIC_SHOTS[id];
+  if (filePath) applyUsageGuideShotFile(id, filePath);
+  usageGuideLoadedShots.add(id);
+}
+
 function showUsageGuideSection(sectionId) {
   const id = sectionId || 'ug-start';
   document.querySelectorAll('.usage-guide-section').forEach((sec) => {
@@ -9124,6 +9134,7 @@ function showUsageGuideSection(sectionId) {
   document.querySelectorAll('.usage-guide-toc-list a[data-ug-target]').forEach((link) => {
     link.classList.toggle('is-active', link.dataset.ugTarget === id);
   });
+  loadUsageGuideShot(id);
   const content = document.querySelector('.usage-guide-content');
   if (content) content.scrollTop = 0;
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -9149,14 +9160,7 @@ function applyUsageGuideShotFile(sectionId, relativePath) {
 
 function initUsageGuide() {
   showUsageGuideSection('ug-start');
-  Object.entries(USAGE_GUIDE_STATIC_SHOTS).forEach(([id, filePath]) => {
-    applyUsageGuideShotFile(id, filePath);
-  });
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  initUsageGuide();
-});
 
 // ===== 섹션 전환 =====
 function switchSection(sectionId, clickedEl) {
