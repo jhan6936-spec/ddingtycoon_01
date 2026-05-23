@@ -11012,19 +11012,24 @@ function searchBestPurchaseQtyForName(stockInv, purchases, prices, effects, prep
 }
 
 /**
- * 매입 포함: 창고 실재고(바닐라 OFF 시 핵·정수 등 제한) 기준으로
- * 예산 안에서 순이익(총 판매가−매입비)이 커지도록 어패류 매입량을 탐색하고
- * 매 단계마다 연금 전체 최적화를 다시 실행합니다.
+ * 매입 포함: 보유재고+매입 합산 재고로 연금 최적화를 매 단계 재실행.
+ * 구매 조합은 최종 연금품 판매가 증가량(총 판매가) 기준으로 탐색합니다.
  */
 function planAlchemyWithOptionalPurchase(stockInv, budget, prices, effects) {
   const prepOpts = getAlchemyPlanPrepOptions();
-  const stockOnly = prepareInventoryForAlchemyPlan({ ...stockInv }, prepOpts);
+  const stockBaseline = evaluateAlchemyPlanWithPurchases(stockInv, {}, effects, prepOpts, prices);
+
   if (!budget || budget <= 0) {
     return {
-      optimized: optimizeAlchemyPlan(stockOnly, effects),
+      optimized: stockBaseline.optimized,
       purchases: {},
       purchaseCost: 0,
-      mergedInv: stockOnly,
+      mergedInv: stockBaseline.merged,
+      stockOnlyOptimized: stockBaseline.optimized,
+      stockOnlyGold: stockBaseline.gold,
+      boostedGold: stockBaseline.gold,
+      goldDelta: 0,
+      netDelta: 0,
     };
   }
 
@@ -11033,16 +11038,21 @@ function planAlchemyWithOptionalPurchase(stockInv, budget, prices, effects) {
   );
   if (!purchasable.length) {
     return {
-      optimized: optimizeAlchemyPlan(stockOnly, effects),
+      optimized: stockBaseline.optimized,
       purchases: {},
       purchaseCost: 0,
-      mergedInv: stockOnly,
+      mergedInv: stockBaseline.merged,
+      stockOnlyOptimized: stockBaseline.optimized,
+      stockOnlyGold: stockBaseline.gold,
+      boostedGold: stockBaseline.gold,
+      goldDelta: 0,
+      netDelta: 0,
     };
   }
 
   const purchases = {};
-  let current = evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects, prepOpts, prices);
-  const MAX_ROUNDS = 36;
+  let current = stockBaseline;
+  const MAX_ROUNDS = 48;
 
   for (let round = 0; round < MAX_ROUNDS; round++) {
     const spent = purchaseCostFromMap(purchases, prices);
@@ -11061,7 +11071,7 @@ function planAlchemyWithOptionalPurchase(stockInv, budget, prices, effects) {
         remaining
       );
       if (!pick) return;
-      if (!bestPick || pick.net > bestPick.net) bestPick = pick;
+      if (!bestPick || pick.goldDelta > bestPick.goldDelta) bestPick = pick;
     });
 
     if (!bestPick || bestPick.qty <= 0) break;
@@ -11070,43 +11080,86 @@ function planAlchemyWithOptionalPurchase(stockInv, budget, prices, effects) {
     current = evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects, prepOpts, prices);
   }
 
+  const goldDelta = current.gold - stockBaseline.gold;
   return {
     optimized: current.optimized,
     purchases,
     purchaseCost: current.purchaseCost,
     mergedInv: current.merged,
+    stockOnlyOptimized: stockBaseline.optimized,
+    stockOnlyGold: stockBaseline.gold,
+    boostedGold: current.gold,
+    goldDelta,
+    netDelta: goldDelta - current.purchaseCost,
   };
 }
 
-function renderRecommendedPurchaseAccordion(purchases, prices, purchaseCost, budget) {
-  const entries = Object.entries(purchases || {}).filter(([, q]) => q > 0);
-  const wrap = document.createElement('details');
-  wrap.className = 'alchemy-remaining-shellfish';
+function renderPurchaseBoostPanel(purchaseMeta, prices, effects) {
+  if (!purchaseMeta || !isPurchaseIncludeEnabled()) return null;
+
+  const budget = purchaseMeta.purchaseBudget || 0;
+  const purchases = purchaseMeta.purchases || {};
+  const entries = Object.entries(purchases).filter(([, q]) => q > 0);
+  const panel = document.createElement('div');
+  panel.className = 'purchase-boost-panel';
+
+  const stockGold = purchaseMeta.stockOnlyGold || 0;
+  const boostedGold = purchaseMeta.boostedGold != null ? purchaseMeta.boostedGold : stockGold;
+  const goldDelta = purchaseMeta.goldDelta || 0;
+  const purchaseCost = purchaseMeta.purchaseCost || 0;
+  const netDelta = purchaseMeta.netDelta != null ? purchaseMeta.netDelta : goldDelta - purchaseCost;
+  const planDeltas = diffFinalPlanCounts(purchaseMeta.stockOnlyOptimized, purchaseMeta.optimized);
+
   if (!entries.length) {
-    if (!isPurchaseIncludeEnabled() || budget <= 0) return null;
-    wrap.innerHTML = `
-      <summary>추천 매입 <span class="alchemy-remaining-chevron" aria-hidden="true">▼</span></summary>
-      <p style="padding:10px 12px;font-size:12px;color:#8899aa;margin:0;">재고만으로 충분하거나, 예산·시세 조건으로 추가 매입이 필요하지 않습니다.</p>
+    if (budget <= 0) return null;
+    panel.innerHTML = `
+      <div class="purchase-boost-panel__title">추가 구매 추천</div>
+      <p class="purchase-boost-panel__lead">재고만으로도 제작 한도에 가깝거나, 예산·시세 조건에서 판매가가 늘지 않는 매입 조합입니다.</p>
+      <p class="purchase-boost-panel__stat">재고만 총 판매가 <strong>${stockGold.toLocaleString()}G</strong></p>
     `;
-    return wrap;
+    return panel;
   }
-  const listHtml = entries
-    .sort((a, b) => a[0].localeCompare(b[0], 'ko'))
+
+  const buyBlocks = entries
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'ko'))
     .map(([name, qty]) => {
-      const unit = Math.max(0, Number(prices[name]) || 0);
+      const unit = Math.max(0, Math.floor(Number(prices[name]) || 0));
       const sub = unit * qty;
-      const img = buildImageTag(name, '', 'height:16px;vertical-align:middle;');
-      const label = img ? `${img}<span>${name}</span>` : `<span>${name}</span>`;
-      return `<li class="alchemy-remaining-shellfish-item">${label}<strong>×${qty.toLocaleString()}</strong><span style="color:#9ecb7a;margin-left:8px;font-weight:600;">${unit.toLocaleString()}G/개 · ${sub.toLocaleString()}G</span></li>`;
+      const img = buildImageTag(name, '', 'height:18px;vertical-align:middle;margin-right:4px;');
+      return `<div class="purchase-boost-buy-row">
+        ${img ? `<span class="purchase-boost-buy-name">${img}${name}</span>` : `<span class="purchase-boost-buy-name">${name}</span>`}
+        <strong class="purchase-boost-buy-qty">${qty.toLocaleString()}개 구매</strong>
+        <span class="purchase-boost-buy-cost">예상 비용: ${sub.toLocaleString()}G</span>
+      </div>`;
     })
     .join('');
-  wrap.open = true;
-  wrap.innerHTML = `
-    <summary>추천 매입 <span class="alchemy-remaining-chevron" aria-hidden="true">▼</span></summary>
-    <p style="padding:8px 12px 4px;font-size:11px;color:#8899aa;margin:0;">예산 <strong style="color:#b8c9d9;">${budget.toLocaleString()}G</strong> 중 <strong style="color:#9ecb7a;">${purchaseCost.toLocaleString()}G</strong> 매입</p>
-    <ul class="alchemy-remaining-shellfish-list">${listHtml}</ul>
+
+  const craftLines = Object.entries(planDeltas)
+    .sort((a, b) => {
+      const ga = (data.recipes.find((r) => r.name === a[0])?.price || 0) * a[1];
+      const gb = (data.recipes.find((r) => r.name === b[0])?.price || 0) * b[1];
+      return gb - ga || a[0].localeCompare(b[0], 'ko');
+    })
+    .map(([name, d]) => {
+      const img = buildImageTag(name, '', 'height:16px;vertical-align:middle;margin-right:4px;');
+      return `<li>${img || ''}${name} <strong>+${d.toLocaleString()}</strong></li>`;
+    })
+    .join('');
+
+  panel.innerHTML = `
+    <div class="purchase-boost-panel__title">추가 구매 추천</div>
+    <p class="purchase-boost-panel__lead">보유 재고 + 아래 매입을 합산해 연금 최적화를 다시 계산한 결과입니다. (예산 ${budget.toLocaleString()}G 중 ${purchaseCost.toLocaleString()}G 사용)</p>
+    <div class="purchase-boost-buy-list">${buyBlocks}</div>
+    ${craftLines ? `<div class="purchase-boost-craft"><div class="purchase-boost-craft__label">추가 제작 가능</div><ul>${craftLines}</ul></div>` : ''}
+    <div class="purchase-boost-metrics">
+      <div><span>재고만 총 판매가</span><strong>${stockGold.toLocaleString()}G</strong></div>
+      <div><span>매입 후 총 판매가</span><strong class="purchase-boost-metrics--gold">${boostedGold.toLocaleString()}G</strong></div>
+      <div><span>예상 추가 판매가</span><strong class="purchase-boost-metrics--up">+${goldDelta.toLocaleString()}G</strong></div>
+      <div><span>매입비</span><strong class="purchase-boost-metrics--cost">−${purchaseCost.toLocaleString()}G</strong></div>
+      <div><span>예상 순이익 변화</span><strong class="${netDelta >= 0 ? 'purchase-boost-metrics--up' : 'purchase-boost-metrics--cost'}">${netDelta >= 0 ? '+' : ''}${netDelta.toLocaleString()}G</strong></div>
+    </div>
   `;
-  return wrap;
+  return panel;
 }
 
 function formatAlchemyMaterialLinesHTML(matObj, qtyMode) {
