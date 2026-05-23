@@ -5525,6 +5525,43 @@
       font-size: 11px;
       margin-bottom: 10px;
     }
+    .recipe-card-price-val {
+      font-size: 17px;
+      text-shadow: 0 0 12px rgba(96, 187, 255, 0.28);
+    }
+    .craft-price-sell-value {
+      font-size: 14px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+    .craft-price-sell-value[data-craft-boosted] {
+      font-size: 16px;
+      text-shadow: 0 0 12px rgba(96, 187, 255, 0.25);
+    }
+    .plan-cell-qty {
+      font-size: 19px;
+      font-weight: 900;
+      color: #9ee0ff;
+      margin-top: 5px;
+      text-shadow: 0 0 14px rgba(96, 187, 255, 0.32);
+      font-variant-numeric: tabular-nums;
+    }
+    .plan-cell {
+      background: #141414;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 8px 6px;
+      text-align: center;
+      min-height: 64px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      transition: border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+    .plan-cell:hover {
+      border-color: rgba(96, 187, 255, 0.35);
+      box-shadow: 0 0 12px rgba(74, 143, 217, 0.12);
+    }
   </style>
 </head>
 <body>
@@ -10579,15 +10616,15 @@ function renderTriFinalPlan(title, orderedNames, counts, tierGold) {
       n > 0 && unitSell > 0
         ? `<div style="font-size:11px;color:#9ecb7a;margin-top:5px;line-height:1.35;">전부 판매 시 <strong style="color:#c8f5a8;">${totalSell.toLocaleString()}G</strong></div>`
         : '';
-    return `<div style="background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:10px 8px;text-align:center;min-height:72px;display:flex;flex-direction:column;justify-content:center;">
+    return `<div class="plan-cell">
       <div style="font-size:11px;color:#9eb2c8;line-height:1.25;word-break:keep-all;">${imgH}${name}</div>
-      <div style="font-size:17px;font-weight:900;color:#8fd5ff;margin-top:6px;">${n}개</div>
+      <div class="plan-cell-qty">${n}개</div>
       ${sellLine}
     </div>`;
   }).join('');
-  return `<div style="margin-bottom:14px;">
-    <div style="font-size:13px;font-weight:800;color:#e5e5e5;margin-bottom:8px;">${title}${tierSellLine}</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">${cells}</div>
+  return `<div style="margin-bottom:10px;">
+    <div style="font-size:13px;font-weight:800;color:#e5e5e5;margin-bottom:6px;">${title}${tierSellLine}</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">${cells}</div>
   </div>`;
 }
 
