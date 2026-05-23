@@ -208,6 +208,13 @@
         try {
           localStorage.removeItem(STORAGE_SHELLFISH_ADMIN_SECRET)
         } catch (_) {}
+        if (response.status >= 500) {
+          setShellfishAuthMessage(
+            '서버 오류(500)입니다. 최신 코드 배포 후 다시 시도하세요. 계속되면 Vercel Function 로그를 확인하세요.',
+            true
+          )
+          return
+        }
         const hint = body.hint ? ` ${body.hint}` : ''
         setShellfishAuthMessage((body.message || body.error || '비밀번호가 올바르지 않습니다.') + hint, true)
         return
