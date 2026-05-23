@@ -2537,7 +2537,7 @@
     }
     .craft-price-metrics {
       display: grid;
-      grid-template-columns: repeat(4, minmax(88px, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 14px 12px;
       padding: 16px 14px;
       background: #151515;
@@ -11633,6 +11633,16 @@ function updateCraftSalesCalcTotals() {
   if (elTB) elTB.textContent = `${totalBase.toLocaleString()}G`;
   if (elTA) elTA.textContent = `${totalAdj.toLocaleString()}G`;
   if (elNote) elNote.textContent = boost > 0 ? `전문가 공예 판매가 +${boost}% 반영` : '전문가 공예 보너스 없음 (0%)';
+}
+
+/** 최고가 대비 % — 구간별 색상 (높을수록 매도 유리) */
+function getCraftPriceRatioColor(ratio) {
+  const r = Number(ratio) || 0;
+  if (r >= 80) return '#4ade80';
+  if (r >= 65) return '#86efac';
+  if (r >= 50) return '#facc15';
+  if (r >= 35) return '#fb923c';
+  return '#f87171';
 }
 
 function renderCraftPricePanel(effects) {
