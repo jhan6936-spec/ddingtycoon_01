@@ -5182,8 +5182,8 @@
       gap: 20px;
     }
     .craft-price-grid {
-      grid-template-columns: repeat(auto-fill, minmax(460px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 12px;
     }
     @media (min-width: 1280px) {
       .recipes-grid {
@@ -5192,12 +5192,12 @@
     }
     @media (min-width: 1400px) {
       .craft-price-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
     }
     @media (min-width: 1680px) {
       .craft-price-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
       }
     }
     #warehouse .warehouse-toolbar {
@@ -5256,12 +5256,12 @@
       min-width: 0;
     }
     .craft-price-metric-value {
-      font-size: 18px !important;
+      font-size: 15px !important;
       line-height: 1.25;
       white-space: nowrap;
     }
     .craft-price-metrics > div:nth-child(2) .craft-price-metric-value {
-      font-size: 17px !important;
+      font-size: 14px !important;
     }
     .craft-price-metric-value--price {
       color: #9ee0ff;
@@ -5271,42 +5271,66 @@
       font-weight: 900;
     }
     .craft-price-change {
-      font-size: 17px;
+      font-size: 14px;
     }
     .craft-price-card-title .expert-name {
-      font-size: 18px !important;
+      font-size: 15px !important;
     }
     .craft-price-card-title img {
-      height: 28px !important;
-      width: auto;
-    }
-    .craft-price-ingredient {
-      font-size: 15px !important;
-      padding: 8px 0 !important;
-    }
-    .craft-price-ingredient img {
       height: 22px !important;
       width: auto;
     }
+    .craft-price-ingredient {
+      font-size: 13px !important;
+      padding: 5px 0 !important;
+    }
+    .craft-price-ingredient img {
+      height: 18px !important;
+      width: auto;
+    }
+    .recipe-card {
+      border-radius: 10px;
+    }
+    .recipe-card-header {
+      padding: 12px 14px !important;
+    }
+    .recipe-card-body {
+      padding: 12px 14px 14px !important;
+    }
     .recipe-card-title {
-      font-size: 17px !important;
+      font-size: 18px !important;
+      line-height: 1.35;
     }
     .recipe-card-title img,
     .recipe-card .ingredient-icon {
-      height: 28px !important;
+      height: 32px !important;
       width: auto;
       max-height: none;
     }
     .recipe-card .ingredient-item {
       font-size: 15px !important;
-      padding: 8px 0 !important;
+      padding: 5px 0 !important;
+      gap: 8px;
     }
     .recipe-card .ingredient-item img {
-      height: 24px !important;
+      height: 26px !important;
       width: auto;
     }
+    .recipe-card-price {
+      padding: 8px 12px !important;
+    }
     .recipe-card-price-val {
-      font-size: 16px !important;
+      font-size: 15px !important;
+    }
+    .recipe-card-price-base {
+      font-size: 12px !important;
+    }
+    .recipe-section {
+      margin-bottom: 10px !important;
+    }
+    .recipe-section-title {
+      font-size: 12px !important;
+      margin-bottom: 6px !important;
     }
     .recipe-section-title {
       font-size: 12px !important;
