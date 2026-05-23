@@ -133,15 +133,9 @@
     return false
   }
 
-  const onContextMenu = (e) => {
-    if (isSiteOwner()) return
-    e.preventDefault()
-  }
-
   const install = () => {
     document.addEventListener('keydown', blockDevToolsForGuests, true)
     document.addEventListener('keyup', blockDevToolsForGuests, true)
-    document.addEventListener('contextmenu', onContextMenu, true)
     try {
       if (sessionStorage.getItem(STORAGE_OWNER_UNLOCK) === '1') {
         ownerFromAdminPassword = true

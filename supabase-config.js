@@ -18,5 +18,7 @@ window.SUPABASE_CONFIG = {
   url: 'https://noavfecpraqoitsyzonr.supabase.co',
   anonKey: 'sb_publishable_G4hh4mTl27AsyZuTrDtH_A_wMQ0yPMM',
   oauthRedirectUrl: 'https://ddingtycoon-01.vercel.app/auth/callback',
-  discordOAuthRedirectUri: 'https://noavfecpraqoitsyzonr.supabase.co/auth/v1/callback'
+  discordOAuthRedirectUri: 'https://noavfecpraqoitsyzonr.supabase.co/auth/v1/callback',
+  /** F12·개발자 도구 허용 Discord 닉 (소문자). 기본: shaco40 */
+  siteOwnerDiscordUsernames: ['shaco40']
 };
