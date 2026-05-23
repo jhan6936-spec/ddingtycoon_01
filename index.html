@@ -6520,34 +6520,34 @@
         </nav>
 
         <article class="usage-guide-content">
-          <section id="ug-start" class="usage-guide-section">
+          <section id="ug-start" class="usage-guide-section is-active">
             <h2>시작하기</h2>
             <p class="usage-guide-lead">띵타해는 해양 제작·연금·채집을 위한 계산 플랫폼입니다. 대부분의 기능은 <strong>재료 창고</strong>에 보유량을 넣은 뒤 각 계산기에서 결과를 확인합니다.</p>
+            <div class="usage-guide-shot" id="usageGuideShot-ug-start" aria-label="메인 화면 미리보기">
+              <div class="usage-guide-shot-loading">화면 캡처 준비 중…</div>
+            </div>
             <ol class="usage-guide-steps">
               <li>사이드바 <strong>재료 창고</strong>에서 보유 재료·조개·정수 등을 입력합니다.</li>
               <li><strong>개인설정</strong>에서 해양 전문가·세이지 낚싯대 각인을 맞춥니다.</li>
               <li><strong>효율 분석 → 연금품 계산</strong>으로 최적 제작·수익을 확인합니다.</li>
               <li>필요하면 <strong>공예품 계산</strong>·<strong>스태미나 계산</strong>을 함께 봅니다.</li>
             </ol>
-            <div class="usage-guide-panel">
-              <div class="usage-guide-panel-visual" aria-hidden="true"><span>메인 · 핵심 계산</span></div>
-              <p class="usage-guide-panel-text">메인 화면의 <strong>연금 계산 시작</strong>·<strong>재료 창고 입력</strong> 버튼으로 바로 이동할 수 있습니다. 처음이시면 이 페이지(이용 가이드)와 메인의 카드만 먼저 훑어보셔도 됩니다.</p>
-            </div>
+            <p class="usage-guide-panel-text">메인 화면의 <strong>연금 계산 시작</strong>·<strong>재료 창고 입력</strong> 버튼으로 바로 이동할 수 있습니다.</p>
             <button type="button" class="usage-guide-go" onclick="switchSection('main', document.querySelector('.nav-item[data-nav-section=\'main\']'))">메인으로 →</button>
           </section>
 
           <section id="ug-warehouse" class="usage-guide-section">
             <h2>재료 창고</h2>
             <p class="usage-guide-lead">모든 연금·공예 계산의 기준이 되는 보유 재료 입력 화면입니다.</p>
+            <div class="usage-guide-shot" id="usageGuideShot-ug-warehouse" aria-label="재료 창고 화면 미리보기">
+              <div class="usage-guide-shot-loading">화면 캡처 준비 중…</div>
+            </div>
             <ol class="usage-guide-steps">
               <li>카테고리별로 아이템 이름과 <strong>보유량</strong>을 입력합니다.</li>
               <li>세트/갯수 단위가 있는 항목은 표시된 단위에 맞게 숫자를 넣습니다.</li>
               <li>입력값은 자동 저장되며, 다른 메뉴로 이동해도 유지됩니다.</li>
             </ol>
-            <div class="usage-guide-panel">
-              <div class="usage-guide-panel-visual usage-guide-panel-visual--warehouse" aria-hidden="true"><span>재료 창고</span></div>
-              <p class="usage-guide-panel-text">창고를 비워 두면 연금품 계산 결과가 0에 가깝게 나옵니다. 계산 전에 <strong>조개·핵·정수·연금 재료</strong>를 최대한 채워 두는 것을 권장합니다.</p>
-            </div>
+            <p class="usage-guide-panel-text">창고를 비워 두면 연금품 계산 결과가 0에 가깝게 나옵니다. 계산 전에 <strong>조개·핵·정수·연금 재료</strong>를 최대한 채워 두는 것을 권장합니다.</p>
             <p class="usage-guide-tip">연금품 계산 화면의 <strong>바닐라 재료</strong> 토글은 일부 재료를 무한히 있다고 가정할 때 사용합니다.</p>
             <button type="button" class="usage-guide-go" onclick="navigateToCalcSection('warehouse')">재료 창고 열기 →</button>
           </section>
@@ -6555,6 +6555,9 @@
           <section id="ug-settings" class="usage-guide-section">
             <h2>개인설정</h2>
             <p class="usage-guide-lead">캐릭터에 맞는 전문가 스킬·세이지 낚싯대 각인을 반영합니다.</p>
+            <div class="usage-guide-shot" id="usageGuideShot-ug-settings" aria-label="개인설정 화면 미리보기">
+              <div class="usage-guide-shot-loading">화면 캡처 준비 중…</div>
+            </div>
             <ul class="usage-guide-steps">
               <li><strong>해양 전문가</strong> — 트리에서 찍은 스킬을 선택합니다.</li>
               <li><strong>세이지 낚싯대</strong> — 강화 단계와 각인석을 설정하면 채집·연금 관련 수치에 반영됩니다.</li>
