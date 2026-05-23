@@ -9203,7 +9203,7 @@ function applyUsageGuideShotFile(sectionId, relativePath) {
   const src = usageGuideImageSrc(relativePath);
   const existing = wrap.querySelector('img');
   if (existing && existing.getAttribute('src') === src) return;
-  wrap.innerHTML = `<img src="${src}" alt="화면 미리보기" loading="lazy" decoding="async" onerror="this.style.display='none';var p=this.nextElementSibling;if(p)p.hidden=false;">`;
+  wrap.innerHTML = `<img class="usage-guide-shot-img" src="${src}" alt="화면 미리보기" loading="lazy" decoding="async" onerror="this.style.display='none';var p=this.nextElementSibling;if(p)p.hidden=false;">`;
   const err = document.createElement('p');
   err.className = 'usage-guide-shot-loading';
   err.hidden = true;
