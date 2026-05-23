@@ -9350,6 +9350,232 @@ function renderRemainingMaterialsAccordion(warehouseStock, usedMaterialTotals) {
   return wrap;
 }
 
+function getAllShellfishStockNames() {
+  const names = [];
+  SHELLFISH_NAMES.forEach((species) => {
+    names.push(`${species} ★`, `${species} ★★`, `${species} ★★★`);
+  });
+  return names;
+}
+
+function applyShellfishPricesCatalog(catalog) {
+  shellfishBuyPrices = {};
+  shellfishPricesHasAny = false;
+  (catalog?.items || []).forEach((item) => {
+    if (!item || !item.itemName) return;
+    const price = Math.max(0, Math.floor(Number(item.buyPrice) || 0));
+    shellfishBuyPrices[item.itemName] = price;
+    if (price > 0) shellfishPricesHasAny = true;
+  });
+  shellfishPricesLoaded = true;
+  try {
+    localStorage.setItem(SHELLFISH_PRICES_CACHE_KEY, JSON.stringify(catalog));
+  } catch (_) {}
+  syncPurchaseControlsUi();
+}
+
+async function fetchShellfishBuyPrices() {
+  try {
+    const response = await fetch('/api/shellfish-prices');
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(body.message || body.error || 'fetch failed');
+    applyShellfishPricesCatalog(body);
+    return true;
+  } catch (error) {
+    console.warn('[shellfish-prices]', error);
+    try {
+      const cached = localStorage.getItem(SHELLFISH_PRICES_CACHE_KEY);
+      if (cached) {
+        applyShellfishPricesCatalog(JSON.parse(cached));
+        return true;
+      }
+    } catch (_) {}
+    shellfishPricesLoaded = false;
+    shellfishPricesHasAny = false;
+    syncPurchaseControlsUi();
+    return false;
+  }
+}
+
+function isPurchaseIncludeEnabled() {
+  const toggle = document.getElementById('purchaseIncludeToggle');
+  return toggle ? toggle.checked : false;
+}
+
+function getPurchaseBudgetGold() {
+  const input = document.getElementById('purchaseBudgetInput');
+  return Math.max(0, Math.floor(Number(input?.value) || 0));
+}
+
+function syncPurchaseControlsUi() {
+  const toggle = document.getElementById('purchaseIncludeToggle');
+  const budgetWrap = document.getElementById('purchaseBudgetWrap');
+  const budgetInput = document.getElementById('purchaseBudgetInput');
+  const hint = document.getElementById('purchaseHint');
+  const canUse = shellfishPricesHasAny;
+  if (toggle) {
+    toggle.disabled = !canUse;
+    if (!canUse) toggle.checked = false;
+  }
+  const on = canUse && isPurchaseIncludeEnabled();
+  if (budgetWrap) budgetWrap.hidden = !on;
+  if (budgetInput) budgetInput.disabled = !on;
+  if (hint) {
+    hint.textContent = canUse
+      ? 'admin 어패류 매입가 기준 · 예산 내 추천 매입 후 제작 추천에 반영됩니다.'
+      : 'admin에서 어패류 매입가를 등록하면 사용할 수 있습니다.';
+  }
+}
+
+function savePurchaseUiState() {
+  try {
+    const toggle = document.getElementById('purchaseIncludeToggle');
+    if (toggle) localStorage.setItem(STORAGE_KEY_PURCHASE_INCLUDE, toggle.checked ? '1' : '0');
+    const budget = getPurchaseBudgetGold();
+    localStorage.setItem(STORAGE_KEY_PURCHASE_BUDGET, String(budget));
+  } catch (_) {}
+}
+
+function restorePurchaseUiState() {
+  try {
+    const toggle = document.getElementById('purchaseIncludeToggle');
+    const savedToggle = localStorage.getItem(STORAGE_KEY_PURCHASE_INCLUDE);
+    if (toggle && savedToggle != null) toggle.checked = savedToggle === '1';
+    const budgetInput = document.getElementById('purchaseBudgetInput');
+    const savedBudget = localStorage.getItem(STORAGE_KEY_PURCHASE_BUDGET);
+    if (budgetInput && savedBudget != null && savedBudget !== '') budgetInput.value = savedBudget;
+  } catch (_) {}
+  syncPurchaseControlsUi();
+}
+
+function shellfishNeedsFromOptimizedPlan(optimized) {
+  const allPlanCounts = { ...optimized.plans[0], ...optimized.plans[1], ...optimized.plans[2] };
+  allPlanCounts['추출된 희석액'] = optimized.diluentCount;
+  const rawTotals = {};
+  const planOpts = { skipShellfishTierConvert: true };
+  Object.entries(allPlanCounts)
+    .filter(([, n]) => Number(n) > 0)
+    .forEach(([name, count]) => {
+      const recipe = data.recipes.find((r) => r.name === name);
+      if (recipe) accumulateFinalRecipeNeeds(recipe, count, rawTotals, planOpts);
+    });
+  return splitShellfishVanillaTotals(rawTotals).shell;
+}
+
+function computeRecommendedPurchases(stockInv, budget, prices, optimized) {
+  const purchases = {};
+  if (!budget || budget <= 0) return { purchases, purchaseCost: 0 };
+
+  const needs = shellfishNeedsFromOptimizedPlan(optimized);
+  const candidates = [];
+  getAllShellfishStockNames().forEach((name) => {
+    const need = Math.max(0, Math.floor(Number(needs[name]) || 0));
+    const have = Math.max(0, Math.floor(Number(stockInv[name]) || 0));
+    const shortage = Math.max(0, need - have);
+    const unitPrice = Math.max(0, Math.floor(Number(prices[name]) || 0));
+    if (shortage > 0 && unitPrice > 0) {
+      candidates.push({ name, shortage, unitPrice });
+    }
+  });
+  candidates.sort((a, b) => a.unitPrice - b.unitPrice || a.name.localeCompare(b.name, 'ko'));
+
+  let remaining = budget;
+  let purchaseCost = 0;
+  candidates.forEach((c) => {
+    if (remaining <= 0) return;
+    const maxAfford = Math.floor(remaining / c.unitPrice);
+    if (maxAfford <= 0) return;
+    const qty = Math.min(c.shortage, maxAfford);
+    if (qty <= 0) return;
+    purchases[c.name] = qty;
+    const cost = qty * c.unitPrice;
+    purchaseCost += cost;
+    remaining -= cost;
+  });
+  return { purchases, purchaseCost };
+}
+
+function mergeInventoryWithPurchases(stockInv, purchases) {
+  const merged = { ...stockInv };
+  Object.entries(purchases || {}).forEach(([name, qty]) => {
+    if (!qty || qty <= 0) return;
+    merged[name] = (Number(merged[name]) || 0) + qty;
+  });
+  return merged;
+}
+
+function planAlchemyWithOptionalPurchase(stockInv, budget, prices, effects) {
+  const stockOnly = prepareInventoryForAlchemyPlan({ ...stockInv });
+  const initialPlan = optimizeAlchemyPlan(stockOnly, effects);
+
+  if (!budget || budget <= 0) {
+    return {
+      optimized: initialPlan,
+      purchases: {},
+      purchaseCost: 0,
+      mergedInv: stockOnly,
+    };
+  }
+
+  let { purchases, purchaseCost } = computeRecommendedPurchases(stockInv, budget, prices, initialPlan);
+  let merged = prepareInventoryForAlchemyPlan(mergeInventoryWithPurchases(stockInv, purchases));
+  let optimized = optimizeAlchemyPlan(merged, effects);
+
+  const refillBudget = Math.max(0, budget - purchaseCost);
+  if (refillBudget > 0) {
+    const second = computeRecommendedPurchases(stockInv, budget, prices, optimized);
+    let changed = false;
+    Object.entries(second.purchases).forEach(([name, qty]) => {
+      const prev = purchases[name] || 0;
+      if (qty > prev) {
+        purchases[name] = qty;
+        changed = true;
+      }
+    });
+    if (changed) {
+      purchaseCost = Object.entries(purchases).reduce(
+        (sum, [name, qty]) => sum + qty * (Math.max(0, Number(prices[name]) || 0)),
+        0
+      );
+      merged = prepareInventoryForAlchemyPlan(mergeInventoryWithPurchases(stockInv, purchases));
+      optimized = optimizeAlchemyPlan(merged, effects);
+    }
+  }
+
+  return { optimized, purchases, purchaseCost, mergedInv: merged };
+}
+
+function renderRecommendedPurchaseAccordion(purchases, prices, purchaseCost, budget) {
+  const entries = Object.entries(purchases || {}).filter(([, q]) => q > 0);
+  const wrap = document.createElement('details');
+  wrap.className = 'alchemy-remaining-shellfish';
+  if (!entries.length) {
+    if (!isPurchaseIncludeEnabled() || budget <= 0) return null;
+    wrap.innerHTML = `
+      <summary>추천 매입 <span class="alchemy-remaining-chevron" aria-hidden="true">▼</span></summary>
+      <p style="padding:10px 12px;font-size:12px;color:#8899aa;margin:0;">재고만으로 충분하거나, 예산·시세 조건으로 추가 매입이 필요하지 않습니다.</p>
+    `;
+    return wrap;
+  }
+  const listHtml = entries
+    .sort((a, b) => a[0].localeCompare(b[0], 'ko'))
+    .map(([name, qty]) => {
+      const unit = Math.max(0, Number(prices[name]) || 0);
+      const sub = unit * qty;
+      const img = buildImageTag(name, '', 'height:16px;vertical-align:middle;');
+      const label = img ? `${img}<span>${name}</span>` : `<span>${name}</span>`;
+      return `<li class="alchemy-remaining-shellfish-item">${label}<strong>×${qty.toLocaleString()}</strong><span style="color:#9ecb7a;margin-left:8px;font-weight:600;">${unit.toLocaleString()}G/개 · ${sub.toLocaleString()}G</span></li>`;
+    })
+    .join('');
+  wrap.open = true;
+  wrap.innerHTML = `
+    <summary>추천 매입 <span class="alchemy-remaining-chevron" aria-hidden="true">▼</span></summary>
+    <p style="padding:8px 12px 4px;font-size:11px;color:#8899aa;margin:0;">예산 <strong style="color:#b8c9d9;">${budget.toLocaleString()}G</strong> 중 <strong style="color:#9ecb7a;">${purchaseCost.toLocaleString()}G</strong> 매입</p>
+    <ul class="alchemy-remaining-shellfish-list">${listHtml}</ul>
+  `;
+  return wrap;
+}
+
 function formatAlchemyMaterialLinesHTML(matObj, qtyMode) {
   const mode = qtyMode != null ? qtyMode : alchemySummaryQtyMode;
   const entries = Object.entries(matObj).filter(([, c]) => c > 0).sort((a, b) => a[0].localeCompare(b[0], 'ko'));
