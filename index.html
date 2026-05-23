@@ -1853,12 +1853,12 @@
       gap: 10px;
     }
     .recipe-card-title {
-      font-size: 17px;
+      font-size: 18px;
       font-weight: 700;
       color: #fff;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
     .recipe-card-price {
       background: #0f1419;
@@ -5293,33 +5293,49 @@
       height: 18px !important;
       width: auto;
     }
-    .recipe-card {
+    #craft .recipe-card {
       border-radius: 10px;
     }
-    .recipe-card-header {
-      padding: 12px 14px !important;
+    #craft .recipe-card-header {
+      padding: 14px 16px !important;
     }
-    .recipe-card-body {
-      padding: 12px 14px 14px !important;
+    #craft .recipe-card-body {
+      padding: 14px 16px 16px !important;
     }
-    .recipe-card-title {
-      font-size: 18px !important;
+    #craft .recipe-card-title {
+      font-size: 21px !important;
       line-height: 1.35;
+      font-weight: 800 !important;
     }
-    .recipe-card-title img,
-    .recipe-card .ingredient-icon {
-      height: 32px !important;
-      width: auto;
+    #craft .recipe-card-title img,
+    #craft .recipe-card .ingredient-icon {
+      height: 42px !important;
+      width: 42px !important;
       max-height: none;
+      object-fit: contain;
+      flex-shrink: 0;
     }
-    .recipe-card .ingredient-item {
-      font-size: 15px !important;
-      padding: 5px 0 !important;
+    #craft .recipe-card .ingredient-item {
+      font-size: 17px !important;
+      padding: 6px 0 !important;
+      gap: 10px;
+    }
+    #craft .recipe-card .ingredient-name {
+      display: flex;
+      align-items: center;
       gap: 8px;
+      font-weight: 600;
+      color: #e2e8f0;
     }
-    .recipe-card .ingredient-item img {
-      height: 26px !important;
-      width: auto;
+    #craft .recipe-card .ingredient-item img {
+      height: 34px !important;
+      width: 34px !important;
+      object-fit: contain;
+    }
+    #craft .recipe-card .ingredient-count {
+      font-size: 16px !important;
+      font-weight: 700;
+      color: #9ee0ff;
     }
     .recipe-card-price {
       padding: 8px 12px !important;
@@ -9264,6 +9280,9 @@ function renderRecipes() {
     { title: '3성 최종 산물', items: alchemyRecipes.filter(r => r.group === 'group3') },
     { title: '혼합 최종 산물', items: alchemyRecipes.filter(r => /희석액/.test(r.name) && !/(정수|핵|에센스|결정|엘릭서|영약)\s+★/.test(r.name)) }
   ];
+
+  const recipeImgStyle = 'height:42px;width:42px;object-fit:contain;margin-right:10px;flex-shrink:0;';
+  const recipeIngImgStyle = 'height:34px;width:34px;object-fit:contain;margin-right:8px;flex-shrink:0;';
 
   const renderCard = (recipe, opts = {}) => {
     const card = document.createElement('div');
