@@ -6782,7 +6782,7 @@
               <li><strong>매입 포함</strong>을 켜고 예산·조개 매입가를 넣으면, 부족분 매입 후에도 이익이 나는 조합을 다시 최적화합니다.</li>
               <li>제작 가이드·연금품 제작 기록 버튼으로 상세 안내·이력을 볼 수 있습니다.</li>
             </ol>
-            <p class="usage-guide-panel-text">매입 포함 모드는 <strong>순이익(총 판매가−매입비)</strong>이 커지도록 어패류 매입량을 찾고, 그 재고로 최종 연금품 개수를 다시 계산합니다.</p>
+            <p class="usage-guide-panel-text">매입 포함 모드는 예산 안에서 <strong>판매가가 오르는 어패류 종류를 모두</strong> 반영해 매입량을 찾고, 합산 재고로 최종 연금품 개수를 다시 계산합니다.</p>
             <button type="button" class="usage-guide-go" onclick="navigateToCalcSection('efficiency', 'alchemy')">연금품 계산 열기 →</button>
           </section>
 
@@ -6819,9 +6819,7 @@
           <section id="ug-recipes" class="usage-guide-section">
             <h2>제작 및 조합법</h2>
             <p class="usage-guide-lead">해양 아이템 레시피·필요 재료를 검색·조회합니다. 연금 전에 재료 구성을 확인할 때 사용합니다.</p>
-            <div class="usage-guide-shot" id="usageGuideShot-ug-recipes" aria-label="제작 및 조합법 화면 미리보기">
-              <img src="%EA%B0%80%EC%9D%B4%EB%93%9C/ug-recipes.png?v=4" alt="제작 및 조합법 화면" loading="lazy" decoding="async">
-            </div>
+            <div class="usage-guide-shot" id="usageGuideShot-ug-recipes" aria-label="제작 및 조합법 화면 미리보기"></div>
             <p class="usage-guide-panel-text">레시피 카드에서 아이콘·재료·가격을 한눈에 볼 수 있습니다. 상단 <strong>연금품 계산</strong> 버튼으로 바로 효율 분석으로 이동할 수도 있습니다.</p>
             <button type="button" class="usage-guide-go" onclick="navigateToCalcSection('craft')">제작 및 조합법 열기 →</button>
           </section>
@@ -9090,7 +9088,7 @@ document.addEventListener('keydown', (e) => {
 
 
 /** 이용 가이드 일러스트 (가이드/*.png) */
-const USAGE_GUIDE_IMAGE_VERSION = '4';
+const USAGE_GUIDE_IMAGE_VERSION = '5';
 const USAGE_GUIDE_STATIC_SHOTS = {
   'ug-start': '가이드/ug-start.png',
   'ug-warehouse': '가이드/ug-warehouse.png',
