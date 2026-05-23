@@ -12942,17 +12942,33 @@ function analyzeEfficiency() {
 
   const purchaseOn = isPurchaseIncludeEnabled() && shellfishPricesHasAny;
   const purchaseBudget = purchaseOn ? getPurchaseBudgetGold() : 0;
-  let purchaseMeta = { purchases: {}, purchaseCost: 0, purchaseBudget: 0 };
+  let purchaseMeta = {
+    purchases: {},
+    purchaseCost: 0,
+    purchaseBudget: 0,
+    stockOnlyGold: 0,
+    boostedGold: 0,
+    goldDelta: 0,
+    netDelta: 0,
+    stockOnlyOptimized: null,
+    optimized: null,
+  };
   let baseInvForPlan;
   let optimized;
 
-  if (purchaseOn && purchaseBudget > 0) {
+  if (purchaseOn) {
     const purchasePlan = planAlchemyWithOptionalPurchase(inventory, purchaseBudget, shellfishBuyPrices, effects);
     optimized = purchasePlan.optimized;
     purchaseMeta = {
       purchases: purchasePlan.purchases,
       purchaseCost: purchasePlan.purchaseCost,
       purchaseBudget,
+      stockOnlyGold: purchasePlan.stockOnlyGold,
+      boostedGold: purchasePlan.boostedGold,
+      goldDelta: purchasePlan.goldDelta,
+      netDelta: purchasePlan.netDelta,
+      stockOnlyOptimized: purchasePlan.stockOnlyOptimized,
+      optimized: purchasePlan.optimized,
     };
     baseInvForPlan = purchasePlan.mergedInv;
   } else {
@@ -12976,12 +12992,7 @@ function analyzeEfficiency() {
   planWrap.className = 'summary-panel summary-panel--plan';
 
   if (purchaseOn) {
-    const purchaseEl = renderRecommendedPurchaseAccordion(
-      purchaseMeta.purchases,
-      shellfishBuyPrices,
-      purchaseMeta.purchaseCost,
-      purchaseMeta.purchaseBudget
-    );
+    const purchaseEl = renderPurchaseBoostPanel(purchaseMeta, shellfishBuyPrices, effects);
     if (purchaseEl) containerAlchemy.appendChild(purchaseEl);
   }
 
