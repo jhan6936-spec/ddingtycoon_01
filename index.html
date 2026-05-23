@@ -11033,20 +11033,43 @@ function purchaseCostFromMap(purchases, prices) {
   }, 0);
 }
 
+let purchasePlanEvalCache = null;
+
+function clearPurchasePlanEvalCache() {
+  purchasePlanEvalCache = new Map();
+}
+
+function purchasePlanCacheKey(purchases) {
+  return Object.keys(purchases || {})
+    .sort()
+    .map((k) => `${k}:${Math.floor(Number(purchases[k]) || 0)}`)
+    .join('|');
+}
+
 /** 재고+매입 합산 재고로 연금 최적화 · 총 판매가·순이익 */
-function evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects, prepOpts, prices) {
+function evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects, prepOpts, prices, useCache = true) {
   const prep = prepOpts || getAlchemyPlanPrepOptions();
+  const key = useCache ? purchasePlanCacheKey(purchases) : '';
+  if (useCache && purchasePlanEvalCache && purchasePlanEvalCache.has(key)) {
+    return purchasePlanEvalCache.get(key);
+  }
   const merged = prepareInventoryForAlchemyPlan(mergeInventoryWithPurchases(stockInv, purchases), prep);
   const optimized = optimizeAlchemyPlan(merged, effects);
   const gold = alchemyPlanTotalGold(optimized, effects);
   const purchaseCost = prices ? purchaseCostFromMap(purchases, prices) : 0;
-  return {
+  const result = {
     optimized,
     merged,
     gold,
     net: gold - purchaseCost,
     purchaseCost,
   };
+  if (useCache) {
+    if (!purchasePlanEvalCache) purchasePlanEvalCache = new Map();
+    if (purchasePlanEvalCache.size > 512) purchasePlanEvalCache.clear();
+    purchasePlanEvalCache.set(key, result);
+  }
+  return result;
 }
 
 function packOptimizedPlanCounts(optimized) {
