@@ -10,6 +10,7 @@
   <link rel="preload" as="image" href="assets/ddingtahe-logo.png">
   <link rel="preload" as="image" href="marine-guide/01.png">
   <script src="supabase-config.js"></script>
+  <script src="js/site-owner-gate.js"></script>
   <style>
     * {
       margin: 0;
@@ -6788,6 +6789,9 @@ function updateAuthUI(user) {
   const avatarImg = document.getElementById('authAvatarImg');
   cachedAuthUserForProfile = user || null;
   currentAuthUserId = user && user.id ? user.id : null;
+  if (window.SiteOwnerGate && typeof window.SiteOwnerGate.refreshFromDiscordUser === 'function') {
+    window.SiteOwnerGate.refreshFromDiscordUser(user || null);
+  }
   if (user) {
     if (bar) bar.hidden = true;
     if (trigger) trigger.hidden = false;
