@@ -8981,16 +8981,20 @@ document.addEventListener('keydown', (e) => {
 
 
 /** 이용 가이드 일러스트 (가이드/*.png) */
-const USAGE_GUIDE_IMAGE_VERSION = '3';
+const USAGE_GUIDE_IMAGE_VERSION = '4';
+const USAGE_GUIDE_DIR = encodeURIComponent('가이드');
 const USAGE_GUIDE_STATIC_SHOTS = {
-  'ug-start': '가이드/ug-start.png',
-  'ug-warehouse': '가이드/ug-warehouse.png',
-  'ug-settings': '가이드/ug-settings.png',
-  'ug-alchemy': '가이드/ug-alchemy.png',
-  'ug-craftprice': '가이드/ug-craftprice.png',
-  'ug-stamina': '가이드/ug-stamina.png',
-  'ug-recipes': '가이드/ug-recipes.png',
+  'ug-start': `${USAGE_GUIDE_DIR}/ug-start.png`,
+  'ug-warehouse': `${USAGE_GUIDE_DIR}/ug-warehouse.png`,
+  'ug-settings': `${USAGE_GUIDE_DIR}/ug-settings.png`,
+  'ug-alchemy': `${USAGE_GUIDE_DIR}/ug-alchemy.png`,
+  'ug-craftprice': `${USAGE_GUIDE_DIR}/ug-craftprice.png`,
+  'ug-stamina': `${USAGE_GUIDE_DIR}/ug-stamina.png`,
+  'ug-recipes': `${USAGE_GUIDE_DIR}/ug-recipes.png`,
 };
+function usageGuideImageSrc(filePath) {
+  return `${encodeAssetPath(filePath)}?v=${USAGE_GUIDE_IMAGE_VERSION}`;
+}
 
 function showUsageGuideSection(sectionId) {
   const id = sectionId || 'ug-start';
@@ -9012,8 +9016,15 @@ function scrollUsageGuideSection(sectionId) {
 function applyUsageGuideShotFile(sectionId, relativePath) {
   const wrap = document.getElementById(`usageGuideShot-${sectionId}`);
   if (!wrap || !relativePath) return;
-  const src = `${encodeAssetPath(relativePath)}?v=${USAGE_GUIDE_IMAGE_VERSION}`;
-  wrap.innerHTML = `<img src="${src}" alt="화면 미리보기" loading="lazy" decoding="async">`;
+  const src = usageGuideImageSrc(relativePath);
+  const existing = wrap.querySelector('img');
+  if (existing && existing.getAttribute('src') === src) return;
+  wrap.innerHTML = `<img src="${src}" alt="화면 미리보기" loading="lazy" decoding="async" onerror="this.style.display='none';var p=this.nextElementSibling;if(p)p.hidden=false;">`;
+  const err = document.createElement('p');
+  err.className = 'usage-guide-shot-loading';
+  err.hidden = true;
+  err.textContent = '이미지를 불러오지 못했습니다. 가이드 폴더(가이드/*.png)가 배포에 포함되어 있는지 확인해 주세요.';
+  wrap.appendChild(err);
 }
 
 function initUsageGuide() {
