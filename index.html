@@ -11433,6 +11433,7 @@ function analyzeEfficiency() {
       <div style="font-weight:700;color:#b8c9d9;margin-bottom:6px;">계산 요약</div>
       <ul style="margin:0;padding-left:18px;">
         <li>어패류만 창고 수량 제한 · 바닐라·회 등 부재료는 충분하다고 가정</li>
+        ${purchaseOn && purchaseMeta.purchaseCost > 0 ? '<li>매입 포함: 창고 + 추천 매입 재고 기준으로 제작 추천을 산출했습니다</li>' : ''}
         <li>연금 최적화에서는 어패류를 승급하지 않고, 완제품 레시피가 요구하는 성급 재고를 그대로 사용</li>
         <li>1성은 ★, 2성은 ★★, 3성은 ★★★ 어패류만 각각 차감 (★★를 ★×3으로 환산하지 않음)</li>
         <li>희석액도 레시피에 들어가는 1성·2성·3성 재료를 각각 해당 성급 재고에서 차감</li>
@@ -11493,7 +11494,17 @@ function analyzeEfficiency() {
     const directInputs = aggregatePlanDirectInputs(planEntries);
     const summaryBox = document.createElement('div');
     summaryBox.className = 'alchemy-mat-summary';
-    lastAlchemySummaryData = { shell, vanilla, directInputs, planEntries, planMaterialTotals };
+    lastAlchemySummaryData = {
+      shell,
+      vanilla,
+      directInputs,
+      planEntries,
+      planMaterialTotals,
+      purchases: { ...purchaseMeta.purchases },
+      purchaseCost: purchaseMeta.purchaseCost,
+      purchaseBudget: purchaseMeta.purchaseBudget,
+      netGold: totalBoosted - (purchaseMeta.purchaseCost || 0),
+    };
     summaryBox.innerHTML = `
       <div class="alchemy-summary-head-row">
         <div class="alchemy-summary-title-text">추천 제작 기준 필요 재료 합계</div>
@@ -11530,8 +11541,13 @@ function analyzeEfficiency() {
     applyAlchemyMatPanelVisibility();
     syncAlchemySummaryQtyButtons();
 
+    const stockForRemaining = { ...warehouseStockSnapshot };
+    Object.entries(purchaseMeta.purchases || {}).forEach(([name, qty]) => {
+      if (!qty || qty <= 0) return;
+      stockForRemaining[name] = (Number(stockForRemaining[name]) || 0) + qty;
+    });
     const remainingMatEl = renderRemainingMaterialsAccordion(
-      warehouseStockSnapshot,
+      stockForRemaining,
       lastAlchemySummaryData ? lastAlchemySummaryData.planMaterialTotals : {}
     );
     if (remainingMatEl) containerAlchemy.appendChild(remainingMatEl);
