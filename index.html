@@ -9039,6 +9039,7 @@ function switchSection(sectionId, clickedEl) {
   } else if (sectionId === 'usage-guide') {
     const nav = document.querySelector('.sidebar .nav-item[data-nav-section="usage-guide"]');
     if (nav) nav.classList.add('active');
+    initUsageGuide();
   } else if (sectionId === 'marine-guide') {
     const nav = document.querySelector('.sidebar .nav-item[data-nav-section="marine-guide"]');
     if (nav) nav.classList.add('active');
