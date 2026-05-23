@@ -11336,9 +11336,25 @@ function analyzeEfficiency() {
 
   const alchemyResults = results.filter(r => r.kind === 'alchemy');
 
-  const baseInvForPlan = prepareInventoryForAlchemyPlan(inventory);
+  const purchaseOn = isPurchaseIncludeEnabled() && shellfishPricesHasAny;
+  const purchaseBudget = purchaseOn ? getPurchaseBudgetGold() : 0;
+  let purchaseMeta = { purchases: {}, purchaseCost: 0, purchaseBudget: 0 };
+  let baseInvForPlan;
+  let optimized;
 
-  const optimized = optimizeAlchemyPlan(baseInvForPlan, effects);
+  if (purchaseOn && purchaseBudget > 0) {
+    const purchasePlan = planAlchemyWithOptionalPurchase(inventory, purchaseBudget, shellfishBuyPrices, effects);
+    optimized = purchasePlan.optimized;
+    purchaseMeta = {
+      purchases: purchasePlan.purchases,
+      purchaseCost: purchasePlan.purchaseCost,
+      purchaseBudget,
+    };
+    baseInvForPlan = purchasePlan.mergedInv;
+  } else {
+    baseInvForPlan = prepareInventoryForAlchemyPlan(inventory);
+    optimized = optimizeAlchemyPlan(baseInvForPlan, effects);
+  }
   const plan1 = optimized.plans[0];
   const plan2 = optimized.plans[1];
   const plan3 = optimized.plans[2];
