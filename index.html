@@ -11749,7 +11749,7 @@ function renderCraftPricePanel(effects) {
       <div class="craft-price-metrics">
         <div>
           <div class="craft-price-metric-label">현재 시세</div>
-          <div class="craft-price-metric-value craft-price-metric-value--hero">${currentPrice.toLocaleString()}G</div>
+          <div class="craft-price-metric-value craft-price-metric-value--price">${currentPrice.toLocaleString()}G</div>
         </div>
         <div>
           <div class="craft-price-metric-label">전회 대비 변동</div>
@@ -11761,7 +11761,7 @@ function renderCraftPricePanel(effects) {
         </div>
         <div>
           <div class="craft-price-metric-label">최고가 대비</div>
-          <div class="craft-price-metric-value craft-price-metric-value--hero" style="color:${ratioColor};">${ratio.toFixed(1)}%</div>
+          <div class="craft-price-metric-value craft-price-metric-value--ratio" style="color:${ratioColor};">${ratio.toFixed(1)}%</div>
         </div>
       </div>
       <div class="craft-price-sell-grid">
