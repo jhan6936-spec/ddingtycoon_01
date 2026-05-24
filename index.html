@@ -7358,6 +7358,18 @@ const ALCHEMY_DOUBLE_OUTPUT_MATERIALS = new Set([
 function getAlchemyMaterialOutputCount(name) {
   return ALCHEMY_DOUBLE_OUTPUT_MATERIALS.has(name) ? 2 : 1;
 }
+
+/** 결과 개수(표시 수량) → 실제 제작 횟수 — 정수·에센스는 1회당 2개 생산 */
+function getAlchemyCraftOpsFromOutputQty(productName, outputQty) {
+  const q = Math.max(0, Number(outputQty) || 0);
+  const perCraft = getAlchemyMaterialOutputCount(productName);
+  return q / perCraft;
+}
+
+/** 결과 개수 기준 재료 소모량 (어패류 1:1 비율 유지) */
+function getAlchemyScaledInputNeed(productName, outputQty, inputCountPerCraft) {
+  return (inputCountPerCraft || 0) * getAlchemyCraftOpsFromOutputQty(productName, outputQty);
+}
 const STAR_PROBS = { s1: 0.6, s2: 0.3, s3: 0.1 };
 const STAMINA_PER_GATHER = 15;
 const IMAGE_FOLDERS = ['재료', '재료 1', '재료1'];
@@ -10438,7 +10450,8 @@ function aggregateMaterialInputsFromTotals(totals) {
     const mat = data.materials[name];
     if (!mat || !mat.inputs || !mat.inputs.length) return;
     for (const inp of mat.inputs) {
-      out[inp.name] = (out[inp.name] || 0) + inp.count * c;
+      const need = getAlchemyScaledInputNeed(name, c, inp.count);
+      out[inp.name] = (out[inp.name] || 0) + need;
     }
   });
   return out;
