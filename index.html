@@ -10480,7 +10480,7 @@ function accumAlchemyMaterialNodes(itemName, qty, out) {
   if (mat && mat.inputs && mat.inputs.length) {
     out[itemName] = (out[itemName] || 0) + q;
     for (const inp of mat.inputs) {
-      accumAlchemyMaterialNodes(inp.name, inp.count * q, out);
+      accumAlchemyMaterialNodes(inp.name, getAlchemyScaledInputNeed(itemName, q, inp.count), out);
     }
   }
 }
@@ -10590,7 +10590,7 @@ function formatAlchemyOneStepPopoverHTML(name, displayQty, qtyMode) {
   }
   return inputs
     .map((inp) => {
-      const need = inp.count * q;
+      const need = getAlchemyScaledInputNeed(name, q, inp.count);
       const img = buildImageTag(inp.name, '', 'height:18px;vertical-align:middle;margin-right:8px;');
       const label = formatAlchemySummaryQty(need, qm);
       return `<div class="alchemy-summary-popover-line">${img}<span>${inp.name}</span><strong>${label}</strong></div>`;
