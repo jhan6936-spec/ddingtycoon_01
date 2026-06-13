@@ -9978,6 +9978,29 @@ function initUsageGuide() {
   showUsageGuideSection('ug-start');
 }
 
+let modPageAnimObserver = null;
+function initModPageAnimations() {
+  const rows = document.querySelectorAll('#mod .mod-row');
+  if (!rows.length) return;
+  if (modPageAnimObserver) {
+    modPageAnimObserver.disconnect();
+    modPageAnimObserver = null;
+  }
+  rows.forEach((row) => row.classList.remove('is-visible'));
+  if (!('IntersectionObserver' in window)) {
+    rows.forEach((row) => row.classList.add('is-visible'));
+    return;
+  }
+  modPageAnimObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('is-visible');
+      modPageAnimObserver.unobserve(entry.target);
+    });
+  }, { threshold: 0.18, rootMargin: '0px 0px -30px 0px' });
+  rows.forEach((row) => modPageAnimObserver.observe(row));
+}
+
 // ===== 섹션 전환 =====
 function switchSection(sectionId, clickedEl) {
   saveWarehouseInventory();
@@ -10015,6 +10038,7 @@ function switchSection(sectionId, clickedEl) {
   } else if (sectionId === 'mod') {
     const nav = document.querySelector('.sidebar .nav-item[data-nav-section="mod"]');
     if (nav) nav.classList.add('active');
+    requestAnimationFrame(() => initModPageAnimations());
   }
 
   const efficiencySubNav = document.getElementById('efficiencySubNav');
