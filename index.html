@@ -12658,7 +12658,7 @@ function optimizeAlchemyPlanGreedy(inv, options = {}) {
 
   for (const perm of permutations) {
     const packed = tryTierOrder(perm, inv);
-    const gold = alchemyPlanTotalGold(packed, effects);
+    const gold = alchemyPlanTotalGold(packed, effects, { includeDiluent });
     if (gold > bestGold) {
       bestGold = gold;
       best = packed;
@@ -12671,7 +12671,7 @@ function optimizeAlchemyPlanGreedy(inv, options = {}) {
     includeDiluentCandidate: includeDiluent,
   });
   const globalPacked = packAlchemyPlanResult({ ...counts, '추출된 희석액': diluentCount });
-  const globalGold = alchemyPlanTotalGold(globalPacked, effects);
+  const globalGold = alchemyPlanTotalGold(globalPacked, effects, { includeDiluent });
   if (globalGold > bestGold) return globalPacked;
   return best;
 }
@@ -13348,11 +13348,13 @@ function closeAlchemyHistoryOnBackdrop(ev) {
   if (ev.target === ev.currentTarget) closeAlchemyHistoryModal();
 }
 
-function computeShellfishEfficiencyScores(inv) {
+function computeShellfishEfficiencyScores(inv, options = {}) {
+  const includeDiluent = resolveAlchemyIncludeDiluent(options);
   const effects = getExpertEffects();
   const scores = {};
   SHELLFISH_NAMES.forEach((s) => { scores[s] = 0.001; });
   data.recipes.forEach((recipe) => {
+    if (!includeDiluent && recipe.name === '추출된 희석액') return;
     const isAlchemy = /(희석액|핵|정수|에센스|결정|엘릭서|영약|비약|코어|아쿠티스|광란체|깃털|날개|파편|나우틸러스|무저)/.test(recipe.name);
     if (!isAlchemy) return;
     if (calculateMaxCraft(recipe, inv, {}, { skipShellfishTierConvert: true }) < 1) return;
@@ -13489,7 +13491,8 @@ function buildStaminaAllocationContext(inventory) {
   if (!isVanillaCalcOn) {
     getInfiniteVanillaMaterials().forEach((n) => { invForEff[n] = Number.MAX_SAFE_INTEGER; });
   }
-  const effScores = computeShellfishEfficiencyScores(invForEff);
+  const includeDiluent = alchemyIncludeDiluentEnabled();
+  const effScores = computeShellfishEfficiencyScores(invForEff, { includeDiluent });
   const planInfo = getPlanShellForStamina(inventory);
   const weights = computeStaminaAllocationWeights(inventory, effScores, planInfo.shell);
   const planByBase = rollupPlanShellByBase(planInfo.shell);
