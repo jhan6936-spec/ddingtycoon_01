@@ -167,7 +167,7 @@ def draw_goal_content(canvas: Image.Image, night: bool, title_font, sub_font, bo
     gap = 4
     total = len(ALCHEMY_ICONS) * icon_size + (len(ALCHEMY_ICONS) - 1) * gap
     start_x = CONTENT_X + max(0, (CONTENT_W - total) // 2)
-    y = 80
+    y = 84
     for index, name in enumerate(ALCHEMY_ICONS):
         icon_x = start_x + index * (icon_size + gap)
         fill = (106, 59, 30, 50) if night else (234, 210, 160, 68)
