@@ -6791,7 +6791,52 @@
       text-decoration: underline;
       text-underline-offset: 2px;
     }
-    #mod .mod-hero-showcase {
+    #mod .mod-external-link-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 4px;
+      position: relative;
+      z-index: 3;
+    }
+    #mod .mod-external-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(125, 228, 247, 0.35);
+      background: rgba(125, 228, 247, 0.08);
+      color: #7de4f7 !important;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.4;
+      text-decoration: none !important;
+      pointer-events: auto;
+      position: relative;
+      z-index: 3;
+      cursor: pointer;
+    }
+    #mod .mod-external-link:hover {
+      background: rgba(125, 228, 247, 0.16);
+      border-color: rgba(125, 228, 247, 0.55);
+      color: #b8f0ff !important;
+    }
+    #mod .mod-external-link--sub {
+      border-color: rgba(159, 180, 200, 0.28);
+      background: rgba(255, 255, 255, 0.04);
+      color: #b8c9d9 !important;
+      font-weight: 600;
+    }
+    #mod .mod-external-link--sub:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(159, 180, 200, 0.45);
+      color: #dce8f2 !important;
+    }
+    #mod .mod-bottom {
+      position: relative;
+      z-index: 2;
+    }
       position: relative;
       min-height: 240px;
     }
@@ -7030,6 +7075,8 @@
       margin-top: 48px;
       padding-top: 40px;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      z-index: 2;
     }
     #mod .mod-box {
       background: rgba(24, 32, 44, 0.55);
