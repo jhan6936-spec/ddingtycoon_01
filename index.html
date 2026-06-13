@@ -11999,6 +11999,26 @@ function isPurchaseIncludeEnabled() {
   return toggle ? toggle.checked : false;
 }
 
+function alchemyIncludeDiluentEnabled() {
+  const toggle = document.getElementById('alchemyIncludeDiluentToggle');
+  return toggle ? toggle.checked : true;
+}
+
+function saveAlchemyIncludeDiluentState() {
+  try {
+    const toggle = document.getElementById('alchemyIncludeDiluentToggle');
+    if (toggle) localStorage.setItem(STORAGE_KEY_ALCHEMY_INCLUDE_DILUENT, toggle.checked ? '1' : '0');
+  } catch (_) {}
+}
+
+function restoreAlchemyIncludeDiluentState() {
+  try {
+    const toggle = document.getElementById('alchemyIncludeDiluentToggle');
+    const saved = localStorage.getItem(STORAGE_KEY_ALCHEMY_INCLUDE_DILUENT);
+    if (toggle && saved != null) toggle.checked = saved === '1';
+  } catch (_) {}
+}
+
 function getPurchaseBudgetGold() {
   const input = document.getElementById('purchaseBudgetInput');
   return Math.max(0, Math.floor(Number(input?.value) || 0));
@@ -12130,7 +12150,7 @@ function evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects, prepOpts
     return purchasePlanEvalCache.get(key);
   }
   const merged = prepareInventoryForAlchemyPlan(mergeInventoryWithPurchases(stockInv, purchases), prep);
-  const optimized = optimizeAlchemyPlan(merged, effects);
+  const optimized = optimizeAlchemyPlan(merged, effects, prep);
   const gold = alchemyPlanTotalGold(optimized, effects);
   const purchaseCost = prices ? purchaseCostFromMap(purchases, prices) : 0;
   const result = {
@@ -12499,7 +12519,8 @@ function prepareInventoryForAlchemyPlan(inv, options = {}) {
   const unboundNonShellfish = options.unboundNonShellfish !== false;
   const out = { ...inv };
   if (!unboundNonShellfish) return out;
-  const products = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'];
+  const products = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3];
+  if (options.includeDiluent !== false) products.push('추출된 희석액');
   products.forEach((name) => {
     Object.keys(buildFinalProductLeafNeeds(name)).forEach((mat) => {
       if (!isShellfishStockName(mat)) {
@@ -12513,7 +12534,7 @@ function prepareInventoryForAlchemyPlan(inv, options = {}) {
 function getAlchemyPlanPrepOptions() {
   const vanillaToggle = document.getElementById('vanillaCalcToggle');
   const isVanillaOn = vanillaToggle ? vanillaToggle.checked : true;
-  return { unboundNonShellfish: !isVanillaOn };
+  return { unboundNonShellfish: !isVanillaOn, includeDiluent: alchemyIncludeDiluentEnabled() };
 }
 
 const _lpMatKeys = new Map();
@@ -12589,7 +12610,8 @@ function alchemyPlanTotalGold(packed, effects) {
   );
 }
 
-function optimizeAlchemyPlanGreedy(inv) {
+function optimizeAlchemyPlanGreedy(inv, options = {}) {
+  const includeDiluent = options.includeDiluent !== false;
   const tierGroups = [{ names: FINAL_GROUP1 }, { names: FINAL_GROUP2 }, { names: FINAL_GROUP3 }];
   const permutations = [
     [0, 1, 2],
