@@ -12631,7 +12631,7 @@ function optimizeAlchemyPlanGreedy(inv, options = {}) {
     let dCount = 0;
     for (const idx of order) {
       const { counts, diluentCount: dPart } = greedyCraftFinalCounts(tierGroups[idx].names, invCopy, {
-        includeDiluentCandidate: true,
+        includeDiluentCandidate: includeDiluent,
       });
       Object.assign(merged, counts);
       dCount += dPart;
@@ -12652,7 +12652,7 @@ function optimizeAlchemyPlanGreedy(inv, options = {}) {
   const invGlobal = { ...inv };
   const allFinals = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3];
   const { counts, diluentCount } = greedyCraftFinalCounts(allFinals, invGlobal, {
-    includeDiluentCandidate: true,
+    includeDiluentCandidate: includeDiluent,
   });
   const globalPacked = packAlchemyPlanResult({ ...counts, '추출된 희석액': diluentCount });
   const globalGold = alchemyPlanTotalGold(globalPacked, effects);
@@ -12663,7 +12663,8 @@ function optimizeAlchemyPlanGreedy(inv, options = {}) {
 function optimizeAlchemyPlanILP(inv, options = {}) {
   _lpMatKeys.clear();
   _lpMatSeq = 0;
-  const products = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'];
+  const products = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3];
+  if (options.includeDiluent !== false) products.push('추출된 희석액');
   const varIds = products.map((_, i) => 'v' + i);
   const demandList = products.map((name) => buildFinalProductOptimizeDemand(name));
 
@@ -12783,7 +12784,8 @@ function optimizeAlchemyPlanILP(inv, options = {}) {
   }
 }
 
-function optimizeAlchemyPlanBalanced(inv) {
+function optimizeAlchemyPlanBalanced(inv, options = {}) {
+  const includeDiluent = options.includeDiluent !== false;
   const effects = getExpertEffects();
   const craftOpts = { skipShellfishTierConvert: true };
   const invCopy = { ...inv };
@@ -12857,7 +12859,7 @@ function optimizeAlchemyPlanBalanced(inv) {
   }
 
   let diluentCount = 0;
-  const diluentRecipe = data.recipes.find((r) => r.name === '추출된 희석액');
+  const diluentRecipe = includeDiluent ? data.recipes.find((r) => r.name === '추출된 희석액') : null;
   if (diluentRecipe) {
     let dIter = 0;
     while (dIter++ < guard && calculateMaxCraft(diluentRecipe, invCopy, {}, craftOpts) >= 1) {
