@@ -12871,12 +12871,13 @@ function optimizeAlchemyPlanBalanced(inv, options = {}) {
   return packAlchemyPlanResult({ ...counts, '추출된 희석액': diluentCount });
 }
 
-function optimizeAlchemyPlan(inv, effects) {
-  const balanced = optimizeAlchemyPlanBalanced(inv);
+function optimizeAlchemyPlan(inv, effects, options = {}) {
+  const planOpts = { includeDiluent: options.includeDiluent !== false };
+  const balanced = optimizeAlchemyPlanBalanced(inv, planOpts);
   if (balanced) return balanced;
-  const greedy = optimizeAlchemyPlanGreedy(inv);
+  const greedy = optimizeAlchemyPlanGreedy(inv, planOpts);
   if (greedy) return greedy;
-  const ilp = optimizeAlchemyPlanILP(inv);
+  const ilp = optimizeAlchemyPlanILP(inv, planOpts);
   if (ilp) return ilp;
   return packAlchemyPlanResult({});
 }
@@ -13385,8 +13386,9 @@ function computePlanShellTotalsFromWarehouse(inventory) {
   if (!Object.values(inventory || {}).some((v) => (parseInt(v, 10) || 0) > 0)) return null;
   try {
     const effects = getExpertEffects();
-    const baseInv = prepareInventoryForAlchemyPlan({ ...inventory });
-    const optimized = optimizeAlchemyPlan(baseInv, effects);
+    const prepOpts = getAlchemyPlanPrepOptions();
+    const baseInv = prepareInventoryForAlchemyPlan({ ...inventory }, prepOpts);
+    const optimized = optimizeAlchemyPlan(baseInv, effects, prepOpts);
     const allPlanCounts = { ...optimized.plans[0], ...optimized.plans[1], ...optimized.plans[2] };
     allPlanCounts['추출된 희석액'] = optimized.diluentCount;
     const rawTotals = {};
@@ -14084,6 +14086,8 @@ function analyzeEfficiency() {
   lastAlchemyRecordSnapshot = null;
   if (containerCraftPrice) containerCraftPrice.innerHTML = '';
 
+  const prepOpts = getAlchemyPlanPrepOptions();
+  const includeDiluent = prepOpts.includeDiluent !== false;
   const purchaseOn = isPurchaseIncludeEnabled() && shellfishPricesHasAny;
   const purchaseBudget = purchaseOn ? getPurchaseBudgetGold() : 0;
   let purchaseMeta = {
@@ -14116,8 +14120,8 @@ function analyzeEfficiency() {
     };
     baseInvForPlan = purchasePlan.mergedInv;
   } else {
-    baseInvForPlan = prepareInventoryForAlchemyPlan(inventory, getAlchemyPlanPrepOptions());
-    optimized = optimizeAlchemyPlan(baseInvForPlan, effects);
+    baseInvForPlan = prepareInventoryForAlchemyPlan(inventory, prepOpts);
+    optimized = optimizeAlchemyPlan(baseInvForPlan, effects, prepOpts);
   }
   const plan1 = optimized.plans[0];
   const plan2 = optimized.plans[1];
@@ -14145,7 +14149,7 @@ function analyzeEfficiency() {
     ${renderTriFinalPlan('1성', FINAL_GROUP1, plan1, g1)}
     ${renderTriFinalPlan('2성', FINAL_GROUP2, plan2, g2)}
     ${renderTriFinalPlan('3성', FINAL_GROUP3, plan3, g3)}
-    ${renderZeroStarDiluentPlanBlock(diluentCount, effects)}
+    ${includeDiluent ? renderZeroStarDiluentPlanBlock(diluentCount, effects) : ''}
   `;
   containerAlchemy.appendChild(planWrap);
 
