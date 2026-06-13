@@ -9,8 +9,8 @@
   <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon/apple-touch-icon.png">
   <link rel="preload" as="image" href="assets/ddingtahe-logo.png">
   <link rel="preload" as="image" href="marine-guide/01.png">
-  <link rel="preload" as="image" href="assets/mod/book_base_pages_day.png">
-  <link rel="preload" as="image" href="assets/mod/book_base_pages_night.png">
+  <link rel="preload" as="image" href="assets/mod/previews/preview_journal_goal_day.png">
+  <link rel="preload" as="image" href="assets/mod/previews/preview_journal_goal_night.png">
   <script src="supabase-config.js"></script>
   <script src="js/site-owner-gate.js"></script>
   <style>
@@ -6979,164 +6979,12 @@
       line-height: 0;
       background: #0a1018;
     }
-    #mod .mod-journal-preview {
-      position: relative;
+    #mod .mod-journal-card-frame img,
+    #mod .mod-book-frame img {
       width: 100%;
-      aspect-ratio: 382 / 256;
-      container-type: inline-size;
+      display: block;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
-      overflow: hidden;
-    }
-    #mod .mod-journal-layer,
-    #mod .mod-journal-tab,
-    #mod .mod-journal-connector {
-      position: absolute;
-      display: block;
-      pointer-events: none;
-      user-select: none;
-    }
-    #mod .mod-journal-layer {
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: fill;
-      z-index: 0;
-    }
-    #mod .mod-journal-layer + .mod-journal-layer {
-      z-index: 1;
-    }
-    #mod .mod-journal-tab {
-      left: 1.05%;
-      width: 20.42%;
-      height: 10.55%;
-      object-fit: fill;
-      z-index: 3;
-    }
-    #mod .mod-journal-tab--0 { top: 16.8%; }
-    #mod .mod-journal-tab--1 { top: 28.13%; }
-    #mod .mod-journal-tab--2 { top: 39.45%; }
-    #mod .mod-journal-tab--3 { top: 50.78%; }
-    #mod .mod-journal-tab--4 { top: 62.11%; }
-    #mod .mod-journal-connector {
-      left: 20.42%;
-      top: 18.36%;
-      width: 5.76%;
-      height: 8.2%;
-      object-fit: fill;
-      z-index: 2;
-    }
-    #mod .mod-journal-ui {
-      position: absolute;
-      left: 29.32%;
-      top: 0;
-      width: 64.92%;
-      height: 100%;
-      pointer-events: none;
-      font-family: "Minecraft", "Minecraftia", "Segoe UI", sans-serif;
-      font-size: 2.35cqw;
-      line-height: 1.35;
-      z-index: 4;
-    }
-    #mod .mod-journal-ui-title {
-      position: absolute;
-      left: 0;
-      top: 22.66%;
-      color: #241409;
-      font-weight: 700;
-    }
-    #mod .mod-journal-ui-sub {
-      position: absolute;
-      left: 0;
-      top: 26.95%;
-      width: 96%;
-      color: #4b2e15;
-      font-size: 0.92em;
-    }
-    #mod .mod-journal-ui-divider {
-      position: absolute;
-      left: 0;
-      top: 32.03%;
-      width: 100%;
-      height: 1px;
-      background: rgba(85, 58, 31, 0.45);
-    }
-    #mod .mod-journal-alchemy {
-      position: absolute;
-      left: 0;
-      top: 31.25%;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      gap: 0.55cqw;
-    }
-    #mod .mod-journal-alchemy img {
-      width: 4.71%;
-      aspect-ratio: 1;
-      object-fit: contain;
-      background: rgba(234, 210, 160, 0.27);
-      border: 1px solid rgba(85, 58, 31, 0.18);
-    }
-    #mod .mod-journal-panel {
-      position: absolute;
-      left: 0;
-      top: 43.75%;
-      width: 100%;
-      height: 28.91%;
-      border: 1px solid rgba(85, 58, 31, 0.46);
-      background: rgba(230, 201, 148, 0.4);
-      box-sizing: border-box;
-      padding: 3.2% 3.6%;
-      color: #241409;
-    }
-    #mod .mod-journal-panel h4 {
-      margin: 0 0 0.35em;
-      font-size: 1em;
-      font-weight: 700;
-      color: #241409;
-    }
-    #mod .mod-journal-panel p {
-      margin: 0;
-      color: #4b2e15;
-      font-size: 0.88em;
-      line-height: 1.45;
-    }
-    #mod .mod-journal-weblink {
-      position: absolute;
-      right: 1.05%;
-      bottom: 16.41%;
-      width: 25.13%;
-      height: 8.59%;
-      margin: 0;
-      padding: 0;
-      border: 1px solid rgba(138, 90, 50, 0.67);
-      background: rgba(223, 200, 140, 0.73);
-      box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.33);
-      color: #2b1609;
-      font-family: inherit;
-      font-size: 0.95em;
-      font-weight: 700;
-      line-height: 1;
-      cursor: default;
-      pointer-events: none;
-    }
-    #mod .mod-journal-preview--night .mod-journal-ui-title { color: #f3e7c8; }
-    #mod .mod-journal-preview--night .mod-journal-ui-sub { color: #c9a882; }
-    #mod .mod-journal-preview--night .mod-journal-ui-divider { background: rgba(201, 160, 74, 0.35); }
-    #mod .mod-journal-preview--night .mod-journal-alchemy img {
-      background: rgba(106, 59, 30, 0.2);
-      border-color: rgba(201, 160, 74, 0.22);
-    }
-    #mod .mod-journal-preview--night .mod-journal-panel {
-      border-color: rgba(43, 22, 9, 0.54);
-      background: rgba(138, 85, 43, 0.36);
-    }
-    #mod .mod-journal-preview--night .mod-journal-panel h4 { color: #f3e7c8; }
-    #mod .mod-journal-preview--night .mod-journal-panel p { color: #c9a882; }
-    #mod .mod-journal-preview--night .mod-journal-weblink {
-      border-color: rgba(107, 69, 40, 0.67);
-      background: rgba(74, 50, 24, 0.67);
-      color: #f3e7c8;
     }
     #mod .mod-journal-card--day {
       box-shadow: 0 16px 36px rgba(120, 80, 30, 0.18), 0 0 0 1px rgba(255, 210, 130, 0.12);
