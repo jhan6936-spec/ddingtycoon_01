@@ -6659,9 +6659,17 @@
       position: relative;
       z-index: 1;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
       gap: 32px;
       align-items: center;
+    }
+    @media (min-width: 1180px) {
+      #mod .mod-hero-grid {
+        grid-template-columns: minmax(0, 1fr) minmax(420px, 520px);
+      }
+      #mod .mod-journal-duo {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
     @media (max-width: 860px) {
       #mod .mod-hero-grid { grid-template-columns: 1fr; text-align: center; }
@@ -6835,8 +6843,9 @@
     }
     #mod .mod-hero-showcase {
       position: relative;
-      min-height: 420px;
+      min-height: 0;
       width: 100%;
+      padding-bottom: 4px;
     }
     #mod .mod-hero-logo {
       position: absolute;
@@ -6864,6 +6873,12 @@
         max-width: 620px;
         margin-left: auto;
         margin-right: auto;
+      }
+    }
+    @media (max-width: 520px) {
+      #mod .mod-journal-duo {
+        grid-template-columns: 1fr;
+        max-width: 320px;
       }
     }
     #mod .mod-journal-card {
