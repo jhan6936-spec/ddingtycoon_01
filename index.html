@@ -9482,6 +9482,8 @@ function buildMinecraftDashboardPayload() {
   const materialTarget = material ? Number(material[1] || 0) : 1;
   const profit = Number(record?.totalBoosted || 0);
   const adjustedSec = Number(record?.adjustedSec || 0);
+  const planEffPerMin = Math.max(0, Math.floor(Number(record?.planEffPerMin) || 0));
+  const includeDiluent = record?.includeDiluent !== false;
   const timeReduceLevel = Number(expertState?.timeReduce || 0);
   const staminaRawLive = getStaminaForDashboardSync();
   const staminaTarget = staminaRawLive > 0
@@ -9526,7 +9528,11 @@ function buildMinecraftDashboardPayload() {
     materialLine: material ? `${material[0]} ${materialCurrent.toLocaleString()} / ${materialTarget.toLocaleString()}` : '부족 재료 정보 없음',
     materialCurrent,
     materialTarget,
-    efficiencyResult: adjustedSec > 0 ? `예상 제작 시간 ${formatGuideDurationSec(adjustedSec)}` : '연금 효율 계산 대기',
+    efficiencyResult: planEffPerMin > 0
+      ? `제작 효율 ${planEffPerMin.toLocaleString()}G/분 · ${includeDiluent ? '9종+희석액' : '9종'} · ${formatGuideDurationSec(adjustedSec)}`
+      : adjustedSec > 0
+        ? `예상 제작 시간 ${formatGuideDurationSec(adjustedSec)}`
+        : '연금 효율 계산 대기',
     expectedProfit: profit > 0 ? `예상 수익 ${profit.toLocaleString()}G` : '예상 수익 없음',
     expertBonusLine: `물 흐르듯 술술 Lv.${timeReduceLevel} / 제작 시간 -${Number(
       typeof getExpertTimeReduceEffect === 'function' ? getExpertTimeReduceEffect(expertState) : eff.timeReduce || 0
@@ -12304,7 +12310,9 @@ function renderPurchaseBoostPanel(purchaseMeta, prices, effects) {
   const goldDelta = purchaseMeta.goldDelta || 0;
   const purchaseCost = purchaseMeta.purchaseCost || 0;
   const netDelta = purchaseMeta.netDelta != null ? purchaseMeta.netDelta : goldDelta - purchaseCost;
-  const planDeltas = diffFinalPlanCounts(purchaseMeta.stockOnlyOptimized, purchaseMeta.optimized);
+  const planDeltas = diffFinalPlanCounts(purchaseMeta.stockOnlyOptimized, purchaseMeta.optimized, {
+    includeDiluent: alchemyIncludeDiluentEnabled(),
+  });
 
   if (!entries.length) {
     if (budget <= 0) return null;
