@@ -6747,6 +6747,50 @@
       color: #9fb4c8;
       line-height: 1.6;
     }
+    #mod .mod-deps-callout {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(251, 191, 36, 0.28);
+      background: rgba(251, 191, 36, 0.06);
+      text-align: left;
+    }
+    #mod .mod-deps-callout-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #fbbf24;
+      margin-bottom: 8px;
+    }
+    #mod .mod-deps-callout p {
+      font-size: 12px;
+      color: #b8c9d9;
+      line-height: 1.65;
+      margin: 0 0 8px;
+    }
+    #mod .mod-deps-callout p:last-child {
+      margin-bottom: 0;
+    }
+    #mod .mod-deps-callout code {
+      font-size: 11px;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.28);
+      color: #e8f4ff;
+    }
+    #mod .mod-deps-aside p {
+      color: #a8bdd0;
+      font-size: 14px;
+      line-height: 1.75;
+      margin: 0 0 12px;
+    }
+    #mod .mod-deps-aside p:last-child {
+      margin-bottom: 0;
+    }
+    #mod .mod-deps-aside a {
+      color: #7de4f7;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
     #mod .mod-hero-showcase {
       position: relative;
       min-height: 240px;
@@ -7645,6 +7689,17 @@
                 </a>
               </div>
               <p class="mod-install-note">다운로드 후 <code>.minecraft/mods</code> 폴더에 넣고 게임을 실행하세요.</p>
+              <div class="mod-deps-callout">
+                <div class="mod-deps-callout-title">Fabric 사용자 — Architectury API 필수</div>
+                <p>
+                  띵타해 Fabric 모드를 구동하려면 <strong>Architectury API 15.0.3</strong>
+                  (<code>architectury-15.0.3-fabric.jar</code>)를 띵타해 JAR과 함께
+                  <code>.minecraft/mods</code>에 넣어야 합니다. 이 파일이 없으면 게임이 띵타해 모드를 불러오지 못합니다.
+                </p>
+                <p style="color:#8899aa;font-size:11px;">
+                  Forge용 띵타해 JAR은 필요한 부분이 포함되어 있어 별도 Architectury 설치가 필요 없습니다.
+                </p>
+              </div>
             </div>
             <div class="mod-hero-showcase" aria-hidden="true">
               <img class="mod-hero-logo" src="assets/ddingtahe-logo.png" alt="">
