@@ -7462,33 +7462,43 @@
 
       <div class="mod-page">
         <section class="mod-hero">
-          <div class="mod-kicker">OFFICIAL COMPANION MOD</div>
-          <p class="mod-lead">
-            띵타이쿤 플레이를 돕는 공식 보조 모드입니다.<br>
-            채집·제작·상점 정보를 기록하고, 띵타해 웹 계산기와 연동합니다.
-          </p>
-          <div class="mod-meta">
-            <span class="mod-chip">Minecraft 1.21.4</span>
-            <span class="mod-chip">모드 v0.1.3</span>
-            <span class="mod-chip">Fabric · Forge</span>
+          <div class="mod-hero-bg" aria-hidden="true"></div>
+          <div class="mod-hero-glow" aria-hidden="true"></div>
+          <div class="mod-hero-grid">
+            <div class="mod-hero-content">
+              <div class="mod-kicker">OFFICIAL COMPANION MOD</div>
+              <p class="mod-lead">
+                띵타이쿤 플레이를 돕는 공식 보조 모드입니다.<br>
+                채집·제작·상점 정보를 기록하고, 띵타해 웹 계산기와 연동합니다.
+              </p>
+              <div class="mod-meta">
+                <span class="mod-chip">Minecraft 1.21.4</span>
+                <span class="mod-chip">모드 v0.1.3</span>
+                <span class="mod-chip">Fabric · Forge</span>
+              </div>
+              <div class="mod-download-row">
+                <a class="mod-dl-btn" href="downloads/ddingtae-fabric-0.1.3.jar" download>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 3v12m0 0l4-4m-4 4L8 11" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+                  </svg>
+                  띵타해 Fabric · 1.21.4 · v0.1.3
+                </a>
+                <a class="mod-dl-btn mod-dl-btn--secondary" href="downloads/ddingtae-forge-0.1.3.jar" download>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 3v12m0 0l4-4m-4 4L8 11" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+                  </svg>
+                  띵타해 Forge · 1.21.4 · v0.1.3
+                </a>
+              </div>
+              <p class="mod-install-note">다운로드 후 <code>.minecraft/mods</code> 폴더에 넣고 게임을 실행하세요.</p>
+            </div>
+            <div class="mod-hero-showcase" aria-hidden="true">
+              <img class="mod-hero-logo" src="assets/ddingtahe-logo.png" alt="">
+              <img class="mod-hero-book" src="assets/mod/main_page_layer_day.png" alt="항해일지 미리보기">
+            </div>
           </div>
-          <div class="mod-download-row">
-            <a class="mod-dl-btn" href="downloads/ddingtae-fabric-0.1.3.jar" download>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M12 3v12m0 0l4-4m-4 4L8 11" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
-              </svg>
-              띵타해 Fabric · 1.21.4 · v0.1.3
-            </a>
-            <a class="mod-dl-btn mod-dl-btn--secondary" href="downloads/ddingtae-forge-0.1.3.jar" download>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M12 3v12m0 0l4-4m-4 4L8 11" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
-              </svg>
-              띵타해 Forge · 1.21.4 · v0.1.3
-            </a>
-          </div>
-          <p class="mod-install-note">다운로드 후 <code>.minecraft/mods</code> 폴더에 넣고 게임을 실행하세요.</p>
         </section>
 
         <p class="mod-features-title">주요 기능</p>
@@ -7505,14 +7515,15 @@
               </ul>
             </div>
             <div class="mod-row-visual">
-              <div class="mod-shot-label">인게임 제작 HUD</div>
-              <div class="mod-shot-body mod-shot-craft">
-                <div class="mod-mc-bg">
+              <div class="mod-scene mod-shot-craft">
+                <img class="mod-scene-bg" src="배경/December 15th 2025, 6_03_14 PM.png" alt="인게임 배경">
+                <div class="mod-scene-shade"></div>
+                <div class="mod-scene-overlay">
                   <div class="mod-hud-panel">
                     <div class="mod-hud-title">[ 연금 제작 ]</div>
                     <div>크라켄의 광란체 x12</div>
                     <div class="mod-hud-row"><span>전문가 -30%</span><span>02:14</span></div>
-                    <div class="mod-hud-bar"><span style="width:62%"></span></div>
+                    <div class="mod-hud-bar"><span style="width:0"></span></div>
                   </div>
                 </div>
               </div>
@@ -7530,15 +7541,16 @@
               </ul>
             </div>
             <div class="mod-row-visual">
-              <div class="mod-shot-label">어패류 채집 목표 HUD</div>
-              <div class="mod-shot-body mod-shot-gather">
-                <div class="mod-mc-bg">
+              <div class="mod-scene mod-shot-gather">
+                <img class="mod-scene-bg" src="배경/December 15th 2025, 6_03_14 PM.png" alt="채집 HUD 배경">
+                <div class="mod-scene-shade"></div>
+                <div class="mod-scene-overlay">
                   <div class="mod-hud-panel">
                     <div class="mod-hud-title">어패류 채집 목표</div>
                     <div class="mod-hud-row"><span>굴</span><span style="color:#5fd068">완료!</span></div>
-                    <div class="mod-hud-bar"><span style="width:100%"></span></div>
+                    <div class="mod-hud-bar"><span style="width:0"></span></div>
                     <div class="mod-hud-row"><span>소라</span><span>32 / 60 회</span></div>
-                    <div class="mod-hud-bar"><span style="width:53%"></span></div>
+                    <div class="mod-hud-bar"><span style="width:0"></span></div>
                   </div>
                 </div>
               </div>
@@ -7556,9 +7568,10 @@
               </ul>
             </div>
             <div class="mod-row-visual">
-              <div class="mod-shot-label">NPC 상점 스캔</div>
-              <div class="mod-shot-body">
-                <div class="mod-mc-bg">
+              <div class="mod-scene">
+                <img class="mod-scene-bg" src="배경/December 15th 2025, 6_03_14 PM.png" alt="NPC 상점 배경">
+                <div class="mod-scene-shade"></div>
+                <div class="mod-scene-overlay">
                   <div class="mod-shop-panel">
                     <div style="font-weight:700;margin-bottom:8px;">항해 NPC 상점</div>
                     <div class="mod-shop-row"><span>굴 ★</span><strong>매입 1,240G</strong></div>
@@ -7581,9 +7594,10 @@
               </ul>
             </div>
             <div class="mod-row-visual">
-              <div class="mod-shot-label">HUD · 조개 알림</div>
-              <div class="mod-shot-body mod-shot-hud">
-                <div class="mod-mc-bg">
+              <div class="mod-scene mod-shot-hud">
+                <img class="mod-scene-bg" src="배경/December 15th 2025, 6_03_14 PM.png" alt="HUD 배경">
+                <div class="mod-scene-shade"></div>
+                <div class="mod-scene-overlay">
                   <div class="mod-hud-panel a">
                     <div class="mod-hud-title">[ 해양 제작 ]</div>
                     <div>푸른 향수병 x3</div>
@@ -7609,20 +7623,10 @@
               </ul>
             </div>
             <div class="mod-row-visual">
-              <div class="mod-shot-label">항해일지 · 웹 연동</div>
-              <div class="mod-shot-body">
-                <div class="mod-mc-bg">
-                  <div class="mod-journal">
-                    <div class="mod-journal-tabs">
-                      <span class="mod-journal-tab active">목표</span>
-                      <span class="mod-journal-tab">자원</span>
-                      <span class="mod-journal-tab">선원</span>
-                    </div>
-                    <div>웹 계산 결과가 항해일지에 동기화되었습니다.</div>
-                    <div class="mod-sync-badge">● 웹사이트 연결됨 · 제작 목표 동기화 완료</div>
-                  </div>
-                </div>
-              </div>
+              <figure class="mod-book-frame">
+                <img src="assets/mod/ddingtae_logbook_day.png" alt="항해일지 · 웹 연동 화면">
+                <img class="mod-web-link-badge" src="assets/mod/web_link_day.png" alt="웹 연동">
+              </figure>
             </div>
           </article>
         </div>
