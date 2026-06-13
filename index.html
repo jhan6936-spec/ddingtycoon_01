@@ -9445,7 +9445,7 @@ function buildMinecraftDashboardPayload() {
   const discordCaptainName = resolveDiscordDisplayNameForMinecraft();
   const record = lastAlchemyRecordSnapshot || loadAlchemyHistoryRecords()[0] || null;
   const counts = lastAlchemyPlanCountsByName || (record && record.counts ? record.counts : {});
-  const minecraftFinalProducts = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'];
+  const minecraftFinalProducts = getAlchemyFinalProductNames();
   const eff = typeof getExpertEffects === 'function' ? getExpertEffects() : { timeReduce: 0, alchemyPriceBoost: 0 };
   const entries = Object.entries(counts)
     .filter(([name, count]) => Number(count) > 0 && minecraftFinalProducts.includes(name))
@@ -13237,7 +13237,7 @@ function renderAlchemyCraftGuideBody() {
     body.innerHTML = `<div class="alchemy-guide-lead-box alchemy-guide-lead-box--solo"><p class="alchemy-guide-lead">재료 창고에 수량을 입력한 뒤 <strong>연금품 계산</strong>이 실행되면, 위 <strong>제작 추천</strong> 수량 기준으로 가이드가 채워집니다.</p></div>`;
     return;
   }
-  const targets = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'];
+  const targets = getAlchemyFinalProductNames();
   const blocks = targets.map((nm) => renderOneAlchemyGuideBlock(nm, getAlchemyGuideRecipeCopies(nm))).join('');
   body.innerHTML = blocks;
 }
@@ -13408,7 +13408,9 @@ function computePlanShellTotalsFromWarehouse(inventory) {
     const baseInv = prepareInventoryForAlchemyPlan({ ...inventory }, prepOpts);
     const optimized = optimizeAlchemyPlan(baseInv, effects, prepOpts);
     const allPlanCounts = { ...optimized.plans[0], ...optimized.plans[1], ...optimized.plans[2] };
-    allPlanCounts['추출된 희석액'] = optimized.diluentCount;
+    if (prepOpts.includeDiluent !== false) {
+      allPlanCounts['추출된 희석액'] = optimized.diluentCount;
+    }
     const rawTotals = {};
     const planOpts = { skipShellfishTierConvert: true };
     Object.entries(allPlanCounts)
