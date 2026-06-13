@@ -6463,7 +6463,8 @@
       to { opacity: 1; transform: translateY(0); }
     }
     @keyframes modBarGrow {
-      from { width: 0; }
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
     }
     @keyframes modToastPulse {
       0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
@@ -6763,11 +6764,16 @@
       height: 100%;
       background: linear-gradient(90deg, #3ecf6a, #5fd068);
       border-radius: 2px;
-      animation: modBarGrow 1.4s ease forwards;
+      transform-origin: left center;
+      transform: scaleX(0);
     }
-    #mod .mod-row.is-visible .mod-hud-bar span[style*="62%"] { width: 62% !important; }
-    #mod .mod-row.is-visible .mod-hud-bar span[style*="100%"] { width: 100% !important; }
-    #mod .mod-row.is-visible .mod-hud-bar span[style*="53%"] { width: 53% !important; }
+    #mod .mod-row.is-visible .mod-hud-bar span {
+      animation: modBarGrow 1.2s ease forwards;
+    }
+    @keyframes modBarGrow {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
     #mod .mod-hud-row {
       display: flex;
       justify-content: space-between;
@@ -7548,9 +7554,9 @@
                   <div class="mod-hud-panel">
                     <div class="mod-hud-title">어패류 채집 목표</div>
                     <div class="mod-hud-row"><span>굴</span><span style="color:#5fd068">완료!</span></div>
-                    <div class="mod-hud-bar"><span style="width:0"></span></div>
+                    <div class="mod-hud-bar"><span style="width:100%"></span></div>
                     <div class="mod-hud-row"><span>소라</span><span>32 / 60 회</span></div>
-                    <div class="mod-hud-bar"><span style="width:0"></span></div>
+                    <div class="mod-hud-bar"><span style="width:53%"></span></div>
                   </div>
                 </div>
               </div>
