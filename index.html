@@ -9,8 +9,8 @@
   <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon/apple-touch-icon.png">
   <link rel="preload" as="image" href="assets/ddingtahe-logo.png">
   <link rel="preload" as="image" href="marine-guide/01.png">
-  <link rel="preload" as="image" href="assets/mod/main_page_layer_day.png">
   <link rel="preload" as="image" href="assets/mod/ddingtae_logbook_day.png">
+  <link rel="preload" as="image" href="assets/mod/ddingtae_logbook_night.png">
   <script src="supabase-config.js"></script>
   <script src="js/site-owner-gate.js"></script>
   <style>
@@ -6835,7 +6835,8 @@
     }
     #mod .mod-hero-showcase {
       position: relative;
-      min-height: 240px;
+      min-height: 420px;
+      width: 100%;
     }
     #mod .mod-hero-logo {
       position: absolute;
@@ -6847,18 +6848,85 @@
       border-radius: 16px;
       box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
       animation: modFloat 4s ease-in-out infinite;
-      z-index: 2;
+      z-index: 3;
     }
-    #mod .mod-hero-book {
-      position: absolute;
-      left: 50%;
-      bottom: 0;
-      transform: translateX(-50%);
-      width: min(100%, 300px);
+    #mod .mod-journal-duo {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 88px;
+      width: 100%;
+    }
+    @media (max-width: 820px) {
+      #mod .mod-journal-duo {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        max-width: 620px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+    #mod .mod-journal-card {
+      margin: 0;
       border-radius: 12px;
-      border: 2px solid rgba(255, 255, 255, 0.12);
-      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(8, 14, 22, 0.55);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
       animation: modFadeUp 0.8s ease both;
+    }
+    #mod .mod-journal-card--night {
+      animation-delay: 0.12s;
+    }
+    #mod .mod-journal-card-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 10px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+    #mod .mod-journal-card--day .mod-journal-card-label {
+      color: #8b5a2a;
+      background: linear-gradient(90deg, rgba(255, 214, 140, 0.22), rgba(255, 214, 140, 0.06));
+      border-bottom: 1px solid rgba(180, 120, 50, 0.25);
+    }
+    #mod .mod-journal-card--night .mod-journal-card-label {
+      color: #8ecdf0;
+      background: linear-gradient(90deg, rgba(18, 194, 232, 0.18), rgba(18, 194, 232, 0.04));
+      border-bottom: 1px solid rgba(18, 194, 232, 0.22);
+    }
+    #mod .mod-journal-card-tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 999px;
+      opacity: 0.9;
+    }
+    #mod .mod-journal-card--day .mod-journal-card-tag {
+      color: #6b4423;
+      background: rgba(255, 220, 150, 0.35);
+    }
+    #mod .mod-journal-card--night .mod-journal-card-tag {
+      color: #b8ecff;
+      background: rgba(18, 194, 232, 0.18);
+    }
+    #mod .mod-journal-card-frame {
+      position: relative;
+      line-height: 0;
+      background: #0a1018;
+    }
+    #mod .mod-journal-card-frame img {
+      width: 100%;
+      display: block;
+    }
+    #mod .mod-journal-card--day {
+      box-shadow: 0 16px 36px rgba(120, 80, 30, 0.18), 0 0 0 1px rgba(255, 210, 130, 0.12);
+    }
+    #mod .mod-journal-card--night {
+      box-shadow: 0 16px 36px rgba(0, 40, 70, 0.28), 0 0 0 1px rgba(18, 194, 232, 0.14);
     }
     #mod .mod-features-title {
       font-size: 14px;
