@@ -14158,14 +14158,14 @@ function analyzeEfficiency() {
   const revBox = document.createElement('div');
   revBox.className = 'summary-panel';
   const diluentRevNote =
-    diluentCount > 0
+    includeDiluent && diluentCount > 0
       ? `<p class="summary-panel__lead" style="margin-top:6px;margin-bottom:0;">추출된 희석액 <strong style="color:#b8c9d9;">${diluentCount.toLocaleString()}개</strong>는 최종 9종과 함께 재료 제약 안에서 총 판매가가 최대가 되도록 함께 산출된 결과입니다.</p>`
       : '';
   const tierSumParts = [
     g1.boosted > 0 ? `1성 ${g1.boosted.toLocaleString()}G` : '',
     g2.boosted > 0 ? `2성 ${g2.boosted.toLocaleString()}G` : '',
     g3.boosted > 0 ? `3성 ${g3.boosted.toLocaleString()}G` : '',
-    gD.boosted > 0 ? `희석액 ${gD.boosted.toLocaleString()}G` : '',
+    includeDiluent && gD.boosted > 0 ? `희석액 ${gD.boosted.toLocaleString()}G` : '',
   ].filter(Boolean);
   const tierSumExpr = tierSumParts.length ? tierSumParts.join(' + ') : '0';
   const netGold = totalBoosted - (purchaseMeta.purchaseCost || 0);
@@ -14181,7 +14181,7 @@ function analyzeEfficiency() {
         : '';
   revBox.innerHTML = `
     <div class="summary-panel__title">수익 요약</div>
-    <p class="summary-panel__lead text-muted">1성·2성·3성 연금품 + 희석액 전량 판매 기준 · 전문가 연금 +${effects.alchemyPriceBoost || 0}%</p>
+    <p class="summary-panel__lead text-muted">1성·2성·3성 연금품${includeDiluent ? ' + 희석액' : ''} 전량 판매 기준 · 전문가 연금 +${effects.alchemyPriceBoost || 0}%${includeDiluent ? '' : ' · 0성(희석액) 제외'}</p>
     <div class="metric-kpi-grid" style="margin-bottom:8px;">
       <div class="metric-kpi">
         <div class="metric-kpi__label">총 판매가</div>
@@ -14203,7 +14203,7 @@ function analyzeEfficiency() {
       <div class="metric-kpi"><div class="metric-kpi__label">1성</div><div class="metric-kpi__value">${g1.boosted.toLocaleString()}G</div></div>
       <div class="metric-kpi"><div class="metric-kpi__label">2성</div><div class="metric-kpi__value">${g2.boosted.toLocaleString()}G</div></div>
       <div class="metric-kpi"><div class="metric-kpi__label">3성</div><div class="metric-kpi__value">${g3.boosted.toLocaleString()}G</div></div>
-      <div class="metric-kpi"><div class="metric-kpi__label">희석액</div><div class="metric-kpi__value">${gD.boosted.toLocaleString()}G</div></div>
+      ${includeDiluent ? `<div class="metric-kpi"><div class="metric-kpi__label">희석액</div><div class="metric-kpi__value">${gD.boosted.toLocaleString()}G</div></div>` : ''}
     </div>
     ${diluentRevNote}
   `;
@@ -14519,6 +14519,7 @@ window.addEventListener('DOMContentLoaded', async function() {
     });
   }
   restorePurchaseUiState();
+  restoreAlchemyIncludeDiluentState();
   fetchShellfishBuyPrices();
   try {
     const shellfishChannel = new BroadcastChannel(SHELLFISH_PRICES_BROADCAST);
@@ -14532,6 +14533,13 @@ window.addEventListener('DOMContentLoaded', async function() {
     purchaseToggle.addEventListener('change', () => {
       savePurchaseUiState();
       syncPurchaseControlsUi();
+      handleEfficiencyInputChanged();
+    });
+  }
+  const diluentToggle = document.getElementById('alchemyIncludeDiluentToggle');
+  if (diluentToggle) {
+    diluentToggle.addEventListener('change', () => {
+      saveAlchemyIncludeDiluentState();
       handleEfficiencyInputChanged();
     });
   }
