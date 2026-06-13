@@ -7671,6 +7671,7 @@
                 <span class="mod-chip">Minecraft 1.21.4</span>
                 <span class="mod-chip">모드 v0.1.3</span>
                 <span class="mod-chip">Fabric · Forge</span>
+                <span class="mod-chip">Fabric: Architectury 15.0.3 필수</span>
               </div>
               <div class="mod-download-row">
                 <a class="mod-dl-btn" href="downloads/ddingtae-fabric-0.1.3.jar" download>
@@ -7842,11 +7843,30 @@
           <div class="mod-box">
             <h2>설치 방법</h2>
             <ol class="mod-steps">
-              <li>Fabric Loader 또는 Forge 1.21.4 설치</li>
-              <li>위 다운로드 버튼에서 모드 JAR 받기</li>
+              <li>Fabric Loader 또는 Forge 1.21.4 설치 (Fabric은 Fabric API도 함께 필요)</li>
+              <li><strong>Fabric 사용 시</strong> Architectury API 15.0.3 (<code>architectury-15.0.3-fabric.jar</code>)를 <code>mods</code> 폴더에 추가</li>
+              <li>위 다운로드 버튼에서 본인 로더에 맞는 띵타해 모드 JAR 받기</li>
               <li><code>.minecraft/mods</code> 폴더에 넣기</li>
               <li>게임 실행 후 <strong>J</strong> 키로 항해일지 열기 · 웹 연동</li>
             </ol>
+          </div>
+          <div class="mod-box mod-deps-aside">
+            <h2>부연 — Architectury API가 왜 필요한가요?</h2>
+            <p>
+              띵타해 모드는 Fabric과 Forge <strong>두 로더</strong>에서 같은 기능을 제공하기 위해
+              <strong>Architectury API</strong> 위에서 만들어졌습니다. HUD, 항해일지, 웹 연동, 채집 기록 등
+              핵심 기능이 이 API가 제공하는 로더 공통 인터페이스를 통해 동작합니다.
+            </p>
+            <p>
+              Fabric 쪽은 Architectury를 <strong>별도 모드 JAR</strong>로 두는 구조입니다.
+              그래서 <code>architectury-15.0.3-fabric.jar</code> 없이 띵타해 Fabric JAR만 넣으면
+              의존 모드 누락 오류로 실행되지 않습니다. 띵타해와 Architectury를 함께 넣어 주세요.
+            </p>
+            <p>
+              Architectury는 띵타해 전용이 아니라, 여러 멀티로더 모드가 공통으로 쓰는 기반 API입니다.
+              Modrinth 등에서 <strong>Architectury API · 1.21.4 · Fabric · 15.0.3</strong> 버전을 받으면 됩니다.
+              (<a href="https://modrinth.com/mod/architectury-api" target="_blank" rel="noopener noreferrer">Modrinth — Architectury API</a>)
+            </p>
           </div>
           <div class="mod-box mod-notice">
             <h2>주의사항</h2>
