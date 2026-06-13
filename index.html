@@ -14156,10 +14156,12 @@ function analyzeEfficiency() {
   const g3 = sumFinalPlanGold(plan3, effects);
   const gD = sumFinalPlanGold({ '추출된 희석액': diluentCount }, effects);
   const allPlanCounts = { ...plan1, ...plan2, ...plan3 };
-  allPlanCounts['추출된 희석액'] = diluentCount;
+  if (includeDiluent) allPlanCounts['추출된 희석액'] = diluentCount;
   const planEntries = Object.entries(allPlanCounts).filter(([, n]) => n > 0);
   const totalBaseTimeSec = calculateAlchemyPlanBaseTimeSec(planEntries);
   const totalAdjustedTimeSec = Math.max(0, totalBaseTimeSec * (1 - (effects.timeReduce || 0) / 100));
+  const planEffPerMin =
+    totalAdjustedTimeSec > 0 ? Math.round((g1.boosted + g2.boosted + g3.boosted + (includeDiluent ? gD.boosted : 0)) / (totalAdjustedTimeSec / 60)) : 0;
   const planWrap = document.createElement('div');
   planWrap.className = 'summary-panel summary-panel--plan';
 
@@ -14177,8 +14179,8 @@ function analyzeEfficiency() {
   `;
   containerAlchemy.appendChild(planWrap);
 
-  const totalBase = g1.base + g2.base + g3.base + gD.base;
-  const totalBoosted = g1.boosted + g2.boosted + g3.boosted + gD.boosted;
+  const totalBase = g1.base + g2.base + g3.base + (includeDiluent ? gD.base : 0);
+  const totalBoosted = g1.boosted + g2.boosted + g3.boosted + (includeDiluent ? gD.boosted : 0);
   const revBox = document.createElement('div');
   revBox.className = 'summary-panel';
   const diluentRevNote =
@@ -14234,12 +14236,15 @@ function analyzeEfficiency() {
   containerAlchemy.appendChild(revBox);
 
   const timeBox = document.createElement('div');
-  timeBox.innerHTML = renderAlchemyTimeSummaryBox(totalBaseTimeSec, totalAdjustedTimeSec);
+  timeBox.innerHTML = renderAlchemyTimeSummaryBox(totalBaseTimeSec, totalAdjustedTimeSec, {
+    planEffPerMin,
+    includeDiluent,
+  });
   containerAlchemy.appendChild(timeBox.firstElementChild);
   
   // 연금품 섹션 - 제작 추천 결과 기반으로 표시
   lastAlchemyPlanCountsByName = {};
-  [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'].forEach((name) => {
+  getAlchemyFinalProductNames({ includeDiluent }).forEach((name) => {
     lastAlchemyPlanCountsByName[name] = Math.max(0, Math.floor(Number(allPlanCounts[name]) || 0));
   });
   lastAlchemyRecordSnapshot = {
@@ -14247,6 +14252,8 @@ function analyzeEfficiency() {
     totalBoosted,
     baseSec: totalBaseTimeSec,
     adjustedSec: totalAdjustedTimeSec,
+    planEffPerMin,
+    includeDiluent,
     counts: { ...lastAlchemyPlanCountsByName },
   };
   if (planEntries.length > 0) {
