@@ -7352,20 +7352,18 @@
       </div>
 
       <div class="mod-page">
-        <div class="mod-hero">
-          <div class="mod-hero-main">
-            <div class="mod-kicker">OFFICIAL COMPANION MOD</div>
-            <p class="mod-lead">
-              자원 수집, 제작 진행도, NPC 상점 가격, 연금 재료 관리 등을 자동으로 기록합니다.
-              띵타해 웹 계산기와 연동해 플레이 효율을 높여 줍니다.
-            </p>
-            <div class="mod-meta">
-              <span class="mod-chip">Minecraft 1.21.4</span>
-              <span class="mod-chip">모드 v0.1.3</span>
-              <span class="mod-chip">Fabric · Forge</span>
-            </div>
+        <section class="mod-hero">
+          <div class="mod-kicker">OFFICIAL COMPANION MOD</div>
+          <p class="mod-lead">
+            띵타이쿤 플레이를 돕는 공식 보조 모드입니다.<br>
+            채집·제작·상점 정보를 기록하고, 띵타해 웹 계산기와 연동합니다.
+          </p>
+          <div class="mod-meta">
+            <span class="mod-chip">Minecraft 1.21.4</span>
+            <span class="mod-chip">모드 v0.1.3</span>
+            <span class="mod-chip">Fabric · Forge</span>
           </div>
-          <div class="mod-hero-aside">
+          <div class="mod-download-row">
             <a class="mod-dl-btn" href="downloads/ddingtae-fabric-0.1.3.jar" download>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M12 3v12m0 0l4-4m-4 4L8 11" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -7380,19 +7378,25 @@
               </svg>
               띵타해 Forge · 1.21.4 · v0.1.3
             </a>
-            <p class="mod-install-note">다운로드 후 <code>.minecraft/mods</code> 폴더에 넣고 실행</p>
           </div>
-        </div>
+          <p class="mod-install-note">다운로드 후 <code>.minecraft/mods</code> 폴더에 넣고 게임을 실행하세요.</p>
+        </section>
 
-        <div class="mod-section-head">
-          <h2>주요 기능</h2>
-          <span>실제 모드에 포함된 기능만 안내합니다</span>
-        </div>
+        <p class="mod-features-title">주요 기능</p>
 
-        <div class="mod-features-grid">
-          <article class="mod-card">
-            <div class="mod-card-visual">
-              <div class="mod-shot-label">제작 HUD</div>
+        <div class="mod-rows">
+          <article class="mod-row">
+            <div class="mod-row-copy">
+              <h3>제작 추적기</h3>
+              <p>목표 아이템을 정하면 필요 재료와 진행 상황을 HUD에서 바로 확인합니다.</p>
+              <ul>
+                <li>필요 재료 자동 계산</li>
+                <li>현재 보유량 반영</li>
+                <li>제작 예상 시간 표시</li>
+              </ul>
+            </div>
+            <div class="mod-row-visual">
+              <div class="mod-shot-label">인게임 제작 HUD</div>
               <div class="mod-shot-body mod-shot-craft">
                 <div class="mod-mc-bg">
                   <div class="mod-hud-panel">
@@ -7404,21 +7408,20 @@
                 </div>
               </div>
             </div>
-            <div class="mod-card-body">
-              <h3>제작 추적기</h3>
-              <p>목표 아이템의 재료·진행도·예상 시간을 HUD로 확인합니다.</p>
-              <div class="mod-tags">
-                <span>재료 자동 계산</span>
-                <span>보유량 반영</span>
-                <span>부족 재료</span>
-                <span>제작 시간</span>
-              </div>
-            </div>
           </article>
 
-          <article class="mod-card">
-            <div class="mod-card-visual">
-              <div class="mod-shot-label">채집 목표 HUD</div>
+          <article class="mod-row">
+            <div class="mod-row-copy">
+              <h3>자원 수집 통계</h3>
+              <p>어패류 채집을 자동 기록합니다. 1회 채집당 +1로 웹 스태미나 계획과 맞춥니다.</p>
+              <ul>
+                <li>굴 · 소라 · 문어 · 성게 · 미역</li>
+                <li>목표 대비 진행률 표시</li>
+                <li>새벽 3시 주기 초기화</li>
+              </ul>
+            </div>
+            <div class="mod-row-visual">
+              <div class="mod-shot-label">어패류 채집 목표 HUD</div>
               <div class="mod-shot-body mod-shot-gather">
                 <div class="mod-mc-bg">
                   <div class="mod-hud-panel">
@@ -7431,44 +7434,44 @@
                 </div>
               </div>
             </div>
-            <div class="mod-card-body">
-              <h3>자원 수집 통계</h3>
-              <p>어패류 채집을 1회당 +1로 기록하고, 웹 스태미나 계획과 맞춥니다.</p>
-              <div class="mod-tags">
-                <span>굴 · 소라 · 문어 · 성게 · 미역</span>
-                <span>목표 대비 진행률</span>
-                <span>새벽 3시 초기화</span>
-              </div>
-            </div>
           </article>
 
-          <article class="mod-card">
-            <div class="mod-card-visual">
-              <div class="mod-shot-label">NPC 상점</div>
+          <article class="mod-row">
+            <div class="mod-row-copy">
+              <h3>NPC 상점 스캐너</h3>
+              <p>상점을 열면 판매·구매 가격을 자동으로 분석해 기록합니다.</p>
+              <ul>
+                <li>상점 가격 확인</li>
+                <li>가격 비교</li>
+                <li>거래 기록 저장</li>
+              </ul>
+            </div>
+            <div class="mod-row-visual">
+              <div class="mod-shot-label">NPC 상점 스캔</div>
               <div class="mod-shot-body">
                 <div class="mod-mc-bg">
                   <div class="mod-shop-panel">
-                    <div style="font-weight:700;margin-bottom:6px;">항해 NPC 상점</div>
+                    <div style="font-weight:700;margin-bottom:8px;">항해 NPC 상점</div>
                     <div class="mod-shop-row"><span>굴 ★</span><strong>매입 1,240G</strong></div>
                     <div class="mod-shop-row"><span>소라 ★</span><strong>매입 980G</strong></div>
-                    <div style="margin-top:6px;font-size:9px;color:#4b2e15;">✓ 가격 기록됨</div>
+                    <div style="margin-top:8px;font-size:10px;color:#4b2e15;">✓ 가격 기록됨</div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="mod-card-body">
-              <h3>NPC 상점 스캐너</h3>
-              <p>상점을 열면 판매·구매 가격을 자동으로 분석해 기록합니다.</p>
-              <div class="mod-tags">
-                <span>가격 확인</span>
-                <span>가격 비교</span>
-                <span>거래 기록</span>
-              </div>
-            </div>
           </article>
 
-          <article class="mod-card">
-            <div class="mod-card-visual">
+          <article class="mod-row">
+            <div class="mod-row-copy">
+              <h3>HUD 표시</h3>
+              <p>제작·채집·알림을 게임 화면에 띄웁니다. 위치는 J → HUD 위치에서 조정할 수 있습니다.</p>
+              <ul>
+                <li>목표 진행도 · 수집량</li>
+                <li>조개 출현 알림</li>
+                <li>HUD 배치 편집</li>
+              </ul>
+            </div>
+            <div class="mod-row-visual">
               <div class="mod-shot-label">HUD · 조개 알림</div>
               <div class="mod-shot-body mod-shot-hud">
                 <div class="mod-mc-bg">
@@ -7484,19 +7487,19 @@
                 </div>
               </div>
             </div>
-            <div class="mod-card-body">
-              <h3>HUD 표시</h3>
-              <p>제작·채집·알림을 게임 화면에 띄우고, J → HUD 위치에서 배치를 조정합니다.</p>
-              <div class="mod-tags">
-                <span>진행도 · 수집량</span>
-                <span>조개 출현 알림</span>
-                <span>위치 편집</span>
-              </div>
-            </div>
           </article>
 
-          <article class="mod-card mod-card--wide">
-            <div class="mod-card-visual">
+          <article class="mod-row">
+            <div class="mod-row-copy">
+              <h3>웹 대시보드 연동</h3>
+              <p>Discord 로그인과 마크 연동 코드로 띵타해 웹 계산기와 데이터를 맞춥니다.</p>
+              <ul>
+                <li>스태미나 · 채집 목표 동기화</li>
+                <li>항해일지 연동</li>
+                <li>재료 창고 연동</li>
+              </ul>
+            </div>
+            <div class="mod-row-visual">
               <div class="mod-shot-label">항해일지 · 웹 연동</div>
               <div class="mod-shot-body">
                 <div class="mod-mc-bg">
@@ -7512,33 +7515,24 @@
                 </div>
               </div>
             </div>
-            <div class="mod-card-body">
-              <h3>웹 대시보드 연동</h3>
-              <p>Discord 로그인·마크 연동 코드로 띵타해 웹 계산기와 데이터를 동기화합니다.</p>
-              <div class="mod-tags">
-                <span>스태미나 · 채집 목표</span>
-                <span>항해일지</span>
-                <span>재료 창고 연동</span>
-              </div>
-            </div>
           </article>
         </div>
 
-        <div class="mod-bottom-grid">
+        <section class="mod-bottom">
           <div class="mod-box">
             <h2>설치 방법</h2>
             <ol class="mod-steps">
               <li>Fabric Loader 또는 Forge 1.21.4 설치</li>
-              <li>위 버튼에서 모드 JAR 다운로드</li>
+              <li>위 다운로드 버튼에서 모드 JAR 받기</li>
               <li><code>.minecraft/mods</code> 폴더에 넣기</li>
-              <li>게임 실행 후 <strong>J</strong> 키로 항해일지 · 웹 연동</li>
+              <li>게임 실행 후 <strong>J</strong> 키로 항해일지 열기 · 웹 연동</li>
             </ol>
           </div>
           <div class="mod-box mod-notice">
             <h2>주의사항</h2>
             <p>본 모드는 띵타이쿤 플레이를 지원하기 위한 보조 모드이며, 서버 규정을 준수해야 합니다.</p>
           </div>
-        </div>
+        </section>
       </div>
     </div>
   </div>
