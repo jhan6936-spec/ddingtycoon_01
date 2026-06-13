@@ -25,7 +25,7 @@ window.CRAFT_MAX_PRICES = {
 window.CRAFT_RECIPE_DEFAULTS = {
   '조개껍데기 브로치': {
     price: 47682,
-    timeMinutes: 1,
+    timeMinutes: 5,
     inputs: [
       { name: '깨진 조개껍데기', count: 1 },
       { name: '노란빛 진주', count: 1 },
@@ -35,7 +35,7 @@ window.CRAFT_RECIPE_DEFAULTS = {
   },
   '푸른 향수병': {
     price: 89700,
-    timeMinutes: 1,
+    timeMinutes: 7,
     inputs: [
       { name: '깨진 조개껍데기', count: 2 },
       { name: '푸른빛 진주', count: 1 },
@@ -46,7 +46,7 @@ window.CRAFT_RECIPE_DEFAULTS = {
   },
   '자개 손거울': {
     price: 257671,
-    timeMinutes: 1,
+    timeMinutes: 7,
     inputs: [
       { name: '깨진 조개껍데기', count: 3 },
       { name: '청록빛 진주', count: 1 },
@@ -57,7 +57,7 @@ window.CRAFT_RECIPE_DEFAULTS = {
   },
   '분홍 헤어핀': {
     price: 456177,
-    timeMinutes: 1,
+    timeMinutes: 10,
     inputs: [
       { name: '깨진 조개껍데기', count: 4 },
       { name: '분홍빛 진주', count: 1 },
@@ -69,7 +69,7 @@ window.CRAFT_RECIPE_DEFAULTS = {
   },
   '자개 부채': {
     price: 90580,
-    timeMinutes: 1,
+    timeMinutes: 10,
     inputs: [
       { name: '깨진 조개껍데기', count: 5 },
       { name: '보라빛 진주', count: 1 },
@@ -81,7 +81,7 @@ window.CRAFT_RECIPE_DEFAULTS = {
   },
   '흑진주 시계': {
     price: 735064,
-    timeMinutes: 1,
+    timeMinutes: 15,
     inputs: [
       { name: '깨진 조개껍데기', count: 7 },
       { name: '흑진주', count: 1 },
