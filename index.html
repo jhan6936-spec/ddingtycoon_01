@@ -13502,7 +13502,7 @@ function buildStaminaAllocationContext(inventory) {
     have: Math.round(getShellfishEffectiveStock(inventory, name)),
     shortage: Math.max(0, Math.round((planByBase[name] || 0) - getShellfishEffectiveStock(inventory, name)))
   }));
-  return { effScores, weights, planInfo, meta };
+  return { effScores, weights, planInfo, meta, includeDiluent };
 }
 
 function sumFinalPlanGold(countsByName, effects) {
@@ -13689,6 +13689,9 @@ function renderStaminaPlan() {
     : allocCtx.planInfo.shell
       ? '창고 기준으로 연금 소모량을 추정해 분배했습니다. 연금품 탭 계산 후 더 정확해집니다.'
       : '창고·연금 효율만 반영했습니다. 재료 창고 입력 후 연금품 계산을 실행하세요.';
+  const diluentEffHint = allocCtx.includeDiluent === false
+    ? ' 0성(희석액) 제외 — 연금 효율·추천은 1·2·3성 9종 기준입니다.'
+    : '';
   const shellfishImages = { 굴: '재료/굴.png', 소라: '재료/소라.png', 문어: '재료/문어.png', 미역: '재료/미역.png', 성게: '재료/성게.png' };
   const deepBonus = (expertMeta.deepCollector.values[expertState.deepCollector] || 0) / 100;
   const engraving = getSageEngravingEffects();
@@ -13726,7 +13729,7 @@ function renderStaminaPlan() {
 
   result.innerHTML = `
     <div style="font-size:13px; color:#9eb2c8; margin-bottom:8px; text-align:center;">입력 ${staminaRaw} → 채집에 사용 <strong style="color:#cde7ff;">${stamina}</strong> (15 단위)</div>
-    <div style="font-size:11px;color:#7f99b6;line-height:1.45;margin-bottom:10px;text-align:center;">${planHint}</div>
+    <div style="font-size:11px;color:#7f99b6;line-height:1.45;margin-bottom:10px;text-align:center;">${planHint}${diluentEffHint}</div>
     <div style="font-size:14px; font-weight:900; color:#f2f2f2; margin-bottom:10px; padding:12px; background:#1a1a1a; border-radius:8px; text-align:center;">⚡ 총 채집 가능: ${gathers}회 (스태미나 15 소모 기준)</div>
     <div style="font-size:12px; color:#9eb2c8; margin-bottom:10px; text-align:center;">세이지 드롭 ${effectiveDrops.toFixed(2)}개/회 (심해채집꾼+각인 반영), 조개 등장 ${shellChanceTotal.toFixed(1)}%, 어획력 ${fishingPowerTotal}, 3성 확률 ${star3Chance.toFixed(1)}%</div>
     <div style="font-size:11px; color:#7f99b6; margin-bottom:10px; text-align:center;">각인 기대값: 물고기 +${expectedExtraFish.toFixed(2)}회분, 정령고래 깨진 조개껍데기 +${expectedWhaleBrokenShell.toFixed(2)}개 (룰렛 포함 기대 어패는 드롭/회에 반영)</div>
