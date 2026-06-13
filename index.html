@@ -12004,6 +12004,17 @@ function alchemyIncludeDiluentEnabled() {
   return toggle ? toggle.checked : true;
 }
 
+function resolveAlchemyIncludeDiluent(options = {}) {
+  if (options.includeDiluent !== undefined) return options.includeDiluent !== false;
+  return alchemyIncludeDiluentEnabled();
+}
+
+function getAlchemyFinalProductNames(options = {}) {
+  const names = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3];
+  if (resolveAlchemyIncludeDiluent(options)) names.push('추출된 희석액');
+  return names;
+}
+
 function saveAlchemyIncludeDiluentState() {
   try {
     const toggle = document.getElementById('alchemyIncludeDiluentToggle');
@@ -12151,7 +12162,7 @@ function evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects, prepOpts
   }
   const merged = prepareInventoryForAlchemyPlan(mergeInventoryWithPurchases(stockInv, purchases), prep);
   const optimized = optimizeAlchemyPlan(merged, effects, prep);
-  const gold = alchemyPlanTotalGold(optimized, effects);
+  const gold = alchemyPlanTotalGold(optimized, effects, prep);
   const purchaseCost = prices ? purchaseCostFromMap(purchases, prices) : 0;
   const result = {
     optimized,
