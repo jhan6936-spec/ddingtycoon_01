@@ -8549,10 +8549,10 @@ function ensureCalcPopup() {
     const allowed = '0123456789+-*/().';
     if (allowed.includes(e.key)) {
     if (calcState.mode === 'count') {
-      calcState.countExpr += e.key;
+      calcState.countExpr = appendCalcExprChar(calcState.countExpr, e.key);
     } else {
-      if (calcState.activePart === 'rem') calcState.remExpr += e.key;
-      else calcState.setExpr += e.key;
+      if (calcState.activePart === 'rem') calcState.remExpr = appendCalcExprChar(calcState.remExpr, e.key);
+      else calcState.setExpr = appendCalcExprChar(calcState.setExpr, e.key);
     }
 
     // 세트 모드 "개 입력"은 0~63 범위만 허용(키보드 입력)
@@ -8720,8 +8720,8 @@ function openCalculatorForInput(inputEl, options = {}) {
     const sets = Math.floor(raw / SET_SIZE);
     const rem = raw % SET_SIZE;
     calcState.countExpr = '';
-    calcState.setExpr = String(sets);
-    calcState.remExpr = String(rem);
+    calcState.setExpr = sets > 0 ? String(sets) : '';
+    calcState.remExpr = rem > 0 ? String(rem) : '';
     const partHint = options.activePart === 'rem' ? 'rem' : getWarehouseCalcActivePart(inputEl);
     syncCalcPopupModeUi(popup, 'set', partHint);
   } else {
@@ -8777,6 +8777,12 @@ function closeCalculator() {
   }
 }
 
+function appendCalcExprChar(expr, key) {
+  const cur = expr || '';
+  if (/^\d$/.test(key) && cur === '0') return key;
+  return cur + key;
+}
+
 function handleCalcKey(key) {
   if (key === 'C') {
     if (calcState.mode === 'count') calcState.countExpr = '';
@@ -8796,10 +8802,10 @@ function handleCalcKey(key) {
     return;
   }
   if (calcState.mode === 'count') {
-    calcState.countExpr += key;
+    calcState.countExpr = appendCalcExprChar(calcState.countExpr, key);
   } else {
-    if (calcState.activePart === 'rem') calcState.remExpr += key;
-    else calcState.setExpr += key;
+    if (calcState.activePart === 'rem') calcState.remExpr = appendCalcExprChar(calcState.remExpr, key);
+    else calcState.setExpr = appendCalcExprChar(calcState.setExpr, key);
   }
 
   // 세트 모드 "개 입력"은 0~63 범위만 허용 (숫자만 단독 입력인 경우 즉시 제한)
@@ -8911,8 +8917,8 @@ function convertCalcMode(nextMode) {
     }
     const sets = Math.floor(total / SET_SIZE);
     const rem = total % SET_SIZE;
-    calcState.setExpr = String(sets);
-    calcState.remExpr = String(rem);
+    calcState.setExpr = sets > 0 ? String(sets) : '';
+    calcState.remExpr = rem > 0 ? String(rem) : '';
     return;
   }
 
