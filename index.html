@@ -13000,7 +13000,14 @@ function calculateAlchemyPlanBaseTimeSec(planEntries) {
   return (planEntries || []).reduce((sum, [name, count]) => sum + calculateAlchemyProductBaseTimeSec(name, count), 0);
 }
 
-function renderAlchemyTimeSummaryBox(baseSec, adjustedSec) {
+function renderAlchemyTimeSummaryBox(baseSec, adjustedSec, options = {}) {
+  const planEffPerMin = Math.max(0, Math.floor(Number(options.planEffPerMin) || 0));
+  const includeDiluent = options.includeDiluent !== false;
+  const effScopeNote = includeDiluent ? '1·2·3성 + 희석액' : '1·2·3성 9종';
+  const effLine =
+    planEffPerMin > 0
+      ? `<div class="alchemy-time-eff-note">제작 효율 <strong style="color:#9ecb7a;">${planEffPerMin.toLocaleString()}G/분</strong> · ${effScopeNote} 기준 · 전문가 시간 반영</div>`
+      : '';
   return `
     <div class="alchemy-time-summary-box">
       <div class="alchemy-time-grid">
@@ -13013,6 +13020,7 @@ function renderAlchemyTimeSummaryBox(baseSec, adjustedSec) {
           <div class="alchemy-time-value">${escapeHtml(formatGuideDurationSec(adjustedSec))}</div>
         </div>
       </div>
+      ${effLine}
       <div class="alchemy-time-talk">${escapeHtml(getAlchemyTimeTalk(adjustedSec))}</div>
     </div>
   `;
