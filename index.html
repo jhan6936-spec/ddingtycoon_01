@@ -6765,25 +6765,68 @@
     }
     #mod .mod-deps-callout-title {
       font-size: 13px;
-      font-weight: 800;
-      color: #fbbf24;
+      font-weight: 600;
+      color: #fde68a;
       margin-bottom: 8px;
     }
     #mod .mod-deps-callout p {
       font-size: 12px;
-      color: #b8c9d9;
+      color: #d5e3ef;
       line-height: 1.65;
       margin: 0 0 8px;
     }
     #mod .mod-deps-callout p:last-child {
       margin-bottom: 0;
     }
-    #mod .mod-deps-callout code {
-      font-size: 11px;
-      padding: 1px 5px;
-      border-radius: 4px;
+    #mod .mod-em {
+      font-weight: 500;
+    }
+    #mod .mod-em--amber {
+      color: #fde68a;
+    }
+    #mod .mod-em--cyan {
+      color: #9ee8f7;
+    }
+    #mod .mod-path,
+    #mod .mod-file,
+    #mod .mod-kbd {
+      display: inline-block;
+      font-family: inherit;
+      font-size: 0.92em;
+      font-weight: 500;
+      line-height: 1.35;
+      padding: 1px 7px;
+      border-radius: 5px;
+      vertical-align: baseline;
+    }
+    #mod .mod-path {
+      border: 1px solid rgba(159, 180, 200, 0.28);
       background: rgba(0, 0, 0, 0.28);
-      color: #e8f4ff;
+      color: #e2edf7;
+    }
+    #mod .mod-file {
+      border: 1px solid rgba(251, 191, 36, 0.32);
+      background: rgba(251, 191, 36, 0.1);
+      color: #fde68a;
+    }
+    #mod .mod-kbd {
+      min-width: 1.35em;
+      text-align: center;
+      border: 1px solid rgba(18, 194, 232, 0.38);
+      background: rgba(18, 194, 232, 0.12);
+      color: #9ee8f7;
+    }
+    #mod strong,
+    #mod b,
+    #mod code {
+      font-family: inherit;
+      font-weight: 500;
+    }
+    #mod code {
+      font-size: inherit;
+      padding: 0;
+      background: none;
+      color: inherit;
     }
     #mod .mod-deps-aside p {
       color: #a8bdd0;
@@ -6817,7 +6860,7 @@
       background: rgba(125, 228, 247, 0.08);
       color: #7de4f7 !important;
       font-size: 13px;
-      font-weight: 700;
+      font-weight: 600;
       line-height: 1.4;
       text-decoration: none !important;
       pointer-events: auto;
@@ -6897,36 +6940,39 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
-      padding: 8px 10px;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.04em;
+      flex-wrap: wrap;
+      gap: 6px 8px;
+      padding: 9px 11px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
     }
     #mod .mod-journal-card--day .mod-journal-card-label {
-      color: #8b5a2a;
-      background: linear-gradient(90deg, rgba(255, 214, 140, 0.22), rgba(255, 214, 140, 0.06));
-      border-bottom: 1px solid rgba(180, 120, 50, 0.25);
+      color: #fff3d6;
+      background: #3f2a14;
+      border-bottom: 1px solid rgba(255, 210, 130, 0.35);
     }
     #mod .mod-journal-card--night .mod-journal-card-label {
-      color: #8ecdf0;
-      background: linear-gradient(90deg, rgba(18, 194, 232, 0.18), rgba(18, 194, 232, 0.04));
-      border-bottom: 1px solid rgba(18, 194, 232, 0.22);
+      color: #d8f4ff;
+      background: #102433;
+      border-bottom: 1px solid rgba(18, 194, 232, 0.32);
     }
     #mod .mod-journal-card-tag {
       font-size: 10px;
-      font-weight: 700;
-      padding: 2px 7px;
+      font-weight: 500;
+      padding: 3px 8px;
       border-radius: 999px;
-      opacity: 0.9;
+      white-space: nowrap;
     }
     #mod .mod-journal-card--day .mod-journal-card-tag {
-      color: #6b4423;
-      background: rgba(255, 220, 150, 0.35);
+      color: #fff3d6;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 210, 130, 0.35);
     }
     #mod .mod-journal-card--night .mod-journal-card-tag {
-      color: #b8ecff;
-      background: rgba(18, 194, 232, 0.18);
+      color: #d8f4ff;
+      background: rgba(18, 194, 232, 0.14);
+      border: 1px solid rgba(18, 194, 232, 0.32);
     }
     #mod .mod-journal-card-frame {
       position: relative;
