@@ -12179,18 +12179,20 @@ function evaluateAlchemyPlanWithPurchases(stockInv, purchases, effects, prepOpts
   return result;
 }
 
-function packOptimizedPlanCounts(optimized) {
+function packOptimizedPlanCounts(optimized, options = {}) {
   if (!optimized || !optimized.plans) return {};
   const out = { ...optimized.plans[0], ...optimized.plans[1], ...optimized.plans[2] };
-  out['추출된 희석액'] = optimized.diluentCount || 0;
+  if (resolveAlchemyIncludeDiluent(options)) {
+    out['추출된 희석액'] = optimized.diluentCount || 0;
+  }
   return out;
 }
 
-function diffFinalPlanCounts(beforeOptimized, afterOptimized) {
-  const before = packOptimizedPlanCounts(beforeOptimized);
-  const after = packOptimizedPlanCounts(afterOptimized);
+function diffFinalPlanCounts(beforeOptimized, afterOptimized, options = {}) {
+  const before = packOptimizedPlanCounts(beforeOptimized, options);
+  const after = packOptimizedPlanCounts(afterOptimized, options);
   const deltas = {};
-  [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3, '추출된 희석액'].forEach((name) => {
+  getAlchemyFinalProductNames(options).forEach((name) => {
     const d = Math.max(0, Math.floor(Number(after[name]) || 0) - Math.floor(Number(before[name]) || 0));
     if (d > 0) deltas[name] = d;
   });
@@ -12612,13 +12614,16 @@ function packAlchemyPlanResult(counts) {
   return { plans: [plan1, plan2, plan3], diluentCount };
 }
 
-function alchemyPlanTotalGold(packed, effects) {
-  return (
+function alchemyPlanTotalGold(packed, effects, options = {}) {
+  const includeDiluent = resolveAlchemyIncludeDiluent(options);
+  let total =
     sumFinalPlanGold(packed.plans[0], effects).boosted +
     sumFinalPlanGold(packed.plans[1], effects).boosted +
-    sumFinalPlanGold(packed.plans[2], effects).boosted +
-    sumFinalPlanGold({ '추출된 희석액': packed.diluentCount }, effects).boosted
-  );
+    sumFinalPlanGold(packed.plans[2], effects).boosted;
+  if (includeDiluent) {
+    total += sumFinalPlanGold({ '추출된 희석액': packed.diluentCount }, effects).boosted;
+  }
+  return total;
 }
 
 function optimizeAlchemyPlanGreedy(inv, options = {}) {
