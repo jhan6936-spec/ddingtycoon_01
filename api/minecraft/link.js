@@ -152,6 +152,46 @@ async function handleMe(req, res) {
   })
 }
 
+async function clearUserLinks(userId) {
+  await supabaseRest(`/minecraft_link_codes?user_id=eq.${encodeURIComponent(userId)}`, {
+    method: 'PATCH',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify({
+      access_token: null,
+      access_token_hash: null
+    })
+  })
+}
+
+async function handleUnlink(req, res) {
+  const authorization = req.headers.authorization || ''
+  const bearer = authorization.startsWith('Bearer ') ? authorization.slice(7).trim() : ''
+
+  const user = await getSupabaseUser(authorization)
+  if (user && user.id) {
+    await clearUserLinks(user.id)
+    return sendJson(res, 200, { unlinked: true, scope: 'user' })
+  }
+
+  if (bearer) {
+    const tokenHash = hashToken(bearer)
+    await supabaseRest(
+      `/minecraft_link_codes?access_token_hash=eq.${encodeURIComponent(tokenHash)}`,
+      {
+        method: 'PATCH',
+        headers: { Prefer: 'return=minimal' },
+        body: JSON.stringify({
+          access_token: null,
+          access_token_hash: null
+        })
+      }
+    )
+    return sendJson(res, 200, { unlinked: true, scope: 'token' })
+  }
+
+  return sendJson(res, 401, { error: 'login_required' })
+}
+
 async function handleClaim(req, res) {
   const user = await getSupabaseUser(req.headers.authorization || '')
   if (!user || !user.id) return sendJson(res, 401, { error: 'login_required' })
