@@ -10155,6 +10155,50 @@ async function claimMinecraftLinkCode() {
     if (button) button.disabled = false;
   } finally {
     clearTimeout(timeout);
+    if (button) button.disabled = false;
+  }
+}
+
+async function unlinkMinecraftLink() {
+  const sb = getSupabaseClient();
+  const status = document.getElementById('minecraftLinkStatus');
+  if (!sb || !currentAuthUserId) {
+    const message = 'Discord 로그인이 필요합니다.';
+    if (status) status.textContent = message;
+    alert(message);
+    return;
+  }
+  if (!confirm('웹과 서버에 저장된 마인크래프트 연동을 해제합니다.\n게임에서 다시 연동하려면 J → 선원 → 웹 연동으로 새 코드를 발급하세요.\n\n연동을 해제할까요?')) {
+    return;
+  }
+
+  const { data: sessionData, error } = await sb.auth.getSession();
+  if (error || !sessionData.session?.access_token) {
+    const message = 'Discord 로그인이 필요합니다.';
+    if (status) status.textContent = message;
+    alert(message);
+    return;
+  }
+
+  if (status) status.textContent = '연동 해제 중...';
+  try {
+    const response = await fetch('/api/minecraft/link?action=unlink', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${sessionData.session.access_token}`
+      }
+    });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(body.error || '연동 해제 실패');
+    clearPendingMinecraftLinkCode();
+    if (status) status.textContent = '연동이 해제되었습니다. 게임에서 새 코드를 발급한 뒤 아래에 입력하세요.';
+    await openMinecraftLinkModal('', { keepOpen: true });
+    refreshMinecraftLinkUi();
+    alert('연동 해제 완료. 게임에서 [웹 연동]으로 새 코드를 발급한 뒤, 여기에 입력해 다시 연결하세요.');
+  } catch (e) {
+    const message = `연동 해제 실패: ${e.message || e}`;
+    if (status) status.textContent = message;
+    alert(message);
   }
 }
 
