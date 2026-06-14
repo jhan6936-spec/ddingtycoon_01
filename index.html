@@ -1582,6 +1582,34 @@
     .minecraft-link-btn:hover {
       background: #21486b;
     }
+    .minecraft-unlink-btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid #8a4a4a;
+      background: #3a1f1f;
+      color: #ffd8d8;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .minecraft-unlink-btn:hover {
+      background: #552828;
+    }
+    .minecraft-link-linked-box {
+      margin: 0 0 14px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: rgba(45, 92, 34, 0.18);
+      border: 1px solid rgba(93, 168, 74, 0.35);
+      color: #c8e8bc;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .minecraft-link-relink-note {
+      margin: 0 0 12px;
+      color: #9aa8b8;
+      font-size: 12px;
+      line-height: 1.55;
+    }
     .minecraft-link-status {
       margin-top: 10px;
       color: #aeb8c5;
@@ -8101,7 +8129,7 @@
       <div id="minecraftLinkBadge" class="minecraft-link-badge" hidden aria-live="polite"></div>
       <div class="profile-settings-actions">
         <button type="button" class="profile-save-btn" onclick="saveProfileSettings()">저장</button>
-        <button type="button" class="minecraft-link-btn" onclick="openMinecraftLinkModal()">마크 연동</button>
+        <button type="button" class="minecraft-link-btn" id="minecraftLinkManageBtn" onclick="openMinecraftLinkModal()">마크 연동</button>
         <button type="button" class="profile-logout-btn" onclick="logoutFromProfileModal()">로그아웃</button>
       </div>
     </div>
@@ -8117,6 +8145,15 @@
     <div class="patch-modal-body">
       <p style="color:#b8c1cc; line-height:1.55; margin-top:0;">
         모드에서 발급된 연동 코드를 입력하면 현재 Discord 계정과 마인크래프트 계정이 연결됩니다.
+      </p>
+      <div id="minecraftLinkLinkedPanel" class="minecraft-link-linked-box" hidden>
+        <div id="minecraftLinkLinkedSummary"></div>
+        <div class="profile-settings-actions" style="margin-top:10px;">
+          <button type="button" class="minecraft-unlink-btn" onclick="unlinkMinecraftLink()">연동 해제</button>
+        </div>
+      </div>
+      <p id="minecraftLinkRelinkNote" class="minecraft-link-relink-note" hidden>
+        다시 연동하려면 게임에서 <strong>J → 선원 → 웹 연동</strong>으로 새 코드를 발급한 뒤 아래에 입력하세요.
       </p>
       <label class="profile-field-label" for="minecraftLinkCodeInput">연동 코드</label>
       <input type="text" id="minecraftLinkCodeInput" class="profile-field-input" maxlength="16" autocomplete="one-time-code" placeholder="예: A7K2PQ">

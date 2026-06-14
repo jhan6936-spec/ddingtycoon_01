@@ -1,6 +1,6 @@
 /**
  * 마인크래프트 ↔ 웹 연동 (단일 Serverless Function)
- * ?action=start|status|restore|me|claim
+ * ?action=start|status|restore|me|claim|unlink
  */
 const {
   handleCors,
@@ -211,6 +211,8 @@ async function handleClaim(req, res) {
     return sendJson(res, 409, { error: 'code_already_claimed' })
   }
 
+  await clearUserLinks(user.id)
+
   const token = randomToken()
   await supabaseRest(`/minecraft_link_codes?id=eq.${encodeURIComponent(row.id)}`, {
     method: 'PATCH',
@@ -251,7 +253,7 @@ module.exports = async function handler(req, res) {
   if (!action) {
     return sendJson(res, 400, {
       error: 'action_required',
-      hint: 'action=start|status|restore|me|claim'
+      hint: 'action=start|status|restore|me|claim|unlink'
     })
   }
 
@@ -275,6 +277,10 @@ module.exports = async function handler(req, res) {
     if (action === 'claim') {
       if (req.method !== 'POST') return sendJson(res, 405, { error: 'method_not_allowed' })
       return await handleClaim(req, res)
+    }
+    if (action === 'unlink') {
+      if (req.method !== 'POST') return sendJson(res, 405, { error: 'method_not_allowed' })
+      return await handleUnlink(req, res)
     }
     return sendJson(res, 400, { error: 'unknown_action', action })
   } catch (error) {
