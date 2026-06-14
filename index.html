@@ -7863,7 +7863,7 @@
               </p>
               <div class="mod-meta">
                 <span class="mod-chip">Minecraft 1.21.4</span>
-                <span class="mod-chip">모드 v0.1.4</span>
+                <span class="mod-chip">모드 v0.1.5</span>
                 <span class="mod-chip">Fabric · Forge</span>
                 <span class="mod-chip">Fabric: Architectury 15.0.3 필수</span>
               </div>
@@ -9603,12 +9603,6 @@ async function handleMinecraftLinkCodeFromUrl() {
   const code = stripMinecraftLinkCodeFromUrl();
   if (!code) return;
   if (currentAuthUserId) {
-    const linkState = await fetchMinecraftLinkState();
-    if (linkState.linked) {
-      clearPendingMinecraftLinkCode();
-      refreshMinecraftLinkUi();
-      return;
-    }
     openMinecraftLinkModal(code, { autoOpen: true });
     return;
   }
@@ -9624,12 +9618,6 @@ async function openPendingMinecraftLinkAfterLogin() {
   } catch (_) {}
   const modal = document.getElementById('minecraftLinkModal');
   if (modal && modal.classList.contains('open')) return;
-  const linkState = await fetchMinecraftLinkState();
-  if (linkState.linked) {
-    clearPendingMinecraftLinkCode();
-    refreshMinecraftLinkUi();
-    return;
-  }
   openMinecraftLinkModal(code, { autoOpen: true, fromPendingLogin: true });
 }
 
