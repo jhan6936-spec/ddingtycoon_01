@@ -9690,18 +9690,26 @@ async function openMinecraftLinkModal(prefillCode, options) {
   const input = document.getElementById('minecraftLinkCodeInput');
   const status = document.getElementById('minecraftLinkStatus');
   const saveButton = document.querySelector('#minecraftLinkModal .profile-save-btn');
+  const linkedPanel = document.getElementById('minecraftLinkLinkedPanel');
+  const linkedSummary = document.getElementById('minecraftLinkLinkedSummary');
+  const relinkNote = document.getElementById('minecraftLinkRelinkNote');
+  const manageBtn = document.getElementById('minecraftLinkManageBtn');
   const linkState = await fetchMinecraftLinkState();
-  if (linkState.linked) {
-    clearPendingMinecraftLinkCode();
-    refreshMinecraftLinkUi();
-    return;
+  const linked = !!linkState.linked;
+  if (manageBtn) manageBtn.textContent = linked ? '마크 연동 관리' : '마크 연동';
+  if (linkedPanel) linkedPanel.hidden = !linked;
+  if (relinkNote) relinkNote.hidden = !linked;
+  if (linkedSummary) {
+    const discordName = linkState.discordName || resolveDiscordDisplayNameForMinecraft() || 'Discord';
+    const mcName = linkState.minecraftName ? ` · ${linkState.minecraftName}` : '';
+    linkedSummary.textContent = `${discordName}${mcName} 계정이 연동되어 있습니다. 게임에서만 해제했다면 웹에서도 [연동 해제]를 눌러 상태를 맞춰 주세요.`;
   }
   if (input) {
     if (normalized) input.value = normalized;
     input.disabled = false;
   }
   if (saveButton) saveButton.disabled = false;
-  if (status) status.textContent = '';
+  if (status) status.textContent = linked ? '새 코드로 다시 연동하려면 아래에 입력하세요.' : '';
   if (modal) modal.classList.add('open');
   if (input) input.focus();
   if (opts.autoOpen && normalized) {
@@ -9983,6 +9991,7 @@ async function refreshMinecraftLinkUi() {
     return;
   }
   const state = await fetchMinecraftLinkState();
+  const manageBtn = document.getElementById('minecraftLinkManageBtn');
   if (state.linked) {
     const name = state.discordName || resolveDiscordDisplayNameForMinecraft() || 'Discord';
     badge.hidden = false;
@@ -9990,8 +9999,10 @@ async function refreshMinecraftLinkUi() {
     badge.textContent = staminaReady
       ? `${name} · 마크 연동됨 · 스태미나 동기화 중`
       : `${name} · 마인크래프트 연동됨`;
+    if (manageBtn) manageBtn.textContent = '마크 연동 관리';
     return;
   }
+  if (manageBtn) manageBtn.textContent = '마크 연동';
   if (staminaReady) {
     badge.hidden = false;
     badge.style.color = '#fbbf24';
@@ -10129,9 +10140,10 @@ async function claimMinecraftLinkCode() {
     const captainName = resolveDiscordDisplayNameForMinecraft() || 'Discord';
     const doneMessage = `${captainName} · 마인크래프트 연동됨`;
     if (status) status.textContent = doneMessage;
-    if (input) input.disabled = true;
+    if (input) input.disabled = false;
     clearPendingMinecraftLinkCode();
     refreshMinecraftLinkUi();
+    await openMinecraftLinkModal('', { keepOpen: true });
     scheduleMinecraftDashboardSync();
     alert('연동 완료! 이제 모드 항해일지에서 웹 계산 결과를 확인할 수 있습니다.');
   } catch (e) {
