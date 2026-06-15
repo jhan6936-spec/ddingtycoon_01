@@ -7868,19 +7868,19 @@
                 <span class="mod-chip">Fabric: Architectury 15.0.3 필수</span>
               </div>
               <div class="mod-download-row">
-                <a class="mod-dl-btn" href="downloads/ddingtae-fabric-0.1.6.jar" download>
+                <a class="mod-dl-btn" href="downloads/ddingtae-fabric-0.1.7.jar" download>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path d="M12 3v12m0 0l4-4m-4 4L8 11" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                     <path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
                   </svg>
-                  띵타해 Fabric · 1.21.4 · v0.1.6
+                  띵타해 Fabric · 1.21.4 · v0.1.7
                 </a>
-                <a class="mod-dl-btn mod-dl-btn--secondary" href="downloads/ddingtae-forge-0.1.6.jar" download>
+                <a class="mod-dl-btn mod-dl-btn--secondary" href="downloads/ddingtae-forge-0.1.7.jar" download>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path d="M12 3v12m0 0l4-4m-4 4L8 11" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                     <path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
                   </svg>
-                  띵타해 Forge · 1.21.4 · v0.1.6
+                  띵타해 Forge · 1.21.4 · v0.1.7
                 </a>
                 <button type="button" class="patch-note-btn mod-patch-note-btn" onclick="openModPatchNotes()">패치노트</button>
               </div>
@@ -8570,12 +8570,18 @@ function buildImageTag(name, alt = '', style = '', className = '') {
   return `<img src="${src0}" alt="${safeAlt}"${cls} data-img-candidates="${safeCandidates}" data-img-fallback-index="0"${styleAttr} decoding="async" loading="lazy" onerror="handleImageFallback(this)">`;
 }
 
-const MOD_VERSION = '0.1.6';
+const MOD_VERSION = '0.1.7';
 
 const MOD_PATCH_NOTES_HTML = `
   <h3>띵타해 모드 (DDingtae)</h3>
   <p><strong>버전:</strong> v${MOD_VERSION}</p>
   <p class="patch-notes-lead">모드 업데이트 내역을 버전별로 정리합니다. 항목이 많아지면 이 창 안을 스크롤하면 됩니다.</p>
+  <h3>v0.1.7</h3>
+  <ul>
+    <li><strong>낚싯대 어패류 채집</strong>이 채집 횟수에 반영되도록 수정했습니다. v0.1.6은 엔티티 공격/우클릭 이벤트만 감지해 낚싯대 채집이 0으로 남던 문제가 있었습니다.</li>
+    <li>인벤토리에 어패류가 들어오면 <strong>채집 1회 = +1</strong>만 집계합니다 (1~3성 여러 개가 들어와도 +1).</li>
+    <li>어부 룰렛 보너스는 본 채집 직후 인벤 지급만 제외합니다. 액션바 룰렛 안내가 먼저 떠도 본 채집은 정상 집계됩니다.</li>
+  </ul>
   <h3>v0.1.6</h3>
   <ul>
     <li>v0.1.4~0.1.5에서 어패류 채집 횟수가 올라가지 않던 문제를 수정했습니다. 웹 연동·채집 목표 HUD는 보이는데 횟수만 0으로 남던 증상입니다.</li>
