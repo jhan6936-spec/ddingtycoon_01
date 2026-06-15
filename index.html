@@ -7880,7 +7880,7 @@
                     <path d="M12 3v12m0 0l4-4m-4 4L8 11" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                     <path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
                   </svg>
-                  띵타해 Forge · 1.21.4 · v0.1.9
+                  띵타해 Forge · 1.21.4 · v0.1.10
                 </a>
                 <button type="button" class="patch-note-btn mod-patch-note-btn" onclick="openModPatchNotes()">패치노트</button>
               </div>
@@ -8570,12 +8570,18 @@ function buildImageTag(name, alt = '', style = '', className = '') {
   return `<img src="${src0}" alt="${safeAlt}"${cls} data-img-candidates="${safeCandidates}" data-img-fallback-index="0"${styleAttr} decoding="async" loading="lazy" onerror="handleImageFallback(this)">`;
 }
 
-const MOD_VERSION = '0.1.9';
+const MOD_VERSION = '0.1.10';
 
 const MOD_PATCH_NOTES_HTML = `
   <h3>띵타해 모드 (DDingtae)</h3>
   <p><strong>버전:</strong> v${MOD_VERSION}</p>
   <p class="patch-notes-lead">모드 업데이트 내역을 버전별로 정리합니다. 항목이 많아지면 이 창 안을 스크롤하면 됩니다.</p>
+  <h3>v0.1.10</h3>
+  <ul>
+    <li><strong>웹 재연동</strong> 후 채집 횟수가 안 올라가던 문제를 수정했습니다. 재연동 시 토큰 교체·인벤 기준선 갱신·채집 인정 유예(45초)를 적용합니다.</li>
+    <li>서버 재접속 직후에도 20초간 채집이 인정되도록 보강했습니다 (재연동 뒤 리로그 테스트 포함).</li>
+    <li>웹 대시보드 동기화를 메인 스레드에서 처리해 재연동 중 상태 꼬임을 줄였습니다.</li>
+  </ul>
   <h3>v0.1.9</h3>
   <ul>
     <li><strong>해양 미니게임</strong> 성공 후 미역·성게 등이 채집 횟수에 안 잡히던 문제를 수정했습니다. v0.1.8은 낚싯대 활동 시간만 보아 미니게임 후 바닥에서 줍거나 시간이 지나면 집계가 빠졌습니다.</li>
