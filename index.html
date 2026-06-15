@@ -8578,6 +8578,10 @@ const MOD_PATCH_NOTES_HTML = `
   <p class="patch-notes-lead">모드 업데이트 내역을 버전별로 정리합니다. 항목이 많아지면 이 창 안을 스크롤하면 됩니다.</p>
   <h3>v0.1.14</h3>
   <ul>
+    <li><strong>서버 접속 시 크래시</strong> 수정 — v0.1.13 업데이트 알림의 HttpClient 초기화 순서 버그 (NullPointerException).</li>
+  </ul>
+  <h3>v0.1.13</h3>
+  <ul>
     <li><strong>뭘 캐도 굴로만 집계되던 문제</strong> 수정 — 인벤 추적을 Item 단위가 아닌 <strong>슬롯별</strong>로 변경해 문어·성게 등이 굴로 잘못 잡히지 않습니다.</li>
     <li>해양 미니게임 +1이 세션 종(굴)으로 고정되던 경로 제거 → 실제 들어온 아이템 종으로 집계.</li>
     <li><strong>J 키 항해일지</strong> 열 때 아래에서 살짝 올라오며 페이드인 되는 연출 추가.</li>
