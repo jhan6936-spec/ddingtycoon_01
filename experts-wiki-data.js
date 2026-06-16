@@ -576,10 +576,10 @@ const EXPERT_TREE_TIERS = [
   [null, null, 'shipRepair', null, null, 'surveyShip', null, 'moreShips']
 ];
 
-/** 7단 — 연금은계속된다(7열) ↙탐사선(5열) ↘다다익선(8열) */
+/** 7단 — 연금은계속된다(7열)에서 ↙6열 탐사선 · ↘8열 다다익선 */
 EXPERT_TREE_LAYOUT.shipRepair = { row: 7, col: 3 };
 EXPERT_TREE_PARENTS.shipRepair = 'treasureHunter';
-EXPERT_TREE_LAYOUT.surveyShip = { row: 7, col: 5 };
+EXPERT_TREE_LAYOUT.surveyShip = { row: 7, col: 6 };
 EXPERT_TREE_PARENTS.surveyShip = 'precisionAlchemySlots';
 EXPERT_TREE_LAYOUT.moreShips = { row: 7, col: 8 };
 EXPERT_TREE_PARENTS.moreShips = 'precisionAlchemySlots';
