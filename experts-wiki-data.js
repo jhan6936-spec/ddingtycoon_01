@@ -55,13 +55,13 @@ const expertMeta = {
     tag: '아일랜드',
     name: '달밤의 대어',
     maxLevel: 3,
-    values: [0, 10, 12, 15],
+    values: [0, 3, 5, 7],
     unit: 'percent',
-    desc: '밤 낚시 시 에픽 물고기 등장 확률 증가',
+    desc: '밤에 낚시 시 전설 물고기 등장 확률',
     levels: [
-      { lv: 1, effect: 10, sp: 1, gold: 5000, stone: 2 },
-      { lv: 2, effect: 12, sp: 30, gold: 1000000, stone: 60 },
-      { lv: 3, effect: 15, sp: 50, gold: 2000000, stone: 100 }
+      { lv: 1, effect: 3, sp: 1, gold: 5000, stone: 2 },
+      { lv: 2, effect: 5, sp: 30, gold: 1000000, stone: 60 },
+      { lv: 3, effect: 7, sp: 50, gold: 2000000, stone: 100 }
     ]
   },
   baitScatter: {
@@ -96,13 +96,13 @@ const expertMeta = {
     desc: '공예품 판매가 증가',
     levels: [
       { lv: 1, effect: 5, sp: 1, gold: 5000, stone: 2 },
-      { lv: 2, effect: 7, sp: 3, gold: 15000, stone: 6 },
+      { lv: 2, effect: 7, sp: 3, gold: 10000, stone: 6 },
       { lv: 3, effect: 10, sp: 5, gold: 200000, stone: 10 },
-      { lv: 4, effect: 15, sp: 30, gold: 1000000, stone: 60 },
-      { lv: 5, effect: 20, sp: 60, gold: 5000000, stone: 120 },
-      { lv: 6, effect: 30, sp: 80, gold: 7000000, stone: 160 },
-      { lv: 7, effect: 40, sp: 100, gold: 10000000, stone: 200 },
-      { lv: 8, effect: 50, sp: 130, gold: 15000000, stone: 260 }
+      { lv: 4, effect: 15, sp: 7, gold: 1000000, stone: 14 },
+      { lv: 5, effect: 20, sp: 10, gold: 3000000, stone: 20 },
+      { lv: 6, effect: 30, sp: 50, gold: 5000000, stone: 100 },
+      { lv: 7, effect: 40, sp: 70, gold: 7000000, stone: 140 },
+      { lv: 8, effect: 50, sp: 90, gold: 10000000, stone: 180 }
     ]
   },
   alchemyPrice: {
