@@ -358,7 +358,7 @@ const expertMeta = {
   moreShips: {
     key: 'moreShips',
     tag: '아일랜드',
-    name: '다다익 "선"',
+    name: '다다의 "선"',
     maxLevel: 3,
     values: [0, 1, 2, 3],
     unit: 'ships',
@@ -503,13 +503,14 @@ const EXPERT_TREE_TIERS = [
   EXPERT_TREE_CHAINS.map((c) => c.keys[1]),
   EXPERT_TREE_CHAINS.map((c) => c.keys[2]),
   EXPERT_TREE_CHAINS.map((c) => c.keys[3]),
-  ['shipRepair', null, 'surveyShip', null, null, null, null, 'moreShips']
+  ['shipRepair', null, null, null, null, null, 'surveyShip', 'moreShips']
 ];
 
-EXPERT_TREE_LAYOUT.shipRepair = { row: 7, col: 1 };
-EXPERT_TREE_PARENTS.shipRepair = 'oceanOrder';
-EXPERT_TREE_LAYOUT.surveyShip = { row: 7, col: 3 };
-EXPERT_TREE_PARENTS.surveyShip = 'treasureHunter';
+/** 7단 — 인게임 트리: 보물 사냥꾼 ↓ 수리수리 / 연금은 계속된다 ↙ 탐사선 · ↘ 다다의 선 */
+EXPERT_TREE_LAYOUT.shipRepair = { row: 7, col: 3 };
+EXPERT_TREE_PARENTS.shipRepair = 'treasureHunter';
+EXPERT_TREE_LAYOUT.surveyShip = { row: 7, col: 7 };
+EXPERT_TREE_PARENTS.surveyShip = 'precisionAlchemySlots';
 EXPERT_TREE_LAYOUT.moreShips = { row: 7, col: 8 };
 EXPERT_TREE_PARENTS.moreShips = 'precisionAlchemySlots';
 
