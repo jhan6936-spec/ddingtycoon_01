@@ -42,9 +42,11 @@ function renderExpertTreeNode(meta) {
     <div class="expert-tree-node-slot" style="${gridStyle}">
       <div class="expert-tree-node${dirty ? ' is-dirty' : ''}${unlocked ? '' : ' is-locked'}${active ? ' is-active' : ''}" data-expert-key="${meta.key}"${lockHint ? ` title="${lockHint}"` : ''}>
         <div class="expert-tree-node-lv">${lv}/${meta.maxLevel}</div>
-        <div class="expert-tree-node-icon-outer" aria-hidden="true">
-          <div class="expert-tree-node-icon-frame">
-            <div class="expert-tree-node-icon">${iconMarkup}</div>
+        <div class="expert-tree-node-icon-outer">
+          <div class="expert-tree-node-icon-hit" data-expert-key="${meta.key}" tabindex="0" aria-label="${meta.name} 효과 보기">
+            <div class="expert-tree-node-icon-frame">
+              <div class="expert-tree-node-icon">${iconMarkup}</div>
+            </div>
           </div>
         </div>
         <div class="expert-tree-node-name">[${meta.tag}] ${meta.name}</div>
@@ -81,9 +83,75 @@ function renderExpertTreeBoard() {
     });
   });
 
+  bindExpertTreeTooltips(board);
+
   requestAnimationFrame(() => {
     drawExpertTreeConnectors();
   });
+}
+
+function ensureExpertTreeTooltipEl() {
+  let el = document.getElementById('expertTreeTooltip');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'expertTreeTooltip';
+    el.className = 'expert-tree-tooltip';
+    el.setAttribute('role', 'tooltip');
+    el.hidden = true;
+    document.body.appendChild(el);
+  }
+  return el;
+}
+
+function positionExpertTreeTooltip(tip, anchorRect) {
+  const margin = 10;
+  const gap = 8;
+  let left = anchorRect.right + gap;
+  let top = anchorRect.top;
+  tip.hidden = false;
+  const tipRect = tip.getBoundingClientRect();
+  if (left + tipRect.width > window.innerWidth - margin) {
+    left = anchorRect.left - tipRect.width - gap;
+  }
+  if (left < margin) left = margin;
+  if (top + tipRect.height > window.innerHeight - margin) {
+    top = window.innerHeight - tipRect.height - margin;
+  }
+  if (top < margin) top = margin;
+  tip.style.left = `${left}px`;
+  tip.style.top = `${top}px`;
+}
+
+function hideExpertTreeTooltip() {
+  const tip = document.getElementById('expertTreeTooltip');
+  if (tip) tip.hidden = true;
+}
+
+function showExpertTreeTooltip(key, anchorEl) {
+  const meta = expertMeta[key];
+  if (!meta) return;
+  const tip = ensureExpertTreeTooltipEl();
+  const currentLv = expertDraftState[key] || 0;
+  tip.innerHTML = buildExpertTooltipHtml(meta, currentLv);
+  positionExpertTreeTooltip(tip, anchorEl.getBoundingClientRect());
+}
+
+function bindExpertTreeTooltips(board) {
+  const tip = ensureExpertTreeTooltipEl();
+  board.querySelectorAll('.expert-tree-node-icon-hit').forEach((hit) => {
+    if (hit.dataset.tooltipBound) return;
+    hit.dataset.tooltipBound = '1';
+    const key = hit.getAttribute('data-expert-key');
+    hit.addEventListener('mouseenter', () => showExpertTreeTooltip(key, hit));
+    hit.addEventListener('focus', () => showExpertTreeTooltip(key, hit));
+    hit.addEventListener('mouseleave', hideExpertTreeTooltip);
+    hit.addEventListener('blur', hideExpertTreeTooltip);
+  });
+  if (!tip.dataset.globalBound) {
+    tip.dataset.globalBound = '1';
+    board.addEventListener('scroll', hideExpertTreeTooltip, { passive: true });
+    window.addEventListener('scroll', hideExpertTreeTooltip, { passive: true });
+  }
 }
 
 function drawExpertTreeConnectors() {
