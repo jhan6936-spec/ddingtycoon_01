@@ -170,37 +170,71 @@ function drawExpertTreeConnectors() {
   const scrollLeft = wrap.scrollLeft;
   const scrollTop = wrap.scrollTop;
 
+  const childrenByParent = {};
   Object.entries(EXPERT_TREE_PARENTS).forEach(([childKey, parentKey]) => {
-    const parentEl = wrap.querySelector(`[data-expert-key="${parentKey}"] .expert-tree-node-icon-frame`);
-    const childEl = wrap.querySelector(`[data-expert-key="${childKey}"] .expert-tree-node-icon-frame`);
-    if (!parentEl || !childEl) return;
+    if (!childrenByParent[parentKey]) childrenByParent[parentKey] = [];
+    childrenByParent[parentKey].push(childKey);
+  });
 
-    const p = parentEl.getBoundingClientRect();
-    const c = childEl.getBoundingClientRect();
-    const x1 = p.left + p.width / 2 - wrapRect.left + scrollLeft;
-    const y1 = p.bottom - wrapRect.top + scrollTop + 2;
-    const x2 = c.left + c.width / 2 - wrapRect.left + scrollLeft;
-    const y2 = c.top - wrapRect.top + scrollTop - 2;
-    const sameColumn = Math.abs(x1 - x2) < 12;
-    const midY = y1 + (y2 - y1) * 0.5;
-    const pathD = sameColumn
-      ? `M ${x1} ${y1} L ${x2} ${y2}`
-      : `M ${x1} ${y1} L ${x1} ${midY} L ${x2} ${midY} L ${x2} ${y2}`;
+  const getAnchor = (key, part) => {
+    const el = wrap.querySelector(`[data-expert-key="${key}"] .expert-tree-node-icon-frame`);
+    if (!el) return null;
+    const r = el.getBoundingClientRect();
+    const x = r.left + r.width / 2 - wrapRect.left + scrollLeft;
+    if (part === 'bottom') {
+      return { x, y: r.bottom - wrapRect.top + scrollTop + 2 };
+    }
+    return { x, y: r.top - wrapRect.top + scrollTop - 2 };
+  };
 
+  const appendPath = (pathD, parentKey) => {
     const parentLv = expertDraftState[parentKey] || 0;
-    const stroke = parentLv > 0 ? '#5a8ab5' : '#383838';
-    const opacity = parentLv > 0 ? '0.9' : '0.4';
-
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     path.setAttribute('d', pathD);
     path.setAttribute('fill', 'none');
-    path.setAttribute('stroke', stroke);
+    path.setAttribute('stroke', parentLv > 0 ? '#5a8ab5' : '#383838');
     path.setAttribute('stroke-width', '1.5');
     path.setAttribute('stroke-linecap', 'round');
     path.setAttribute('stroke-linejoin', 'round');
-    path.setAttribute('opacity', opacity);
+    path.setAttribute('opacity', parentLv > 0 ? '0.9' : '0.4');
     path.setAttribute('class', 'expert-tree-connector');
     svg.appendChild(path);
+  };
+
+  Object.entries(childrenByParent).forEach(([parentKey, childKeys]) => {
+    const parentBottom = getAnchor(parentKey, 'bottom');
+    if (!parentBottom) return;
+
+    const childTops = childKeys
+      .map((childKey) => {
+        const top = getAnchor(childKey, 'top');
+        return top ? { childKey, ...top } : null;
+      })
+      .filter(Boolean);
+    if (!childTops.length) return;
+
+    if (childTops.length >= 2) {
+      const minX = Math.min(...childTops.map((c) => c.x));
+      const maxX = Math.max(...childTops.map((c) => c.x));
+      const forkY = parentBottom.y + (childTops[0].y - parentBottom.y) * 0.45;
+      let pathD = `M ${parentBottom.x} ${parentBottom.y} L ${parentBottom.x} ${forkY}`;
+      if (Math.abs(maxX - minX) > 12) {
+        pathD += ` L ${minX} ${forkY} L ${maxX} ${forkY}`;
+      }
+      childTops.forEach((child) => {
+        pathD += ` M ${child.x} ${forkY} L ${child.x} ${child.y}`;
+      });
+      appendPath(pathD, parentKey);
+      return;
+    }
+
+    const child = childTops[0];
+    const sameColumn = Math.abs(parentBottom.x - child.x) < 12;
+    const midY = parentBottom.y + (child.y - parentBottom.y) * 0.5;
+    const pathD = sameColumn
+      ? `M ${parentBottom.x} ${parentBottom.y} L ${child.x} ${child.y}`
+      : `M ${parentBottom.x} ${parentBottom.y} L ${parentBottom.x} ${midY} L ${child.x} ${midY} L ${child.x} ${child.y}`;
+    appendPath(pathD, parentKey);
   });
 }
 
