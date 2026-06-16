@@ -34,7 +34,8 @@ function renderExpertTreeNode(meta) {
   const lockHint = unlocked ? '' : getExpertLockHint(meta.key);
   const layout = getExpertTreeLayout(meta.key);
   const spanPart = layout.colSpan ? ` / span ${layout.colSpan}` : '';
-  const gridStyle = `grid-row:${layout.row};grid-column:${layout.col}${spanPart}`;
+  const offsetPart = layout.offsetX ? `;transform:translateX(${layout.offsetX}px)` : '';
+  const gridStyle = `grid-row:${layout.row};grid-column:${layout.col}${spanPart}${offsetPart}`;
   const canIncrease = unlocked && lv < meta.maxLevel;
   const canDecrease = lv > 0;
 

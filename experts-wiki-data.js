@@ -573,15 +573,15 @@ const EXPERT_TREE_TIERS = [
   EXPERT_TREE_CHAINS.map((c) => c.keys[1]),
   EXPERT_TREE_CHAINS.map((c) => c.keys[2]),
   EXPERT_TREE_CHAINS.map((c) => c.keys[3]),
-  [null, null, 'shipRepair', null, null, 'surveyShip', 'moreShips', null]
+  [null, 'shipRepair', null, null, null, null, null]
 ];
 
-/** 7단 — 연금은계속된다(7열) ↙6열 탐사선 · ↘7열 다다익선 */
+/** 7단 — 인게임: 보물사냥꾼↓수리수리 · 연금은계속된다(6열) ↙↘ 탐사선/다다익선 */
 EXPERT_TREE_LAYOUT.shipRepair = { row: 7, col: 3 };
 EXPERT_TREE_PARENTS.shipRepair = 'treasureHunter';
-EXPERT_TREE_LAYOUT.surveyShip = { row: 7, col: 6 };
+EXPERT_TREE_LAYOUT.surveyShip = { row: 7, col: 6, offsetX: -50 };
 EXPERT_TREE_PARENTS.surveyShip = 'precisionAlchemySlots';
-EXPERT_TREE_LAYOUT.moreShips = { row: 7, col: 7 };
+EXPERT_TREE_LAYOUT.moreShips = { row: 7, col: 6, offsetX: 50 };
 EXPERT_TREE_PARENTS.moreShips = 'precisionAlchemySlots';
 
 function getExpertParentKey(key) {
