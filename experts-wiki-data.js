@@ -429,6 +429,10 @@ function formatExpertEffectLabel(meta, level) {
   if (meta.unit === 'percentBoost') return `${value}% 증가`;
   if (meta.unit === 'percent') return `${value}%`;
   if (meta.unit === 'percentPoint') return `${value}%p`;
+  if (meta.key === 'surveyShip') {
+    const row = meta.levels?.find((r) => r.lv === level);
+    return row?.grade ? `${row.grade}등급 ${value}%` : `${value}%`;
+  }
   if (meta.unit === 'exp') return `EXP +${value}%`;
   if (meta.unit === 'slots') return `${value}칸`;
   if (meta.unit === 'count') return `${value}회/일`;
@@ -443,7 +447,72 @@ function formatWikiLevelEffect(meta, row) {
   if (meta.unit === 'exp') return `EXP +${row.effect}%`;
   if (meta.unit === 'percentReduce') return `-${row.effect}%`;
   if (meta.unit === 'percentBoost') return `+${row.effect}%`;
+  if (meta.key === 'surveyShip' && row.grade) return `${row.grade}등급 ${row.effect}%`;
   return `${row.effect}%`;
+}
+
+/** 위키 문구 기반 레벨별 효과 설명 (툴팁용) */
+function getExpertLevelEffectSentence(meta, row) {
+  const e = row.effect;
+  switch (meta.key) {
+    case 'oceanBasics':
+      return `낚시·수중 어획 경험치 ${e}% 증가`;
+    case 'doubleCatch':
+      return `낚시 시 ${e}% 확률로 두 마리 동시 획득`;
+    case 'deepCollector':
+      return `수중 어획 시 어패류 ${e}% 추가 드롭`;
+    case 'moonEpic':
+      return `밤 낚시 시 전설 물고기 ${e}% 등장`;
+    case 'baitScatter':
+      return `30초간 입질 ${e}% 감소 · 접근 ${row.approach}초`;
+    case 'craftPrice':
+      return `공예품 판매가 ${e}% 증가`;
+    case 'alchemyPrice':
+      return `연금품 판매가 ${e}% 증가`;
+    case 'fishPrice':
+      return `물고기 판매가 ${e}% 증가`;
+    case 'tropicalFish':
+      return `열대어 낚을 확률 ${e}%`;
+    case 'timeReduce':
+      return `해양·연금 제작 시간 ${e}% 감소`;
+    case 'starshell':
+      return `3성 어패류 등장 확률 ${e}% 증가`;
+    case 'keyHook':
+      return `열쇠 조각 낚을 확률 ${e}%`;
+    case 'stormFisher':
+      return `비 오는 날 신화 물고기 ${e}% 등장`;
+    case 'shellRefill':
+      return `수중 어획 시 조개 등장 ${e}% 증가`;
+    case 'craftSlots':
+      return `해양 제작 대기 슬롯 ${e}칸`;
+    case 'oceanOrder':
+      return `오션오더 일일 수령 ${e}회`;
+    case 'treasureHunter':
+      return `녹슨 상자 낚을 확률 ${e}%`;
+    case 'alchemySlots':
+      return `연금 제작 대기 슬롯 ${e}칸`;
+    case 'precisionAlchemySlots':
+      return `정밀 연금 대기 슬롯 ${e}칸`;
+    case 'shipRepair':
+      return `낚시 어선 일일 수리 ${e}회`;
+    case 'surveyShip':
+      return `${row.grade}등급 탐사선 항구 도착 ${e}%`;
+    case 'moreShips':
+      return `해양 탐사선 ${e}척 (고대 주화 등장)`;
+    default:
+      return formatWikiLevelEffect(meta, row);
+  }
+}
+
+function buildExpertTooltipHtml(meta, currentLv) {
+  if (!meta?.levels?.length) return '';
+  const title = `[${meta.tag}] ${meta.name}`;
+  const rows = meta.levels.map((row) => {
+    const current = currentLv === row.lv ? ' expert-tooltip-lv is-current' : ' expert-tooltip-lv';
+    const effect = getExpertLevelEffectSentence(meta, row);
+    return `<li class="${current.trim()}"><span class="expert-tooltip-lv-num">Lv.${row.lv}</span> ${effect}<br><span class="expert-tooltip-cost">${row.sp}pt · ${row.gold.toLocaleString()}G · 스톤 ${row.stone}</span></li>`;
+  }).join('');
+  return `<div class="expert-tooltip-title">${title}</div><div class="expert-tooltip-desc">${meta.desc}</div><ul class="expert-tooltip-levels">${rows}</ul>`;
 }
 
 function renderExpertWikiLevels(meta) {
