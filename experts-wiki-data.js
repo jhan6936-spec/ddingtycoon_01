@@ -531,19 +531,19 @@ function renderExpertWikiLevels(meta) {
  */
 const EXPERT_TREE_BRANCHES = {
   left: { row: 2, col: 2, fork: 'doubleCatch' },
-  right: { row: 2, col: 6, fork: 'deepCollector' }
+  right: { row: 2, col: 5, fork: 'deepCollector' }
 };
 
 /** [열, 줄] = 부모 fork 아래 이어지는 4단 세로 체인 */
 const EXPERT_TREE_CHAINS = [
   { col: 1, fork: 'doubleCatch', keys: ['moonEpic', 'fishPrice', 'keyHook', 'oceanOrder'] },
   { col: 3, fork: 'doubleCatch', keys: ['baitScatter', 'tropicalFish', 'stormFisher', 'treasureHunter'] },
-  { col: 5, fork: 'deepCollector', keys: ['craftPrice', 'timeReduce', 'shellRefill', 'alchemySlots'] },
-  { col: 7, fork: 'deepCollector', keys: ['alchemyPrice', 'starshell', 'craftSlots', 'precisionAlchemySlots'] }
+  { col: 4, fork: 'deepCollector', keys: ['craftPrice', 'timeReduce', 'shellRefill', 'alchemySlots'] },
+  { col: 6, fork: 'deepCollector', keys: ['alchemyPrice', 'starshell', 'craftSlots', 'precisionAlchemySlots'] }
 ];
 
 const EXPERT_TREE_LAYOUT = {
-  oceanBasics: { row: 1, col: 2, colSpan: 6 }
+  oceanBasics: { row: 1, col: 2, colSpan: 4 }
 };
 const EXPERT_TREE_PARENTS = {};
 
