@@ -507,12 +507,13 @@ function getExpertLevelEffectSentence(meta, row) {
 function buildExpertTooltipHtml(meta, currentLv) {
   if (!meta?.levels?.length) return '';
   const title = `[${meta.tag}] ${meta.name}`;
-  const rows = meta.levels.map((row) => {
-    const current = currentLv === row.lv ? ' expert-tooltip-lv is-current' : ' expert-tooltip-lv';
-    const effect = getExpertLevelEffectSentence(meta, row);
-    return `<li class="${current.trim()}"><span class="expert-tooltip-lv-num">Lv.${row.lv}</span> ${effect}<br><span class="expert-tooltip-cost">${row.sp}pt · ${row.gold.toLocaleString()}G · 스톤 ${row.stone}</span></li>`;
-  }).join('');
-  return `<div class="expert-tooltip-title">${title}</div><div class="expert-tooltip-desc">${meta.desc}</div><ul class="expert-tooltip-levels">${rows}</ul>`;
+  const showLv = currentLv > 0 ? currentLv : 1;
+  const row = meta.levels.find((r) => r.lv === showLv);
+  if (!row) return '';
+  const effect = getExpertLevelEffectSentence(meta, row);
+  const lvLabel = currentLv > 0 ? `Lv.${currentLv}` : `Lv.1 (미습득)`;
+  const cost = `${row.sp}pt · ${row.gold.toLocaleString()}G · 스톤 ${row.stone}`;
+  return `<div class="expert-tooltip-title">${title}</div><div class="expert-tooltip-lv-label">${lvLabel}</div><div class="expert-tooltip-effect">${effect}</div><div class="expert-tooltip-cost">${cost}</div>`;
 }
 
 function renderExpertWikiLevels(meta) {
@@ -530,19 +531,19 @@ function renderExpertWikiLevels(meta) {
  */
 const EXPERT_TREE_BRANCHES = {
   left: { row: 2, col: 2, fork: 'doubleCatch' },
-  right: { row: 2, col: 7, fork: 'deepCollector' }
+  right: { row: 2, col: 6, fork: 'deepCollector' }
 };
 
 /** [열, 줄] = 부모 fork 아래 이어지는 4단 세로 체인 */
 const EXPERT_TREE_CHAINS = [
   { col: 1, fork: 'doubleCatch', keys: ['moonEpic', 'fishPrice', 'keyHook', 'oceanOrder'] },
   { col: 3, fork: 'doubleCatch', keys: ['baitScatter', 'tropicalFish', 'stormFisher', 'treasureHunter'] },
-  { col: 6, fork: 'deepCollector', keys: ['craftPrice', 'timeReduce', 'shellRefill', 'alchemySlots'] },
-  { col: 8, fork: 'deepCollector', keys: ['alchemyPrice', 'starshell', 'craftSlots', 'precisionAlchemySlots'] }
+  { col: 5, fork: 'deepCollector', keys: ['craftPrice', 'timeReduce', 'shellRefill', 'alchemySlots'] },
+  { col: 7, fork: 'deepCollector', keys: ['alchemyPrice', 'starshell', 'craftSlots', 'precisionAlchemySlots'] }
 ];
 
 const EXPERT_TREE_LAYOUT = {
-  oceanBasics: { row: 1, col: 4, colSpan: 2 }
+  oceanBasics: { row: 1, col: 2, colSpan: 6 }
 };
 const EXPERT_TREE_PARENTS = {};
 
@@ -572,15 +573,15 @@ const EXPERT_TREE_TIERS = [
   EXPERT_TREE_CHAINS.map((c) => c.keys[1]),
   EXPERT_TREE_CHAINS.map((c) => c.keys[2]),
   EXPERT_TREE_CHAINS.map((c) => c.keys[3]),
-  [null, null, 'shipRepair', null, null, 'surveyShip', null, 'moreShips']
+  [null, null, 'shipRepair', null, 'surveyShip', null, 'moreShips', null]
 ];
 
-/** 7단 — 인게임: 보물 사냥꾼↓수리수리 · 증류실↓탐사선 · 연금은 계속된다↓다다익선 */
+/** 7단 — 보물 사냥꾼↓수리수리 · 증류실↓탐사선 · 연금은 계속된다↓다다익선 */
 EXPERT_TREE_LAYOUT.shipRepair = { row: 7, col: 3 };
 EXPERT_TREE_PARENTS.shipRepair = 'treasureHunter';
-EXPERT_TREE_LAYOUT.surveyShip = { row: 7, col: 6 };
+EXPERT_TREE_LAYOUT.surveyShip = { row: 7, col: 5 };
 EXPERT_TREE_PARENTS.surveyShip = 'alchemySlots';
-EXPERT_TREE_LAYOUT.moreShips = { row: 7, col: 8 };
+EXPERT_TREE_LAYOUT.moreShips = { row: 7, col: 7 };
 EXPERT_TREE_PARENTS.moreShips = 'precisionAlchemySlots';
 
 function getExpertParentKey(key) {
