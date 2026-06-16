@@ -503,7 +503,7 @@ const EXPERT_TREE_TIERS = [
   EXPERT_TREE_CHAINS.map((c) => c.keys[1]),
   EXPERT_TREE_CHAINS.map((c) => c.keys[2]),
   EXPERT_TREE_CHAINS.map((c) => c.keys[3]),
-  ['shipRepair', null, null, null, null, null, 'surveyShip', 'moreShips']
+  [null, null, 'shipRepair', null, null, null, 'surveyShip', 'moreShips']
 ];
 
 /** 7단 — 인게임 트리: 보물 사냥꾼 ↓ 수리수리 / 연금은 계속된다 ↙ 탐사선 · ↘ 다다의 선 */
