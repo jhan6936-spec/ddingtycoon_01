@@ -325,6 +325,49 @@ const expertMeta = {
       { lv: 4, effect: 8, sp: 70, gold: 2000000, stone: 140 },
       { lv: 5, effect: 9, sp: 120, gold: 3000000, stone: 240 }
     ]
+  },
+  shipRepair: {
+    key: 'shipRepair',
+    tag: '아일랜드',
+    name: '수리수리 마수리!',
+    maxLevel: 5,
+    values: [0, 6, 7, 8, 9, 10],
+    unit: 'count',
+    desc: '세레니티 낚시 어선 일일 수리 제한 횟수',
+    levels: [
+      { lv: 1, effect: 6, sp: 30, gold: 1000000, stone: 60 },
+      { lv: 2, effect: 7, sp: 50, gold: 2000000, stone: 100 },
+      { lv: 3, effect: 8, sp: 70, gold: 3000000, stone: 140 },
+      { lv: 4, effect: 9, sp: 90, gold: 4000000, stone: 180 },
+      { lv: 5, effect: 10, sp: 100, gold: 5000000, stone: 200 }
+    ]
+  },
+  surveyShip: {
+    key: 'surveyShip',
+    tag: '아일랜드',
+    name: '탐나는 탐사선',
+    maxLevel: 2,
+    values: [0, 20, 10],
+    unit: 'percent',
+    desc: 'B·A등급 해양 탐사선 항구 도착 확률',
+    levels: [
+      { lv: 1, effect: 20, sp: 96, gold: 5000000, stone: 192 },
+      { lv: 2, effect: 10, sp: 136, gold: 10000000, stone: 272 }
+    ]
+  },
+  moreShips: {
+    key: 'moreShips',
+    tag: '아일랜드',
+    name: '다다익 "선"',
+    maxLevel: 3,
+    values: [0, 1, 2, 3],
+    unit: 'ships',
+    desc: '해양 탐사선 수 증가 (해금 후 고대 주화 등장)',
+    levels: [
+      { lv: 1, effect: 1, sp: 56, gold: 3000000, stone: 112 },
+      { lv: 2, effect: 2, sp: 96, gold: 5000000, stone: 192 },
+      { lv: 3, effect: 3, sp: 136, gold: 10000000, stone: 272 }
+    ]
   }
 };
 
@@ -389,12 +432,14 @@ function formatExpertEffectLabel(meta, level) {
   if (meta.unit === 'exp') return `EXP +${value}%`;
   if (meta.unit === 'slots') return `${value}칸`;
   if (meta.unit === 'count') return `${value}회/일`;
+  if (meta.unit === 'ships') return `${value}척`;
   return String(value);
 }
 
 function formatWikiLevelEffect(meta, row) {
   if (meta.unit === 'slots') return `${row.effect}칸`;
   if (meta.unit === 'count') return `${row.effect}회/일`;
+  if (meta.unit === 'ships') return `${row.effect}척`;
   if (meta.unit === 'exp') return `EXP +${row.effect}%`;
   if (meta.unit === 'percentReduce') return `-${row.effect}%`;
   if (meta.unit === 'percentBoost') return `+${row.effect}%`;
@@ -457,8 +502,16 @@ const EXPERT_TREE_TIERS = [
   EXPERT_TREE_CHAINS.map((c) => c.keys[0]),
   EXPERT_TREE_CHAINS.map((c) => c.keys[1]),
   EXPERT_TREE_CHAINS.map((c) => c.keys[2]),
-  EXPERT_TREE_CHAINS.map((c) => c.keys[3])
+  EXPERT_TREE_CHAINS.map((c) => c.keys[3]),
+  ['shipRepair', null, 'surveyShip', null, null, null, null, 'moreShips']
 ];
+
+EXPERT_TREE_LAYOUT.shipRepair = { row: 7, col: 1 };
+EXPERT_TREE_PARENTS.shipRepair = 'oceanOrder';
+EXPERT_TREE_LAYOUT.surveyShip = { row: 7, col: 3 };
+EXPERT_TREE_PARENTS.surveyShip = 'treasureHunter';
+EXPERT_TREE_LAYOUT.moreShips = { row: 7, col: 8 };
+EXPERT_TREE_PARENTS.moreShips = 'precisionAlchemySlots';
 
 function getExpertParentKey(key) {
   return EXPERT_TREE_PARENTS[key] || null;
