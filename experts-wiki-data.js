@@ -211,15 +211,15 @@ const expertMeta = {
     tag: '아일랜드',
     name: '폭풍의 낚시꾼',
     maxLevel: 5,
-    values: [0, 0.7, 0.9, 1.2, 1.5, 2],
-    unit: 'percentPoint',
-    desc: '비 오는 날 신화 물고기 등장 확률 증가',
+    values: [0, 1, 1.5, 2, 2.5, 3],
+    unit: 'percent',
+    desc: '비 오는 날 신화 물고기 등장 확률',
     levels: [
-      { lv: 1, effect: 0.7, sp: 1, gold: 5000, stone: 2 },
-      { lv: 2, effect: 0.9, sp: 7, gold: 15000, stone: 14 },
-      { lv: 3, effect: 1.2, sp: 10, gold: 100000, stone: 20 },
-      { lv: 4, effect: 1.5, sp: 30, gold: 700000, stone: 60 },
-      { lv: 5, effect: 2, sp: 50, gold: 1000000, stone: 100 }
+      { lv: 1, effect: 1, sp: 1, gold: 5000, stone: 2 },
+      { lv: 2, effect: 1.5, sp: 7, gold: 15000, stone: 14 },
+      { lv: 3, effect: 2, sp: 10, gold: 100000, stone: 20 },
+      { lv: 4, effect: 2.5, sp: 30, gold: 700000, stone: 60 },
+      { lv: 5, effect: 3, sp: 50, gold: 1000000, stone: 100 }
     ]
   },
   shellRefill: {
@@ -351,14 +351,14 @@ const expertMeta = {
     unit: 'percent',
     desc: 'B·A등급 해양 탐사선 항구 도착 확률',
     levels: [
-      { lv: 1, effect: 20, sp: 96, gold: 5000000, stone: 192 },
-      { lv: 2, effect: 10, sp: 136, gold: 10000000, stone: 272 }
+      { lv: 1, effect: 20, grade: 'B', sp: 96, gold: 5000000, stone: 192 },
+      { lv: 2, effect: 10, grade: 'A', sp: 136, gold: 10000000, stone: 272 }
     ]
   },
   moreShips: {
     key: 'moreShips',
     tag: '아일랜드',
-    name: '다다의 "선"',
+    name: '다다익 "선"',
     maxLevel: 3,
     values: [0, 1, 2, 3],
     unit: 'ships',
