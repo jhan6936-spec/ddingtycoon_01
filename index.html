@@ -3710,6 +3710,12 @@
       font-weight: 700;
       user-select: none;
     }
+    .toggle-wrap.is-disabled {
+      opacity: 0.45;
+    }
+    .toggle-wrap.is-disabled .toggle-slider {
+      cursor: not-allowed;
+    }
     .toggle-switch {
       position: relative;
       width: 42px;
@@ -7593,10 +7599,17 @@
                   <span class="toggle-slider"></span>
                 </label>
               </div>
-              <div class="toggle-wrap">
+              <div class="toggle-wrap" id="alchemyIncludeDiluentWrap">
                 <span>0성(희석액) 포함</span>
                 <label class="toggle-switch" title="추출된 희석액(0성)을 연금품 제작 추천에 포함">
                   <input id="alchemyIncludeDiluentToggle" type="checkbox" checked aria-label="0성 희석액 포함" />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="toggle-wrap">
+                <span>희석액만 제작</span>
+                <label class="toggle-switch" title="1·2·3성 9종은 만들지 않고, 추출된 희석액만 최대치로 계산">
+                  <input id="alchemyDiluentOnlyToggle" type="checkbox" aria-label="희석액만 제작" />
                   <span class="toggle-slider"></span>
                 </label>
               </div>
@@ -8451,6 +8464,7 @@ const STORAGE_KEY_ALCHEMY_HISTORY = 'thingta_alchemy_production_history_v1';
 const STORAGE_KEY_PURCHASE_INCLUDE = 'thingta_purchase_include_v1';
 const STORAGE_KEY_PURCHASE_BUDGET = 'thingta_purchase_budget_v1';
 const STORAGE_KEY_ALCHEMY_INCLUDE_DILUENT = 'thingta_alchemy_include_diluent_v1';
+const STORAGE_KEY_ALCHEMY_DILUENT_ONLY = 'thingta_alchemy_diluent_only_v1';
 const SHELLFISH_PRICES_CACHE_KEY = 'ddingtahe_shellfish_prices_v1';
 const SHELLFISH_PRICES_BROADCAST = 'ddingtahe-shellfish-prices-updated';
 
@@ -10030,6 +10044,7 @@ function buildMinecraftDashboardPayload() {
   const adjustedSec = Number(record?.adjustedSec || 0);
   const planEffPerMin = Math.max(0, Math.floor(Number(record?.planEffPerMin) || 0));
   const includeDiluent = record?.includeDiluent !== false;
+  const diluentOnly = record?.diluentOnly === true;
   const timeReduceLevel = Number(expertState?.timeReduce || 0);
   const staminaRawLive = getStaminaForDashboardSync();
   const staminaTarget = staminaRawLive > 0
@@ -10075,7 +10090,7 @@ function buildMinecraftDashboardPayload() {
     materialCurrent,
     materialTarget,
     efficiencyResult: planEffPerMin > 0
-      ? `제작 효율 ${planEffPerMin.toLocaleString()}G/분 · ${includeDiluent ? '9종+희석액' : '9종'} · ${formatGuideDurationSec(adjustedSec)}`
+      ? `제작 효율 ${planEffPerMin.toLocaleString()}G/분 · ${alchemyEfficiencyScopeShort({ includeDiluent, diluentOnly })} · ${formatGuideDurationSec(adjustedSec)}`
       : adjustedSec > 0
         ? `예상 제작 시간 ${formatGuideDurationSec(adjustedSec)}`
         : '연금 효율 계산 대기',
@@ -12629,12 +12644,36 @@ function alchemyIncludeDiluentEnabled() {
   return toggle ? toggle.checked : true;
 }
 
+function alchemyDiluentOnlyEnabled() {
+  const toggle = document.getElementById('alchemyDiluentOnlyToggle');
+  return toggle ? toggle.checked : false;
+}
+
+function resolveAlchemyDiluentOnly(options = {}) {
+  if (options.diluentOnly !== undefined) return options.diluentOnly === true;
+  return alchemyDiluentOnlyEnabled();
+}
+
 function resolveAlchemyIncludeDiluent(options = {}) {
+  if (resolveAlchemyDiluentOnly(options)) return true;
   if (options.includeDiluent !== undefined) return options.includeDiluent !== false;
   return alchemyIncludeDiluentEnabled();
 }
 
+function alchemyEfficiencyScopeLabel(options = {}) {
+  if (resolveAlchemyDiluentOnly(options)) return '희석액만';
+  if (resolveAlchemyIncludeDiluent(options)) return '1·2·3성 + 희석액';
+  return '1·2·3성 9종';
+}
+
+function alchemyEfficiencyScopeShort(options = {}) {
+  if (resolveAlchemyDiluentOnly(options)) return '희석액만';
+  if (resolveAlchemyIncludeDiluent(options)) return '9종+희석액';
+  return '9종';
+}
+
 function getAlchemyFinalProductNames(options = {}) {
+  if (resolveAlchemyDiluentOnly(options)) return ['추출된 희석액'];
   const names = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3];
   if (resolveAlchemyIncludeDiluent(options)) names.push('추출된 희석액');
   return names;
@@ -12647,12 +12686,34 @@ function saveAlchemyIncludeDiluentState() {
   } catch (_) {}
 }
 
+function saveAlchemyDiluentOnlyState() {
+  try {
+    const toggle = document.getElementById('alchemyDiluentOnlyToggle');
+    if (toggle) localStorage.setItem(STORAGE_KEY_ALCHEMY_DILUENT_ONLY, toggle.checked ? '1' : '0');
+  } catch (_) {}
+}
+
+function syncAlchemyDiluentTogglesUi() {
+  const onlyOn = alchemyDiluentOnlyEnabled();
+  const includeToggle = document.getElementById('alchemyIncludeDiluentToggle');
+  const includeWrap = document.getElementById('alchemyIncludeDiluentWrap');
+  if (includeToggle) {
+    includeToggle.disabled = onlyOn;
+    if (onlyOn) includeToggle.checked = true;
+  }
+  if (includeWrap) includeWrap.classList.toggle('is-disabled', onlyOn);
+}
+
 function restoreAlchemyIncludeDiluentState() {
   try {
-    const toggle = document.getElementById('alchemyIncludeDiluentToggle');
-    const saved = localStorage.getItem(STORAGE_KEY_ALCHEMY_INCLUDE_DILUENT);
-    if (toggle && saved != null) toggle.checked = saved === '1';
+    const includeToggle = document.getElementById('alchemyIncludeDiluentToggle');
+    const includeSaved = localStorage.getItem(STORAGE_KEY_ALCHEMY_INCLUDE_DILUENT);
+    if (includeToggle && includeSaved != null) includeToggle.checked = includeSaved === '1';
+    const onlyToggle = document.getElementById('alchemyDiluentOnlyToggle');
+    const onlySaved = localStorage.getItem(STORAGE_KEY_ALCHEMY_DILUENT_ONLY);
+    if (onlyToggle && onlySaved != null) onlyToggle.checked = onlySaved === '1';
   } catch (_) {}
+  syncAlchemyDiluentTogglesUi();
 }
 
 function getPurchaseBudgetGold() {
@@ -12924,6 +12985,7 @@ function renderPurchaseBoostPanel(purchaseMeta, prices, effects) {
   const netDelta = purchaseMeta.netDelta != null ? purchaseMeta.netDelta : goldDelta - purchaseCost;
   const planDeltas = diffFinalPlanCounts(purchaseMeta.stockOnlyOptimized, purchaseMeta.optimized, {
     includeDiluent: alchemyIncludeDiluentEnabled(),
+    diluentOnly: alchemyDiluentOnlyEnabled(),
   });
 
   if (!entries.length) {
@@ -13160,8 +13222,7 @@ function prepareInventoryForAlchemyPlan(inv, options = {}) {
   const unboundNonShellfish = options.unboundNonShellfish !== false;
   const out = { ...inv };
   if (!unboundNonShellfish) return out;
-  const products = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3];
-  if (options.includeDiluent !== false) products.push('추출된 희석액');
+  const products = getAlchemyFinalProductNames(options);
   products.forEach((name) => {
     Object.keys(buildFinalProductLeafNeeds(name)).forEach((mat) => {
       if (!isShellfishStockName(mat)) {
@@ -13175,7 +13236,12 @@ function prepareInventoryForAlchemyPlan(inv, options = {}) {
 function getAlchemyPlanPrepOptions() {
   const vanillaToggle = document.getElementById('vanillaCalcToggle');
   const isVanillaOn = vanillaToggle ? vanillaToggle.checked : true;
-  return { unboundNonShellfish: !isVanillaOn, includeDiluent: alchemyIncludeDiluentEnabled() };
+  const diluentOnly = alchemyDiluentOnlyEnabled();
+  return {
+    unboundNonShellfish: !isVanillaOn,
+    includeDiluent: diluentOnly || alchemyIncludeDiluentEnabled(),
+    diluentOnly,
+  };
 }
 
 const _lpMatKeys = new Map();
@@ -13255,7 +13321,12 @@ function alchemyPlanTotalGold(packed, effects, options = {}) {
 }
 
 function optimizeAlchemyPlanGreedy(inv, options = {}) {
-  const includeDiluent = options.includeDiluent !== false;
+  const diluentOnly = options.diluentOnly === true;
+  const includeDiluent = diluentOnly || options.includeDiluent !== false;
+  if (diluentOnly) {
+    const { diluentCount } = greedyCraftFinalCounts([], { ...inv }, { includeDiluentCandidate: true });
+    return packAlchemyPlanResult({ '추출된 희석액': diluentCount });
+  }
   const tierGroups = [{ names: FINAL_GROUP1 }, { names: FINAL_GROUP2 }, { names: FINAL_GROUP3 }];
   const permutations = [
     [0, 1, 2],
@@ -13307,8 +13378,11 @@ function optimizeAlchemyPlanGreedy(inv, options = {}) {
 function optimizeAlchemyPlanILP(inv, options = {}) {
   _lpMatKeys.clear();
   _lpMatSeq = 0;
-  const products = [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3];
-  if (options.includeDiluent !== false) products.push('추출된 희석액');
+  const diluentOnly = options.diluentOnly === true;
+  const products = diluentOnly
+    ? ['추출된 희석액']
+    : [...FINAL_GROUP1, ...FINAL_GROUP2, ...FINAL_GROUP3];
+  if (!diluentOnly && options.includeDiluent !== false) products.push('추출된 희석액');
   const varIds = products.map((_, i) => 'v' + i);
   const demandList = products.map((name) => buildFinalProductOptimizeDemand(name));
 
@@ -13516,7 +13590,18 @@ function optimizeAlchemyPlanBalanced(inv, options = {}) {
 }
 
 function optimizeAlchemyPlan(inv, effects, options = {}) {
-  const planOpts = { includeDiluent: options.includeDiluent !== false };
+  const diluentOnly = options.diluentOnly === true;
+  const planOpts = {
+    includeDiluent: diluentOnly || options.includeDiluent !== false,
+    diluentOnly,
+  };
+  if (diluentOnly) {
+    const greedy = optimizeAlchemyPlanGreedy(inv, planOpts);
+    if (greedy) return greedy;
+    const ilp = optimizeAlchemyPlanILP(inv, planOpts);
+    if (ilp) return ilp;
+    return packAlchemyPlanResult({});
+  }
   const balanced = optimizeAlchemyPlanBalanced(inv, planOpts);
   if (balanced) return balanced;
   const greedy = optimizeAlchemyPlanGreedy(inv, planOpts);
@@ -13630,8 +13715,7 @@ function calculateAlchemyPlanBaseTimeSec(planEntries) {
 
 function renderAlchemyTimeSummaryBox(baseSec, adjustedSec, options = {}) {
   const planEffPerMin = Math.max(0, Math.floor(Number(options.planEffPerMin) || 0));
-  const includeDiluent = options.includeDiluent !== false;
-  const effScopeNote = includeDiluent ? '1·2·3성 + 희석액' : '1·2·3성 9종';
+  const effScopeNote = alchemyEfficiencyScopeLabel(options);
   const effLine =
     planEffPerMin > 0
       ? `<div class="alchemy-time-eff-note">제작 효율 <strong style="color:#9ecb7a;">${planEffPerMin.toLocaleString()}G/분</strong> · ${effScopeNote} 기준 · 전문가 시간 반영</div>`
@@ -13953,7 +14037,7 @@ function renderAlchemyHistoryBody() {
         <div>
           <div class="alchemy-history-entry-title">${escapeHtml(formatAlchemyRecordDate(record.savedAt))}</div>
           <div class="alchemy-history-entry-meta">
-            걸리는 시간(전문가 적용): <strong>${escapeHtml(formatGuideDurationSec(record.adjustedSec || 0))}</strong><br>
+            ${record.diluentOnly ? '희석액만 제작 · ' : ''}${record.includeDiluent === false && !record.diluentOnly ? '0성 제외 · ' : ''}걸리는 시간(전문가 적용): <strong>${escapeHtml(formatGuideDurationSec(record.adjustedSec || 0))}</strong><br>
             판매가(전문가 적용): <strong>${Number(record.totalBoosted || 0).toLocaleString()}G</strong>
           </div>
         </div>
@@ -13986,11 +14070,14 @@ function closeAlchemyHistoryOnBackdrop(ev) {
 
 function computeShellfishEfficiencyScores(inv, options = {}) {
   const includeDiluent = resolveAlchemyIncludeDiluent(options);
+  const diluentOnly = resolveAlchemyDiluentOnly(options);
   const effects = getExpertEffects();
   const scores = {};
   SHELLFISH_NAMES.forEach((s) => { scores[s] = 0.001; });
   data.recipes.forEach((recipe) => {
-    if (!includeDiluent && recipe.name === '추출된 희석액') return;
+    if (diluentOnly) {
+      if (recipe.name !== '추출된 희석액') return;
+    } else if (!includeDiluent && recipe.name === '추출된 희석액') return;
     const isAlchemy = /(희석액|핵|정수|에센스|결정|엘릭서|영약|비약|코어|아쿠티스|광란체|깃털|날개|파편|나우틸러스|무저)/.test(recipe.name);
     if (!isAlchemy) return;
     if (calculateMaxCraft(recipe, inv, {}, { skipShellfishTierConvert: true }) < 1) return;
@@ -14044,7 +14131,7 @@ function computePlanShellTotalsFromWarehouse(inventory) {
     const baseInv = prepareInventoryForAlchemyPlan({ ...inventory }, prepOpts);
     const optimized = optimizeAlchemyPlan(baseInv, effects, prepOpts);
     const allPlanCounts = { ...optimized.plans[0], ...optimized.plans[1], ...optimized.plans[2] };
-    if (prepOpts.includeDiluent !== false) {
+    if (prepOpts.includeDiluent !== false || prepOpts.diluentOnly) {
       allPlanCounts['추출된 희석액'] = optimized.diluentCount;
     }
     const rawTotals = {};
@@ -14129,8 +14216,9 @@ function buildStaminaAllocationContext(inventory) {
   if (!isVanillaCalcOn) {
     getInfiniteVanillaMaterials().forEach((n) => { invForEff[n] = Number.MAX_SAFE_INTEGER; });
   }
-  const includeDiluent = alchemyIncludeDiluentEnabled();
-  const effScores = computeShellfishEfficiencyScores(invForEff, { includeDiluent });
+  const includeDiluent = alchemyDiluentOnlyEnabled() || alchemyIncludeDiluentEnabled();
+  const diluentOnly = alchemyDiluentOnlyEnabled();
+  const effScores = computeShellfishEfficiencyScores(invForEff, { includeDiluent, diluentOnly });
   const planInfo = getPlanShellForStamina(inventory);
   const weights = computeStaminaAllocationWeights(inventory, effScores, planInfo.shell);
   const planByBase = rollupPlanShellByBase(planInfo.shell);
@@ -14140,7 +14228,7 @@ function buildStaminaAllocationContext(inventory) {
     have: Math.round(getShellfishEffectiveStock(inventory, name)),
     shortage: Math.max(0, Math.round((planByBase[name] || 0) - getShellfishEffectiveStock(inventory, name)))
   }));
-  return { effScores, weights, planInfo, meta, includeDiluent };
+  return { effScores, weights, planInfo, meta, includeDiluent, diluentOnly };
 }
 
 function sumFinalPlanGold(countsByName, effects) {
@@ -14327,7 +14415,9 @@ function renderStaminaPlan() {
     : allocCtx.planInfo.shell
       ? '창고 기준으로 연금 소모량을 추정해 분배했습니다. 연금품 탭 계산 후 더 정확해집니다.'
       : '창고·연금 효율만 반영했습니다. 재료 창고 입력 후 연금품 계산을 실행하세요.';
-  const diluentEffHint = allocCtx.includeDiluent === false
+  const diluentEffHint = allocCtx.diluentOnly
+    ? ' 희석액만 제작 기준 — 연금 효율·추천은 추출된 희석액만 만듭니다.'
+    : allocCtx.includeDiluent === false
     ? ' 0성(희석액) 제외 — 연금 효율·추천은 1·2·3성 9종 기준입니다.'
     : '';
   const shellfishImages = { 굴: '재료/굴.png', 소라: '재료/소라.png', 문어: '재료/문어.png', 미역: '재료/미역.png', 성게: '재료/성게.png' };
@@ -14747,7 +14837,8 @@ function analyzeEfficiency() {
   if (containerCraftPrice) containerCraftPrice.innerHTML = '';
 
   const prepOpts = getAlchemyPlanPrepOptions();
-  const includeDiluent = prepOpts.includeDiluent !== false;
+  const diluentOnly = prepOpts.diluentOnly === true;
+  const includeDiluent = diluentOnly || prepOpts.includeDiluent !== false;
   const purchaseOn = isPurchaseIncludeEnabled() && shellfishPricesHasAny;
   const purchaseBudget = purchaseOn ? getPurchaseBudgetGold() : 0;
   let purchaseMeta = {
@@ -14806,11 +14897,19 @@ function analyzeEfficiency() {
     if (purchaseEl) containerAlchemy.appendChild(purchaseEl);
   }
 
+  const purchaseTitleNote = purchaseOn && purchaseMeta.goldDelta > 0
+    ? ` <span style="font-size:11px;font-weight:600;color:#9ecb7a;">(재고+매입 · +${purchaseMeta.goldDelta.toLocaleString()}G)</span>`
+    : purchaseOn
+      ? ' <span style="font-size:11px;font-weight:600;color:#8899aa;">(재고 기준)</span>'
+      : '';
+  const diluentOnlyTitleNote = diluentOnly
+    ? ' <span style="font-size:11px;font-weight:600;color:#9ecb7a;">(희석액만)</span>'
+    : '';
   planWrap.innerHTML = `
-    <div class="summary-panel__title">제작 추천${purchaseOn && purchaseMeta.goldDelta > 0 ? ` <span style="font-size:11px;font-weight:600;color:#9ecb7a;">(재고+매입 · +${purchaseMeta.goldDelta.toLocaleString()}G)</span>` : purchaseOn ? ' <span style="font-size:11px;font-weight:600;color:#8899aa;">(재고 기준)</span>' : ''}</div>
-    ${renderTriFinalPlan('1성', FINAL_GROUP1, plan1, g1)}
-    ${renderTriFinalPlan('2성', FINAL_GROUP2, plan2, g2)}
-    ${renderTriFinalPlan('3성', FINAL_GROUP3, plan3, g3)}
+    <div class="summary-panel__title">제작 추천${diluentOnlyTitleNote}${purchaseTitleNote}</div>
+    ${diluentOnly ? '' : renderTriFinalPlan('1성', FINAL_GROUP1, plan1, g1)}
+    ${diluentOnly ? '' : renderTriFinalPlan('2성', FINAL_GROUP2, plan2, g2)}
+    ${diluentOnly ? '' : renderTriFinalPlan('3성', FINAL_GROUP3, plan3, g3)}
     ${includeDiluent ? renderZeroStarDiluentPlanBlock(diluentCount, effects) : ''}
   `;
   containerAlchemy.appendChild(planWrap);
@@ -14820,13 +14919,15 @@ function analyzeEfficiency() {
   const revBox = document.createElement('div');
   revBox.className = 'summary-panel';
   const diluentRevNote =
-    includeDiluent && diluentCount > 0
+    diluentOnly && diluentCount > 0
+      ? `<p class="summary-panel__lead" style="margin-top:6px;margin-bottom:0;">추출된 희석액 <strong style="color:#b8c9d9;">${diluentCount.toLocaleString()}개</strong>는 1·2·3성 9종을 만들지 않고, 보유 재료로 희석액만 최대치로 만든 결과입니다.</p>`
+      : includeDiluent && diluentCount > 0
       ? `<p class="summary-panel__lead" style="margin-top:6px;margin-bottom:0;">추출된 희석액 <strong style="color:#b8c9d9;">${diluentCount.toLocaleString()}개</strong>는 최종 9종과 함께 재료 제약 안에서 총 판매가가 최대가 되도록 함께 산출된 결과입니다.</p>`
       : '';
   const tierSumParts = [
-    g1.boosted > 0 ? `1성 ${g1.boosted.toLocaleString()}G` : '',
-    g2.boosted > 0 ? `2성 ${g2.boosted.toLocaleString()}G` : '',
-    g3.boosted > 0 ? `3성 ${g3.boosted.toLocaleString()}G` : '',
+    !diluentOnly && g1.boosted > 0 ? `1성 ${g1.boosted.toLocaleString()}G` : '',
+    !diluentOnly && g2.boosted > 0 ? `2성 ${g2.boosted.toLocaleString()}G` : '',
+    !diluentOnly && g3.boosted > 0 ? `3성 ${g3.boosted.toLocaleString()}G` : '',
     includeDiluent && gD.boosted > 0 ? `희석액 ${gD.boosted.toLocaleString()}G` : '',
   ].filter(Boolean);
   const tierSumExpr = tierSumParts.length ? tierSumParts.join(' + ') : '0';
@@ -14843,7 +14944,7 @@ function analyzeEfficiency() {
         : '';
   revBox.innerHTML = `
     <div class="summary-panel__title">수익 요약</div>
-    <p class="summary-panel__lead text-muted">1성·2성·3성 연금품${includeDiluent ? ' + 희석액' : ''} 전량 판매 기준 · 전문가 연금 +${effects.alchemyPriceBoost || 0}%${includeDiluent ? '' : ' · 0성(희석액) 제외'}</p>
+    <p class="summary-panel__lead text-muted">${diluentOnly ? '추출된 희석액만 전량 판매 기준' : `1성·2성·3성 연금품${includeDiluent ? ' + 희석액' : ''} 전량 판매 기준`} · 전문가 연금 +${effects.alchemyPriceBoost || 0}%${diluentOnly ? ' · 희석액만 제작' : includeDiluent ? '' : ' · 0성(희석액) 제외'}</p>
     <div class="metric-kpi-grid" style="margin-bottom:8px;">
       <div class="metric-kpi">
         <div class="metric-kpi__label">총 판매가</div>
@@ -14859,12 +14960,12 @@ function analyzeEfficiency() {
         <div class="metric-kpi__value">${totalBase.toLocaleString()}G</div>
       </div>
     </div>
-    <p class="summary-panel__lead text-muted" style="margin-bottom:10px;">성급별 합산: <span style="color:#9ecb7a;font-weight:700;">${tierSumExpr}</span></p>
+    <p class="summary-panel__lead text-muted" style="margin-bottom:10px;">${diluentOnly ? '희석액 판매가' : '성급별 합산'}: <span style="color:#9ecb7a;font-weight:700;">${tierSumExpr}</span></p>
     ${purchaseRevBlock}
     <div class="metric-kpi-grid" style="margin-bottom:8px;">
-      <div class="metric-kpi"><div class="metric-kpi__label">1성</div><div class="metric-kpi__value">${g1.boosted.toLocaleString()}G</div></div>
+      ${diluentOnly ? '' : `<div class="metric-kpi"><div class="metric-kpi__label">1성</div><div class="metric-kpi__value">${g1.boosted.toLocaleString()}G</div></div>
       <div class="metric-kpi"><div class="metric-kpi__label">2성</div><div class="metric-kpi__value">${g2.boosted.toLocaleString()}G</div></div>
-      <div class="metric-kpi"><div class="metric-kpi__label">3성</div><div class="metric-kpi__value">${g3.boosted.toLocaleString()}G</div></div>
+      <div class="metric-kpi"><div class="metric-kpi__label">3성</div><div class="metric-kpi__value">${g3.boosted.toLocaleString()}G</div></div>`}
       ${includeDiluent ? `<div class="metric-kpi"><div class="metric-kpi__label">희석액</div><div class="metric-kpi__value">${gD.boosted.toLocaleString()}G</div></div>` : ''}
     </div>
     ${diluentRevNote}
@@ -14875,12 +14976,13 @@ function analyzeEfficiency() {
   timeBox.innerHTML = renderAlchemyTimeSummaryBox(totalBaseTimeSec, totalAdjustedTimeSec, {
     planEffPerMin,
     includeDiluent,
+    diluentOnly,
   });
   containerAlchemy.appendChild(timeBox.firstElementChild);
   
   // 연금품 섹션 - 제작 추천 결과 기반으로 표시
   lastAlchemyPlanCountsByName = {};
-  getAlchemyFinalProductNames({ includeDiluent }).forEach((name) => {
+  getAlchemyFinalProductNames({ includeDiluent, diluentOnly }).forEach((name) => {
     lastAlchemyPlanCountsByName[name] = Math.max(0, Math.floor(Number(allPlanCounts[name]) || 0));
   });
   lastAlchemyRecordSnapshot = {
@@ -14890,6 +14992,7 @@ function analyzeEfficiency() {
     adjustedSec: totalAdjustedTimeSec,
     planEffPerMin,
     includeDiluent,
+    diluentOnly,
     counts: { ...lastAlchemyPlanCountsByName },
   };
   if (planEntries.length > 0) {
@@ -15206,6 +15309,15 @@ window.addEventListener('DOMContentLoaded', async function() {
   const diluentToggle = document.getElementById('alchemyIncludeDiluentToggle');
   if (diluentToggle) {
     diluentToggle.addEventListener('change', () => {
+      saveAlchemyIncludeDiluentState();
+      handleEfficiencyInputChanged();
+    });
+  }
+  const diluentOnlyToggle = document.getElementById('alchemyDiluentOnlyToggle');
+  if (diluentOnlyToggle) {
+    diluentOnlyToggle.addEventListener('change', () => {
+      syncAlchemyDiluentTogglesUi();
+      saveAlchemyDiluentOnlyState();
       saveAlchemyIncludeDiluentState();
       handleEfficiencyInputChanged();
     });
